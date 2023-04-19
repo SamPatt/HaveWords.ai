@@ -635,6 +635,7 @@ async function fetchOpenAIResponse(prompt) {
     const apiKey = localStorage.getItem('openai_api_key');
     if (!apiKey) {
       console.error("API key is missing.");
+      addMessage("system-message", "API key is missing.", "System");
       return;
     }
  
