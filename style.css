@@ -1,0 +1,500 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    background-color: #333; /* Dark gray background */
+    color: #f0f0f0; /* Light gray text */
+}
+p {
+    margin: 5px;
+    padding: 5px;
+}
+
+h {
+    margin: 3px;
+    padding: 3px;
+}
+
+input, select {
+    border: 1px solid #777;
+    background-color: #444;
+    color: #f0f0f0;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 2px;
+    font-size: 14px;
+}
+
+textarea {
+    width: 50%;
+    border: 1px solid #777;
+    background-color: #444;
+    color: #f0f0f0;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 2px;
+    font-size: 14px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+
+
+  
+  .input-wrapper textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 60px; /* Adjust this value based on the send button's width */
+  }
+  
+  .input-wrapper button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: calc(100% - 8px);
+    width: 60px; /* Adjust this value based on the desired width of the send button */
+    background: rgb(73, 73, 73);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+    margin-right: 4px;
+  }
+  
+a {
+    color: #FFA500; /* Set the default hyperlink color, e.g., orange */
+    text-decoration: none; /* Remove the default underline */
+  }
+  
+  a:hover {
+    color: #FF4500; /* Set the color when the user hovers over the hyperlink, e.g., orange-red */
+    text-decoration: underline; /* Add underline when hovering */
+  }
+  
+  a:visited {
+    color: #CD5C5C; /* Set the color for visited links, e.g., Indian red */
+  }
+  
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.optionsContainer {
+    display: flex;
+}
+
+#aiSelection {
+    width: 75%; /* Change this value according to your preference */
+    /* Other styles */
+}
+
+.adventureOptions {
+    width: 25%; /* Change this value according to your preference */
+    /* Add other styles as needed */
+}
+
+    
+
+.aiSelection label {
+    margin-right: 10px;
+}
+
+.loadingPageBuffer {
+    height: 100vh;
+    flex: 1;
+}
+  
+
+#userList {
+    padding-left: 0;
+    width: auto;
+  }
+  
+.system-container {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+}
+
+button {
+    border: 1px solid #777;
+    background-color: #444;
+    color: #f0f0f0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.loading {
+    display: none;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.loading span {
+    animation: loadingDots 1.5s infinite;
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+@keyframes loadingDots {
+    0%, 20% { opacity: 0.3; }
+    40% { opacity: 1; }
+    60% { opacity: 0.3; }
+    80%, 100% { opacity: 0.3; }
+}
+
+
+
+#messageInput {
+    flex: flex-end;
+}
+
+#messageInputRemote {
+    flex: flex-end;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+.system-container input {
+    width: auto;
+}
+
+.system-container label {
+    margin-right: 10px;
+}
+.system-container button {
+    margin-left: 10px;
+}
+
+#loadingPage {
+    height: 100vh;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#startSession {
+    border: #ccc 1px solid;
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+#joinSession {
+    border: #ccc 1px solid;
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+#joinContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#hostAIContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.main-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    height: 100%;
+}
+
+.inviteLink {
+    padding: 5px;
+    border: 1px solid #777;
+    border-radius: 5px;
+    margin: 2px;
+}
+
+.userPanel {
+    display: flex;
+    flex: 5;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #777; /* Less bright border color */
+}
+
+.connectedUsers {
+
+    max-width: 300px; /* Adjust this value to set the maximum width */
+    overflow-x: auto;
+
+}
+
+.chatPanel {
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #777; /* Less bright border color */
+}
+
+/* #us {
+    background-color: #4a4a4a;
+}
+
+#chat {
+    background-color: #4a4a4a;
+} */
+
+.message {
+    margin-bottom: 10px;
+}
+.messages {
+    overflow-y: auto;
+}
+.icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.icon.right {
+    position: absolute;
+    right: 0;
+    margin-right: 0;
+}
+
+.message-icon {
+    margin-right: 5px;
+  }
+
+  .message-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.aiOutput, .chatOutput {
+    flex-grow: 1;
+    padding: 1rem;
+    border: 1px solid #777; /* Less bright border color */
+    border-radius: 20px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-color: rgb(39, 39, 39);
+    overflow-y: auto;
+}
+
+.chatMessage {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    max-width: 70%;
+    word-wrap: break-word;
+    list-style-type: none
+}
+
+.localChatMessage {
+    background-color: #444;
+    align-self: flex-end;
+}
+.remoteChatMessage {
+    background-color: #444;
+    align-self: flex-start;
+}
+
+.local-message {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    max-width: 70%;
+    word-wrap: break-word;
+    background-color: #d5f5e3;
+    display: inline-block;
+  }
+
+.remote-message {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    max-width: 70%;
+    word-wrap: break-word;
+    background-color: #f5e5d5;
+    display: inline-block;
+}
+
+.localPromptMessage {
+    background-color: #444;
+    align-self: flex-end;
+}
+
+.hostPromptMessage {
+    background-color: #444;
+    align-self: flex-start;
+}
+
+.guestPromptMessage {
+    background-color: #444;
+    align-self: flex-start;
+}
+.guestSystemMessage {
+    background-color: #444;
+    align-self: flex-start;
+}
+.ai-response {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    max-width: 70%;
+    word-wrap: break-word;
+    background-color: #3f3f3f;
+    display: inline-block;
+    float: right;
+    clear: right;
+  }
+
+.remote-ai-response {
+    background-color: #444;
+    align-self: flex-end;}
+
+.message-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    }
+
+.message-nickname {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.message-text {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow-wrap: anywhere;
+}
+
+.message-content.right .message-text {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    overflow-wrap: anywhere;
+}
+.message-content.right {
+    align-items: flex-end;
+    padding-right: 10px; 
+}
+
+
+.message-sender {
+font-weight: bold;
+margin-right: 5px;
+}
+
+.message-text {
+display: inline;
+}
+    
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+background-color: #fefefe;
+margin: 15% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 80%;
+}
+
+.modal-footer {
+padding: 10px 20px;
+text-align: right;
+}
+.user-container {
+    display: block; /* Change this from flex to block */
+    margin-bottom: 10px;
+    margin: 5px;
+  }
+  
+  .user-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 200px;
+  }
+  
+  .user-actions button {
+    margin-top: 5px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  
+  .user-container li {
+    list-style: none;
+    padding: 3px;
+  }
+  
+  #connectedUsers {
+    min-width: 200px;
+    width: auto;
+    max-width: fit-content;
+    border: 1px solid #777; /* Less bright border color */
+    gap: 1rem;
+    padding: 1rem;
+
+  }
+  
+
+.arrow-indicator {
+float: left;
+margin-right: 5px;
+cursor: pointer;
+}
+  
