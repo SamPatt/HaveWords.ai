@@ -34,7 +34,7 @@ let bannedGuests = [];
 let conn;
 let gameMode = false;
 const peer = new Peer(id,{
-    host: "https://peerjssignalserver.herokuapp.com",
+    host: "peerjssignalserver.herokuapp.com",
     path: "/peerjs",
     secure: true,
     port: 443,
