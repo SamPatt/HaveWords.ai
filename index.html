@@ -1,56 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="HaveWords is a P2P AI sharing platform using WebRTC.">
-  <meta name="author" content="Github: SamPatt">
-  <title>HaveWords - P2P AI Sharing</title>
-  <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HaveWords is a P2P AI sharing platform using WebRTC.">
+    <meta name="author" content="Github: SamPatt">
+    <title>HaveWords - P2P AI Sharing</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div id="hostAIContainer" style="display:none;">          
+    <div id="hostAIContainer" style="display:none;">
         <div class="main-wrapper">
             <div id="us" class="userPanel">
-                <h2>HaveWords.ai</h2>
-                <div id="remoteSystemPrompt" style="display:none;"></div>
-                <div class="optionsContainer">
-                <div id="aiSelection" style="display:none;">
-                    <label for="aiModel">AI Model:</label>
-                    <select id="aiModel">
-                        <option disabled selected>Choose your AI</option>
-                        <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT</option>
-                        <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
+                <div class="header">
+                    <h2>HaveWords.ai</h2>
+                    <div id="remoteSystemPrompt" style="display:none;"></div>
+                    <div class="optionsContainer">
+                        <div id="aiSelection" class="aiSelection" style="display:none;">
+                            <label for="aiModel">AI Model:</label>
+                            <select id="aiModel">
+                                <option disabled selected>Choose your AI</option>
+                                <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT</option>
+                                <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
+                            </select>
+                            <div id="apiKeyInput" style="display: none;">
+                                <label for="apiKey"><a href="https://platform.openai.com/account/api-keys">API Key:</a>
+                                </label>
+                                <input id="apiKey" type="password" placeholder="Enter your API key">
+                                <button id="submitApiKey" style="display: none;">Submit</button>
+                            </div>
+                            <div class="system-container">
+                                <label for="systemMessage">AI Role:</label>
+                                <input id="systemMessage" type="text" placeholder="You are a helpful assistant.">
+                                <button id="submitSystemMessage" style="display: none;">Set</button>
+                            </div>
+                            <div id="displayInviteLinkContainer" style="display:none;">
+                                <label for="displayInviteLink">Invite link:</label>
+                                <input id="displayInviteLink" class="inviteLink" type="text" placeholder="Invite link">
+                                <button id="copyInviteLink">Copy</button>
+                            </div>
 
-                    </select>
-                    <div id="apiKeyInput" style="display: none;">
-                        <label for="apiKey"><a href="https://platform.openai.com/account/api-keys">API Key:</a> </label>
-                        <input id="apiKey" type="password" placeholder="Enter your API key">
-                        <button id="submitApiKey" style="display: none;">Submit</button>
+                        </div>
+                        <div class="adventureOptions">
+                            <button id="startGameButton" style="display: none;">Start Game</button>
+                        </div>
                     </div>
-                    <div class="system-container">
-                        <label for="systemMessage">AI Role:</label>
-                        <input id="systemMessage" type="text" placeholder="You are a helpful assistant." >
-                        <button id="submitSystemMessage" style="display: none;">Set</button>
-                    </div>
-                    <div id="displayInviteLinkContainer" style="display:none;">
-                        <label for="displayInviteLink">Invite link:</label>
-                        <input id="displayInviteLink" class="inviteLink" type="text" placeholder="Invite link">
-                        <button id="copyInviteLink">Copy</button>
-                    </div>
-                
                 </div>
-                <div class="adventureOptions">
-                    <button id="startGameButton" style="display: none;">Start Game</button>
-                </div>
-            </div>
-                <div class="aiOutput">
+                <div class="aiScrollingOutput scrollingOutput">
                     <div class="messages"></div>
                     <span class="loading loadingHost" id="loadingHost"><span>.</span><span>.</span><span>.</span></span>
                 </div>
-                    
+
                 <div id="inputSection" class="inputSection" style="display:none;">
                     <div class="input-wrapper">
                         <textarea id="messageInput" rows="3" placeholder="Prompt the AI..."></textarea>
@@ -59,30 +63,37 @@
                 </div>
                 <div id="inputSectionRemote" class="inputSection" style="display:none;">
                     <div class="input-wrapper">
-                        <textarea id="messageInputRemote" rows="3" placeholder="The host hasn't given you AI access..."></textarea>
+                        <textarea id="messageInputRemote" rows="3"
+                            placeholder="The host hasn't given you AI access..."></textarea>
                         <button id="sendButtonRemote">Send</button>
                     </div>
                 </div>
             </div>
             <div id="chat" class="chatPanel">
-                <h2>Group Chat</h2>
-                <div id = "displayUsername"></div>
-                <div class="aiOutput" id="chatOutput">
+                <div class="header">
+                    <h2>Group Chat</h2>
+                    <div id="displayUsername"></div>
+                </div>
+
+                <div class="chatScrollingOutput scrollingOutput" id="chatOutput">
                     <div class="chatMessages"></div>
                 </div>
-                <div class="inputSection">
+                <div id="inputSection" class="inputSection">
                     <div class="input-wrapper">
-                        <textarea id="chatInput" rows="2" placeholder="Type your message..."></textarea>
+                        <textarea id="chatInput" rows="3" placeholder="Type your message..."></textarea>
                         <button id="chatSendButton">Send</button>
                     </div>
                 </div>
             </div>
-            <div id="connectedUsers" class="connectedUsers">
-                <h2>Peers</h2>
+            <div class="connectedUsers">
+                <div class="header">
+                    <h2>Peers</h2>
+                </div>
                 <ul id="userList"></ul>
             </div>
         </div>
     </div>
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
