@@ -40,8 +40,8 @@ const peer = new Peer(id,{
   host: "localhost",
   port: 9000,
   path: "/myapp",
-}); */
-
+});
+ */
 
 // Deployed peerjs server
 const peer = new Peer(id,{
@@ -101,20 +101,24 @@ peer.on('open', function () {
     
 
 
-
+let retryCount = 0;
+const maxRetries = 5;
 
 peer.on('error', function (err) {
-    console.log('PeerJS error:', err);
+  console.log('PeerJS error:', err);
+
+  if (retryCount < maxRetries) {
     setTimeout(() => {
       console.log('Attempting to reconnect to PeerJS server...');
       peer.reconnect();
+      retryCount++;
     }, 5000);
-  });
-  
-window.addEventListener('beforeunload', () => {
-    peer.disconnect();
-    peer.destroy();
-  });
+  } else {
+    console.log('Reached maximum number of retries. Displaying system message.');
+    // Display a system message here, e.g. by updating the UI
+    addChatMessage("system-message", `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`, "System");
+  }
+});
 
 // Answer incoming voice calls
 peer.on('call', call => {
