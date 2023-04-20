@@ -33,12 +33,26 @@ let guestNickname;
 let bannedGuests = [];
 let conn;
 let gameMode = false;
+
+
+/* // Local peerjs server
+const peer = new Peer(id,{
+  host: "localhost",
+  port: 9000,
+  path: "/myapp",
+}); */
+
+
+// Deployed peerjs server
 const peer = new Peer(id,{
     host: "peerjssignalserver.herokuapp.com",
     path: "/peerjs",
     secure: true,
     port: 443,
 });
+
+
+
 let content = "You are a helpful assistant.";
 let conversationHistory = [
     {
@@ -64,21 +78,37 @@ peer.on('open', function () {
     
   
     if (isHost) {
-      hostNickname = (generateHostNickname() + ' (host)');
-      console.log('Host nickname:', hostNickname);
-      displayUsername.innerHTML = "<b>" + hostNickname + "</b>";
-      setupHostSession(); // Call the function to set up the host session
-      checkForExistingSession(); // Call the function to check for an existing session
+      if (!hostNickname) {
+        hostNickname = (generateHostNickname() + ' (host)');
+        console.log('Host nickname:', hostNickname);
+        displayUsername.innerHTML = "<b>" + hostNickname + "</b>";
+        setupHostSession(); // Call the function to set up the host session
+        checkForExistingSession(); // Call the function to check for an existing session
+      } else {
+        console.log('Host nickname is already set:', hostNickname);
+      }
     } else {
-      setupJoinSession(); // Call the function to set up the join session
-      guestNickname = generateNickname();
-      displayUsername.innerHTML = "<b>" + guestNickname + "</b>";
-      console.log('Guest nickname:', guestNickname);
+      if (!guestNickname) {
+        setupJoinSession(); // Call the function to set up the join session
+        guestNickname = generateNickname();
+        displayUsername.innerHTML = "<b>" + guestNickname + "</b>";
+        console.log('Guest nickname:', guestNickname);
+      } else {
+        console.log('Guest nickname is already set:', guestNickname);
+      }
     }
-  });
-  
+    });
+    
+
+
+
+
 peer.on('error', function (err) {
     console.log('PeerJS error:', err);
+    setTimeout(() => {
+      console.log('Attempting to reconnect to PeerJS server...');
+      peer.reconnect();
+    }, 5000);
   });
   
 window.addEventListener('beforeunload', () => {
