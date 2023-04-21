@@ -40,8 +40,8 @@ const peer = new Peer(id,{
   host: "localhost",
   port: 9000,
   path: "/myapp",
-}); */
-
+});
+ */
 
 // Deployed peerjs server
 const peer = new Peer(id,{
@@ -447,8 +447,9 @@ async function setupHostSession() {
             if (data.type === 'nickname-update') {
               // Update nickname in datachannels
               const oldNickname = dataChannels[conn.peer].nickname;
-              dataChannels[conn.peer].nickname = data.nickname;
-              addChatMessage("system-message", `${oldNickname} is now ${data.nickname}.`, hostNickname);
+              dataChannels[conn.peer].nickname = data.newNickname;
+              addChatMessage("system-message", `${oldNickname} is now ${data.newNickname}.`, hostNickname);
+              updateUserList();
               // Update nickname in guest user list
               const updatedGuestUserList = updateGuestUserlist();
               guestUserList = updatedGuestUserList;
@@ -457,10 +458,10 @@ async function setupHostSession() {
                 if (dataChannels.hasOwnProperty(guestId)) {
                     dataChannels[guestId].conn.send({
                         type: 'nickname-update',
-                        message: `${oldNickname} is now ${data.nickname}.`,
+                        message: `${oldNickname} is now ${data.newNickname}.`,
                         nickname: hostNickname,
                         oldNickname: oldNickname,
-                        newNickname: data.nickname,
+                        newNickname: data.newNickname,
                         guestUserList: updatedGuestUserList,
                     });
                 }
@@ -1243,7 +1244,7 @@ function sendUsername(username) {
       conn.send({
         type: 'nickname-update',
         id: id,
-        nickname: guestNickname,
+        newNickname: username,
       });
         }
 
