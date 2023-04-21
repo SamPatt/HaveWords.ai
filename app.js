@@ -172,6 +172,7 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 
 
 const displayInviteLink = document.getElementById('displayInviteLink');
+const displayInviteText = document.getElementById('displayInviteText');
 
 // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
 function generateId() {
@@ -296,6 +297,7 @@ async function setupHostSession() {
     displayHostHTMLChanges();
     const inviteLink = makeInviteLink(id);
     displayInviteLink.value = inviteLink;
+    displayInviteText.innerHTML = "<span style='user-select: none;'>invite link:&nbsp;</span>" + inviteLink;
     addMessage("system-message", "<p>Welcome, <b>" + hostNickname + '</b>!</p> <p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then copy the invite link above, and send it to your friends. Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>', "HaveWords");
   
     // Handle incoming connections from guests
@@ -756,19 +758,20 @@ async function fetchOpenAIResponse(prompt) {
 
 function addMessage(type, message, nickname) {
     let icon;
-    if(type === 'prompt') {
-      loadingAnimation.style.display = 'inline';
-      icon = '👤';
-    } else if (type === 'ai-response') {
-      loadingAnimation.style.display = 'none';
-      icon = '🤖';
-      }  else if (type === 'system-message')  {
+    let isUser = false;
+    if (type === "prompt") {
+      loadingAnimation.style.display = "inline";
+      icon = "👤";
+      isUser = true;
+    } else if (type === "ai-response") {
+      loadingAnimation.style.display = "none";
+      icon = "🤖";
+    } else if (type === "system-message") {
+      icon = "🔧";
+    } else {
+      icon = "🦔";
+    }
 
-      icon = '🔧';
-      } else {
-
-      icon = '🦔';
-      }
     const formattedResponse = convertToParagraphs(message);
     const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
     const messagesDiv = document.querySelector('.messages');
@@ -781,6 +784,10 @@ function addMessage(type, message, nickname) {
 
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
+
+    if (!isUser) {
+      messageWrapper.className += " aiMessage"; 
+    }
 
     const messageNickname = document.createElement('div');
     messageNickname.className = 'message-nickname';
@@ -796,6 +803,8 @@ function addMessage(type, message, nickname) {
 
     messagesDiv.appendChild(messageWrapper);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    //const scrollView = messagesDiv.parentNode
+    //scrollView.scrollTop = scrollView.scrollHeight;
 }
 
 function addChatMessage(type, message, nickname) {
@@ -833,7 +842,8 @@ function addChatMessage(type, message, nickname) {
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);
   messagesDiv.appendChild(messageWrapper);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  const scrollView = messagesDiv.parentNode
+  scrollView.scrollTop = scrollView.scrollHeight;
 }
   
   
@@ -916,22 +926,22 @@ async function sendPrompt(message) {
 }
 
 async function guestSendPrompt() {
-    const input = document.getElementById('messageInputRemote');
-    const message = input.value;
+  const input = document.getElementById("messageInputRemote");
+  const message = input.value;
 
-        if (message.trim() !== '') {
-            input.value = '';
-        
-              // Send chat message to host
-              conn.send({
-                type: 'remote-prompt',
-                id: id,
-                message: message,
-                nickname: guestNickname,
-              });
-              guestAddLocalPrompt(message);
-            }
-          }
+  if (message.trim() !== "") {
+    input.value = "";
+
+    // Send chat message to host
+    conn.send({
+      type: "remote-prompt",
+      id: id,
+      message: message,
+      nickname: guestNickname,
+    });
+    guestAddLocalPrompt(message);
+  }
+}
 
 // These functions update the list of connected guests and display the user actions menu
 
@@ -1250,7 +1260,7 @@ function sendUsername(username) {
 
   const systemMessage = document.getElementById('systemMessage');
   systemMessage.addEventListener('focus', () => {
-      document.getElementById('submitSystemMessage').style.display = 'block';
+      document.getElementById('submitSystemMessage').style.display = 'inline-block';
     });
   systemMessage.addEventListener('input', () => {
       systemMessage.style.width = `${systemMessage.value.length}ch`;
@@ -1487,9 +1497,11 @@ function getCurrentUsernames() {
 
 function triggerAdventureStart() {
     // Trigger the visual indicator (e.g., change the background color)
-    document.body.style.backgroundColor = "rgb(52, 78, 56)";
+    //document.body.style.backgroundColor = "rgb(52, 78, 56)";
 
     // Play the sound effect
+
+    document.getElementById('aiSelectionBlock').style.display = "none"; 
     playOminousSound();
 }
 
