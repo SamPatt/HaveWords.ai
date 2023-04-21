@@ -349,10 +349,9 @@ button:hover {
 }
 
 .connectedUsers {
-    max-width: 300px;
+    min-width: 300px;
     /* Adjust this value to set the maximum width */
     overflow-x: auto;
-    min-width: 200px;
     width: auto;
     max-width: fit-content;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -363,13 +362,13 @@ button:hover {
 
 
 .chatPanel {
+    min-width: 300px;
     display: flex;
     flex: 2;
     flex-direction: column;
     gap: 0rem;
     padding: 0rem;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    /* Less bright border color */
 }
 
 /* #us {
@@ -517,6 +516,7 @@ button:hover {
 }
 
 .message-nickname {
+    letter-spacing: 0.1em;
     font-size: 0.6em;
     margin-bottom: 2px;
     text-transform: uppercase;
@@ -625,6 +625,10 @@ button:hover {
 }
 
 #sendButton {
+    display: none;
+}
+
+#sendButtonRemote {
     display: none;
 }
 
