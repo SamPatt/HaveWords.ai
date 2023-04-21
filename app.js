@@ -297,7 +297,7 @@ async function setupHostSession() {
     displayHostHTMLChanges();
     const inviteLink = makeInviteLink(id);
     displayInviteLink.value = inviteLink;
-    displayInviteText.innerHTML = "invite link: " + inviteLink;
+    displayInviteText.innerHTML = "<span style='user-select: none;'>invite link:&nbsp;</span>" + inviteLink;
     addMessage("system-message", "<p>Welcome, <b>" + hostNickname + '</b>!</p> <p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then copy the invite link above, and send it to your friends. Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>', "HaveWords");
   
     // Handle incoming connections from guests
@@ -756,8 +756,8 @@ function addMessage(type, message, nickname) {
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
 
-    if (isUser) {
-      messageContent.style.opacity = 0.7;
+    if (!isUser) {
+      messageWrapper.className += " aiMessage"; 
     }
 
     const messageNickname = document.createElement('div');
@@ -894,22 +894,22 @@ async function sendPrompt(message) {
 }
 
 async function guestSendPrompt() {
-    const input = document.getElementById('messageInputRemote');
-    const message = input.value;
+  const input = document.getElementById("messageInputRemote");
+  const message = input.value;
 
-        if (message.trim() !== '') {
-            input.value = '';
-        
-              // Send chat message to host
-              conn.send({
-                type: 'remote-prompt',
-                id: id,
-                message: message,
-                nickname: guestNickname,
-              });
-              guestAddLocalPrompt(message);
-            }
-          }
+  if (message.trim() !== "") {
+    input.value = "";
+
+    // Send chat message to host
+    conn.send({
+      type: "remote-prompt",
+      id: id,
+      message: message,
+      nickname: guestNickname,
+    });
+    guestAddLocalPrompt(message);
+  }
+}
 
 // These functions update the list of connected guests and display the user actions menu
 

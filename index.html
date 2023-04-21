@@ -13,6 +13,9 @@
 </head>
 
 <body>
+
+
+
     <div id="hostAIContainer" style="display:none;">
         <div class="main-wrapper">
             <div id="us" class="userPanel">
@@ -20,41 +23,41 @@
                     <h2>HaveWords.ai</h2>
                     <h3 id="displayInviteText"></h3>
                 </div>
-                <div class="header" id="aiSelectionBlock" style="padding-top: 1em;">
 
+                <div class="header" id="aiSelectionBlock" style="min-height: fit-content;">
                     <div id="remoteSystemPrompt" style="display:none;"></div>
                     <div class="optionsContainer">
-                        <div id="aiSelection" class="aiSelection" style="display:none;">
-                            <div>
+                        <div id="aiSelection" class="aiSelection" >
+                            <div style="width: fit-content;">
                                 <div class="inputLabel" for="aiModel">AI Model</div>
-                                <select id="aiModel" style="width: 20.8em; font-size: 1em;">
+                                <select id="aiModel" style="width: 25.8em; font-size: 1em;">
                                     <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT</option>
                                     <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
                                 </select>
                             </div>
                             <div id="apiKeyInput" style="display: block;">
-                                <div class="inputLabel" for="apiKey"><a
-                                        href="https://platform.openai.com/account/api-keys">API Key</a></div>
+                                <div class="inputLabel" for="apiKey">API Key <a
+                                        href="https://platform.openai.com/account/api-keys" style="opacity: 1; text-transform: lowercase;">&#9432;</a></div>
                                 <input id="apiKey" type="password" placeholder="Enter your API key"
-                                    style="min-width: 20em;">
+                                    style="min-width: 25em;">
                                 <button id="submitApiKey" style="display: none;">Submit</button>
                             </div>
                             <div class="system-container">
                                 <div class="inputLabel" for="systemMessage">AI Role</div>
                                 <input id="systemMessage" type="text" placeholder="You are a helpful assistant."
-                                    value="dungeon master" style="min-width: 20em;">
-                                <button id="submitSystemMessage" style="width: 6em; display: inline-block;">Set</button>
+                                    value="dungeon master" style="min-width: 25em;">
+                                <button id="submitSystemMessage" style="width: 6em; display: none;">Set</button>
                             </div>
 
-                            <div id="displayInviteLinkContainer" style="display:none;">
+                            <div id="displayInviteLinkContainer" style="display:none; max-height: 0px; overflow: hidden;">
                                 <div class="inputLabel" for="displayInviteLink">Invite link</div>
                                 <input id="displayInviteLink" class="inviteLink" type="text" placeholder="Invite link"
-                                    style="width: 20em;">
+                                    style="width: 25em;">
                                 <button id="copyInviteLink" style="width: 6em;">Copy</button>
                             </div>
 
                             <div class="adventureOptions">
-                                <div style="display: inline-block; margin-left:7em;">
+                                <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
                                     <div class="button" id="startGameButton" style="margin-top: 0.3em;">Start&nbsp;Game
                                     </div>
                                 </div>
@@ -85,7 +88,9 @@
             <div id="chat" class="chatPanel">
                 <div class="header">
                     <h2>Players Chat</h2>
-                    <h3><div id="displayUsername"></div></h3>
+                    <h3>
+                        <div id="displayUsername"></div>
+                    </h3>
                 </div>
 
                 <div class="chatScrollingOutput scrollingOutput" id="chatOutput">

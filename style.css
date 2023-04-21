@@ -6,12 +6,13 @@
 
 body {
     font-family: "Day Roman", Arial, sans-serif;
+    line-height: 1.45em;
     margin: 0;
     padding: 0;
     height: 100vh;
     display: flex;
     background-color: #222;
-    font-size: 15px;
+    font-size: 16px;
     /* Dark gray background */
     color:rgb(219, 219, 219);
     /* Light gray text */
@@ -73,15 +74,19 @@ h2 {
     font-size: 1em;
     font-weight: normal;
     margin-bottom: 0.5em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 h3 {
     line-height: 1em;
-    font-size: 1em;
+    font-size: 0.6em;
     font-weight: normal;
     margin-top: 0em;
     margin-bottom: 0.5em;
     opacity: 0.5;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .header {
@@ -145,8 +150,18 @@ ul {
     display: flex;
 }
 
+/*
+#aiSelectionBlock {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #666;
+    z-index: 1;
+}
+*/
+
 #aiSelection {
-    width: 75%;
     /* Change this value according to your preference */
     /* Other styles */
 }
@@ -157,16 +172,22 @@ ul {
     /* Add other styles as needed */
 }
 
+.aiMessage {
+    color: #bbb;
+    background-color: #333;
+}
+
 #displayUsername {
 }
 
 .inputLabel  {
-    display: inline-block;
-    min-width: 6em;
-    max-width: 6em;
+    font-size: 0.8em;
+    opacity: 0.6;
+    text-transform: uppercase;
+    display: block;
     margin-right: 0.4em;
-    border: 0px red dashed;
-    text-align: right;
+    text-align: left;
+    margin-top: 1em;
 }
 
 .loadingPageBuffer {
@@ -194,7 +215,6 @@ button {
     background-color: #444;
     color: #f0f0f0;
     border-radius: 5px;
-    padding: 5px 10px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -202,15 +222,16 @@ button {
 }
 
 .button {
+    font-size: 1em;
     border: 1px solid #777;
     background-color: #444;
     color: #f0f0f0;
     border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 14px;
+    padding: 0.3em 1em;
     cursor: pointer;
     transition: background-color 0.3s;
     user-select: none;
+    text-transform: uppercase;
 }
 
 .loading {
@@ -407,9 +428,10 @@ button:hover {
 .message-wrapper {
     display: flex;
     flex-direction: row;
-    margin-bottom: 1em;
-    margin-left: 1em;
-    margin-right: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
     position: relative;
 }
 
