@@ -81,7 +81,7 @@ peer.on('open', function () {
       if (!hostNickname) {
         hostNickname = (generateHostNickname() + ' (host)');
         console.log('Host nickname:', hostNickname);
-        displayUsername.innerHTML = "" + hostNickname + "";
+        displayUsername.value = hostNickname;
         setupHostSession(); // Call the function to set up the host session
         checkForExistingSession(); // Call the function to check for an existing session
       } else {
@@ -91,7 +91,7 @@ peer.on('open', function () {
       if (!guestNickname) {
         setupJoinSession(); // Call the function to set up the join session
         guestNickname = generateNickname();
-        displayUsername.innerHTML = "" + guestNickname + "";
+        displayUsername.value = guestNickname;
         console.log('Guest nickname:', guestNickname);
       } else {
         console.log('Guest nickname is already set:', guestNickname);
@@ -445,8 +445,32 @@ async function setupHostSession() {
                 }
               }
             }
-            });
 
+            if (data.type === 'nickname-update') {
+              // Update nickname in datachannels
+              const oldNickname = dataChannels[conn.peer].nickname;
+              dataChannels[conn.peer].nickname = data.newNickname;
+              addChatMessage("system-message", `${oldNickname} is now ${data.newNickname}.`, hostNickname);
+              updateUserList();
+              // Update nickname in guest user list
+              const updatedGuestUserList = updateGuestUserlist();
+              guestUserList = updatedGuestUserList;
+              // Send updated guest user list to all guests
+              for (const guestId in dataChannels) {
+                if (dataChannels.hasOwnProperty(guestId)) {
+                    dataChannels[guestId].conn.send({
+                        type: 'nickname-update',
+                        message: `${oldNickname} is now ${data.newNickname}.`,
+                        nickname: hostNickname,
+                        oldNickname: oldNickname,
+                        newNickname: data.newNickname,
+                        guestUserList: updatedGuestUserList,
+                    });
+                }
+          }
+
+        }
+      });
 
         conn.on('close', () => {
           
@@ -548,7 +572,12 @@ async function setupJoinSession() {
           displayGuestUserList(); // Call a function to update the UI with the new guestUserList
           guestDisplayHostSessionHistory(data.history);
       }
-      
+
+        if (data.type === 'nickname-update') {
+          guestUserList = data.guestUserList.filter(guest => guest.id !== id);
+          displayGuestUserList();
+          addChatMessage("chat", data.message, data.nickname);
+        }
         
         if (data.type === 'system-message') {
           guestAddSystemMessage(data);
@@ -1181,6 +1210,54 @@ function banUser(id, token) {
     userActions.style.display = "none";
   }
 
+const usernameField = document.getElementById('username');
+  usernameField.addEventListener('focus', () => {
+    document.getElementById('submitUsername').style.display = 'block';
+  });
+  usernameField.addEventListener('input', () => {
+    usernameField.style.width = `${usernameField.value.length}ch`;
+  });
+    document.getElementById('submitUsername').addEventListener('click', () => {    
+      const username = usernameField.value;
+      if (username.trim() !== '') {
+    
+  
+    document.getElementById('submitUsername').style.display = 'none';
+    if (isHost) {
+      // Set new host nickname and send to all guests
+      const oldNickname = hostNickname;
+      hostNickname = username;
+      addChatMessage('chat', `${oldNickname} is now ${hostNickname}.`, hostNickname);
+      const updatedGuestUserList = updateGuestUserlist()
+      for (const guestId in dataChannels) {
+        if (dataChannels.hasOwnProperty(guestId)) {
+            dataChannels[guestId].conn.send({
+                type: 'nickname-update',
+                message: `${oldNickname} is now ${hostNickname}.`,
+                nickname: hostNickname,
+                oldNickname: oldNickname,
+                newNickname: hostNickname,
+                guestUserList: updatedGuestUserList,
+            });
+        }
+  }
+    } else {
+      // Set new guest nickname and send to host
+      guestNickname = username;
+      sendUsername(username);
+    }
+  }
+  });
+  
+function sendUsername(username) {
+      // Send chat message to host
+      conn.send({
+        type: 'nickname-update',
+        id: id,
+        newNickname: username,
+      });
+        }
+
   const systemMessage = document.getElementById('systemMessage');
   systemMessage.addEventListener('focus', () => {
       document.getElementById('submitSystemMessage').style.display = 'inline-block';
@@ -1204,8 +1281,8 @@ function banUser(id, token) {
         sendSystemMessageToHost(content);
       }
     }); 
-
-  async function sendSystemMessage(message) {
+    
+async function sendSystemMessage(message) {
       // Send the updated system message to all connected guests
       for (const guestId in dataChannels) {
         if (dataChannels.hasOwnProperty(guestId)) {
@@ -1321,7 +1398,7 @@ messageInputRemote.addEventListener('keypress', handleEnterKeyPress);
 
 
 // This displays the user's nickname above the chat window
-const displayUsername = document.getElementById('displayUsername');
+const displayUsername = document.getElementById('username');
 if (isHost) {
   displayUsername.innerHTML = hostNickname;
 } else {
