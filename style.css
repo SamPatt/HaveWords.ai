@@ -1,7 +1,10 @@
+
+
 @font-face {
     font-family: 'Day Roman';
     src: URL('./resources/fonts/day-roman/DAYROM__.ttf') format('truetype');
-  }
+}
+
 
 
 body {
