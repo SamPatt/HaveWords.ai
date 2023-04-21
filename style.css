@@ -445,7 +445,7 @@ button:hover {
     border-radius: 0px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    /*justify-content: flex-end;*/
     overflow-y: visible;
     overflow-x: hidden;
 }

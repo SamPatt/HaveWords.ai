@@ -774,6 +774,8 @@ function addMessage(type, message, nickname) {
 
     messagesDiv.appendChild(messageWrapper);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    //const scrollView = messagesDiv.parentNode
+    //scrollView.scrollTop = scrollView.scrollHeight;
 }
 
 function addChatMessage(type, message, nickname) {
@@ -811,7 +813,8 @@ function addChatMessage(type, message, nickname) {
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);
   messagesDiv.appendChild(messageWrapper);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  const scrollView = messagesDiv.parentNode
+  scrollView.scrollTop = scrollView.scrollHeight;
 }
   
   
