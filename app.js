@@ -729,19 +729,20 @@ async function fetchOpenAIResponse(prompt) {
 
 function addMessage(type, message, nickname) {
     let icon;
-    if(type === 'prompt') {
-      loadingAnimation.style.display = 'inline';
-      icon = '👤';
-    } else if (type === 'ai-response') {
-      loadingAnimation.style.display = 'none';
-      icon = '🤖';
-      }  else if (type === 'system-message')  {
+    let isUser = false;
+    if (type === "prompt") {
+      loadingAnimation.style.display = "inline";
+      icon = "👤";
+      isUser = true;
+    } else if (type === "ai-response") {
+      loadingAnimation.style.display = "none";
+      icon = "🤖";
+    } else if (type === "system-message") {
+      icon = "🔧";
+    } else {
+      icon = "🦔";
+    }
 
-      icon = '🔧';
-      } else {
-
-      icon = '🦔';
-      }
     const formattedResponse = convertToParagraphs(message);
     const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
     const messagesDiv = document.querySelector('.messages');
@@ -754,6 +755,10 @@ function addMessage(type, message, nickname) {
 
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
+
+    if (isUser) {
+      messageContent.style.opacity = 0.7;
+    }
 
     const messageNickname = document.createElement('div');
     messageNickname.className = 'message-nickname';

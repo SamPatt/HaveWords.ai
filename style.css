@@ -47,14 +47,18 @@ select {
 textarea {
     font-family: "Day Roman", Arial, sans-serif;
     width: 50%;
-    border: 1px solid #777;
-    background-color: #333;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.03);
     color: #f0f0f0;
     border-radius: 5px;
     padding: 5px;
     font-size: 1em;
     resize: none;
     margin: 2px;
+}
+
+textarea:focus { 
+    outline: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .input-wrapper {
@@ -385,8 +389,10 @@ button:hover {
 }
 
 .icon {
+    display: none;
     font-size: 1em;
     margin-right: 10px;
+    text-transform: uppercase;
 }
 
 .icon.right {
@@ -402,13 +408,14 @@ button:hover {
 .message-wrapper {
     display: flex;
     flex-direction: row;
-    margin-bottom: 20px;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
     position: relative;
 }
 
 .scrollingOutput {
     flex-grow: 1;
-    padding: 1rem;
     border: 0px solid #777;
     /* Less bright border color */
     border-radius: 0px;
@@ -510,19 +517,19 @@ button:hover {
 }
 
 .message-nickname {
-    font-size: 1em;
+    font-size: 0.6em;
     margin-bottom: 2px;
+    text-transform: uppercase;
 }
 
 .message-text {
     display: inline-block;
     padding-top: 0.3em;
-    padding-bottom: 0.5em;
-    
+    padding-bottom: 1em;
     padding-left: 0.8em;
     padding-right: 0.8em;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
+    /*background-color: rgba(255, 255, 255, 0.05);*/
     overflow-wrap: anywhere;
 }
 
@@ -615,4 +622,12 @@ button:hover {
     float: left;
     margin-right: 5px;
     cursor: pointer;
+}
+
+#sendButton {
+    display: none;
+}
+
+#chatSendButton {
+    display: none;
 }
