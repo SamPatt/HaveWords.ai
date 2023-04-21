@@ -10,19 +10,21 @@ body {
     padding: 0;
     height: 100vh;
     display: flex;
-    background-color: #333;
+    background-color: #222;
     font-size: 15px;
     /* Dark gray background */
-    color: #f0f0f0;
+    color:rgb(219, 219, 219);
     /* Light gray text */
 }
 
-/*
+
 p {
     margin: 5px;
     padding: 5px;
 }
 
+
+/*
 h {
     margin: 3px;
     padding: 3px;
@@ -36,21 +38,23 @@ select {
     color: #f0f0f0;
     border-radius: 5px;
     padding: 5px;
-    margin: 2px;
+    margin: 0px;
     font-size: 1em;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
 }
 
 textarea {
     font-family: "Day Roman", Arial, sans-serif;
     width: 50%;
     border: 1px solid #777;
-    background-color: #444;
+    background-color: #333;
     color: #f0f0f0;
     border-radius: 5px;
     padding: 5px;
-    margin: 2px;
     font-size: 1em;
     resize: none;
+    margin: 2px;
 }
 
 .input-wrapper {
@@ -61,17 +65,29 @@ textarea {
 }
 
 h2 {
+    line-height: 1em;
     font-size: 1em;
+    font-weight: normal;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    line-height: 1em;
+    font-size: 1em;
+    font-weight: normal;
+    margin-top: 0em;
+    margin-bottom: 0.5em;
+    opacity: 0.5;
 }
 
 .header {
-    min-height: 5em;
+    min-height: 4em;
     padding-left: 1em;
     padding-right: 1em;
     padding-bottom: 1em;
     padding-top: 0.1em;
     background-color: #252525;
-    border-bottom: rgba(255, 255, 255, 1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .input-wrapper textarea {
@@ -82,7 +98,6 @@ h2 {
 }
 
 .input-wrapper button {
-    font-family: "Day Roman", Arial, sans-serif;
     position: absolute;
     right: 0;
     bottom: 0;
@@ -124,7 +139,6 @@ ul {
 
 .optionsContainer {
     display: flex;
-    padding-right: 2em;
 }
 
 #aiSelection {
@@ -139,10 +153,16 @@ ul {
     /* Add other styles as needed */
 }
 
+#displayUsername {
+}
 
-
-.aiSelection label {
-    margin-right: 100px;
+.inputLabel  {
+    display: inline-block;
+    min-width: 6em;
+    max-width: 6em;
+    margin-right: 0.4em;
+    border: 0px red dashed;
+    text-align: right;
 }
 
 .loadingPageBuffer {
@@ -157,12 +177,15 @@ ul {
 }
 
 .system-container {
-    margin: 5px;
-    display: flex;
-    align-items: center;
+    width: 100%;
+}
+
+input {
+    font-family: "Day Roman", Arial, sans-serif;
 }
 
 button {
+    font-family: "Day Roman", Arial, sans-serif;
     border: 1px solid #777;
     background-color: #444;
     color: #f0f0f0;
@@ -171,6 +194,19 @@ button {
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s;
+    user-select: none;
+}
+
+.button {
+    border: 1px solid #777;
+    background-color: #444;
+    color: #f0f0f0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    user-select: none;
 }
 
 .loading {
@@ -214,7 +250,8 @@ button {
 }
 
 #inputSection {
-    padding: 1em;
+    padding: 0.3em;
+    background-color: #222;
 }
 
 #messageInputRemote {
@@ -229,6 +266,7 @@ button:hover {
     width: auto;
 }
 
+/*
 .system-container label {
     margin-right: 10px;
 }
@@ -236,6 +274,7 @@ button:hover {
 .system-container button {
     margin-left: 10px;
 }
+*/
 
 #loadingPage {
     height: 100vh;
@@ -293,7 +332,6 @@ button:hover {
     padding: 5px;
     border: 1px solid #777;
     border-radius: 5px;
-    margin: 2px;
 }
 
 .userPanel {
@@ -327,7 +365,6 @@ button:hover {
     gap: 0rem;
     padding: 0rem;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: rgb(30, 31, 34);
     /* Less bright border color */
 }
 
@@ -375,11 +412,11 @@ button:hover {
     border: 0px solid #777;
     /* Less bright border color */
     border-radius: 0px;
-    overflow: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    overflow-y: auto;
+    overflow-y: visible;
+    overflow-x: hidden;
 }
 
 .aiScrollingOutput {
@@ -387,7 +424,7 @@ button:hover {
 }
 
 .chatScrollingOutput {
-    background-color: #333;
+    background-color: #222;
 }
 
 .chatMessage {
@@ -479,10 +516,19 @@ button:hover {
 
 .message-text {
     display: inline-block;
-    padding: 8px 12px;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
+    padding-top: 0.3em;
+    padding-bottom: 0.5em;
+    
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
     overflow-wrap: anywhere;
+}
+
+.message-text p {
+    margin: 0px;
+    padding: 0px;
 }
 
 .message-content.right .message-text {

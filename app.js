@@ -81,7 +81,7 @@ peer.on('open', function () {
       if (!hostNickname) {
         hostNickname = (generateHostNickname() + ' (host)');
         console.log('Host nickname:', hostNickname);
-        displayUsername.innerHTML = "<b>" + hostNickname + "</b>";
+        displayUsername.innerHTML = "" + hostNickname + "";
         setupHostSession(); // Call the function to set up the host session
         checkForExistingSession(); // Call the function to check for an existing session
       } else {
@@ -91,7 +91,7 @@ peer.on('open', function () {
       if (!guestNickname) {
         setupJoinSession(); // Call the function to set up the join session
         guestNickname = generateNickname();
-        displayUsername.innerHTML = "<b>" + guestNickname + "</b>";
+        displayUsername.innerHTML = "" + guestNickname + "";
         console.log('Guest nickname:', guestNickname);
       } else {
         console.log('Guest nickname is already set:', guestNickname);
@@ -172,6 +172,7 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 
 
 const displayInviteLink = document.getElementById('displayInviteLink');
+const displayInviteText = document.getElementById('displayInviteText');
 
 // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
 function generateId() {
@@ -296,6 +297,7 @@ async function setupHostSession() {
     displayHostHTMLChanges();
     const inviteLink = makeInviteLink(id);
     displayInviteLink.value = inviteLink;
+    displayInviteText.innerHTML = "invite link: " + inviteLink;
     addMessage("system-message", "<p>Welcome, <b>" + hostNickname + '</b>!</p> <p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then copy the invite link above, and send it to your friends. Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>', "HaveWords");
   
     // Handle incoming connections from guests
@@ -1173,7 +1175,7 @@ function banUser(id, token) {
 
   const systemMessage = document.getElementById('systemMessage');
   systemMessage.addEventListener('focus', () => {
-      document.getElementById('submitSystemMessage').style.display = 'block';
+      document.getElementById('submitSystemMessage').style.display = 'inline-block';
     });
   systemMessage.addEventListener('input', () => {
       systemMessage.style.width = `${systemMessage.value.length}ch`;
@@ -1410,9 +1412,11 @@ function getCurrentUsernames() {
 
 function triggerAdventureStart() {
     // Trigger the visual indicator (e.g., change the background color)
-    document.body.style.backgroundColor = "rgb(52, 78, 56)";
+    //document.body.style.backgroundColor = "rgb(52, 78, 56)";
 
     // Play the sound effect
+
+    document.getElementById('aiSelectionBlock').style.display = "none"; 
     playOminousSound();
 }
 
