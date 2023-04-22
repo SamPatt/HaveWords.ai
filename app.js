@@ -229,6 +229,7 @@ function displayGuestHTMLChanges () {
     document.getElementById('remoteSystemPrompt').style.display = 'block';
     document.getElementById('inputSectionRemote').style.display = 'block';
     messageInputRemote.disabled = true;
+    document.getElementById('aiSelection').style.display = 'none';
 }
 // Disables the chat send button until the data channel is open
 const chatSendButton = document.getElementById('chatSendButton');
@@ -267,11 +268,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSendButtonState();
   });
 
-  /*
+  
   submitApiKeyButton.addEventListener('click', () => {
     localStorage.setItem('openai_api_key', apiKeyInput.value);
+    submitApiKeyButton.textContent = 'Saved!';
+    setTimeout(() => {
+      submitApiKeyButton.style.display = 'none';
+    }, 1000);
   });
-  */
+ 
 
   // Load the stored API key from localStorage if it exists
   const storedApiKey = localStorage.getItem('openai_api_key');
@@ -1444,17 +1449,18 @@ function sendUsername(username) {
     });
     */
 
-  function sendAIRoleMessage () {
-    content = systemMessage.value;
+  function setNewAIRole(newRole) {
+    content = newRole;
+    systemMessage.value = content;
     conversationHistory.push({
       role: 'system',
-      content: prompt,
+      content: content,
     });
     // Check to see if host or guest and send message to appropriate party
     if (isHost) {
       sendSystemMessage(content);
     } else {
-      sendSystemMessageToHost(content);
+      console.log("Guests cannot set new AI role")
     }
     console.log("sent system message:", content)
   }
@@ -1653,11 +1659,8 @@ async function startAdventure() {
     addMessage('prompt', "You've started the session!", hostNickname);
     // Construct the system message to guide the AI
     //TODO Allow user choices and pass various choices into the content and prompt options
-
-    sendAIRoleMessage()
-
-    content = "You are now the AI Dungeon Master guiding a roleplaying session.";
-    systemMessage.value = content;
+    const newRole = "You are now the AI Dungeon Master guiding a roleplaying session.";
+    setNewAIRole(newRole)
     
     // Get the current user's usernames
     const usernames = getCurrentUsernames();
@@ -1718,9 +1721,12 @@ function getCurrentUsernames() {
 
 function triggerAdventureStart() {
     // Trigger the visual indicator (e.g., change the background color)
-    //document.body.style.backgroundColor = "rgb(52, 78, 56)";
 
-    // Play the sound effect
+    var h2Element = document.querySelector('.header h2');
+
+    // Change the content of the h2 element
+    h2Element.innerHTML = 'AI GAME MASTER';
+
 
     document.getElementById('aiSelectionBlock').style.display = "none"; 
     playOminousSound();

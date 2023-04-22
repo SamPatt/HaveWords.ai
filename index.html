@@ -18,7 +18,7 @@
         <div class="main-wrapper">
             <div id="us" class="userPanel">
                 <div class="header">
-                    <h2>AI Game Master</h2>
+                    <h2>HaveWords.ai</h2>
                 </div>
 
                 <div class="header" id="aiSelectionBlock" style="min-height: fit-content;">
@@ -29,18 +29,18 @@
                                 <div class="inputLabel" for="aiModel">AI Model</div>
                                 <select id="aiModel" style="padding-left: 1em; padding-right: 1em;">
                                     <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT 3.5</option>
-                                    <option value="gpt-4" data-nickname="GPT-4">ChatGPT 4</option>
+                                    <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
                                 </select>
                             </div>
                             <div id="apiKeyInput" style="display: block;">
                                 <div class="inputLabel" for="apiKey">API Key <a
                                         href="https://platform.openai.com/account/api-keys" style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
                                 <input id="apiKey" type="password" placeholder="Enter your API key" class="underlinedInput optionsInput" style="color: #ccc;">
-                                <button id="submitApiKey" style="display: none;">Submit</button>
+                                <button id="submitApiKey" >Submit</button>
                             </div>
                             <div class="system-container">
                                 <div class="inputLabel" for="systemMessage">AI Role</div>
-                                <input id="systemMessage" type="text" placeholder="" name="aiRole" value="You are now the AI Dungeon Master guiding a roleplaying session." class="underlinedInput optionsInput">
+                                <input id="systemMessage" type="text" placeholder="You are a helpful assistant." class="underlinedInput optionsInput">
                                 <!-- <button id="submitSystemMessage" style="width: 6em; display: none;">Set</button> -->
                             </div>
 
@@ -52,7 +52,7 @@
 
                             <div class="adventureOptions">
                                 <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
-                                    <div class="button" class="button" id="startGameButton" style="margin-top: 0.3em; background-color: transparent;">Start&nbsp;Game</div>
+                                    <div class="button" class="button" id="startGameButton" style="display: none; margin-top: 0.3em; background-color: transparent;">Start&nbsp;Game</div>
                                 </div>
                             </div>
                         </div>
