@@ -35,11 +35,39 @@ h {
 }
 */
 
+  /*-------------------*/
+
+  select {
+    appearance: none;
+    font-size: 1em;
+    outline: none;
+  }
+  
+  /*
+  .select-wrapper {
+    position: relative;
+  }
+  
+  .select-wrapper::after {
+    content: "▼";
+    font-size: 1rem;
+    top: 6px;
+    right: 10px;
+    position: absolute;
+  }
+  */
+
+option {
+    font-family: "Day Roman", Arial, sans-serif;
+    font-size: 1em;
+}
+
 input,
 select {
+    font-family: "Day Roman", Arial, sans-serif;
     border: 1px solid #777;
-    background-color: #444;
-    color: #f0f0f0;
+    background-color: transparent;
+    color: #ccc;
     border-radius: 5px;
     padding: 5px;
     margin: 0px;
@@ -47,6 +75,87 @@ select {
     margin-top: 0.3em;
     margin-bottom: 0.3em;
 }
+
+/*
+
+.select-selected:after {
+    position: absolute;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #fff transparent transparent transparent;
+}
+
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 7px;
+}
+*/
+
+
+/* style the items (options), including the selected item: */
+/*
+.select-items div,.select-selected {
+    color: #ffffff;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+  }
+  */
+  
+  /* Style items (options): */
+  /*
+  .select-items {
+    position: absolute;
+    background-color: DodgerBlue;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+  }
+  */
+  
+  /* Hide the items when the select box is closed: */
+  /*
+  .select-hide {
+    display: none;
+  }
+  
+  .select-items div:hover, .same-as-selected {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  */
+
+  /*-------------------*/
+
+a {
+    color: #FFA500;
+    /* Set the default hyperlink color, e.g., orange */
+    text-decoration: none !important;
+    /* Remove the default underline */
+}
+
+a:hover {
+    color: #FFFF00;
+    /* Set the color when the user hovers over the hyperlink, e.g., orange-red */
+    text-decoration: underline;
+    /* Add underline when hovering */
+}
+
+a:visited {
+    /* Set the color for visited links, e.g., Indian red */
+}
+
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
 
 textarea {
     font-family: "Day Roman", Arial, sans-serif;
@@ -83,23 +192,40 @@ h2 {
 
 h3 {
     line-height: 1em;
-    font-size: 0.6em;
+    font-size: 0.75em;
     font-weight: normal;
     margin-top: 0em;
     margin-bottom: 0.5em;
     opacity: 0.5;
     letter-spacing: 0.1em;
-    text-transform: uppercase;
+    overflow: hidden;
 }
 
 .header {
-    min-height: 4em;
+    min-height: 5em;
     padding-left: 1em;
-    padding-right: 1em;
+    padding-right: 1.75em;
     padding-bottom: 1em;
     padding-top: 0.1em;
     background-color: #252525;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.underlinedInput {
+    overflow: visible; 
+    outline:none; 
+    padding-left: 0em; 
+    max-width: fit-content; 
+    border-radius: 0px; 
+    border: none; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+    background-color: transparent;
+}
+
+.optionsInput {
+    min-width: 30em;
+    width: auto;
+    max-width: 100%;
 }
 
 .input-wrapper textarea {
@@ -124,31 +250,6 @@ h3 {
     margin-right: 4px;
 }
 
-a {
-    color: #FFA500;
-    /* Set the default hyperlink color, e.g., orange */
-    text-decoration: none;
-    /* Remove the default underline */
-}
-
-a:hover {
-    color: #FF4500;
-    /* Set the color when the user hovers over the hyperlink, e.g., orange-red */
-    text-decoration: underline;
-    /* Add underline when hovering */
-}
-
-a:visited {
-    color: #CD5C5C;
-    /* Set the color for visited links, e.g., Indian red */
-}
-
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
 .optionsContainer {
     display: flex;
 }
@@ -164,10 +265,10 @@ ul {
 }
 */
 
+/*
 #aiSelection {
-    /* Change this value according to your preference */
-    /* Other styles */
 }
+*/
 
 .adventureOptions {
     width: 25%;
@@ -180,8 +281,10 @@ ul {
     background-color: #333;
 }
 
+/*
 #displayUsername {
 }
+*/
 
 .inputLabel  {
     font-size: 0.8em;
@@ -216,19 +319,23 @@ button {
     font-family: "Day Roman", Arial, sans-serif;
     border: 1px solid #777;
     background-color: #444;
-    color: #f0f0f0;
+    color: #ccc;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: 0.3s;
     user-select: none;
+}
+
+.button:hover {
+    color: rgb(255, 255, 255, 1);
+    transition: 0.3s;
 }
 
 .button {
     font-size: 1em;
     border: 1px solid #777;
     background-color: #444;
-    color: #f0f0f0;
     border-radius: 5px;
     padding: 0.3em 1em;
     cursor: pointer;
@@ -284,10 +391,6 @@ button {
 
 #messageInputRemote {
     flex: flex-end;
-}
-
-button:hover {
-    background-color: #555;
 }
 
 .system-container input {
@@ -525,7 +628,7 @@ button:hover {
     word-wrap: break-word;
     background-color: #3f3f3f;
     display: inline-block;
-    float: right;
+    /*float: right;*/
     clear: right;
 }
 
