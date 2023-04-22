@@ -51,8 +51,6 @@ const peer = new Peer(id,{
     port: 443,
 });
 
-
-
 let content = "You are a helpful assistant.";
 let conversationHistory = [
     {
@@ -948,7 +946,10 @@ async function sendPrompt(message) {
         nickname: hostNickname,
     });
     }
-  }
+  } if (gameMode) {
+    message = hostNickname + ": " + message;
+    console.log("Game mode is on, adding username to prompt: " + message);
+   }
   sendAIResponse(message);
 }
 
