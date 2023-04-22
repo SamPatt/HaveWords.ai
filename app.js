@@ -82,6 +82,8 @@ peer.on('open', function () {
         hostNickname = (generateHostNickname() + ' (host)');
         console.log('Host nickname:', hostNickname);
         displayUsername.value = hostNickname;
+        updateInputField(displayUsername)
+
         setupHostSession(); // Call the function to set up the host session
         checkForExistingSession(); // Call the function to check for an existing session
       } else {
@@ -92,6 +94,8 @@ peer.on('open', function () {
         setupJoinSession(); // Call the function to set up the join session
         guestNickname = generateNickname();
         displayUsername.value = guestNickname;
+        updateInputField(displayUsername)
+
         console.log('Guest nickname:', guestNickname);
       } else {
         console.log('Guest nickname is already set:', guestNickname);
@@ -169,10 +173,23 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
   };
 }
 
-
+const copyToClipboard = (str) => {
+  playSendBeep()
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(str);
+  }
+  return Promise.reject('The Clipboard API is not available.');
+};
 
 const displayInviteLink = document.getElementById('displayInviteLink');
+
 const displayInviteText = document.getElementById('displayInviteText');
+displayInviteText.addEventListener('click', (event) => {
+  const oldColor = event.target.style.color
+  event.target.style.color = "white"
+  setTimeout(() => { event.target.style.color = oldColor; }, 0.2*1000)
+  copyToClipboard(displayInviteText._link);
+});
 
 // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
 function generateId() {
@@ -205,7 +222,6 @@ function displayHostHTMLChanges () {
     document.getElementById('hostAIContainer').style.display = 'block';
     document.getElementById('aiSelection').style.display = 'block';
     document.getElementById('inputSection').style.display = 'block';
-    document.getElementById('displayInviteLinkContainer').style.display = 'block';
     startGameButton.style.display = 'block';
 
 }
@@ -297,7 +313,9 @@ async function setupHostSession() {
     displayHostHTMLChanges();
     const inviteLink = makeInviteLink(id);
     displayInviteLink.value = inviteLink;
-    displayInviteText.innerHTML = "<span style='user-select: none;'>invite link:&nbsp;</span>" + inviteLink;
+    displayInviteText._link = inviteLink
+    displayInviteText.style.opacity = 1;
+
     addMessage("system-message", "<p>Welcome, <b>" + hostNickname + '</b>!</p> <p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then copy the invite link above, and send it to your friends. Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>', "HaveWords");
   
     // Handle incoming connections from guests
@@ -1211,43 +1229,59 @@ function banUser(id, token) {
   }
 
 const usernameField = document.getElementById('username');
-  usernameField.addEventListener('focus', () => {
-    document.getElementById('submitUsername').style.display = 'block';
-  });
-  usernameField.addEventListener('input', () => {
-    usernameField.style.width = `${usernameField.value.length}ch`;
-  });
-    document.getElementById('submitUsername').addEventListener('click', () => {    
-      const username = usernameField.value;
-      if (username.trim() !== '') {
-    
-  
-    document.getElementById('submitUsername').style.display = 'none';
+
+usernameField.addEventListener("keyup", (event) => {
+  const target = event.target
+  //console.log("event.key: '" + event.key + "'")
+  if (event.key === "Enter") {
+    updateUserName()
+    event.target.blur()
+  }
+  updateInputField(target)
+})
+
+function updateInputField (target) {
+  const size = target.value.length ? target.value.length : target.placeholder.length;
+  //console.log("size:", size)
+  target.setAttribute('size', (size) + "em")
+}
+
+
+function updateUserName () {
+  const username = usernameField.value;
+  if (username.trim() !== "") {
     if (isHost) {
       // Set new host nickname and send to all guests
       const oldNickname = hostNickname;
+      if (hostNickname === username) {
+        return;
+      }
       hostNickname = username;
-      addChatMessage('chat', `${oldNickname} is now ${hostNickname}.`, hostNickname);
-      const updatedGuestUserList = updateGuestUserlist()
+      addChatMessage(
+        "chat",
+        `${oldNickname} is now ${hostNickname}.`,
+        hostNickname
+      );
+      const updatedGuestUserList = updateGuestUserlist();
       for (const guestId in dataChannels) {
         if (dataChannels.hasOwnProperty(guestId)) {
-            dataChannels[guestId].conn.send({
-                type: 'nickname-update',
-                message: `${oldNickname} is now ${hostNickname}.`,
-                nickname: hostNickname,
-                oldNickname: oldNickname,
-                newNickname: hostNickname,
-                guestUserList: updatedGuestUserList,
-            });
+          dataChannels[guestId].conn.send({
+            type: "nickname-update",
+            message: `${oldNickname} is now ${hostNickname}.`,
+            nickname: hostNickname,
+            oldNickname: oldNickname,
+            newNickname: hostNickname,
+            guestUserList: updatedGuestUserList,
+          });
         }
-  }
+      }
     } else {
       // Set new guest nickname and send to host
       guestNickname = username;
       sendUsername(username);
     }
   }
-  });
+}
   
 function sendUsername(username) {
       // Send chat message to host
@@ -1400,9 +1434,11 @@ messageInputRemote.addEventListener('keypress', handleEnterKeyPress);
 // This displays the user's nickname above the chat window
 const displayUsername = document.getElementById('username');
 if (isHost) {
-  displayUsername.innerHTML = hostNickname;
+  displayUsername.value = hostNickname;
+  updateInputField(displayUsername)
 } else {
-  displayUsername.innerHTML = guestNickname;
+  displayUsername.value = guestNickname;
+  updateInputField(displayUsername)
 }
 
 
