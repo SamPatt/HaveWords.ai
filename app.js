@@ -40,8 +40,8 @@ const peer = new Peer(id,{
   host: "localhost",
   port: 9000,
   path: "/myapp",
-});
- */
+}); */
+
 
 // Deployed peerjs server
 const peer = new Peer(id,{
@@ -50,8 +50,6 @@ const peer = new Peer(id,{
     secure: true,
     port: 443,
 });
-
-
 
 let content = "You are a helpful assistant.";
 const conversationHistory = [
@@ -688,7 +686,7 @@ async function sendAIResponse(message, nickname) {
         console.log("Game mode is on, adding username to prompt: " + message);
        }
   // Get AI Response and post locally
-    const response = await fetchOpenAIResponse(message);
+    const response = await fetchOpenAITextResponse(message);
     addAIReponse(response);
     // Send the response to all connected guests
     for (const guestId in dataChannels) {
@@ -703,8 +701,8 @@ async function sendAIResponse(message, nickname) {
     }
   }
 
-async function fetchOpenAIResponse(prompt) {
-  debugger;
+// Calls the OpenAI LLM API and returns the response
+async function fetchOpenAITextResponse(prompt) {
     const apiKey = localStorage.getItem('openai_api_key');
     if (!apiKey) {
       console.error("API key is missing.");
@@ -763,6 +761,33 @@ async function fetchOpenAIResponse(prompt) {
       addMessage("system-message", "Error fetching AI response. Make sure the model is selected and the API key is correct.", "Host");
     }
   }
+// Calls the OpenAI Image API and returns the image URL
+async function fetchOpenAIImageResponse(prompt) {
+  const apiKey = localStorage.getItem('openai_api_key');
+  if (!apiKey) {
+    console.error("API key is missing.");
+    addMessage("system-message", "API key is missing.", "System");
+    return;
+  }
+  const apiUrl = 'https://api.openai.com/v1/images/generations';
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      n: 1,
+      size: "512x512",
+    }),
+  };
+  const response = await fetch(apiUrl, requestOptions);
+  const responseData = await response.json();
+  const imageURL = responseData.data[0].url;
+  return imageURL;
+}
+
 
 function addMessage(type, message, nickname) {
     let icon;
@@ -929,7 +954,10 @@ async function sendPrompt(message) {
         nickname: hostNickname,
     });
     }
-  }
+  } if (gameMode) {
+    message = hostNickname + ": " + message;
+    console.log("Game mode is on, adding username to prompt: " + message);
+   }
   sendAIResponse(message);
 }
 
@@ -1045,9 +1073,6 @@ function updateUserList() {
     }
   }
 }
-
-
-
 
 function displayGuestUserList() {
   
@@ -1523,7 +1548,7 @@ async function startAdventure() {
       });
       }
     }
-    const response = await fetchOpenAIResponse(prompt);
+    const response = await fetchOpenAITextResponse(prompt);
     addAIReponse(response);
 
     // Send the response to all connected guests
