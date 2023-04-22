@@ -54,7 +54,7 @@ const peer = new Peer(id,{
 
 
 let content = "You are a helpful assistant.";
-let conversationHistory = [
+const conversationHistory = [
     {
       role: 'system',
       content: content,
@@ -254,37 +254,26 @@ function updateSendButtonState() {
   }
 }
 
+const apiKeyInput = document.getElementById('apiKey');
+
 document.addEventListener('DOMContentLoaded', () => {
   const aiModel = document.getElementById('aiModel');
   const sendButton = document.getElementById('sendButton');
-  const apiKeyInput = document.getElementById('apiKey');
-  const apiKeyInputContainer = document.getElementById('apiKeyInput');
   const submitApiKeyButton = document.getElementById('submitApiKey');
   updateSendButtonState();
   modelSelect.addEventListener('change', updateSelectedModelNickname);
 
   aiModel.addEventListener('change', () => {
-    apiKeyInputContainer.style.display = 'inline';
     selectedOption = modelSelect.options[modelSelect.selectedIndex];
     selectedModelNickname = selectedOption.getAttribute('data-nickname');
     updateSendButtonState();
   });
-  
 
-
-  apiKeyInput.addEventListener('input', () => {
-    if (apiKeyInput.value.length > 0) {
-      submitApiKeyButton.style.display = 'inline';
-    } else {
-      submitApiKeyButton.style.display = 'none';
-    }
-  });
-
+  /*
   submitApiKeyButton.addEventListener('click', () => {
     localStorage.setItem('openai_api_key', apiKeyInput.value);
-    apiKeyInputContainer.style.display = 'none';
-    submitApiKeyButton.style.display = 'none';
   });
+  */
 
   // Load the stored API key from localStorage if it exists
   const storedApiKey = localStorage.getItem('openai_api_key');
@@ -715,6 +704,7 @@ async function sendAIResponse(message, nickname) {
   }
 
 async function fetchOpenAIResponse(prompt) {
+  debugger;
     const apiKey = localStorage.getItem('openai_api_key');
     if (!apiKey) {
       console.error("API key is missing.");
@@ -1293,12 +1283,49 @@ function sendUsername(username) {
         }
 
   const systemMessage = document.getElementById('systemMessage');
+  /*
   systemMessage.addEventListener('focus', () => {
       document.getElementById('submitSystemMessage').style.display = 'inline-block';
     });
-  systemMessage.addEventListener('input', () => {
-      systemMessage.style.width = `${systemMessage.value.length}ch`;
+    */
+
+  function sendAIRoleMessage () {
+    content = systemMessage.value;
+    conversationHistory.push({
+      role: 'system',
+      content: prompt,
     });
+    // Check to see if host or guest and send message to appropriate party
+    if (isHost) {
+      sendSystemMessage(content);
+    } else {
+      sendSystemMessageToHost(content);
+    }
+    console.log("sent system message:", content)
+  }
+
+  /*
+  systemMessage.addEventListener('input', () => {
+      //systemMessage.style.width = `${systemMessage.value.length}ch`;
+      content = systemMessage.value;
+      conversationHistory = [
+        {
+          role: 'system',
+          content: content,
+        },
+      ];
+      document.getElementById('submitSystemMessage').style.display = 'none';
+      // Check to see if host or guest and send message to appropriate party
+      if (isHost) {
+        sendSystemMessage(content);
+      } else {
+        sendSystemMessageToHost(content);
+      }
+      console.log("sent system message:", content)
+    });
+
+    */
+    /*
   document.getElementById('submitSystemMessage').addEventListener('click', () => {    
       content = systemMessage.value;
       conversationHistory = [
@@ -1315,6 +1342,7 @@ function sendUsername(username) {
         sendSystemMessageToHost(content);
       }
     }); 
+    */
     
 async function sendSystemMessage(message) {
       // Send the updated system message to all connected guests
@@ -1332,12 +1360,10 @@ async function sendSystemMessage(message) {
 
 function guestChangeSystemMessage(data) {
   content = data.message;
-  conversationHistory = [
-    {
-      role: 'system',
-      content: content,
-    },
-  ];
+  conversationHistory.push({
+    role: 'user',
+    content: prompt,
+  });
   // Update system message input
   systemMessage.value = content;
   // Relay to connected guests
@@ -1463,15 +1489,18 @@ function handleEnterKeyPress(event) {
 // Start the group game when the host clicks the button
 startGameButton.addEventListener('click', () => {
   startAdventure();
-  
 });
 
 async function startAdventure() {
     gameMode = true;
+    localStorage.setItem('openai_api_key', apiKeyInput.value);
     triggerAdventureStart();
     addMessage('prompt', "You've started the session!", hostNickname);
     // Construct the system message to guide the AI
     //TODO Allow user choices and pass various choices into the content and prompt options
+
+    sendAIRoleMessage()
+
     content = "You are now the AI Dungeon Master guiding a roleplaying session.";
     systemMessage.value = content;
     
@@ -1607,8 +1636,7 @@ function playReceiveBeep() {
 }
 
 window.addEventListener('load', () => {
-  const systemMessageElement = document.getElementById('systemMessage'); 
-  systemMessageElement.value = ''; 
+
 });
 
 // This section is for creating a random nickname for the users

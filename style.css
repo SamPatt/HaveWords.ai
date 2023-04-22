@@ -135,19 +135,18 @@ select {
 a {
     color: #FFA500;
     /* Set the default hyperlink color, e.g., orange */
-    text-decoration: none;
+    text-decoration: none !important;
     /* Remove the default underline */
 }
 
 a:hover {
-    color: #FF4500;
+    color: #FFFF00;
     /* Set the color when the user hovers over the hyperlink, e.g., orange-red */
     text-decoration: underline;
     /* Add underline when hovering */
 }
 
 a:visited {
-    color: #CD5C5C;
     /* Set the color for visited links, e.g., Indian red */
 }
 

@@ -14,8 +14,6 @@
 
 <body>
 
-
-
     <div id="hostAIContainer" style="display:none;">
         <div class="main-wrapper">
             <div id="us" class="userPanel">
@@ -36,14 +34,14 @@
                             </div>
                             <div id="apiKeyInput" style="display: block;">
                                 <div class="inputLabel" for="apiKey">API Key <a
-                                        href="https://platform.openai.com/account/api-keys" style="opacity: 1; text-transform: lowercase;">&#9432;</a></div>
+                                        href="https://platform.openai.com/account/api-keys" style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
                                 <input id="apiKey" type="password" placeholder="Enter your API key" class="underlinedInput optionsInput" style="color: #ccc;">
                                 <button id="submitApiKey" style="display: none;">Submit</button>
                             </div>
                             <div class="system-container">
                                 <div class="inputLabel" for="systemMessage">AI Role</div>
-                                <input id="systemMessage" type="text" placeholder="You are a helpful assistant." value="dungeon master" class="underlinedInput optionsInput">
-                                <button id="submitSystemMessage" style="width: 6em; display: none;">Set</button>
+                                <input id="systemMessage" type="text" placeholder="" name="aiRole" value="You are now the AI Dungeon Master guiding a roleplaying session." class="underlinedInput optionsInput">
+                                <!-- <button id="submitSystemMessage" style="width: 6em; display: none;">Set</button> -->
                             </div>
 
                             <div id="displayInviteLinkContainer" style="display:none; max-height: 0px; overflow: hidden;">
@@ -103,7 +101,7 @@
             <div class="connectedUsers">
                 <div class="header">
                     <h2>Players</h2>
-                    <h3 id="displayInviteText" style="transition: 0.2s; color: #999; font-size: 0.6em; text-transform: uppercase; user-select: none; padding: 0.5em 1em; margin-top: 1em; opacity: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px;">copy invite link</h3>
+                    <h3 id="displayInviteText" style="transition: 0.2s; color: #999; font-size: 0.6em; text-transform: uppercase; user-select: none; margin-top: 2em; padding: 0.5em 1em; opacity: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px;">copy invite link</h3>
                 </div>
                 <ul id="userList"></ul>
             </div>
