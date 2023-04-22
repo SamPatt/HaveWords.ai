@@ -580,6 +580,10 @@ async function setupJoinSession() {
         if (data.type === 'system-message') {
           guestAddSystemMessage(data);
         }
+        if (data.type === 'image-link') {
+          addImage(data.message);
+        }
+
         if (data.type === 'game-launch') {
           triggerAdventureStart();
           addMessage("prompt", "The adventure has begun! The AI DM is crafting our session, please wait...", data.nickname);
@@ -675,11 +679,22 @@ function sendChatMessage() {
 async function sendAIResponse(message, nickname) {
   // If in game mode, add username to the start of each prompt
        if (gameMode) {
-        message = nickname + ": " + message;
-        console.log("Game mode is on, adding username to prompt: " + message);
+        if (!isHost) {
+          message = nickname + ": " + message;
+          console.log("Game mode is on, adding username to prompt: " + message);
+          }
+       } else {
+        console.log("Game mode is off, sending prompt to OpenAI: " + message)
        }
+
   // Get AI Response and post locally
     const response = await fetchOpenAITextResponse(message);
+    if (gameMode) {
+      console.log("Calling triggerBot with AI response:", response);
+      triggerBot(response);
+      console.log("Game mode is on, sending response to bot: " + response);
+    }
+    
     addAIReponse(response);
     // Send the response to all connected guests
     for (const guestId in dataChannels) {
@@ -769,7 +784,7 @@ async function fetchOpenAIImageResponse(prompt) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      prompt: prompt,
+      prompt: "An epic masterpiece realistic painting of " + prompt + ", in the style of John Howe and Alan Lee, digital art",
       n: 1,
       size: "512x512",
     }),
@@ -780,6 +795,90 @@ async function fetchOpenAIImageResponse(prompt) {
   return imageURL;
 }
 
+// Sends AI responses from fetchOpenAITextResponse to ChatGPT to determine if it should trigger actions
+async function triggerBot(response) {
+  const apiKey = localStorage.getItem('openai_api_key');
+  if (!apiKey) {
+    console.error("API key is missing.");
+    addMessage("system-message", "API key is missing.", "System");
+    return;
+  }
+  const prompt = `Respond only with JSON.\n\nMy friends and I are playing a roleplaying fantasy game. We will send our game messages to you. I will refer to the messages as scenes.\n\nYour job is to trigger certain actions if you identify certain events happening in the scenes. If you respond with "Trigger: Yes" you must also include an "Image: Description" response with a description of the scene. Here are the events you are looking for, and the actions to trigger:\n\n1) EVENT:  A new monster, new player character, or new non-player character is being introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Prompt" section, where Prompt is replaced with a prompt you've created to describe the new monster or character being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\n2) EVENT: Combat has started, or a serious threat has been introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n3) EVENT: The party has defeated a monster and ended combat, or otherwise completed an impressive achievement in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" describing the scene.\n\n4) EVENT: The party has entered a tavern, inn, or celebrating with a large group in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n5) EVENT:  The setting in the scene changes significantly, and the new scenery is being described. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new scene being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\nIf multiple events occur within the same scene, respond with multiple actions.\n\nIf you detect none of these happening in the scene, respond with a "Trigger: No" section in your JSON.\n\nExamples\n\nScene: A group of gnolls approaches. The gnolls are humanoid creatures with the head of a hyena and the body of a human. They stand about 7 feet tall and with their wiry builds, they can move quickly and gracefully. You can see from their sharpened teeth and claws that they are fierce predators, and their beady eyes gleam with hunger and malice.\n\nYour response:\n\n{\n"Trigger": "Yes",\n"Image": "A group of 7-foot-tall gnolls with the head of a hyena and the body of a human approach with sharpened teeth and claws, gleaming with hunger and malice."\n}\n\nScene: You met a dozen villagers or so - mostly women, children, and elderly - sheltering behind hastily erected barricades, wielding whatever makeshift weapons they could find. They are dressed in simple clothes and have weathered faces, evidence of the harsh desert terrain they live in. They are relieved and grateful as you approach them, thanking you repeatedly for your help.\n\n{\n"Trigger": "Yes",\n"Image": "A group of women, children, and elderly villagers dressed in simple, ragged clothes, living in the desert, showing gratitude"\n}\n\nScene: You bid farewell to the grateful villagers and decide to continue your journey through the vast desert of Avaloria. As you walk, the sandy dunes seem to stretch endlessly before you, and the sun beats down relentlessly. You find a rocky outcropping where you can rest and eat. You notice that there is a winding path that seems to lead up the outcropping. Do you investigate or continue walking through the desert?\n\n{\n"Trigger": "Yes",\n"Image": "A rocky outcropping in the desert with a winding path leading up to it"\n}\n\n\nScene: You decide to rest for a while in the shade of the rocky outcropping. As you settle in, you notice that there are some signs of a recent fire nearby. Do you investigate the fire or continue resting?\n\n{\n"Trigger": "No"\n}\n\nScene: You approach the sealed doors of the ancient temple and inspect them closely. It seems that the doors have been sealed for centuries, and it will require a great deal of strength to move the stone blocks that have been placed there.\n\nDo you want to try and move the blocks yourself or investigate the surrounding area for clues on how to open the doors?\n\n{\n"Trigger": "No"\n}\n\nScene:`
+  const message = prompt + response;
+  const apiUrl = 'https://api.openai.com/v1/chat/completions';
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      "model": "gpt-3.5-turbo",
+      "messages": [{"role": "user", "content": message}]
+    }),
+  };
+  const AIresponse = await fetch(apiUrl, requestOptions);
+  const data = await AIresponse.json();
+  const rawTrigger = data.choices[0].message.content;
+  let trigger;
+  if (isValidJSON(rawTrigger)) {
+    const cleanedResponse = removeWhitespace(rawTrigger);
+    trigger = JSON.parse(cleanedResponse);
+
+    // Rest of the code...
+  } else {
+    console.error("Invalid JSON data:", response);
+  }
+  // If an image is triggered, send the image prompt to the image API
+  if (trigger["Trigger"] === "Yes") {
+    if ("Image" in trigger) {
+      const imageDescription = trigger["Image"];
+      const imageURL = await fetchOpenAIImageResponse(imageDescription);
+      console.log("event triggered, image: " + imageURL);
+      sendImage(imageURL);
+      addImage(imageURL);
+      // Use the imageDescription here for your desired action
+      console.log(`Image description: ${imageDescription}`);
+    }
+  } else {
+    console.log("No event triggered");
+  }
+  
+}
+
+// Send imageURL to all connected guests
+function sendImage(imageURL) {
+  for (const guestId in dataChannels) {
+    if (dataChannels.hasOwnProperty(guestId)) {
+          dataChannels[guestId].conn.send({
+          type: 'image-link',
+          message: imageURL,
+          nickname: hostNickname,
+        });
+      }
+    }
+
+  }
+
+function isValidJSON(jsonString) {
+  try {
+    const parsedJSON = JSON.parse(jsonString);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function removeWhitespace(jsonString) {
+  try {
+    const parsedJSON = JSON.parse(jsonString);
+    const cleanedJSONString = JSON.stringify(parsedJSON);
+    return cleanedJSONString;
+  } catch (error) {
+    console.error("Error while removing whitespace from JSON:", error);
+    return jsonString;
+  }
+}
 
 function addMessage(type, message, nickname) {
     let icon;
@@ -831,6 +930,37 @@ function addMessage(type, message, nickname) {
     //const scrollView = messagesDiv.parentNode
     //scrollView.scrollTop = scrollView.scrollHeight;
 }
+
+function addImage(imageURL) {
+  let icon;
+  let isUser = false;
+
+  const messagesDiv = document.querySelector('.messages');
+  const messageWrapper = document.createElement('div');
+  messageWrapper.className = 'message-wrapper';
+
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'icon';
+  iconDiv.innerHTML = icon;
+
+  const messageContent = document.createElement('div');
+  messageContent.className = 'message-content';
+
+  if (!isUser) {
+    messageWrapper.className += " aiMessage"; 
+  }
+
+  const imageElement = document.createElement('img');
+  imageElement.src = imageURL;
+  messageContent.appendChild(imageElement);
+
+  messageWrapper.appendChild(iconDiv);
+  messageWrapper.appendChild(messageContent);
+
+  messagesDiv.appendChild(messageWrapper);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
 
 function addChatMessage(type, message, nickname) {
   let icon;
@@ -1469,7 +1599,7 @@ async function startAdventure() {
     console.log(usernames);
 
     // Construct the prompt to assign roles and describe the setting
-    const prompt = `We are a group of people playing a fantasy role playing game, and you are our dungeon master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead, and do not use Markdown.  When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(', ')}.`;
+    const prompt = `We are a group of people playing a fantasy role playing game, and you are our dungeon master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead. When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Don't use Markdown, only use HTML. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(', ')}.`;
 
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
@@ -1484,6 +1614,7 @@ async function startAdventure() {
       }
     }
     const response = await fetchOpenAITextResponse(prompt);
+    triggerBot(response);
     addAIReponse(response);
 
     // Send the response to all connected guests
