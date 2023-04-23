@@ -120,7 +120,15 @@ peer.on('open', function () {
     }
     });
     
-
+function checkURLPath() {
+  const hash = window.location.hash;
+  console.log('Current hash:', hash); // Add this line for debugging
+  if (hash === '#adventure') {
+      console.log('URL includes #adventure');
+      updateSessionTypeOptions("fantasyRoleplay");      
+  }
+}
+  
 
 let retryCount = 0;
 const maxRetries = 5;
@@ -281,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitApiKeyButton = document.getElementById('submitApiKey');
   updateSendButtonState();
   modelSelect.addEventListener('change', updateSelectedModelNickname);
+  checkURLPath();
 
   aiModel.addEventListener('change', () => {
     selectedOption = modelSelect.options[modelSelect.selectedIndex];
@@ -937,6 +946,10 @@ function removeWhitespace(jsonString) {
 }
 
 function addMessage(type, message, nickname) {
+    // If the string is empty, don't add it
+    if (message === "") {
+      return;
+    }
     let icon;
     let isUser = false;
     if (type === "prompt") {
@@ -1018,6 +1031,10 @@ function addImage(imageURL) {
 
 
 function addChatMessage(type, message, nickname) {
+  // If the string is empty, don't add it
+  if(message === '') {
+    return;
+  }
   let icon;
     if(type === 'chat') {
       icon = '🗯️';
@@ -1709,11 +1726,13 @@ function handleEnterKeyPress(event) {
 
 // Start the group game when the host clicks the button
 startGameButton.addEventListener('click', () => {
-  startSession("fantasyRoleplay");
+  updateSessionTypeOptions("fantasyRoleplay");
 });
 
-async function startSession(sessionType) {
-    localStorage.setItem('openai_api_key', apiKeyInput.value);
+//TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
+
+async function startSession(sessionType, sessionDetails) {
+
     addMessage('prompt', "You've started the session!", hostNickname);
     // Check which session type was selected
     if(sessionType === "fantasyRoleplay") {  
@@ -1757,9 +1776,101 @@ async function startSession(sessionType) {
       }
     }
     } else {
+      console.log("No session type selected");
       // other session types later
     }
 }
+
+function updateSessionTypeOptions(sessionType) {
+  const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
+  const sessionTypeDescription = document.getElementById('sessionTypeDescription');
+
+  // Clear existing options and description
+  sessionTypeDetailsSelect.innerHTML = '';
+  sessionTypeDescription.innerHTML = '';
+
+  let options;
+  let description;
+
+  if (sessionType === 'fantasyRoleplay') {
+    options = [
+      { value: 'traditional', text: 'Traditional roleplaying' },
+      { value: 'conan', text: 'Conan' },
+      { value: 'norse', text: 'Norse Mythology' },
+      { value: 'harry_potter', text: 'Harry Potter' },
+    ];
+    description = `
+      <h2>Fantasy Roleplaying:</h2>
+      <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
+    `;
+  } else if (sessionType === 'trivianight') {
+    options = [
+      // Add trivia night options here
+    ];
+    description = `
+      <h3>Trivia Night:</h3>
+      <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
+    `;
+  } else if (sessionType === 'explorefiction') {
+    options = [
+      // Add explore fiction options here
+    ];
+    description = `
+      <h3>Explore Fiction:</h3>
+      <p>Travel to various fictional universes with the AI's help. Discover new worlds, interact with famous characters, and engage in thrilling adventures as you explore the limits of your imagination.</p>
+    `;
+  } else {
+    // Add different options and descriptions for other session types
+  }
+
+  // Add the new options to the dropdown menu
+  options.forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.text;
+    sessionTypeDetailsSelect.appendChild(opt);
+  });
+
+   // Add the description to the sessionTypeDescription div
+   sessionTypeDescription.innerHTML = description;
+   
+   displayHashModal(sessionType);
+  }
+
+  function displayHashModal(sessionType) {
+    // Display the API key modal
+    const submitHashModal = document.getElementById('submitOnVisitHashModalButton');
+    const onVisitHashModal = document.getElementById('onVisitHashModal');
+    const hashApiKey = document.getElementById('hashApiKeyInput');
+    const apiKeyError = document.getElementById('apiKeyError'); // Add this line to get the error element
+  
+    // Check if the API key is already set in local storage
+    const storedApiKey = localStorage.getItem('openai_api_key');
+    if (storedApiKey) {
+      // Update the input field's placeholder text and disable the input
+      hashApiKey.disabled = true;
+      hashApiKey.value = ""
+      hashApiKey.placeholder = "Already set!";
+    }
+  
+    onVisitHashModal.style.display = 'block';
+    const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
+    let selectedSessionTypeDetails;
+    // Add event listener for the submit button
+    submitHashModal.addEventListener('click', () => {
+      if (!hashApiKey.disabled && hashApiKey.value.trim() === '') {
+        apiKeyError.style.display = 'block'; // Show the error message
+        return;
+      }
+      localStorage.setItem('openai_api_key', hashApiKey.value);
+      selectedSessionTypeDetails = sessionTypeDetailsSelect.value;
+      onVisitHashModal.style.display = 'none';
+      // Start the session with the selected session type
+      startSession(sessionType, selectedSessionTypeDetails);
+    });
+  }
+  
+  
 
 function endAdventure() {
     gameMode = false;
@@ -2062,7 +2173,7 @@ const adjectives = [
   
 
 
-function convertToParagraphs(text) {
+function convertToParagraphs(text) {  
   // Split the text into paragraphs using double newline characters
   const paragraphs = text.split(/\n{2,}/g);
 
