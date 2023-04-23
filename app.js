@@ -8,13 +8,17 @@ if (inviteId) {
   isHost = true;
 }
 let id;
+let hostNickname;
+let guestNickname;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
   const existingHostId = localStorage.getItem('hostId');
+  const existingHostNickname = localStorage.getItem('hostNickname');
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
     id = existingHostId;
+    hostNickname = existingHostNickname;
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
     id = generateId();
@@ -22,18 +26,24 @@ if (isHost) {
   }
 } else {
   // If user is guest, generate a new id
-  id = generateId();
+  const existingGuestId = localStorage.getItem('guestId');
+  const existingGuestNickname = localStorage.getItem('guestNickname');
+  if (existingGuestId) {
+    // If there is an existing guestId, set the guestId to the existing one
+    id = existingGuestId;
+    guestNickname = existingGuestNickname;
+  } else {
+    // If there is no existing guestId, generate a new one and save it to local storage
+      id = generateId();
+      localStorage.setItem('guestId', id);
+  }
 }
-
 
 let connections = {};
 let dataChannels = {};
-let hostNickname;
-let guestNickname;
 let bannedGuests = [];
 let conn;
 let gameMode = false;
-
 
 /* // Local peerjs server
 const peer = new Peer(id,{
@@ -76,21 +86,25 @@ peer.on('open', function () {
     
   
     if (isHost) {
+      setupHostSession(); // Call the function to set up the host session
+      loadSessionData();
+      displaySessionHistory();
       if (!hostNickname) {
         hostNickname = (generateHostNickname() + ' (host)');
+        // Add host nickname to localstorage
+        localStorage.setItem('hostNickname', hostNickname);
         console.log('Host nickname:', hostNickname);
         displayUsername.value = hostNickname;
         updateInputField(displayUsername)
-
-        setupHostSession(); // Call the function to set up the host session
-        checkForExistingSession(); // Call the function to check for an existing session
       } else {
         console.log('Host nickname is already set:', hostNickname);
+        
       }
     } else {
       if (!guestNickname) {
-        setupJoinSession(); // Call the function to set up the join session
         guestNickname = generateNickname();
+        // Add guest nickname to localstorage
+        localStorage.setItem('guestNickname', guestNickname);
         displayUsername.value = guestNickname;
         updateInputField(displayUsername)
 
@@ -98,6 +112,7 @@ peer.on('open', function () {
       } else {
         console.log('Guest nickname is already set:', guestNickname);
       }
+      setupJoinSession(); // Call the function to set up the join session
     }
     });
     
@@ -220,6 +235,7 @@ function displayHostHTMLChanges () {
     document.getElementById('hostAIContainer').style.display = 'block';
     document.getElementById('aiSelection').style.display = 'block';
     document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('resetSessionButton').style.display = 'block';
     startGameButton.style.display = 'block';
 
 }
@@ -816,7 +832,7 @@ async function triggerBot(response) {
     addMessage("system-message", "API key is missing.", "System");
     return;
   }
-  const prompt = `Respond only with JSON.\n\nMy friends and I are playing a roleplaying fantasy game. We will send our game messages to you. I will refer to the messages as scenes.\n\nYour job is to trigger certain actions if you identify certain events happening in the scenes. If you respond with "Trigger: Yes" you must also include an "Image: Description" response with a description of the scene. Here are the events you are looking for, and the actions to trigger:\n\n1) EVENT:  A new monster, new player character, or new non-player character is being introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Prompt" section, where Prompt is replaced with a prompt you've created to describe the new monster or character being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\n2) EVENT: Combat has started, or a serious threat has been introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n3) EVENT: The party has defeated a monster and ended combat, or otherwise completed an impressive achievement in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" describing the scene.\n\n4) EVENT: The party has entered a tavern, inn, or celebrating with a large group in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n5) EVENT:  The setting in the scene changes significantly, and the new scenery is being described. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new scene being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\nIf multiple events occur within the same scene, respond with multiple actions.\n\nIf you detect none of these happening in the scene, respond with a "Trigger: No" section in your JSON.\n\nExamples\n\nScene: A group of gnolls approaches. The gnolls are humanoid creatures with the head of a hyena and the body of a human. They stand about 7 feet tall and with their wiry builds, they can move quickly and gracefully. You can see from their sharpened teeth and claws that they are fierce predators, and their beady eyes gleam with hunger and malice.\n\nYour response:\n\n{\n"Trigger": "Yes",\n"Image": "A group of 7-foot-tall gnolls with the head of a hyena and the body of a human approach with sharpened teeth and claws, gleaming with hunger and malice."\n}\n\nScene: You met a dozen villagers or so - mostly women, children, and elderly - sheltering behind hastily erected barricades, wielding whatever makeshift weapons they could find. They are dressed in simple clothes and have weathered faces, evidence of the harsh desert terrain they live in. They are relieved and grateful as you approach them, thanking you repeatedly for your help.\n\n{\n"Trigger": "Yes",\n"Image": "A group of women, children, and elderly villagers dressed in simple, ragged clothes, living in the desert, showing gratitude"\n}\n\nScene: You bid farewell to the grateful villagers and decide to continue your journey through the vast desert of Avaloria. As you walk, the sandy dunes seem to stretch endlessly before you, and the sun beats down relentlessly. You find a rocky outcropping where you can rest and eat. You notice that there is a winding path that seems to lead up the outcropping. Do you investigate or continue walking through the desert?\n\n{\n"Trigger": "Yes",\n"Image": "A rocky outcropping in the desert with a winding path leading up to it"\n}\n\n\nScene: You decide to rest for a while in the shade of the rocky outcropping. As you settle in, you notice that there are some signs of a recent fire nearby. Do you investigate the fire or continue resting?\n\n{\n"Trigger": "No"\n}\n\nScene: You approach the sealed doors of the ancient temple and inspect them closely. It seems that the doors have been sealed for centuries, and it will require a great deal of strength to move the stone blocks that have been placed there.\n\nDo you want to try and move the blocks yourself or investigate the surrounding area for clues on how to open the doors?\n\n{\n"Trigger": "No"\n}\n\nScene:`
+  const prompt = `Respond only with JSON.\n\nMy friends and I are playing a roleplaying fantasy game. We will send our game messages to you. I will refer to the messages as scenes.\n\nYour job is to trigger certain actions if you identify certain events happening in the scenes. Your message should never include two "Trigger:" messages, only one. If you respond with "Trigger: Yes" you must also include an "Image: Description" response with a description of the scene. This description will generate an image, so keep your description brief and only include words which are simple to represent visually, do not include the names of the characters in the prompt, and request that monsters or characters are centered in the image. Here are the events you are looking for, and the actions to trigger:\n\n1) EVENT:  A new monster, new player character, or new non-player character is being introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new monster or character being introduced.\n\n2) EVENT: Combat has started, or a serious threat has been introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n3) EVENT: The party has defeated a monster and ended combat, or otherwise completed an impressive achievement in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" describing the scene.\n\n4) EVENT: The party has entered a tavern, inn, or celebrating with a large group in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n5) EVENT:  The setting in the scene changes significantly, and the new scenery is being described. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new scene being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\nIf multiple events occur within the same scene, respond with multiple actions.\n\nIf you detect none of these happening in the scene, respond with a "Trigger: No" section in your JSON.\n\nExamples\n\nScene: A group of gnolls approaches. The gnolls are humanoid creatures with the head of a hyena and the body of a human. They stand about 7 feet tall and with their wiry builds, they can move quickly and gracefully. You can see from their sharpened teeth and claws that they are fierce predators, and their beady eyes gleam with hunger and malice.\n\nYour response:\n\n{\n"Trigger": "Yes",\n"Image": "A group of 7-foot-tall gnolls with the head of a hyena and the body of a human approach with sharpened teeth and claws, gleaming with hunger and malice."\n}\n\nScene: You met a dozen villagers or so - mostly women, children, and elderly - sheltering behind hastily erected barricades, wielding whatever makeshift weapons they could find. They are dressed in simple clothes and have weathered faces, evidence of the harsh desert terrain they live in. They are relieved and grateful as you approach them, thanking you repeatedly for your help.\n\n{\n"Trigger": "Yes",\n"Image": "A group of women, children, and elderly villagers dressed in simple, ragged clothes, living in the desert, showing gratitude"\n}\n\nScene: You bid farewell to the grateful villagers and decide to continue your journey through the vast desert of Avaloria. As you walk, the sandy dunes seem to stretch endlessly before you, and the sun beats down relentlessly. You find a rocky outcropping where you can rest and eat. You notice that there is a winding path that seems to lead up the outcropping. Do you investigate or continue walking through the desert?\n\n{\n"Trigger": "Yes",\n"Image": "A rocky outcropping in the desert with a winding path leading up to it"\n}\n\n\nScene: You decide to rest for a while in the shade of the rocky outcropping. As you settle in, you notice that there are some signs of a recent fire nearby. Do you investigate the fire or continue resting?\n\n{\n"Trigger": "No"\n}\n\nScene: You approach the sealed doors of the ancient temple and inspect them closely. It seems that the doors have been sealed for centuries, and it will require a great deal of strength to move the stone blocks that have been placed there.\n\nDo you want to try and move the blocks yourself or investigate the surrounding area for clues on how to open the doors?\n\n{\n"Trigger": "No"\n}\n\nScene:`
   const message = prompt + response;
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
   const requestOptions = {
@@ -1407,6 +1423,8 @@ function updateUserName () {
         return;
       }
       hostNickname = username;
+      // Update the host nickname in localstorage
+      localStorage.setItem("hostNickname", hostNickname);
       addChatMessage(
         "chat",
         `${oldNickname} is now ${hostNickname}.`,
@@ -1428,6 +1446,8 @@ function updateUserName () {
     } else {
       // Set new guest nickname and send to host
       guestNickname = username;
+      // Update the guest nickname in localstorage
+      localStorage.setItem("guestNickname", guestNickname);
       sendUsername(username);
     }
   }
@@ -1563,14 +1583,27 @@ function loadSessionData() {
 function clearSessionData() {
     localStorage.removeItem('sessionData');
     localStorage.removeItem('hostId');
+    localStorage.removeItem('hostNickname');
   }
+
+// Add event listener to trigger the resetSession function when the resetSessionButton is clicked
+resetSessionButton.addEventListener('click', resetSession);
+
+function resetSession () {
+  const userChoice = confirm('Do you want to start a new session? This will delete the previous session data and create a new invite link.');  
+  // Clear the session data
+    clearSessionData();
+    // Reload the page
+    window.location.reload();
+  }
+
 // You can call this function when the host starts a new session
 async function checkForExistingSession() {
     const sessionData = loadSessionData();
     if (sessionData) {
       const userChoice = confirm('Do you want to restore the previous session? Cancel to start a new session.');
       if (userChoice) {
-        displaySessionHistory();
+        
       } else {
         // Start a new session
         clearSessionData();
@@ -1628,7 +1661,6 @@ if (isHost) {
   updateInputField(displayUsername)
 }
 
-
 function handleEnterKeyPress(event) {
   if (event.keyCode === 13) { // Check if the key is Enter
     if (!event.shiftKey) { // Check if Shift is NOT pressed
@@ -1644,8 +1676,6 @@ function handleEnterKeyPress(event) {
     }
   }
 }
-
-
 
 // Start the group game when the host clicks the button
 startGameButton.addEventListener('click', () => {
@@ -1731,8 +1761,6 @@ function triggerAdventureStart() {
     document.getElementById('aiSelectionBlock').style.display = "none"; 
     playOminousSound();
 }
-
-
 
 function playOminousSound() {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
