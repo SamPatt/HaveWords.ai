@@ -613,7 +613,7 @@ async function setupJoinSession() {
         }
 
         if (data.type === 'game-launch') {
-          triggerAdventureStart();
+          startRoleplaySession();
           addMessage("prompt", "The adventure has begun! The AI DM is crafting our session, please wait...", data.nickname);
         }
         if (data.type === "guest-join") {
@@ -798,7 +798,7 @@ async function fetchOpenAITextResponse(prompt) {
     }
   }
 // Calls the OpenAI Image API and returns the image URL
-async function fetchOpenAIImageResponse(prompt) {
+async function fetchOpenAIImageResponse(prompt, sessionType) {
   const apiKey = localStorage.getItem('openai_api_key');
   if (!apiKey) {
     console.error("API key is missing.");
@@ -806,6 +806,13 @@ async function fetchOpenAIImageResponse(prompt) {
     return;
   }
   const apiUrl = 'https://api.openai.com/v1/images/generations';
+  // Changes prompt based on session type
+  let imagePrompt;
+  if (sessionType === "fantasyRoleplay") {
+    imagePrompt = "An epic masterpiece realistic painting of " + prompt + ", in the style of John Howe and Alan Lee, digital art";
+  } else {
+    // other session types later
+  }
   const requestOptions = {
     method: 'POST',
     headers: {
@@ -813,7 +820,7 @@ async function fetchOpenAIImageResponse(prompt) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      prompt: "An epic masterpiece realistic painting of " + prompt + ", in the style of John Howe and Alan Lee, digital art",
+      prompt: imagePrompt,
       n: 1,
       size: "512x512",
     }),
@@ -834,10 +841,11 @@ async function triggerBot(response, sessionType) {
   }
   const fantasyRoleplayPrompt = `Respond only with JSON.\n\nMy friends and I are playing a roleplaying fantasy game. We will send our game messages to you. I will refer to the messages as scenes.\n\nYour job is to trigger certain actions if you identify certain events happening in the scenes. Your message should never include two "Trigger:" messages, only one. If you respond with "Trigger: Yes" you must also include an "Image: Description" response with a description of the scene. This description will generate an image, so keep your description brief and only include words which are simple to represent visually, do not include the names of the characters in the prompt, and request that monsters or characters are centered in the image. Here are the events you are looking for, and the actions to trigger:\n\n1) EVENT:  A new monster, new player character, or new non-player character is being introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new monster or character being introduced.\n\n2) EVENT: Combat has started, or a serious threat has been introduced in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n3) EVENT: The party has defeated a monster and ended combat, or otherwise completed an impressive achievement in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" describing the scene.\n\n4) EVENT: The party has entered a tavern, inn, or celebrating with a large group in the scene. ACTION: Respond with a "Trigger: Yes" section in your JSON, and an "Image: Description" section describing the scene.\n\n5) EVENT:  The setting in the scene changes significantly, and the new scenery is being described. ACTION: Respond with a "Trigger: Yes" section in your JSON and an "Image: Description" section, where Description is replaced with a prompt you've created to describe the new scene being introduced. This prompt will be used to generate a new image, so make the prompt as descriptive as you can given the information from the scene.\n\nIf multiple events occur within the same scene, respond with multiple actions.\n\nIf you detect none of these happening in the scene, respond with a "Trigger: No" section in your JSON.\n\nExamples\n\nScene: A group of gnolls approaches. The gnolls are humanoid creatures with the head of a hyena and the body of a human. They stand about 7 feet tall and with their wiry builds, they can move quickly and gracefully. You can see from their sharpened teeth and claws that they are fierce predators, and their beady eyes gleam with hunger and malice.\n\nYour response:\n\n{\n"Trigger": "Yes",\n"Image": "A group of 7-foot-tall gnolls with the head of a hyena and the body of a human approach with sharpened teeth and claws, gleaming with hunger and malice."\n}\n\nScene: You met a dozen villagers or so - mostly women, children, and elderly - sheltering behind hastily erected barricades, wielding whatever makeshift weapons they could find. They are dressed in simple clothes and have weathered faces, evidence of the harsh desert terrain they live in. They are relieved and grateful as you approach them, thanking you repeatedly for your help.\n\n{\n"Trigger": "Yes",\n"Image": "A group of women, children, and elderly villagers dressed in simple, ragged clothes, living in the desert, showing gratitude"\n}\n\nScene: You bid farewell to the grateful villagers and decide to continue your journey through the vast desert of Avaloria. As you walk, the sandy dunes seem to stretch endlessly before you, and the sun beats down relentlessly. You find a rocky outcropping where you can rest and eat. You notice that there is a winding path that seems to lead up the outcropping. Do you investigate or continue walking through the desert?\n\n{\n"Trigger": "Yes",\n"Image": "A rocky outcropping in the desert with a winding path leading up to it"\n}\n\n\nScene: You decide to rest for a while in the shade of the rocky outcropping. As you settle in, you notice that there are some signs of a recent fire nearby. Do you investigate the fire or continue resting?\n\n{\n"Trigger": "No"\n}\n\nScene: You approach the sealed doors of the ancient temple and inspect them closely. It seems that the doors have been sealed for centuries, and it will require a great deal of strength to move the stone blocks that have been placed there.\n\nDo you want to try and move the blocks yourself or investigate the surrounding area for clues on how to open the doors?\n\n{\n"Trigger": "No"\n}\n\nScene:`
   let triggerPrompt;
-  if(sessionType == "fantasyRoleplay") {
+  if(sessionType === "fantasyRoleplay") {
     triggerPrompt = fantasyRoleplayPrompt;
     } else {
       // other session types later
+      console.log("No session type for triggerBot found.")
     }  
   const message = triggerPrompt + response;
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
@@ -868,11 +876,10 @@ async function triggerBot(response, sessionType) {
   if (trigger["Trigger"] === "Yes") {
     if ("Image" in trigger) {
       const imageDescription = trigger["Image"];
-      const imageURL = await fetchOpenAIImageResponse(imageDescription);
+      const imageURL = await fetchOpenAIImageResponse(imageDescription, "fantasyRoleplay");
       console.log("event triggered, image: " + imageURL);
       sendImage(imageURL);
       addImage(imageURL);
-      // Use the imageDescription here for your desired action
       console.log(`Image description: ${imageDescription}`);
     }
   } else {
@@ -1698,25 +1705,24 @@ function handleEnterKeyPress(event) {
 
 // Start the group game when the host clicks the button
 startGameButton.addEventListener('click', () => {
-  startAdventure();
+  startSession("fantasyRoleplay");
 });
 
-async function startAdventure() {
-    gameMode = true;
+async function startSession(sessionType) {
     localStorage.setItem('openai_api_key', apiKeyInput.value);
-    triggerAdventureStart();
     addMessage('prompt', "You've started the session!", hostNickname);
-    // Construct the system message to guide the AI
-    //TODO Allow user choices and pass various choices into the content and prompt options
-    const newRole = "You are now the AI Dungeon Master guiding a roleplaying session.";
-    setNewAIRole(newRole)
-    
-    // Get the current user's usernames
-    const usernames = getCurrentUsernames();
-    console.log(usernames);
-
-    // Construct the prompt to assign roles and describe the setting
-    const prompt = `We are a group of people playing a fantasy role playing game, and you are our dungeon master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead. When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Don't use Markdown, only use HTML. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(', ')}.`;
+    // Check which session type was selected
+    if(sessionType === "fantasyRoleplay") {  
+      gameMode = true;
+      startRoleplaySession();
+      // Construct the system message to guide the AI
+      const newRole = "You are now the AI Dungeon Master guiding a roleplaying session.";
+      setNewAIRole(newRole)
+      // Get the current user's usernames
+      const usernames = getCurrentUsernames();
+      console.log(usernames);
+      // Construct the prompt to assign roles and describe the setting
+      const prompt = `We are a group of people playing a fantasy role playing game, and you are our dungeon master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead. When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Don't use Markdown, only use HTML. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(', ')}.`;
 
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
@@ -1725,9 +1731,10 @@ async function startAdventure() {
         dataChannels[guestId].conn.send({
           type: 'game-launch',
           id: id,
-          message: "The game has begun!",
+          message: "The host started a new session!",
           nickname: hostNickname,
       });
+
       }
     }
     const response = await fetchOpenAITextResponse(prompt);
@@ -1745,7 +1752,9 @@ async function startAdventure() {
       });
       }
     }
-    // Trigger the visual indicator and sound effect
+    } else {
+      // other session types later
+    }
 }
 
 function endAdventure() {
@@ -1768,7 +1777,7 @@ function getCurrentUsernames() {
   return guestNicknames;
 }
 
-function triggerAdventureStart() {
+function startRoleplaySession() {
     // Trigger the visual indicator (e.g., change the background color)
 
     var h2Element = document.querySelector('.header h2');
