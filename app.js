@@ -86,7 +86,6 @@ peer.on('open', function () {
     
   
     if (isHost) {
-      setupHostSession(); // Call the function to set up the host session
       loadSessionData();
       displaySessionHistory();
       if (!hostNickname) {
@@ -99,7 +98,7 @@ peer.on('open', function () {
       } else {
         console.log('Host nickname is already set:', hostNickname);
         
-      }
+      } setupHostSession(); // Call the function to set up the host session
     } else {
       if (!guestNickname) {
         guestNickname = generateNickname();
