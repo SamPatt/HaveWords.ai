@@ -877,6 +877,16 @@ async function triggerBot(response) {
 
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
+  //Save into session history  
+  const sessionData = loadSessionData();
+    sessionData.history.push({
+      type: 'image-link',
+      data: imageURL,
+      id: id,
+      nickname: hostNickname,
+    });
+    saveSessionData(sessionData);
+
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
           dataChannels[guestId].conn.send({
@@ -963,19 +973,6 @@ function addMessage(type, message, nickname) {
 function addImage(imageURL) {
   let icon;
   let isUser = false;
-
-  // If host, add image link into session history
-  if (isHost) {
-    const sessionData = loadSessionData();
-    sessionData.history.push({
-      type: 'image-link',
-      data: imageURL,
-      id: id,
-      nickname: hostNickname,
-    });
-    saveSessionData(sessionData);
-  }
-
   const messagesDiv = document.querySelector('.messages');
   const messageWrapper = document.createElement('div');
   messageWrapper.className = 'message-wrapper';
