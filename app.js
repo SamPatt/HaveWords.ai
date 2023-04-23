@@ -964,6 +964,18 @@ function addImage(imageURL) {
   let icon;
   let isUser = false;
 
+  // If host, add image link into session history
+  if (isHost) {
+    const sessionData = loadSessionData();
+    sessionData.history.push({
+      type: 'image-link',
+      data: imageURL,
+      id: id,
+      nickname: hostNickname,
+    });
+    saveSessionData(sessionData);
+  }
+
   const messagesDiv = document.querySelector('.messages');
   const messageWrapper = document.createElement('div');
   messageWrapper.className = 'message-wrapper';
@@ -1622,6 +1634,8 @@ function guestDisplayHostSessionHistory(sessionData) {
         addMessage(item.type, item.data, item.nickname);
       } else if (item.type === 'chat') {
         addChatMessage(item.type, item.data, item.nickname);
+      } else if (item.type === 'image-link') {
+        addImage(item.data);
       }
     });
   }
@@ -1638,6 +1652,8 @@ function displaySessionHistory() {
       addMessage(item.type, item.data, item.nickname);
     } else if (item.type === 'chat') {
       addChatMessage(item.type, item.data, item.nickname);
+    } else if (item.type === 'image-link') {
+      addImage(item.data);
     }
   });
 }
