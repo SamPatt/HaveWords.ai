@@ -324,7 +324,7 @@ async function setupHostSession() {
     displayInviteText._link = inviteLink
     displayInviteText.style.opacity = 1;
 
-    addMessage("system-message", "<p>Welcome, <b>" + hostNickname + '</b>!</p> <p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then copy the invite link above, and send it to your friends. Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>', "HaveWords");
+    addMessage("system-message", `<p>Welcome, <b> ${hostNickname} </b>!</p><br><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><br><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>. <br> Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <br> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`, "HaveWords");
   
     // Handle incoming connections from guests
     peer.on('connection', (conn) => {
@@ -1780,10 +1780,14 @@ function getCurrentUsernames() {
 function startRoleplaySession() {
     // Trigger the visual indicator (e.g., change the background color)
 
-    var h2Element = document.querySelector('.header h2');
+    var userPanelh2Element = document.querySelector('.userPanel .header h2');
+    var guestChatH2 = document.querySelector('.chatPanel .header h2');
+    var peersH2 = document.querySelector('.connectedUsers .header h2');
 
     // Change the content of the h2 element
-    h2Element.innerHTML = 'AI GAME MASTER';
+    userPanelh2Element.innerHTML = 'AI GAME MASTER';
+    guestChatH2.innerHTML = "Players' Chat";
+    peersH2.innerHTML = 'Players';
 
 
     document.getElementById('aiSelectionBlock').style.display = "none"; 
