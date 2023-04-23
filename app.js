@@ -10,6 +10,7 @@ if (inviteId) {
 let id;
 let hostNickname;
 let guestNickname;
+let hostWelcomeMessage = false;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
@@ -98,7 +99,11 @@ peer.on('open', function () {
       } else {
         console.log('Host nickname is already set:', hostNickname);
         
-      } setupHostSession(); // Call the function to set up the host session
+      } 
+      if(hostWelcomeMessage == false){
+      setupHostSession(); // Call the function to set up the host session
+      hostWelcomeMessage = true;
+      }
     } else {
       if (!guestNickname) {
         guestNickname = generateNickname();
