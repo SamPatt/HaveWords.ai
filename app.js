@@ -1027,7 +1027,7 @@ function removeWhitespace(jsonString) {
 
 function addMessage(type, message, nickname, sessionType, sessionDetails) {
     // If the string is empty, don't add it
-    if (message === "") {
+    if (message === "" || message === undefined) {
       return;
     }
     let icon;
