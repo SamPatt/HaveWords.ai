@@ -45,6 +45,7 @@ let dataChannels = {};
 let bannedGuests = [];
 let conn;
 let gameMode = false;
+let fantasyRoleplay = false;
 
 /* // Local peerjs server
 const peer = new Peer(id,{
@@ -120,7 +121,16 @@ peer.on('open', function () {
     }
     });
     
-
+function checkURLPath() {
+  const hash = window.location.hash;
+  console.log('Current hash:', hash); // Add this line for debugging
+  if (hash === '#adventure') {
+      console.log('URL includes #adventure');
+      fantasyRoleplay = true;
+      updateSessionTypeOptions("fantasyRoleplay");      
+  }
+}
+  
 
 let retryCount = 0;
 const maxRetries = 5;
@@ -281,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitApiKeyButton = document.getElementById('submitApiKey');
   updateSendButtonState();
   modelSelect.addEventListener('change', updateSelectedModelNickname);
+  checkURLPath();
 
   aiModel.addEventListener('change', () => {
     selectedOption = modelSelect.options[modelSelect.selectedIndex];
@@ -328,8 +339,9 @@ async function setupHostSession() {
     displayInviteText._link = inviteLink
     displayInviteText.style.opacity = 1;
 
+    if(!fantasyRoleplay){
     addMessage("system-message", `<p>Welcome, <b> ${hostNickname} </b>!</p><br><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><br><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>. <br> Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <br> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`, "HaveWords");
-  
+    }
     // Handle incoming connections from guests
     peer.on('connection', (conn) => {
         console.log('Incoming connection:', conn);
@@ -936,7 +948,11 @@ function removeWhitespace(jsonString) {
   }
 }
 
-function addMessage(type, message, nickname) {
+function addMessage(type, message, nickname, sessionType, sessionDetails) {
+    // If the string is empty, don't add it
+    if (message === "") {
+      return;
+    }
     let icon;
     let isUser = false;
     if (type === "prompt") {
@@ -981,6 +997,18 @@ function addMessage(type, message, nickname) {
     messageWrapper.appendChild(iconDiv);
     messageWrapper.appendChild(messageContent);
 
+    // Add "Begin Session" button for welcome messages
+    if (type === "welcome-message") {
+      const beginSessionButton = document.createElement('button');
+      beginSessionButton.textContent = "Begin Session";
+      beginSessionButton.className = "begin-session-button";
+      beginSessionButton.addEventListener('click', () => {
+          // Add your desired action when the "Begin Session" button is clicked
+          startSession(sessionType, sessionDetails);
+          console.log("Begin Session button clicked" + sessionType + sessionDetails);
+      });
+      messageContent.appendChild(beginSessionButton);
+  }
     messagesDiv.appendChild(messageWrapper);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
     //const scrollView = messagesDiv.parentNode
@@ -1018,6 +1046,10 @@ function addImage(imageURL) {
 
 
 function addChatMessage(type, message, nickname) {
+  // If the string is empty, don't add it
+  if(message === '') {
+    return;
+  }
   let icon;
     if(type === 'chat') {
       icon = '🗯️';
@@ -1504,7 +1536,8 @@ function sendUsername(username) {
     });
     // Check to see if host or guest and send message to appropriate party
     if (isHost) {
-      sendSystemMessage(content);
+      //sendSystemMessage(content);
+      // Disable for now
     } else {
       console.log("Guests cannot set new AI role")
     }
@@ -1709,18 +1742,19 @@ function handleEnterKeyPress(event) {
 
 // Start the group game when the host clicks the button
 startGameButton.addEventListener('click', () => {
-  startSession("fantasyRoleplay");
+  updateSessionTypeOptions("fantasyRoleplay");
 });
 
-async function startSession(sessionType) {
-    localStorage.setItem('openai_api_key', apiKeyInput.value);
+//TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
+
+async function startSession(sessionType, sessionDetails) {
+
     addMessage('prompt', "You've started the session!", hostNickname);
     // Check which session type was selected
     if(sessionType === "fantasyRoleplay") {  
       gameMode = true;
-      startRoleplaySession();
       // Construct the system message to guide the AI
-      const newRole = "You are now the AI Dungeon Master guiding a roleplaying session.";
+      const newRole = "You are now the AI Game Master guiding a roleplaying session set in the " + sessionDetails + " world";
       setNewAIRole(newRole)
       // Get the current user's usernames
       const usernames = getCurrentUsernames();
@@ -1757,10 +1791,105 @@ async function startSession(sessionType) {
       }
     }
     } else {
+      console.log("No session type selected");
       // other session types later
     }
 }
 
+function updateSessionTypeOptions(sessionType) {
+  const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
+  const sessionTypeDescription = document.getElementById('sessionTypeDescription');
+
+  // Clear existing options and description
+  sessionTypeDetailsSelect.innerHTML = '';
+  sessionTypeDescription.innerHTML = '';
+
+  let options;
+  let description;
+
+  if (sessionType === 'fantasyRoleplay') {
+    options = [
+      { value: 'traditional fantasy', text: 'Traditional roleplaying' },
+      { value: 'Conan', text: 'Conan' },
+      { value: 'Norse', text: 'Norse Mythology' },
+      { value: 'Harry Potter', text: 'Harry Potter' },
+    ];
+    description = `
+      <h2>Fantasy Roleplaying:</h2>
+      <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
+    `;
+  } else if (sessionType === 'trivianight') {
+    options = [
+      // Add trivia night options here
+    ];
+    description = `
+      <h3>Trivia Night:</h3>
+      <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
+    `;
+  } else if (sessionType === 'explorefiction') {
+    options = [
+      // Add explore fiction options here
+    ];
+    description = `
+      <h3>Explore Fiction:</h3>
+      <p>Travel to various fictional universes with the AI's help. Discover new worlds, interact with famous characters, and engage in thrilling adventures as you explore the limits of your imagination.</p>
+    `;
+  } else {
+    // Add different options and descriptions for other session types
+  }
+
+  // Add the new options to the dropdown menu
+  options.forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.text;
+    sessionTypeDetailsSelect.appendChild(opt);
+  });
+
+   // Add the description to the sessionTypeDescription div
+   sessionTypeDescription.innerHTML = description;
+   displayHashModal(sessionType);
+  }
+
+  function displayHashModal(sessionType) {
+    // Display the API key modal
+    const submitHashModal = document.getElementById('submitOnVisitHashModalButton');
+    const onVisitHashModal = document.getElementById('onVisitHashModal');
+    const hashApiKey = document.getElementById('hashApiKeyInput');
+    const apiKeyError = document.getElementById('apiKeyError'); // Add this line to get the error element
+  
+    // Check if the API key is already set in local storage
+    const storedApiKey = localStorage.getItem('openai_api_key');
+    if (storedApiKey) {
+      // Update the input field's placeholder text and disable the input
+      hashApiKey.disabled = true;
+      hashApiKey.placeholder = "Already set!";
+    }
+  
+    onVisitHashModal.style.display = 'block';
+    const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
+    let selectedSessionTypeDetails;
+    // Add event listener for the submit button
+    submitHashModal.addEventListener('click', () => {
+      if (!hashApiKey.disabled && hashApiKey.value.trim() === '') {
+        apiKeyError.style.display = 'block'; // Show the error message
+        return;
+      }
+      // Only set the API key in local storage if the input is not disabled
+      if (!hashApiKey.disabled) {
+        localStorage.setItem('openai_api_key', hashApiKey.value);
+      }
+      selectedSessionTypeDetails = sessionTypeDetailsSelect.value;
+      onVisitHashModal.style.display = 'none';
+      // Start the session with the selected session type
+      if (sessionType === 'fantasyRoleplay') {
+        startRoleplaySession(sessionType, selectedSessionTypeDetails);
+      } else {
+        // Add other session types here
+      }
+    });
+  }
+  
 function endAdventure() {
     gameMode = false;
     // Trigger the visual indicator (e.g., change the background color)
@@ -1781,9 +1910,9 @@ function getCurrentUsernames() {
   return guestNicknames;
 }
 
-function startRoleplaySession() {
-    // Trigger the visual indicator (e.g., change the background color)
-
+// This changes the display for the roleplay session in order to create a waiting room for players to join
+function startRoleplaySession(sessionType, sessionDetails) {
+    // Trigger the visual indicator
     var userPanelh2Element = document.querySelector('.userPanel .header h2');
     var guestChatH2 = document.querySelector('.chatPanel .header h2');
     var peersH2 = document.querySelector('.connectedUsers .header h2');
@@ -1793,8 +1922,12 @@ function startRoleplaySession() {
     guestChatH2.innerHTML = "Players' Chat";
     peersH2.innerHTML = 'Players';
 
-
     document.getElementById('aiSelectionBlock').style.display = "none"; 
+    
+    if(isHost) {
+    const inviteLink = makeInviteLink(id);
+    addMessage("welcome-message", `<p>Welcome to your roleplaying session, set in the <b>${sessionDetails}</b> world!</p><br></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><br><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`, "HaveWords.ai", sessionType, sessionDetails);
+    }
     playOminousSound();
 }
 
@@ -2062,7 +2195,7 @@ const adjectives = [
   
 
 
-function convertToParagraphs(text) {
+function convertToParagraphs(text) {  
   // Split the text into paragraphs using double newline characters
   const paragraphs = text.split(/\n{2,}/g);
 
