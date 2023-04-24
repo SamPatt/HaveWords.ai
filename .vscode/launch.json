@@ -7,7 +7,7 @@
             "name": "launch local HTTPS",
             "url": "https://localhost:8000/index.html",
             "webRoot": "${workspaceFolder}",
-            "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            //"runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
             //"runtimeExecutable": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
             "runtimeArgs": [
             ],
@@ -21,7 +21,7 @@
             "name": "launch local file",
             "url": "file://${workspaceFolder}/index.html",
             "webRoot": "${workspaceFolder}",
-            "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            //"runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
             //"runtimeExecutable": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
             "runtimeArgs": [
             ],
@@ -33,7 +33,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "launch site",
-            "url": "https://strvct.net/",
+            "url": "https://havewords.ai/",
             "webRoot": "${workspaceFolder}",
             "runtimeArgs": [
             ],
