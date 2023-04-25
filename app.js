@@ -78,7 +78,7 @@ let guestUserList = [];
 let userAudioStream;
 
 /* --- microphone input ---*/
-
+/*
 const micButton = document.getElementById("micButton");
 micButton._isOn = false;
 micButton._onIcon = "mic-fill-svgrepo-com.svg";
@@ -159,7 +159,7 @@ function requestMicAccess() {
       console.error("Error getting audio stream:", error);
     });
 }
-
+*/
 /*
 function muteMicrophone () {
   if (userAudioStream) {

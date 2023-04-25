@@ -4,13 +4,18 @@ class Boot extends Object {
 
   files () {
     return [
+      /*
       "https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js",
+      */
+      "source/external/peerjs1.3.2.min.js",
+      "source/external/purify2.3.3.min.js",
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
       "source/app/App.js",
       "source/app/Nickname.js",
       "source/app/Sounds.js",
+      "source/app/Microphone.js",
       "app.js"
     ]
   }
@@ -23,7 +28,9 @@ class Boot extends Object {
   loadNext () {
     if (this._queue.length) {
       const file = this._queue.shift()
-      this.loadScript(file, () => this.loadNext())
+      this.loadScript(file, () => {
+        this.loadNext()
+      })
     } else {
       this.didFinish()
     }
@@ -40,7 +47,7 @@ class Boot extends Object {
     }
     script.onload = callback;
     script.onerror = (error) => {
-      console.log(error)
+      console.log("Boot ERROR loading: '" + this.src + "'")
     }
     head.appendChild(script);
   }

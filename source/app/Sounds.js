@@ -83,4 +83,5 @@
       oscillator.stop(context.currentTime + index * 0.1 + 0.1);
     });
   }
+  
 }.initThisClass());
