@@ -49,21 +49,21 @@ let conn;
 let gameMode = false;
 let fantasyRoleplay = false;
 
-// Local peerjs server
+/* // Local peerjs server
 const peer = new Peer(id,{
   host: "localhost",
   port: 9000,
   path: "/myapp",
-});
+}); */
 
 
-/* // Deployed peerjs server
+// Deployed peerjs server
 const peer = new Peer(id,{
     host: "peerjssignalserver.herokuapp.com",
     path: "/peerjs",
     secure: true,
     port: 443,
-}); */
+});
 
 let content = "You are a helpful assistant.";
 const conversationHistory = [
