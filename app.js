@@ -710,7 +710,7 @@ async function setupJoinSession() {
 
         if (data.type === 'game-launch') {
           startRoleplaySession();
-          addMessage("prompt", "The adventure has begun! The AI DM is crafting our session, please wait...", data.nickname);
+          addMessage("prompt", data.message, data.nickname);
         }
         if (data.type === "guest-join") {
           addChatMessage("chat", data.message, data.nickname);
@@ -805,10 +805,8 @@ async function sendAIResponse(message, nickname) {
        if (gameMode) {
         if (!isHost) {
           message = nickname + ": " + message;
-          console.log("Game mode is on, adding username to prompt: " + message);
           }
        } else {
-        console.log("Game mode is off, sending prompt to OpenAI: " + message)
        }
 
   // Get AI Response and post locally
@@ -816,7 +814,6 @@ async function sendAIResponse(message, nickname) {
     if (gameMode) {
       //console.log("Calling triggerBot with AI response:", response);
       //triggerBot(response, groupSessionType, groupSessionDetails);
-      console.log("Game mode is on, sending response to bot: " + response);
     }
     
     addAIReponse(response);
@@ -919,7 +916,6 @@ async function triggerImageBot(response) {
     const data = await AIresponse.json();
     const imageDescription = data.choices[0].message.content;
     const imageURL = await fetchOpenAIImageResponse(imageDescription, groupSessionType, groupSessionDetails);
-    console.log("event triggered, image: " + imageURL);
     sendImage(imageURL);
     addImage(imageURL);
     console.log(`Image description: ${imageDescription}`);
@@ -1084,7 +1080,10 @@ function addMessage(type, message, nickname) {
     } else if (type === "ai-response") {
       loadingAnimation.style.display = "none";
       icon = "🤖";
-       // Create a new icon/button element for the AI responses
+        // Check if host, and if so, add a button to generate an image prompt
+        if (isHost) {
+
+        // Create a new icon/button element for the AI responses
         const generateImagePromptButton = document.createElement('button');
         generateImagePromptButton.textContent = "🎨";
         generateImagePromptButton.className = "generate-image-prompt-button";
@@ -1093,15 +1092,13 @@ function addMessage(type, message, nickname) {
         // Add an event listener to the icon/button
         generateImagePromptButton.addEventListener('click', () => {
           triggerImageBot(sanitizedHtml);
-          // Your desired action to generate an image prompt from the AI response
-          console.log("Generate image prompt for:", sanitizedHtml);
-          
           // Optional: Hide the button after it has been clicked
           generateImagePromptButton.style.display = 'none';
         });
 
         // Append the icon/button to the message content
         messageContent.appendChild(generateImagePromptButton);
+      }
     } else if (type === "system-message") {
       icon = "🔧";
     } else {
@@ -1313,9 +1310,7 @@ async function sendPrompt(message) {
     });
     }
   } if (gameMode) {
-    message = hostNickname + ": " + message;
-    console.log("Game mode is on, adding username to prompt: " + message);
-   }
+    message = hostNickname + ": " + message;   }
   sendAIResponse(message);
 }
 
@@ -1924,7 +1919,7 @@ async function startSession(sessionType, sessionDetails) {
         dataChannels[guestId].conn.send({
           type: 'game-launch',
           id: id,
-          message: "The host started a new session!",
+          message: "The host started a new " + sessionDetails + " session! Please wait while the AI Game master crafts your world...",
           nickname: hostNickname,
       });
 
@@ -1966,7 +1961,6 @@ function updateSessionTypeOptions(sessionType) {
 
   if (sessionType === 'fantasyRoleplay') {
     groupSessionType = "fantasyRoleplay";
-    console.log("fantasy roleplay session selected");
     options = [
       { value: 'traditional fantasy', text: 'Traditional roleplaying' },
       { value: 'Conan', text: 'Conan' },
@@ -2065,7 +2059,6 @@ function getCurrentUsernames() {
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
       guestNicknames.push(dataChannels[guestId].nickname);
-      console.log("Added to guestNicknames: " + dataChannels[guestId].nickname);
     }
   }
   return guestNicknames;
