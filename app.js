@@ -1,6 +1,6 @@
 // If the user is a guest this will set the room id to the one in the url
 const urlParams = new URLSearchParams(window.location.search);
-const inviteId = urlParams.get('room');
+const inviteId = urlParams.get("room");
 
 if (inviteId) {
   isHost = false;
@@ -17,8 +17,8 @@ let groupSessionFirstAIResponse;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
-  const existingHostId = localStorage.getItem('hostId');
-  const existingHostNickname = localStorage.getItem('hostNickname');
+  const existingHostId = localStorage.getItem("hostId");
+  const existingHostNickname = localStorage.getItem("hostNickname");
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
     id = existingHostId;
@@ -26,20 +26,20 @@ if (isHost) {
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
     id = generateId();
-    localStorage.setItem('hostId', id);
+    localStorage.setItem("hostId", id);
   }
 } else {
   // If user is guest, generate a new id
-  const existingGuestId = localStorage.getItem('guestId');
-  const existingGuestNickname = localStorage.getItem('guestNickname');
+  const existingGuestId = localStorage.getItem("guestId");
+  const existingGuestNickname = localStorage.getItem("guestNickname");
   if (existingGuestId) {
     // If there is an existing guestId, set the guestId to the existing one
     id = existingGuestId;
     guestNickname = existingGuestNickname;
   } else {
     // If there is no existing guestId, generate a new one and save it to local storage
-      id = generateId();
-      localStorage.setItem('guestId', id);
+    id = generateId();
+    localStorage.setItem("guestId", id);
   }
 }
 
@@ -57,108 +57,107 @@ const peer = new Peer(id,{
   path: "/myapp",
 }); */
 
-
 // Deployed peerjs server
-const peer = new Peer(id,{
-    host: "peerjssignalserver.herokuapp.com",
-    path: "/peerjs",
-    secure: true,
-    port: 443,
+const peer = new Peer(id, {
+  host: "peerjssignalserver.herokuapp.com",
+  path: "/peerjs",
+  secure: true,
+  port: 443,
 });
 
 let content = "You are a helpful assistant.";
 const conversationHistory = [
-    {
-      role: 'system',
-      content: content,
-    },
-  ];
-const loadingAnimation = document.getElementById('loadingHost');
-const startGameButton = document.getElementById('startGameButton');
+  {
+    role: "system",
+    content: content,
+  },
+];
+const loadingAnimation = document.getElementById("loadingHost");
+const startGameButton = document.getElementById("startGameButton");
 let guestUserList = [];
 let userAudioStream;
 
 /* --- microphone input ---*/
 
-const micButton = document.getElementById('micButton');
+const micButton = document.getElementById("micButton");
 micButton._isOn = false;
 micButton._onIcon = "mic-fill-svgrepo-com.svg";
 micButton._offIcon = "mic-slash-fill-svgrepo-com.svg";
 
 micButton.toggleState = function () {
   if (this._isOn) {
-    this.turnOff()
+    this.turnOff();
   } else {
-    this.turnOn()
+    this.turnOn();
   }
-}
+};
 
 micButton.setIsOn = function (bool) {
-  this._isOn = bool
-  this.updateIcon()
-}
+  this._isOn = bool;
+  this.updateIcon();
+};
 
 micButton.svgObject = function () {
-  return document.getElementById("micSvgIcon")
-}
+  return document.getElementById("micSvgIcon");
+};
 
 micButton.updateIcon = function () {
   const icon = this._isOn ? this._onIcon : this._offIcon;
-  this.svgObject().setAttribute("data", "resources/icons/" + icon)
-}
+  this.svgObject().setAttribute("data", "resources/icons/" + icon);
+};
 
 micButton.turnOn = function () {
-  this.setIsOn(true)
-}
+  this.setIsOn(true);
+};
 
 micButton.turnOff = function () {
-  this.setIsOn(false)
-}
+  this.setIsOn(false);
+};
 
-micButton.addEventListener('click', (event) => {
-  const self = event.target
+micButton.addEventListener("click", (event) => {
+  const self = event.target;
   //this.toggleState()
   if (self._isOn) {
     if (hasMicAccess()) {
-        userAudioStream.muted = true // not sure if this works
+      userAudioStream.muted = true; // not sure if this works
     }
-    self.setIsOn(false)
+    self.setIsOn(false);
   } else {
     if (hasMicAccess()) {
-      userAudioStream.muted = false // not sure if this works
+      userAudioStream.muted = false; // not sure if this works
       //userAudioStream = undefined;
-      self.setIsOn(true)
+      self.setIsOn(true);
     } else {
-      requestMicAccess()
+      requestMicAccess();
     }
   }
 });
 
-function hasMicAccess () {
-  return (userAudioStream !== undefined);
+function hasMicAccess() {
+  return userAudioStream !== undefined;
 }
 
-let isRequestingMicAccess = false
+let isRequestingMicAccess = false;
 
-function requestMicAccess () {
+function requestMicAccess() {
   if (hasMicAccess() || isRequestingMicAccess) {
-    return 
+    return;
   }
 
-  isRequestingMicAccess = true
+  isRequestingMicAccess = true;
 
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      isRequestingMicAccess = false
+  navigator.mediaDevices
+    .getUserMedia({ audio: true })
+    .then((stream) => {
+      isRequestingMicAccess = false;
       userAudioStream = stream;
-      micButton.setIsOn(true)
+      micButton.setIsOn(true);
     })
-    .catch(error => {
-      isRequestingMicAccess = false
-      micButton.setIsOn(false)
-      console.error('Error getting audio stream:', error);
-    }
-  );
+    .catch((error) => {
+      isRequestingMicAccess = false;
+      micButton.setIsOn(false);
+      console.error("Error getting audio stream:", error);
+    });
 }
 
 /*
@@ -180,93 +179,96 @@ function muteMicrophone () {
 
 /* --------------------- */
 
-peer.on('open', function () {
-    console.log('PeerJS client is ready. Peer ID:', id);
-    
-  
-    if (isHost) {
-      loadSessionData();
-      displaySessionHistory();
-      if (!hostNickname) {
-        hostNickname = (generateHostNickname() + ' (host)');
-        // Add host nickname to localstorage
-        localStorage.setItem('hostNickname', hostNickname);
-        console.log('Host nickname:', hostNickname);
-        displayUsername.value = hostNickname;
-        updateInputField(displayUsername)
-      } else {
-        console.log('Host nickname is already set:', hostNickname);
-        
-      } 
-      if(hostWelcomeMessage == false){
+peer.on("open", function () {
+  console.log("PeerJS client is ready. Peer ID:", id);
+
+  if (isHost) {
+    loadSessionData();
+    displaySessionHistory();
+    if (!hostNickname) {
+      hostNickname = generateHostNickname() + " (host)";
+      // Add host nickname to localstorage
+      localStorage.setItem("hostNickname", hostNickname);
+      console.log("Host nickname:", hostNickname);
+      displayUsername.value = hostNickname;
+      updateInputField(displayUsername);
+    } else {
+      console.log("Host nickname is already set:", hostNickname);
+    }
+    if (hostWelcomeMessage == false) {
       setupHostSession(); // Call the function to set up the host session
       hostWelcomeMessage = true;
-      }
-    } else {
-      if (!guestNickname) {
-        guestNickname = generateNickname();
-        // Add guest nickname to localstorage
-        localStorage.setItem('guestNickname', guestNickname);
-        displayUsername.value = guestNickname;
-        updateInputField(displayUsername)
-
-        console.log('Guest nickname:', guestNickname);
-      } else {
-        console.log('Guest nickname is already set:', guestNickname);
-      }
-      setupJoinSession(); // Call the function to set up the join session
     }
-    });
-    
+  } else {
+    if (!guestNickname) {
+      guestNickname = generateNickname();
+      // Add guest nickname to localstorage
+      localStorage.setItem("guestNickname", guestNickname);
+      displayUsername.value = guestNickname;
+      updateInputField(displayUsername);
+
+      console.log("Guest nickname:", guestNickname);
+    } else {
+      console.log("Guest nickname is already set:", guestNickname);
+    }
+    setupJoinSession(); // Call the function to set up the join session
+  }
+});
+
 function checkURLPath() {
   const hash = window.location.hash;
-  console.log('Current hash:', hash); // Add this line for debugging
-  if (hash === '#adventure') {
-      console.log('URL includes #adventure');
-      fantasyRoleplay = true;
-      updateSessionTypeOptions("fantasyRoleplay");      
+  console.log("Current hash:", hash); // Add this line for debugging
+  if (hash === "#adventure") {
+    console.log("URL includes #adventure");
+    fantasyRoleplay = true;
+    updateSessionTypeOptions("fantasyRoleplay");
   }
 }
-  
 
 let retryCount = 0;
 const maxRetries = 5;
 
-peer.on('error', function (err) {
-  console.log('PeerJS error:', err);
+peer.on("error", function (err) {
+  console.log("PeerJS error:", err);
 
   if (retryCount < maxRetries) {
     setTimeout(() => {
-      console.log('Attempting to reconnect to PeerJS server...');
+      console.log("Attempting to reconnect to PeerJS server...");
       peer.reconnect();
       retryCount++;
     }, 5000);
   } else {
-    console.log('Reached maximum number of retries. Displaying system message.');
+    console.log(
+      "Reached maximum number of retries. Displaying system message."
+    );
     // Display a system message here, e.g. by updating the UI
-    addChatMessage("system-message", `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`, "System");
+    addChatMessage(
+      "system-message",
+      `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`,
+      "System"
+    );
   }
 });
 
 // Answer incoming voice calls
-peer.on('call', call => {
+peer.on("call", (call) => {
   const acceptCall = confirm(`Incoming call. Do you want to accept the call?`);
 
   if (acceptCall) {
     call.answer(userAudioStream);
-    console.log('Answering incoming call from:', call.peer);
+    console.log("Answering incoming call from:", call.peer);
 
-    call.on('stream', remoteStream => {
+    call.on("stream", (remoteStream) => {
       handleRemoteStream(remoteStream);
       updateCalleeVoiceRequestButton(call.peer, call);
     });
 
-    call.on('close', () => {
+    call.on("close", () => {
       // Handle call close event
-      console.log('Call with peer:', call.peer, 'has ended');
+      console.log("Call with peer:", call.peer, "has ended");
     });
   } else {
-    console.log('Call from', call.peer, 'rejected');
+    console.log("Call from", call.peer, "rejected");
   }
 });
 
@@ -279,13 +281,19 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 
   const userActions = listItem.parentNode.querySelector(".user-actions");
   if (!userActions) {
-    console.error("Couldn't find user actions element for callee ID:", calleeID);
+    console.error(
+      "Couldn't find user actions element for callee ID:",
+      calleeID
+    );
     return;
   }
 
   const voiceRequestButton = userActions.querySelector("button");
   if (!voiceRequestButton) {
-    console.error("Couldn't find voice request button for callee ID:", calleeID);
+    console.error(
+      "Couldn't find voice request button for callee ID:",
+      calleeID
+    );
     return;
   }
 
@@ -298,675 +306,704 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 }
 
 const copyToClipboard = (str) => {
-  playSendBeep()
+  playSendBeep();
   if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(str);
   }
-  return Promise.reject('The Clipboard API is not available.');
+  return Promise.reject("The Clipboard API is not available.");
 };
 
-const displayInviteLink = document.getElementById('displayInviteLink');
+const displayInviteLink = document.getElementById("displayInviteLink");
 
-const displayInviteText = document.getElementById('displayInviteText');
-displayInviteText.addEventListener('click', (event) => {
-  const oldColor = event.target.style.color
-  event.target.style.color = "white"
-  setTimeout(() => { event.target.style.color = oldColor; }, 0.2*1000)
+const displayInviteText = document.getElementById("displayInviteText");
+displayInviteText.addEventListener("click", (event) => {
+  const oldColor = event.target.style.color;
+  event.target.style.color = "white";
+  setTimeout(() => {
+    event.target.style.color = oldColor;
+  }, 0.2 * 1000);
   copyToClipboard(displayInviteText._link);
 });
 
 // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
 function generateId() {
-    return Math.random().toString(36).substr(2, 9);
-  }
+  return Math.random().toString(36).substr(2, 9);
+}
 function makeInviteLink(hostRoomId) {
-    const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
-    return inviteLink;
-  }
-const copyInviteLinkButton = document.getElementById('copyInviteLink');
-copyInviteLinkButton.addEventListener('click', () => {
-    displayInviteLink.select();
-    document.execCommand('copy');
-  });
+  const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
+  return inviteLink;
+}
+const copyInviteLinkButton = document.getElementById("copyInviteLink");
+copyInviteLinkButton.addEventListener("click", () => {
+  displayInviteLink.select();
+  document.execCommand("copy");
+});
 
 // Creates a token for guest identity across sessions
 function generateToken() {
-    console.log('Generating token...');
-    return Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
-    
-  }
+  console.log("Generating token...");
+  return (
+    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
+  );
+}
 let guestToken = localStorage.getItem("guestToken");
-  if (!guestToken) {
-    guestToken = generateToken();
-    localStorage.setItem("guestToken", guestToken);
-  }
-  
-
-function displayHostHTMLChanges () {
-    document.getElementById('hostAIContainer').style.display = 'block';
-    document.getElementById('aiSelection').style.display = 'block';
-    document.getElementById('inputSection').style.display = 'block';
-    document.getElementById('resetSessionButton').style.display = 'block';
-    startGameButton.style.display = 'block';
-
+if (!guestToken) {
+  guestToken = generateToken();
+  localStorage.setItem("guestToken", guestToken);
 }
 
-function displayGuestHTMLChanges () {
-    document.getElementById('hostAIContainer').style.display = 'block';
-    document.getElementById('remoteSystemPrompt').style.display = 'block';
-    document.getElementById('inputSectionRemote').style.display = 'block';
-    messageInputRemote.disabled = true;
-    document.getElementById('aiSelection').style.display = 'none';
+function displayHostHTMLChanges() {
+  document.getElementById("hostAIContainer").style.display = "block";
+  document.getElementById("aiSelection").style.display = "block";
+  document.getElementById("inputSection").style.display = "block";
+  document.getElementById("resetSessionButton").style.display = "block";
+  startGameButton.style.display = "block";
+}
+
+function displayGuestHTMLChanges() {
+  document.getElementById("hostAIContainer").style.display = "block";
+  document.getElementById("remoteSystemPrompt").style.display = "block";
+  document.getElementById("inputSectionRemote").style.display = "block";
+  messageInputRemote.disabled = true;
+  document.getElementById("aiSelection").style.display = "none";
 }
 // Disables the chat send button until the data channel is open
-const chatSendButton = document.getElementById('chatSendButton');
-chatSendButton.addEventListener('click', sendChatMessage);
+const chatSendButton = document.getElementById("chatSendButton");
+chatSendButton.addEventListener("click", sendChatMessage);
 
-const modelSelect = document.getElementById('aiModel');
-let selectedModelNickname = '';
+const modelSelect = document.getElementById("aiModel");
+let selectedModelNickname = "";
 
 function updateSelectedModelNickname() {
   const selectedOption = modelSelect.options[modelSelect.selectedIndex];
-  selectedModelNickname = selectedOption.getAttribute('data-nickname');
+  selectedModelNickname = selectedOption.getAttribute("data-nickname");
 }
 updateSelectedModelNickname();
 
-
 function updateSendButtonState() {
-  if (aiModel.value === 'gpt-3.5-turbo' || aiModel.value === 'gpt-4') {
+  if (aiModel.value === "gpt-3.5-turbo" || aiModel.value === "gpt-4") {
     sendButton.disabled = false;
   } else {
     sendButton.disabled = true;
   }
 }
 
-const apiKeyInput = document.getElementById('apiKey');
+const apiKeyInput = document.getElementById("apiKey");
 
-document.addEventListener('DOMContentLoaded', () => {
-  const aiModel = document.getElementById('aiModel');
-  const sendButton = document.getElementById('sendButton');
-  const submitApiKeyButton = document.getElementById('submitApiKey');
+document.addEventListener("DOMContentLoaded", () => {
+  const aiModel = document.getElementById("aiModel");
+  const sendButton = document.getElementById("sendButton");
+  const submitApiKeyButton = document.getElementById("submitApiKey");
   updateSendButtonState();
-  modelSelect.addEventListener('change', updateSelectedModelNickname);
+  modelSelect.addEventListener("change", updateSelectedModelNickname);
   checkURLPath();
 
-  aiModel.addEventListener('change', () => {
+  aiModel.addEventListener("change", () => {
     selectedOption = modelSelect.options[modelSelect.selectedIndex];
-    selectedModelNickname = selectedOption.getAttribute('data-nickname');
+    selectedModelNickname = selectedOption.getAttribute("data-nickname");
     updateSendButtonState();
   });
 
-  
-  submitApiKeyButton.addEventListener('click', () => {
-    localStorage.setItem('openai_api_key', apiKeyInput.value);
-    submitApiKeyButton.textContent = 'Saved!';
+  submitApiKeyButton.addEventListener("click", () => {
+    localStorage.setItem("openai_api_key", apiKeyInput.value);
+    submitApiKeyButton.textContent = "Saved!";
     setTimeout(() => {
-      submitApiKeyButton.style.display = 'none';
+      submitApiKeyButton.style.display = "none";
     }, 1000);
   });
- 
 
   // Load the stored API key from localStorage if it exists
-  const storedApiKey = localStorage.getItem('openai_api_key');
+  const storedApiKey = localStorage.getItem("openai_api_key");
   if (storedApiKey) {
     apiKeyInput.value = storedApiKey;
   }
 
-  chatSendButton.addEventListener('click', () => {
-    sendChatMessage()
+  chatSendButton.addEventListener("click", () => {
+    sendChatMessage();
   });
 
-  sendButton.addEventListener('click', () => {
-    addPrompt();    
+  sendButton.addEventListener("click", () => {
+    addPrompt();
   });
 
-  sendButtonRemote.addEventListener('click', () => {
-    guestSendPrompt();    
+  sendButtonRemote.addEventListener("click", () => {
+    guestSendPrompt();
   });
-  
 });
 
 //PeerJS webRTC section
 
 async function setupHostSession() {
-    console.log('Setting up host session');
-    displayHostHTMLChanges();
-    const inviteLink = makeInviteLink(id);
-    displayInviteLink.value = inviteLink;
-    displayInviteText._link = inviteLink
-    displayInviteText.style.opacity = 1;
+  console.log("Setting up host session");
+  displayHostHTMLChanges();
+  const inviteLink = makeInviteLink(id);
+  displayInviteLink.value = inviteLink;
+  displayInviteText._link = inviteLink;
+  displayInviteText.style.opacity = 1;
 
-    if(!fantasyRoleplay){
-    addMessage("system-message", `<p>Welcome, <b> ${hostNickname} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`, "HaveWords");
-    }
-    // Handle incoming connections from guests
-    peer.on('connection', (conn) => {
-        console.log('Incoming connection:', conn);
-        conn.on('open', () => {
-          connections[conn.peer] = conn;
-      
-          // Adds to datachannels
-          dataChannels[conn.peer] = {
-            conn: conn,
-            id: conn.peer,
-            nickname: '',
-            token: '',
-            canSendPrompts: false,
-          };
-  
-        // Handle receiving messages from guests
-        conn.on('data', (data) => {
-            console.log(`Message from ${conn.peer}:`, data);
-          
-            if (data.type === 'nickname') {
-                if (bannedGuests.includes(data.token)) {
-                    
-                    const guestConn = dataChannels[data.id].conn;
-                    guestConn.send({ type: "ban" });
-                    setTimeout(() => {
-                        guestConn.close();
-                        console.log(`Rejected banned guest: ${data.id}`);
-                    }, 500);
-                  } else {
-                // Store the guest's nickname
-                dataChannels[conn.peer].nickname = data.nickname;
+  if (!fantasyRoleplay) {
+    addMessage(
+      "system-message",
+      `<p>Welcome, <b> ${hostNickname} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
+      "HaveWords"
+    );
+  }
+  // Handle incoming connections from guests
+  peer.on("connection", (conn) => {
+    console.log("Incoming connection:", conn);
+    conn.on("open", () => {
+      connections[conn.peer] = conn;
 
-                //Store the guest's token
-                dataChannels[conn.peer].token = data.token;
-                console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
-                updateUserList();
+      // Adds to datachannels
+      dataChannels[conn.peer] = {
+        conn: conn,
+        id: conn.peer,
+        nickname: "",
+        token: "",
+        canSendPrompts: false,
+      };
 
-                // Create a guest user list with ids and nicknames to send to the new guest
-                const newGuestUserList = updateGuestUserlist();
-                guestUserList = newGuestUserList
-                // Send the session history to the guest
-                const sessionData = loadSessionData();
-                dataChannels[conn.peer].conn.send({
-                  type: 'session-history',
-                  history: sessionData.history,
-                  nickname: hostNickname,
-                  guestUserList: newGuestUserList,
-                });                
-                // Send a new message to all connected guests to notify them of the new guest
-                for (const guestId in dataChannels) {
-                  if (dataChannels.hasOwnProperty(guestId)) {
-                    if (data.id !== guestId) {
-                      dataChannels[guestId].conn.send({
-                        type: 'guest-join',
-                        message: `${data.nickname} has joined the session!`,
-                        nickname: hostNickname,
-                        joiningGuestNickname: data.nickname,
-                        joiningGuestId: data.id,
-                        guestUserList: guestUserList,
-                      });
-                    }
-                  }
+      // Handle receiving messages from guests
+      conn.on("data", (data) => {
+        console.log(`Message from ${conn.peer}:`, data);
 
-                }
-                addChatMessage("system-message", `${data.nickname} has joined the session!`, hostNickname);
-              }
-            }
-            if (data.type === 'remote-prompt') {
-                // Add prompt to prompt history
-                if (dataChannels[conn.peer].canSendPrompts) {
-                  const sessionData = loadSessionData();
-                  sessionData.history.push({
-                  type: 'prompt',
-                  data: data.message,
-                  id: data.id,
-                  nickname: data.nickname,
+        if (data.type === "nickname") {
+          if (bannedGuests.includes(data.token)) {
+            const guestConn = dataChannels[data.id].conn;
+            guestConn.send({ type: "ban" });
+            setTimeout(() => {
+              guestConn.close();
+              console.log(`Rejected banned guest: ${data.id}`);
+            }, 500);
+          } else {
+            // Store the guest's nickname
+            dataChannels[conn.peer].nickname = data.nickname;
 
-                });
-                  saveSessionData(sessionData);
-                  // Send prompt to guests
-                  for (const guestId in dataChannels) {
-                    if (dataChannels.hasOwnProperty(guestId)) {
-                        if (data.id !== guestId) {
-                            dataChannels[guestId].conn.send({
-                                type: 'prompt',
-                                id: data.id,
-                                message: data.message,
-                                nickname: data.nickname,
-                            });
-                        }
-                    }
-                  }
-                  // Display prompt
-                  addMessage("prompt", data.message, data.nickname);
-                  sendAIResponse(data.message, data.nickname);
-                } else {
-                  console.log(`Rejected prompt from ${conn.peer} - ${dataChannels[conn.peer].nickname}`);
-                }
-            }
-            if (data.type === 'remote-system-message') {
-              // Add remote system message update to history if guest is allowed to send prompts
-              if (dataChannels[conn.peer].canSendPrompts) {
-                const sessionData = loadSessionData();
-                sessionData.history.push({
-                  type: 'system-message',
-                  data: data.message,
-                  id: data.id,
-                  nickname: data.nickname,
+            //Store the guest's token
+            dataChannels[conn.peer].token = data.token;
+            console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
+            updateUserList();
 
-                });
-                saveSessionData(sessionData);
-                // Update system message and display it TO DO SEND TO ALL
-                addMessage("system-message", data.message, data.nickname);
-                guestChangeSystemMessage(data);
-              } else {
-                console.log(`Rejected system message update from ${conn.peer} - ${dataChannels[conn.peer].nickname}`);
-              }
-          }
-            if (data.type === 'chat') {
-                // Add chat to chat history
-                const sessionData = loadSessionData();
-                sessionData.history.push({
-                  type: 'chat',
-                  data: data.message,
-                  id: data.id,
-                  nickname: data.nickname,
-                });
-                saveSessionData(sessionData);
-                // Display chat message
-                addChatMessage(data.type, data.message, data.nickname);
-
-              // Broadcast chat message to all connected guests
-              for (const guestId in dataChannels) {
-                if (dataChannels.hasOwnProperty(guestId)) {
-                    if (data.id !== guestId) {
-                        dataChannels[guestId].conn.send({
-                            type: 'chat',
-                            id: data.id,
-                            message: data.message,
-                            nickname: data.nickname,
-                        });
-                    }
-                }
-              }
-            }
-
-            if (data.type === 'nickname-update') {
-              // Update nickname in datachannels
-              const oldNickname = dataChannels[conn.peer].nickname;
-              dataChannels[conn.peer].nickname = data.newNickname;
-              addChatMessage("system-message", `${oldNickname} is now ${data.newNickname}.`, hostNickname);
-              updateUserList();
-              // Update nickname in guest user list
-              const updatedGuestUserList = updateGuestUserlist();
-              guestUserList = updatedGuestUserList;
-              // Send updated guest user list to all guests
-              for (const guestId in dataChannels) {
-                if (dataChannels.hasOwnProperty(guestId)) {
-                    dataChannels[guestId].conn.send({
-                        type: 'nickname-update',
-                        message: `${oldNickname} is now ${data.newNickname}.`,
-                        nickname: hostNickname,
-                        oldNickname: oldNickname,
-                        newNickname: data.newNickname,
-                        guestUserList: updatedGuestUserList,
-                    });
-                }
-          }
-
-        }
-      });
-
-        conn.on('close', () => {
-          
-          console.log(`Guest disconnected: ${conn.peer}`);
-          // Create a new guest list without the disconnected peer
-          const closedPeerId = dataChannels[conn.peer].id;
-          const closedPeerNickname = dataChannels[conn.peer].nickname;
-          delete connections[conn.peer];
-          delete dataChannels[conn.peer];
-          const updatedGuestUserList = updateGuestUserlist();
-          guestUserList = updatedGuestUserList;
-          for (const guestId in dataChannels) {
+            // Create a guest user list with ids and nicknames to send to the new guest
+            const newGuestUserList = updateGuestUserlist();
+            guestUserList = newGuestUserList;
+            // Send the session history to the guest
+            const sessionData = loadSessionData();
+            dataChannels[conn.peer].conn.send({
+              type: "session-history",
+              history: sessionData.history,
+              nickname: hostNickname,
+              guestUserList: newGuestUserList,
+            });
+            // Send a new message to all connected guests to notify them of the new guest
+            for (const guestId in dataChannels) {
               if (dataChannels.hasOwnProperty(guestId)) {
+                if (data.id !== guestId) {
                   dataChannels[guestId].conn.send({
-                      type: 'guest-leave',
-                      message: `${closedPeerNickname} has left the session.`,
-                      nickname: hostNickname,
-                      leavingGuestNickname: closedPeerNickname,
-                      leavingGuestId: closedPeerId,
-                      guestUserList: updatedGuestUserList,
+                    type: "guest-join",
+                    message: `${data.nickname} has joined the session!`,
+                    nickname: hostNickname,
+                    joiningGuestNickname: data.nickname,
+                    joiningGuestId: data.id,
+                    guestUserList: guestUserList,
                   });
+                }
               }
+            }
+            addChatMessage(
+              "system-message",
+              `${data.nickname} has joined the session!`,
+              hostNickname
+            );
           }
-          addChatMessage("system-message", `${closedPeerNickname} has left the session.`, hostNickname);
-
-
-          updateUserList();
-        });
-      });
-    });
-  }
-
-function updateGuestUserlist() {
-    let guestUserList = [];
-    guestUserList.push({
-      id: id,
-      nickname: hostNickname,
-    });
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        guestUserList.push({
-          id: guestId,
-          nickname: dataChannels[guestId].nickname,
-        });
-      }
-    }
-    return guestUserList;
-  }
-  
-
-
-async function setupJoinSession() {
-    console.log('Setting up join session');
-    displayGuestHTMLChanges();
-
-    console.log('Attempting to connect to host with inviteId:', inviteId); // Add this line
-  
-    conn = peer.connect(inviteId);
-  
-    conn.on('open', () => {
-      console.log('Connection opened:', conn);
-      connections[inviteId] = conn;
-      dataChannels[inviteId] = conn;
-      console.log(`Connected to host: ${inviteId}`);
-      conn.send({
-        type: 'nickname',
-        id: id,
-        nickname: guestNickname,
-        token: guestToken,
-      });
-  
-  
-      // Handle receiving messages from the host
-      conn.on('data', (data) => {
-        console.log(`Message from host:`, data);
-        if (data.type === "kick") {
-            conn.close();
-            console.log("You have been kicked from the session.");
-            displayKickedMessage();
-          }
-        if (data.type === 'chat') {
-            playReceiveBeep();
-            addChatMessage(data.type, data.message, data.nickname)
         }
-        if (data.type === 'prompt') {
-            guestAddPrompt(data);
-        }
-        if (data.type === 'ai-response') {
-            guestAddHostAIResponse(data.message, data.nickname);
-        }
-        if (data.type === 'ban') {
-            document.getElementById('chatInput').disabled = true;
-            addChatMessage("chat", "You have been banned from the session.", "System");
-        }
-        if (data.type === 'session-history') {
-          console.log('Received session history:', data.history);
-          guestUserList = data.guestUserList.filter(guest => guest.id !== id);
-          console.log("Received guestUserList:", guestUserList);
-          displayGuestUserList(); // Call a function to update the UI with the new guestUserList
-          guestDisplayHostSessionHistory(data.history);
-      }
-
-        if (data.type === 'nickname-update') {
-          guestUserList = data.guestUserList.filter(guest => guest.id !== id);
-          displayGuestUserList();
-          addChatMessage("chat", data.message, data.nickname);
-        }
-        
-        if (data.type === 'system-message') {
-          guestAddSystemMessage(data);
-        }
-        if (data.type === 'image-link') {
-          addImage(data.message);
-        }
-
-        if (data.type === 'game-launch') {
-          startRoleplaySession();
-          addMessage("prompt", data.message, data.nickname);
-        }
-        if (data.type === "guest-join") {
-          addChatMessage("chat", data.message, data.nickname);
-          guestUserList = data.guestUserList;
-          const index = guestUserList.findIndex(guest => guest.id === id); // Use a function to test each element
-          if (index !== -1) {
-              guestUserList.splice(index, 1);
-          }
-          displayGuestUserList();
-      }
-        if (data.type === "guest-leave") {
-          addChatMessage("chat", data.message, data.nickname);
-          guestUserList = data.guestUserList;
-          const index = guestUserList.findIndex(guest => guest.id === id); // Use a function to test each element
-          if (index !== -1) {
-              guestUserList.splice(index, 1);
-          }
-          displayGuestUserList();
-      }
-      
-          
-        const messageInputRemote = document.getElementById('messageInputRemote');
-        if (data.type === 'grant-ai-access') {
-          messageInputRemote.disabled = false;
-          messageInputRemote.placeholder = 'Send a prompt to the AI...';
-          addChatMessage("chat", "You've been granted AI access!", "Host");
-        } else if (data.type === 'revoke-ai-access') {
-          messageInputRemote.disabled = true;
-          messageInputRemote.placeholder = "No prompt permission";
-          addChatMessage("chat", "You've lost AI access.", "Host");
-        }
-
-
-        });
-      conn.on('error', (err) => {
-      console.log('Connection error:', err);
-      });
-      conn.on('close', () => {
-        delete connections[inviteId];
-        delete dataChannels[inviteId];
-        console.log(`Disconnected from host: ${inviteId}`);
-      });
-    });
-  }
-
-function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value;
-    playSendBeep();
-
-        if (message.trim() !== '') {
-            input.value = '';
-        
-            if (isHost) {
-            // Add chat to chat history
+        if (data.type === "remote-prompt") {
+          // Add prompt to prompt history
+          if (dataChannels[conn.peer].canSendPrompts) {
             const sessionData = loadSessionData();
             sessionData.history.push({
-              type: 'chat',
-              data: message,
-              id: id,
-              nickname: hostNickname,
+              type: "prompt",
+              data: data.message,
+              id: data.id,
+              nickname: data.nickname,
             });
             saveSessionData(sessionData);
-            // Display chat message
-            addLocalChatMessage(message);
-            // Broadcast chat message to all connected guests
+            // Send prompt to guests
             for (const guestId in dataChannels) {
-                if (dataChannels.hasOwnProperty(guestId)) {
-                    dataChannels[guestId].conn.send({
-                    type: 'chat',
-                    id: id,
-                    message: message,
-                    nickname: hostNickname,
-                    });
+              if (dataChannels.hasOwnProperty(guestId)) {
+                if (data.id !== guestId) {
+                  dataChannels[guestId].conn.send({
+                    type: "prompt",
+                    id: data.id,
+                    message: data.message,
+                    nickname: data.nickname,
+                  });
                 }
-                }
-            } else {
-              // Send chat message to host
-              conn.send({
-                type: 'chat',
-                id: id,
-                message: message,
-                nickname: guestNickname,
-              });
-              guestAddLocalChatMessage(message);
+              }
+            }
+            // Display prompt
+            addMessage("prompt", data.message, data.nickname);
+            sendAIResponse(data.message, data.nickname);
+          } else {
+            console.log(
+              `Rejected prompt from ${conn.peer} - ${
+                dataChannels[conn.peer].nickname
+              }`
+            );
+          }
+        }
+        if (data.type === "remote-system-message") {
+          // Add remote system message update to history if guest is allowed to send prompts
+          if (dataChannels[conn.peer].canSendPrompts) {
+            const sessionData = loadSessionData();
+            sessionData.history.push({
+              type: "system-message",
+              data: data.message,
+              id: data.id,
+              nickname: data.nickname,
+            });
+            saveSessionData(sessionData);
+            // Update system message and display it TO DO SEND TO ALL
+            addMessage("system-message", data.message, data.nickname);
+            guestChangeSystemMessage(data);
+          } else {
+            console.log(
+              `Rejected system message update from ${conn.peer} - ${
+                dataChannels[conn.peer].nickname
+              }`
+            );
+          }
+        }
+        if (data.type === "chat") {
+          // Add chat to chat history
+          const sessionData = loadSessionData();
+          sessionData.history.push({
+            type: "chat",
+            data: data.message,
+            id: data.id,
+            nickname: data.nickname,
+          });
+          saveSessionData(sessionData);
+          // Display chat message
+          addChatMessage(data.type, data.message, data.nickname);
+
+          // Broadcast chat message to all connected guests
+          for (const guestId in dataChannels) {
+            if (dataChannels.hasOwnProperty(guestId)) {
+              if (data.id !== guestId) {
+                dataChannels[guestId].conn.send({
+                  type: "chat",
+                  id: data.id,
+                  message: data.message,
+                  nickname: data.nickname,
+                });
+              }
             }
           }
+        }
+
+        if (data.type === "nickname-update") {
+          // Update nickname in datachannels
+          const oldNickname = dataChannels[conn.peer].nickname;
+          dataChannels[conn.peer].nickname = data.newNickname;
+          addChatMessage(
+            "system-message",
+            `${oldNickname} is now ${data.newNickname}.`,
+            hostNickname
+          );
+          updateUserList();
+          // Update nickname in guest user list
+          const updatedGuestUserList = updateGuestUserlist();
+          guestUserList = updatedGuestUserList;
+          // Send updated guest user list to all guests
+          for (const guestId in dataChannels) {
+            if (dataChannels.hasOwnProperty(guestId)) {
+              dataChannels[guestId].conn.send({
+                type: "nickname-update",
+                message: `${oldNickname} is now ${data.newNickname}.`,
+                nickname: hostNickname,
+                oldNickname: oldNickname,
+                newNickname: data.newNickname,
+                guestUserList: updatedGuestUserList,
+              });
+            }
+          }
+        }
+      });
+
+      conn.on("close", () => {
+        console.log(`Guest disconnected: ${conn.peer}`);
+        // Create a new guest list without the disconnected peer
+        const closedPeerId = dataChannels[conn.peer].id;
+        const closedPeerNickname = dataChannels[conn.peer].nickname;
+        delete connections[conn.peer];
+        delete dataChannels[conn.peer];
+        const updatedGuestUserList = updateGuestUserlist();
+        guestUserList = updatedGuestUserList;
+        for (const guestId in dataChannels) {
+          if (dataChannels.hasOwnProperty(guestId)) {
+            dataChannels[guestId].conn.send({
+              type: "guest-leave",
+              message: `${closedPeerNickname} has left the session.`,
+              nickname: hostNickname,
+              leavingGuestNickname: closedPeerNickname,
+              leavingGuestId: closedPeerId,
+              guestUserList: updatedGuestUserList,
+            });
+          }
+        }
+        addChatMessage(
+          "system-message",
+          `${closedPeerNickname} has left the session.`,
+          hostNickname
+        );
+
+        updateUserList();
+      });
+    });
+  });
+}
+
+function updateGuestUserlist() {
+  let guestUserList = [];
+  guestUserList.push({
+    id: id,
+    nickname: hostNickname,
+  });
+  for (const guestId in dataChannels) {
+    if (dataChannels.hasOwnProperty(guestId)) {
+      guestUserList.push({
+        id: guestId,
+        nickname: dataChannels[guestId].nickname,
+      });
+    }
   }
+  return guestUserList;
+}
+
+async function setupJoinSession() {
+  console.log("Setting up join session");
+  displayGuestHTMLChanges();
+
+  console.log("Attempting to connect to host with inviteId:", inviteId); // Add this line
+
+  conn = peer.connect(inviteId);
+
+  conn.on("open", () => {
+    console.log("Connection opened:", conn);
+    connections[inviteId] = conn;
+    dataChannels[inviteId] = conn;
+    console.log(`Connected to host: ${inviteId}`);
+    conn.send({
+      type: "nickname",
+      id: id,
+      nickname: guestNickname,
+      token: guestToken,
+    });
+
+    // Handle receiving messages from the host
+    conn.on("data", (data) => {
+      console.log(`Message from host:`, data);
+      if (data.type === "kick") {
+        conn.close();
+        console.log("You have been kicked from the session.");
+        displayKickedMessage();
+      }
+      if (data.type === "chat") {
+        playReceiveBeep();
+        addChatMessage(data.type, data.message, data.nickname);
+      }
+      if (data.type === "prompt") {
+        guestAddPrompt(data);
+      }
+      if (data.type === "ai-response") {
+        guestAddHostAIResponse(data.message, data.nickname);
+      }
+      if (data.type === "ban") {
+        document.getElementById("chatInput").disabled = true;
+        addChatMessage(
+          "chat",
+          "You have been banned from the session.",
+          "System"
+        );
+      }
+      if (data.type === "session-history") {
+        console.log("Received session history:", data.history);
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
+        console.log("Received guestUserList:", guestUserList);
+        displayGuestUserList(); // Call a function to update the UI with the new guestUserList
+        guestDisplayHostSessionHistory(data.history);
+      }
+
+      if (data.type === "nickname-update") {
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
+        displayGuestUserList();
+        addChatMessage("chat", data.message, data.nickname);
+      }
+
+      if (data.type === "system-message") {
+        guestAddSystemMessage(data);
+      }
+      if (data.type === "image-link") {
+        addImage(data.message);
+      }
+
+      if (data.type === "game-launch") {
+        startRoleplaySession();
+        addMessage("prompt", data.message, data.nickname);
+      }
+      if (data.type === "guest-join") {
+        addChatMessage("chat", data.message, data.nickname);
+        guestUserList = data.guestUserList;
+        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        if (index !== -1) {
+          guestUserList.splice(index, 1);
+        }
+        displayGuestUserList();
+      }
+      if (data.type === "guest-leave") {
+        addChatMessage("chat", data.message, data.nickname);
+        guestUserList = data.guestUserList;
+        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        if (index !== -1) {
+          guestUserList.splice(index, 1);
+        }
+        displayGuestUserList();
+      }
+
+      const messageInputRemote = document.getElementById("messageInputRemote");
+      if (data.type === "grant-ai-access") {
+        messageInputRemote.disabled = false;
+        messageInputRemote.placeholder = "Send a prompt to the AI...";
+        addChatMessage("chat", "You've been granted AI access!", "Host");
+      } else if (data.type === "revoke-ai-access") {
+        messageInputRemote.disabled = true;
+        messageInputRemote.placeholder = "No prompt permission";
+        addChatMessage("chat", "You've lost AI access.", "Host");
+      }
+    });
+    conn.on("error", (err) => {
+      console.log("Connection error:", err);
+    });
+    conn.on("close", () => {
+      delete connections[inviteId];
+      delete dataChannels[inviteId];
+      console.log(`Disconnected from host: ${inviteId}`);
+    });
+  });
+}
+
+function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const message = input.value;
+  playSendBeep();
+
+  if (message.trim() !== "") {
+    input.value = "";
+
+    if (isHost) {
+      // Add chat to chat history
+      const sessionData = loadSessionData();
+      sessionData.history.push({
+        type: "chat",
+        data: message,
+        id: id,
+        nickname: hostNickname,
+      });
+      saveSessionData(sessionData);
+      // Display chat message
+      addLocalChatMessage(message);
+      // Broadcast chat message to all connected guests
+      for (const guestId in dataChannels) {
+        if (dataChannels.hasOwnProperty(guestId)) {
+          dataChannels[guestId].conn.send({
+            type: "chat",
+            id: id,
+            message: message,
+            nickname: hostNickname,
+          });
+        }
+      }
+    } else {
+      // Send chat message to host
+      conn.send({
+        type: "chat",
+        id: id,
+        message: message,
+        nickname: guestNickname,
+      });
+      guestAddLocalChatMessage(message);
+    }
+  }
+}
 
 async function sendAIResponse(message, nickname) {
   // If in game mode, add username to the start of each prompt
-       if (gameMode) {
-        if (!isHost) {
-          message = nickname + ": " + message;
-          }
-       } else {
-       }
+  if (gameMode) {
+    if (!isHost) {
+      message = nickname + ": " + message;
+    }
+  } else {
+  }
 
   // Get AI Response and post locally
-    const response = await fetchOpenAITextResponse(message);
-    if (gameMode) {
-      //console.log("Calling triggerBot with AI response:", response);
-      //triggerBot(response, groupSessionType, groupSessionDetails);
-    }
-    
-    addAIReponse(response);
-    // Send the response to all connected guests
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send({
-          type: 'ai-response',
-          id: id,
-          message: response,
-          nickname: selectedModelNickname,
+  const response = await fetchOpenAITextResponse(message);
+  if (gameMode) {
+    //console.log("Calling triggerBot with AI response:", response);
+    //triggerBot(response, groupSessionType, groupSessionDetails);
+  }
+
+  addAIReponse(response);
+  // Send the response to all connected guests
+  for (const guestId in dataChannels) {
+    if (dataChannels.hasOwnProperty(guestId)) {
+      dataChannels[guestId].conn.send({
+        type: "ai-response",
+        id: id,
+        message: response,
+        nickname: selectedModelNickname,
       });
-      }
     }
   }
+}
 
 // Calls the OpenAI LLM API and returns the response
 async function fetchOpenAITextResponse(prompt) {
-    const apiKey = localStorage.getItem('openai_api_key');
-    if (!apiKey) {
-      console.error("API key is missing.");
-      addMessage("system-message", "API key is missing.", "System");
-      return;
-    }
- 
-
-  
-    const apiUrl = 'https://api.openai.com/v1/chat/completions';
-  
-    const aiModelSelect = document.getElementById('aiModel');
-    const selectedModel = aiModelSelect.value;
-  
-    // Add the user's message to the conversation history
-    conversationHistory.push({
-      role: 'user',
-      content: prompt,
-    });
-  
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: selectedModel,
-        messages: conversationHistory,
-      }),
-    };
-  
-    try {
-      const response = await fetch(apiUrl, requestOptions);
-      const data = await response.json();
-      const aiResponse = data.choices[0].message.content;
-  
-      // Add the assistant's response to the conversation history
-      conversationHistory.push({
-        role: 'assistant',
-        content: aiResponse,
-      });
-      // Save the conversation history to local storage
-      const sessionData = loadSessionData();
-      sessionData.history.push({
-        type: 'ai-response',
-        data: aiResponse,
-        id: id,
-        nickname: selectedModelNickname,
-      });
-      saveSessionData(sessionData);
-
-      return aiResponse;
-    } catch (error) {
-      console.error("Error fetching AI response:", error);
-      addMessage("system-message", "Error fetching AI response. Make sure the model is selected and the API key is correct.", "Host");
-    }
-  }
-
-// ImageBot function it triggered when the host requests an image description of the current scene
-async function triggerImageBot(response) {
-    const apiKey = localStorage.getItem('openai_api_key');
-    if (!apiKey) {
-      console.error("API key is missing.");
-      addMessage("system-message", "API key is missing.", "System");
-      return;
-    }
-    const message = "We are playing a roleplaying game and need a description of the current scene in order to generate an image. I will give you the background information for the characters and setting, and then the details of the current scene. Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. Do not use character's names, or location names. No proper nouns. Here is the background for the scene: \n\n" + groupSessionFirstAIResponse + "\n\nHere is the current scene: \n\n " + response + "\n\n Image description: ";
-    const apiUrl = 'https://api.openai.com/v1/chat/completions';
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": message}]
-      }),
-    };
-    const AIresponse = await fetch(apiUrl, requestOptions);
-    const data = await AIresponse.json();
-    const imageDescription = data.choices[0].message.content;
-    const imageURL = await fetchOpenAIImageResponse(imageDescription, groupSessionType, groupSessionDetails);
-    sendImage(imageURL);
-    addImage(imageURL);
-    console.log(`Image description: ${imageDescription}`);
-    
-  }
-
-// Calls the OpenAI Image API and returns the image URL
-async function fetchOpenAIImageResponse(prompt, sessionType, sessionDetails) {
-  const apiKey = localStorage.getItem('openai_api_key');
+  const apiKey = localStorage.getItem("openai_api_key");
   if (!apiKey) {
     console.error("API key is missing.");
     addMessage("system-message", "API key is missing.", "System");
     return;
   }
-  const apiUrl = 'https://api.openai.com/v1/images/generations';
+
+  const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+  const aiModelSelect = document.getElementById("aiModel");
+  const selectedModel = aiModelSelect.value;
+
+  // Add the user's message to the conversation history
+  conversationHistory.push({
+    role: "user",
+    content: prompt,
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: selectedModel,
+      messages: conversationHistory,
+    }),
+  };
+
+  try {
+    const response = await fetch(apiUrl, requestOptions);
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
+
+    // Add the assistant's response to the conversation history
+    conversationHistory.push({
+      role: "assistant",
+      content: aiResponse,
+    });
+    // Save the conversation history to local storage
+    const sessionData = loadSessionData();
+    sessionData.history.push({
+      type: "ai-response",
+      data: aiResponse,
+      id: id,
+      nickname: selectedModelNickname,
+    });
+    saveSessionData(sessionData);
+
+    return aiResponse;
+  } catch (error) {
+    console.error("Error fetching AI response:", error);
+    addMessage(
+      "system-message",
+      "Error fetching AI response. Make sure the model is selected and the API key is correct.",
+      "Host"
+    );
+  }
+}
+
+// ImageBot function it triggered when the host requests an image description of the current scene
+async function triggerImageBot(response) {
+  const apiKey = localStorage.getItem("openai_api_key");
+  if (!apiKey) {
+    console.error("API key is missing.");
+    addMessage("system-message", "API key is missing.", "System");
+    return;
+  }
+  const message =
+    "We are playing a roleplaying game and need a description of the current scene in order to generate an image. I will give you the background information for the characters and setting, and then the details of the current scene. Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. Do not use character's names, or location names. No proper nouns. Here is the background for the scene: \n\n" +
+    groupSessionFirstAIResponse +
+    "\n\nHere is the current scene: \n\n " +
+    response +
+    "\n\n Image description: ";
+  const apiUrl = "https://api.openai.com/v1/chat/completions";
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: message }],
+    }),
+  };
+  const AIresponse = await fetch(apiUrl, requestOptions);
+  const data = await AIresponse.json();
+  const imageDescription = data.choices[0].message.content;
+  const imageURL = await fetchOpenAIImageResponse(
+    imageDescription,
+    groupSessionType,
+    groupSessionDetails
+  );
+  sendImage(imageURL);
+  addImage(imageURL);
+  console.log(`Image description: ${imageDescription}`);
+}
+
+// Calls the OpenAI Image API and returns the image URL
+async function fetchOpenAIImageResponse(prompt, sessionType, sessionDetails) {
+  const apiKey = localStorage.getItem("openai_api_key");
+  if (!apiKey) {
+    console.error("API key is missing.");
+    addMessage("system-message", "API key is missing.", "System");
+    return;
+  }
+  const apiUrl = "https://api.openai.com/v1/images/generations";
   // Changes prompt based on session type
   let imagePrompt;
   if (sessionType === "fantasyRoleplay") {
     // Change prompt based on session details
     if (sessionDetails === "Studio Ghibli") {
-      imagePrompt = "A cute animated still from Spirited Away (2001) showing " + prompt;
+      imagePrompt =
+        "A cute animated still from Spirited Away (2001) showing " + prompt;
     } else if (sessionDetails === "Harry Potter") {
-      imagePrompt = "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
+      imagePrompt =
+        "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
     } else {
-    imagePrompt = "Pen and ink sketch of " + prompt + " in a " + sessionDetails + " world.";
+      imagePrompt =
+        "Pen and ink sketch of " +
+        prompt +
+        " in a " +
+        sessionDetails +
+        " world.";
     }
   } else {
     // other session types later
   }
   const requestOptions = {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       prompt: imagePrompt,
@@ -1039,27 +1076,26 @@ async function triggerBot(response, sessionType, sessionDetails) {
 
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
-  //Save into session history  
+  //Save into session history
   const sessionData = loadSessionData();
-    sessionData.history.push({
-      type: 'image-link',
-      data: imageURL,
-      id: id,
-      nickname: hostNickname,
-    });
-    saveSessionData(sessionData);
+  sessionData.history.push({
+    type: "image-link",
+    data: imageURL,
+    id: id,
+    nickname: hostNickname,
+  });
+  saveSessionData(sessionData);
 
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-          type: 'image-link',
-          message: imageURL,
-          nickname: hostNickname,
-        });
-      }
+      dataChannels[guestId].conn.send({
+        type: "image-link",
+        message: imageURL,
+        nickname: hostNickname,
+      });
     }
-
   }
+}
 
 function isValidJSON(jsonString) {
   try {
@@ -1082,119 +1118,120 @@ function removeWhitespace(jsonString) {
 }
 
 function addMessage(type, message, nickname) {
-    // If the string is empty, don't add it
-    if (message === "" || message === undefined) {
-      return;
-    }
-
-    const messageContent = document.createElement('div');
-    let icon;
-    let isUser = false;
-    if (type === "prompt") {
-      loadingAnimation.style.display = "inline";
-      icon = "👤";
-      isUser = true;
-    } else if (type === "ai-response") {
-      loadingAnimation.style.display = "none";
-      icon = "🤖";
-        // Check if host, and if so, add a button to generate an image prompt
-        if (isHost) {
-
-        // Create a new icon/button element for the AI responses
-        const generateImagePromptButton = document.createElement('button');
-        generateImagePromptButton.textContent = "🎨";
-        generateImagePromptButton.className = "generate-image-prompt-button";
-        generateImagePromptButton.setAttribute('data-tooltip', 'Show this scene');
-
-        // Add an event listener to the icon/button
-        generateImagePromptButton.addEventListener('click', () => {
-          triggerImageBot(sanitizedHtml);
-          // Optional: Hide the button after it has been clicked
-          generateImagePromptButton.style.display = 'none';
-        });
-
-        // Append the icon/button to the message content
-        messageContent.appendChild(generateImagePromptButton);
-      }
-    } else if (type === "system-message") {
-      icon = "🔧";
-    } else {
-      icon = "🦔";
-    }
-
-    const formattedResponse = convertToParagraphs(message);
-    const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-    const messagesDiv = document.querySelector('.messages');
-    const messageWrapper = document.createElement('div');
-    messageWrapper.className = 'message-wrapper';
-
-    const iconDiv = document.createElement('div');
-    iconDiv.className = 'icon';
-    iconDiv.innerHTML = icon;
-
-    
-    messageContent.className = 'message-content';
-
-    if (!isUser) {
-      messageWrapper.className += " aiMessage"; 
-    }
-
-   
-
-    const messageNickname = document.createElement('div');
-    messageNickname.className = 'message-nickname';
-    messageNickname.textContent = nickname;
-    messageContent.appendChild(messageNickname);
-
-    const messageText = document.createElement('div');
-    messageText.className = 'message-text';
-    messageText.innerHTML = sanitizedHtml;
-    messageContent.appendChild(messageText);
-    messageWrapper.appendChild(iconDiv);
-    messageWrapper.appendChild(messageContent);
-
-    // Add "Begin Session" button for welcome messages
-    if (type === "welcome-message") {
-      const beginSessionButton = document.createElement('button');
-      beginSessionButton.textContent = "Begin Session";
-      beginSessionButton.className = "begin-session-button";
-      beginSessionButton.addEventListener('click', () => {
-          // Add your desired action when the "Begin Session" button is clicked
-          startSession(groupSessionType, groupSessionDetails);
-          console.log("Begin Session button clicked " + groupSessionType + " " + groupSessionDetails);
-      });
-      messageContent.appendChild(beginSessionButton);
+  // If the string is empty, don't add it
+  if (message === "" || message === undefined) {
+    return;
   }
-    messagesDiv.appendChild(messageWrapper);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    //const scrollView = messagesDiv.parentNode
-    //scrollView.scrollTop = scrollView.scrollHeight;
+
+  const messageContent = document.createElement("div");
+  let icon;
+  let isUser = false;
+  if (type === "prompt") {
+    loadingAnimation.style.display = "inline";
+    icon = "👤";
+    isUser = true;
+  } else if (type === "ai-response") {
+    loadingAnimation.style.display = "none";
+    icon = "🤖";
+    // Check if host, and if so, add a button to generate an image prompt
+    if (isHost) {
+      // Create a new icon/button element for the AI responses
+      const generateImagePromptButton = document.createElement("button");
+      generateImagePromptButton.textContent = "🎨";
+      generateImagePromptButton.className = "generate-image-prompt-button";
+      generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
+
+      // Add an event listener to the icon/button
+      generateImagePromptButton.addEventListener("click", () => {
+        triggerImageBot(sanitizedHtml);
+        // Optional: Hide the button after it has been clicked
+        generateImagePromptButton.style.display = "none";
+      });
+
+      // Append the icon/button to the message content
+      messageContent.appendChild(generateImagePromptButton);
+    }
+  } else if (type === "system-message") {
+    icon = "🔧";
+  } else {
+    icon = "🦔";
+  }
+
+  const formattedResponse = convertToParagraphs(message);
+  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
+  const messagesDiv = document.querySelector(".messages");
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
+
+  const iconDiv = document.createElement("div");
+  iconDiv.className = "icon";
+  iconDiv.innerHTML = icon;
+
+  messageContent.className = "message-content";
+
+  if (!isUser) {
+    messageWrapper.className += " aiMessage";
+  }
+
+  const messageNickname = document.createElement("div");
+  messageNickname.className = "message-nickname";
+  messageNickname.textContent = nickname;
+  messageContent.appendChild(messageNickname);
+
+  const messageText = document.createElement("div");
+  messageText.className = "message-text";
+  messageText.innerHTML = sanitizedHtml;
+  messageContent.appendChild(messageText);
+  messageWrapper.appendChild(iconDiv);
+  messageWrapper.appendChild(messageContent);
+
+  // Add "Begin Session" button for welcome messages
+  if (type === "welcome-message") {
+    const beginSessionButton = document.createElement("button");
+    beginSessionButton.textContent = "Begin Session";
+    beginSessionButton.className = "begin-session-button";
+    beginSessionButton.addEventListener("click", () => {
+      // Add your desired action when the "Begin Session" button is clicked
+      startSession(groupSessionType, groupSessionDetails);
+      console.log(
+        "Begin Session button clicked " +
+          groupSessionType +
+          " " +
+          groupSessionDetails
+      );
+    });
+    messageContent.appendChild(beginSessionButton);
+  }
+  messagesDiv.appendChild(messageWrapper);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  //const scrollView = messagesDiv.parentNode
+  //scrollView.scrollTop = scrollView.scrollHeight;
 }
 
 function addImage(imageURL) {
   let icon;
   let isUser = false;
-  const messagesDiv = document.querySelector('.messages');
-  const messageWrapper = document.createElement('div');
-  messageWrapper.className = 'message-wrapper';
+  const messagesDiv = document.querySelector(".messages");
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
 
-  const iconDiv = document.createElement('div');
-  iconDiv.className = 'icon';
+  const iconDiv = document.createElement("div");
+  iconDiv.className = "icon";
   iconDiv.innerHTML = icon;
 
-  const messageContent = document.createElement('div');
-  messageContent.className = 'message-content';
+  const messageContent = document.createElement("div");
+  messageContent.className = "message-content";
 
   if (!isUser) {
-    messageWrapper.className += " aiMessage"; 
+    messageWrapper.className += " aiMessage";
   }
 
-  const imageElement = document.createElement('img');
+  const imageElement = document.createElement("img");
   imageElement.src = imageURL;
-  imageElement.className = 'message-image';
+  imageElement.className = "message-image";
 
-  const imageContainer = document.createElement('div'); // Create a new div for the image container
-  imageContainer.className = 'image-container'; // Set the new class for the image container
+  const imageContainer = document.createElement("div"); // Create a new div for the image container
+  imageContainer.className = "image-container"; // Set the new class for the image container
 
   imageContainer.appendChild(imageElement); // Append the image to the image container
   messageContent.appendChild(imageContainer); // Append the image container to the message content
@@ -1206,109 +1243,102 @@ function addImage(imageURL) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-
-
 function addChatMessage(type, message, nickname) {
   // If the string is empty, don't add it
-  if(message === '') {
+  if (message === "") {
     return;
   }
   let icon;
-    if(type === 'chat') {
-      icon = '🗯️';
-    } else if (type === 'ai-response') {
-      icon = '🤖';
-      }  else  {
-      icon = '🔧';
-      }
-      
+  if (type === "chat") {
+    icon = "🗯️";
+  } else if (type === "ai-response") {
+    icon = "🤖";
+  } else {
+    icon = "🔧";
+  }
+
   const formattedResponse = convertToParagraphs(message);
   const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-  const messagesDiv = document.querySelector('.chatMessages');
-  const messageWrapper = document.createElement('div');
-  messageWrapper.className = 'message-wrapper';
+  const messagesDiv = document.querySelector(".chatMessages");
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
 
-  const iconDiv = document.createElement('div');
-  iconDiv.className = 'icon';
+  const iconDiv = document.createElement("div");
+  iconDiv.className = "icon";
   iconDiv.innerHTML = icon;
 
-  const messageContent = document.createElement('div');
-  messageContent.className = 'message-content';
+  const messageContent = document.createElement("div");
+  messageContent.className = "message-content";
 
-  const messageNickname = document.createElement('div');
-  messageNickname.className = 'message-nickname';
+  const messageNickname = document.createElement("div");
+  messageNickname.className = "message-nickname";
   messageNickname.textContent = nickname;
   messageContent.appendChild(messageNickname);
 
-  const messageText = document.createElement('div');
-  messageText.className = 'message-text';
+  const messageText = document.createElement("div");
+  messageText.className = "message-text";
   messageText.innerHTML = sanitizedHtml;
   messageContent.appendChild(messageText);
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);
   messagesDiv.appendChild(messageWrapper);
-  const scrollView = messagesDiv.parentNode
+  const scrollView = messagesDiv.parentNode;
   scrollView.scrollTop = scrollView.scrollHeight;
 }
-  
-  
-  
 
 async function addAIReponse(response) {
   playReceiveBeep();
-    addMessage("ai-response", response, selectedModelNickname);
-  }
+  addMessage("ai-response", response, selectedModelNickname);
+}
 
 async function addLocalChatMessage(message) {
-    const sessionData = loadSessionData();
-    sessionData.history.push({
-      type: 'chat',
-      data: message,
-      id: id,
-      nickname: hostNickname,
-    });
-    saveSessionData(sessionData);
-    addChatMessage("chat", message, hostNickname);
-    
-  }
+  const sessionData = loadSessionData();
+  sessionData.history.push({
+    type: "chat",
+    data: message,
+    id: id,
+    nickname: hostNickname,
+  });
+  saveSessionData(sessionData);
+  addChatMessage("chat", message, hostNickname);
+}
 
 async function guestAddLocalChatMessage(message) {
-    addChatMessage("chat", message, guestNickname);
-  }
-
+  addChatMessage("chat", message, guestNickname);
+}
 
 async function addPrompt() {
-    playSendBeep();
-    const input = document.getElementById('messageInput');
-    const message = input.value.trim();
-    if (message === '') return;
-    input.value = '';
-    const sessionData = loadSessionData();
-    sessionData.history.push({
-      type: 'prompt',
-      data: message,
-      id: id,
-      nickname: hostNickname,
-    });
-    saveSessionData(sessionData);
-    addMessage("prompt", message, hostNickname);
-    sendPrompt(message);
- } 
+  playSendBeep();
+  const input = document.getElementById("messageInput");
+  const message = input.value.trim();
+  if (message === "") return;
+  input.value = "";
+  const sessionData = loadSessionData();
+  sessionData.history.push({
+    type: "prompt",
+    data: message,
+    id: id,
+    nickname: hostNickname,
+  });
+  saveSessionData(sessionData);
+  addMessage("prompt", message, hostNickname);
+  sendPrompt(message);
+}
 
 async function guestAddPrompt(data) {
   playReceiveBeep();
   addMessage("prompt", data.message, data.nickname);
-} 
+}
 
 async function guestAddSystemMessage(data) {
   playReceiveBeep();
   addMessage("system-message", data.message, data.nickname);
-} 
+}
 
 async function guestAddLocalPrompt(prompt) {
   playSendBeep();
   addMessage("prompt", prompt, guestNickname);
-} 
+}
 
 async function guestAddHostAIResponse(response, nickname) {
   playReceiveBeep();
@@ -1320,14 +1350,16 @@ async function sendPrompt(message) {
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
       dataChannels[guestId].conn.send({
-        type: 'prompt',
+        type: "prompt",
         id: id,
         message: message,
         nickname: hostNickname,
-    });
+      });
     }
-  } if (gameMode) {
-    message = hostNickname + ": " + message;   }
+  }
+  if (gameMode) {
+    message = hostNickname + ": " + message;
+  }
   sendAIResponse(message);
 }
 
@@ -1380,17 +1412,22 @@ function updateUserList() {
       userActions.classList.add("user-actions");
 
       // AI Access button
-      const canSendPromptsButton = document.createElement('button');
-      canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts ? 'Revoke AI access' : 'Grant AI access';
+      const canSendPromptsButton = document.createElement("button");
+      canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts
+        ? "Revoke AI access"
+        : "Grant AI access";
       canSendPromptsButton.onclick = () => {
-        dataChannels[guestId].canSendPrompts = !dataChannels[guestId].canSendPrompts;
-      
-        canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts ? 'Revoke AI access' : 'Grant AI access';
-      
+        dataChannels[guestId].canSendPrompts =
+          !dataChannels[guestId].canSendPrompts;
+
+        canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts
+          ? "Revoke AI access"
+          : "Grant AI access";
+
         if (dataChannels[guestId].canSendPrompts) {
-          dataChannels[guestId].conn.send({ type: 'grant-ai-access' });
+          dataChannels[guestId].conn.send({ type: "grant-ai-access" });
         } else {
-          dataChannels[guestId].conn.send({ type: 'revoke-ai-access' });
+          dataChannels[guestId].conn.send({ type: "revoke-ai-access" });
         }
       };
       userActions.appendChild(canSendPromptsButton);
@@ -1405,7 +1442,7 @@ function updateUserList() {
       kickButton.textContent = "Kick";
       kickButton.onclick = () => {
         // Kick logic
-        console.log("Kicking user " + guestId)
+        console.log("Kicking user " + guestId);
         kickUser(guestId);
       };
       userActions.appendChild(kickButton);
@@ -1445,7 +1482,6 @@ function updateUserList() {
 }
 
 function displayGuestUserList() {
-  
   const userList = document.getElementById("userList");
   userList.innerHTML = "";
 
@@ -1485,7 +1521,6 @@ function displayGuestUserList() {
       };
       userActions.appendChild(muteButton);
 
-
       // Add user actions to the user container and set it to be hidden by default
       userActions.style.display = "none";
       userContainer.appendChild(userActions);
@@ -1505,7 +1540,6 @@ function displayGuestUserList() {
   }
 }
 
-
 function handleVoiceRequestButton(userActions, calleeID) {
   // Voice request button
   const voiceRequestButton = document.createElement("button");
@@ -1513,35 +1547,35 @@ function handleVoiceRequestButton(userActions, calleeID) {
   let isVoiceCallActive = false;
   let activeCalls = {}; // Store active calls
 
-voiceRequestButton.onclick = () => {
-  if (!isVoiceCallActive) {
-    // Start the voice call
-    console.log("Requesting voice call with " + calleeID);
-    voiceRequestButton.textContent = "End Voice Call";
-    const call = peer.call(calleeID, userAudioStream);
-    activeCalls[calleeID] = call;
+  voiceRequestButton.onclick = () => {
+    if (!isVoiceCallActive) {
+      // Start the voice call
+      console.log("Requesting voice call with " + calleeID);
+      voiceRequestButton.textContent = "End Voice Call";
+      const call = peer.call(calleeID, userAudioStream);
+      activeCalls[calleeID] = call;
 
-    call.on('stream', remoteStream => {
-      handleRemoteStream(remoteStream);
-    });
-    call.on('close', () => {
-      console.log('Call with peer:', call.peer, 'has ended');
+      call.on("stream", (remoteStream) => {
+        handleRemoteStream(remoteStream);
+      });
+      call.on("close", () => {
+        console.log("Call with peer:", call.peer, "has ended");
+        voiceRequestButton.textContent = "Request Voice Call";
+        isVoiceCallActive = false;
+        delete activeCalls[calleeID]; // Remove the call from activeCalls
+      });
+    } else {
+      // End the voice call
+      const call = activeCalls[calleeID];
+      if (call) {
+        call.close();
+        delete activeCalls[calleeID];
+      }
       voiceRequestButton.textContent = "Request Voice Call";
-      isVoiceCallActive = false;
-      delete activeCalls[calleeID]; // Remove the call from activeCalls
-    });
-  } else {
-    // End the voice call
-    const call = activeCalls[calleeID];
-    if (call) {
-      call.close();
-      delete activeCalls[calleeID];
     }
-    voiceRequestButton.textContent = "Request Voice Call";
-  }
-  isVoiceCallActive = !isVoiceCallActive;
-};
-userActions.appendChild(voiceRequestButton);
+    isVoiceCallActive = !isVoiceCallActive;
+  };
+  userActions.appendChild(voiceRequestButton);
 }
 
 function handleRemoteStream(remoteStream) {
@@ -1559,80 +1593,80 @@ function handleRemoteStream(remoteStream) {
   stereoPanner.connect(audioContext.destination);
 }
 
-
 function displayUserActions(event) {
-    const guestId = event.currentTarget.getAttribute("data-id");
-    const userActions = document.getElementById("userActions");
-    userActions.style.display = "block";
-    userActions.setAttribute("data-id", guestId);
-  }
-  
-function kickUser(kickedUserId) {
-    if (dataChannels.hasOwnProperty(kickedUserId)) {
-      const guestConn = dataChannels[kickedUserId].conn;
-      guestConn.send({ type: "kick" });
-  
-      setTimeout(() => {
-        guestConn.close();
-        console.log(`Kicked guest: ${kickedUserId}`);
-        delete dataChannels[kickedUserId];
-        updateUserList();
-      }, 500); // Adjust the delay (in milliseconds) as needed
-    }
-    const userActions = document.getElementById("user-actions");
-    userActions.style.display = "none";
-  }
-
-function displayKickedMessage() {
-    const chatOutput = document.getElementById("chatOutput");
-    const kickedMessage = document.createElement("li");
-    kickedMessage.classList.add("kicked-message");
-    kickedMessage.textContent = "You've been kicked.";
-    chatOutput.appendChild(kickedMessage);
-  
-    const chatSendButton = document.getElementById("chatSendButton");
-    chatSendButton.disabled = true;
-  }
-
-function banUser(id, token) {
-    if (dataChannels.hasOwnProperty(id)) {
-      const guestConn = dataChannels[id].conn;
-      guestConn.send({ type: "ban" });
-  
-      setTimeout(() => {
-        guestConn.close();
-        console.log(`Banned guest: ${id}`);
-        bannedGuests.push(token);
-        console.log(token)
-        console.log(bannedGuests)
-        delete dataChannels[id];
-        updateUserList();
-      }, 500); // Adjust the delay (in milliseconds) as needed
-    }
-    const userActions = document.getElementById("user-actions");
-    userActions.style.display = "none";
-  }
-
-const usernameField = document.getElementById('username');
-
-usernameField.addEventListener("keyup", (event) => {
-  const target = event.target
-  //console.log("event.key: '" + event.key + "'")
-  if (event.key === "Enter") {
-    updateUserName()
-    event.target.blur()
-  }
-  updateInputField(target)
-})
-
-function updateInputField (target) {
-  const size = target.value.length ? target.value.length : target.placeholder.length;
-  //console.log("size:", size)
-  target.setAttribute('size', (size) + "em")
+  const guestId = event.currentTarget.getAttribute("data-id");
+  const userActions = document.getElementById("userActions");
+  userActions.style.display = "block";
+  userActions.setAttribute("data-id", guestId);
 }
 
+function kickUser(kickedUserId) {
+  if (dataChannels.hasOwnProperty(kickedUserId)) {
+    const guestConn = dataChannels[kickedUserId].conn;
+    guestConn.send({ type: "kick" });
 
-function updateUserName () {
+    setTimeout(() => {
+      guestConn.close();
+      console.log(`Kicked guest: ${kickedUserId}`);
+      delete dataChannels[kickedUserId];
+      updateUserList();
+    }, 500); // Adjust the delay (in milliseconds) as needed
+  }
+  const userActions = document.getElementById("user-actions");
+  userActions.style.display = "none";
+}
+
+function displayKickedMessage() {
+  const chatOutput = document.getElementById("chatOutput");
+  const kickedMessage = document.createElement("li");
+  kickedMessage.classList.add("kicked-message");
+  kickedMessage.textContent = "You've been kicked.";
+  chatOutput.appendChild(kickedMessage);
+
+  const chatSendButton = document.getElementById("chatSendButton");
+  chatSendButton.disabled = true;
+}
+
+function banUser(id, token) {
+  if (dataChannels.hasOwnProperty(id)) {
+    const guestConn = dataChannels[id].conn;
+    guestConn.send({ type: "ban" });
+
+    setTimeout(() => {
+      guestConn.close();
+      console.log(`Banned guest: ${id}`);
+      bannedGuests.push(token);
+      console.log(token);
+      console.log(bannedGuests);
+      delete dataChannels[id];
+      updateUserList();
+    }, 500); // Adjust the delay (in milliseconds) as needed
+  }
+  const userActions = document.getElementById("user-actions");
+  userActions.style.display = "none";
+}
+
+const usernameField = document.getElementById("username");
+
+usernameField.addEventListener("keyup", (event) => {
+  const target = event.target;
+  //console.log("event.key: '" + event.key + "'")
+  if (event.key === "Enter") {
+    updateUserName();
+    event.target.blur();
+  }
+  updateInputField(target);
+});
+
+function updateInputField(target) {
+  const size = target.value.length
+    ? target.value.length
+    : target.placeholder.length;
+  //console.log("size:", size)
+  target.setAttribute("size", size + "em");
+}
+
+function updateUserName() {
   const username = usernameField.value;
   if (username.trim() !== "") {
     if (isHost) {
@@ -1671,41 +1705,41 @@ function updateUserName () {
     }
   }
 }
-  
-function sendUsername(username) {
-      // Send chat message to host
-      conn.send({
-        type: 'nickname-update',
-        id: id,
-        newNickname: username,
-      });
-        }
 
-  const systemMessage = document.getElementById('systemMessage');
-  /*
+function sendUsername(username) {
+  // Send chat message to host
+  conn.send({
+    type: "nickname-update",
+    id: id,
+    newNickname: username,
+  });
+}
+
+const systemMessage = document.getElementById("systemMessage");
+/*
   systemMessage.addEventListener('focus', () => {
       document.getElementById('submitSystemMessage').style.display = 'inline-block';
     });
     */
 
-  function setNewAIRole(newRole) {
-    content = newRole;
-    systemMessage.value = content;
-    conversationHistory.push({
-      role: 'system',
-      content: content,
-    });
-    // Check to see if host or guest and send message to appropriate party
-    if (isHost) {
-      //sendSystemMessage(content);
-      // Disable for now
-    } else {
-      console.log("Guests cannot set new AI role")
-    }
-    console.log("sent system message:", content)
+function setNewAIRole(newRole) {
+  content = newRole;
+  systemMessage.value = content;
+  conversationHistory.push({
+    role: "system",
+    content: content,
+  });
+  // Check to see if host or guest and send message to appropriate party
+  if (isHost) {
+    //sendSystemMessage(content);
+    // Disable for now
+  } else {
+    console.log("Guests cannot set new AI role");
   }
+  console.log("sent system message:", content);
+}
 
-  /*
+/*
   systemMessage.addEventListener('input', () => {
       //systemMessage.style.width = `${systemMessage.value.length}ch`;
       content = systemMessage.value;
@@ -1726,7 +1760,7 @@ function sendUsername(username) {
     });
 
     */
-    /*
+/*
   document.getElementById('submitSystemMessage').addEventListener('click', () => {    
       content = systemMessage.value;
       conversationHistory = [
@@ -1744,25 +1778,25 @@ function sendUsername(username) {
       }
     }); 
     */
-    
+
 async function sendSystemMessage(message) {
-      // Send the updated system message to all connected guests
-      for (const guestId in dataChannels) {
-        if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-            type: 'system-message',
-            id: id,
-            message: message,
-            nickname: hostNickname,
-        });
-        }
-      }
+  // Send the updated system message to all connected guests
+  for (const guestId in dataChannels) {
+    if (dataChannels.hasOwnProperty(guestId)) {
+      dataChannels[guestId].conn.send({
+        type: "system-message",
+        id: id,
+        message: message,
+        nickname: hostNickname,
+      });
     }
+  }
+}
 
 function guestChangeSystemMessage(data) {
   content = data.message;
   conversationHistory.push({
-    role: 'user',
+    role: "user",
     content: prompt,
   });
   // Update system message input
@@ -1771,123 +1805,125 @@ function guestChangeSystemMessage(data) {
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
       dataChannels[guestId].conn.send({
-        type: 'system-message',
+        type: "system-message",
         id: data.id,
         message: data.message,
         nickname: data.nickname,
-    });
+      });
     }
   }
 }
 
 // These functions save, load, and clear the session data from local storage
 function saveSessionData(sessionData) {
-    localStorage.setItem('sessionData', JSON.stringify(sessionData));
-  }
+  localStorage.setItem("sessionData", JSON.stringify(sessionData));
+}
 
 function loadSessionData() {
-    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
-    if (!sessionData) {
-      return {
-        history: [],
-      };
-    }
-  
-    if (!sessionData.history) {
-      sessionData.history = [];
-    }
-  
-    return sessionData;
+  const sessionData = JSON.parse(localStorage.getItem("sessionData"));
+  if (!sessionData) {
+    return {
+      history: [],
+    };
   }
-  
+
+  if (!sessionData.history) {
+    sessionData.history = [];
+  }
+
+  return sessionData;
+}
+
 function clearSessionData() {
-    localStorage.removeItem('sessionData');
-    localStorage.removeItem('hostId');
-    localStorage.removeItem('hostNickname');
-  }
+  localStorage.removeItem("sessionData");
+  localStorage.removeItem("hostId");
+  localStorage.removeItem("hostNickname");
+}
 
 // Add event listener to trigger the resetSession function when the resetSessionButton is clicked
-resetSessionButton.addEventListener('click', resetSession);
+resetSessionButton.addEventListener("click", resetSession);
 
-function resetSession () {
-  const userChoice = confirm('Do you want to start a new session? This will delete the previous session data and create a new invite link.');  
+function resetSession() {
+  const userChoice = confirm(
+    "Do you want to start a new session? This will delete the previous session data and create a new invite link."
+  );
   // Clear the session data
-    clearSessionData();
-    // Reload the page
-    window.location.reload();
-  }
+  clearSessionData();
+  // Reload the page
+  window.location.reload();
+}
 
 // You can call this function when the host starts a new session
 async function checkForExistingSession() {
-    const sessionData = loadSessionData();
-    if (sessionData) {
-      const userChoice = confirm('Do you want to restore the previous session? Cancel to start a new session.');
-      if (userChoice) {
-        
-      } else {
-        // Start a new session
-        clearSessionData();
-      }
+  const sessionData = loadSessionData();
+  if (sessionData) {
+    const userChoice = confirm(
+      "Do you want to restore the previous session? Cancel to start a new session."
+    );
+    if (userChoice) {
+    } else {
+      // Start a new session
+      clearSessionData();
     }
   }
+}
 
 function guestDisplayHostSessionHistory(sessionData) {
-    
-    sessionData.forEach((item) => {
-      if (item.type === 'prompt') {
-        addMessage(item.type, item.data, item.nickname);
-      } else if (item.type === 'ai-response') {
-        addMessage(item.type, item.data, item.nickname);
-      } else if (item.type === 'system-message') {
-        addMessage(item.type, item.data, item.nickname);
-      } else if (item.type === 'chat') {
-        addChatMessage(item.type, item.data, item.nickname);
-      } else if (item.type === 'image-link') {
-        addImage(item.data);
-      }
-    });
-  }
-  
-function displaySessionHistory() {
-  const sessionData = loadSessionData();
-  sessionData.history.forEach((item) => {
-    
-    if (item.type === 'prompt') {
+  sessionData.forEach((item) => {
+    if (item.type === "prompt") {
       addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === 'ai-response') {
+    } else if (item.type === "ai-response") {
       addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === 'system-message') {
+    } else if (item.type === "system-message") {
       addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === 'chat') {
+    } else if (item.type === "chat") {
       addChatMessage(item.type, item.data, item.nickname);
-    } else if (item.type === 'image-link') {
+    } else if (item.type === "image-link") {
       addImage(item.data);
     }
   });
 }
 
-const messageInput = document.getElementById('messageInput');
-const chatInput = document.getElementById('chatInput');
-const messageInputRemote = document.getElementById('messageInputRemote');
+function displaySessionHistory() {
+  const sessionData = loadSessionData();
+  sessionData.history.forEach((item) => {
+    if (item.type === "prompt") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "ai-response") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "system-message") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "chat") {
+      addChatMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "image-link") {
+      addImage(item.data);
+    }
+  });
+}
 
-messageInput.addEventListener('keypress', handleEnterKeyPress);
-chatInput.addEventListener('keypress', handleEnterKeyPress);
-messageInputRemote.addEventListener('keypress', handleEnterKeyPress);
+const messageInput = document.getElementById("messageInput");
+const chatInput = document.getElementById("chatInput");
+const messageInputRemote = document.getElementById("messageInputRemote");
 
+messageInput.addEventListener("keypress", handleEnterKeyPress);
+chatInput.addEventListener("keypress", handleEnterKeyPress);
+messageInputRemote.addEventListener("keypress", handleEnterKeyPress);
 
 // This displays the user's nickname above the chat window
-const displayUsername = document.getElementById('username');
+const displayUsername = document.getElementById("username");
 if (isHost) {
   displayUsername.value = hostNickname;
-  updateInputField(displayUsername)
+  updateInputField(displayUsername);
 } else {
   displayUsername.value = guestNickname;
-  updateInputField(displayUsername)
+  updateInputField(displayUsername);
 }
 
 function handleEnterKeyPress(event) {
-  if (event.keyCode === 13) { // Check if the key is Enter
-    if (!event.shiftKey) { // Check if Shift is NOT pressed
+  if (event.keyCode === 13) {
+    // Check if the key is Enter
+    if (!event.shiftKey) {
+      // Check if Shift is NOT pressed
       event.preventDefault(); // Prevent the default action (newline)
 
       if (document.activeElement === messageInput) {
@@ -1902,44 +1938,54 @@ function handleEnterKeyPress(event) {
 }
 
 // Start the group game when the host clicks the button
-startGameButton.addEventListener('click', () => {
+startGameButton.addEventListener("click", () => {
   updateSessionTypeOptions("fantasyRoleplay");
 });
 
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-
-    addMessage('prompt', "You've started the session!", hostNickname);
-    // Check which session type was selected
-    if(sessionType === "fantasyRoleplay") {  
-      gameMode = true;
-      // Construct the system message to guide the AI
-      const newRole = "You are now the AI Game Master guiding a roleplaying session set in the " + sessionDetails + " world";
-      setNewAIRole(newRole)
-      // Get the current user's usernames
-      const usernames = getCurrentUsernames();
-      console.log(usernames);
-      // Determine the prompt based on the session details
-      let prompt;
-      if(sessionDetails === "Studio Ghibli") {
-        prompt = `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others. You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\nFormatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\nMessages: Each player will respond with their own name at the beginning of the message for you to identify them. You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\nDialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. Remember there are multiple players, and dialogue is usually happening within a group.\n\nPlot: Describe only the next step of the adventure based on the player input. Don't take any actions on the player's behalf, always let the player make the decisions. Remember there are multiple players, and descriptions of scenes should include more than just one player. The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\nBeginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\nThe player names are: ${usernames.join(', ')}.\n\nYour response:`;
-      } else if(sessionDetails === "Harry Potter") {
-        prompt = `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\nFormatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\nMessages: Each player will respond with their own name at the beginning of the message for you to identify them. You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\nDialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. Remember there are multiple players, and dialogue is usually happening within a group.\n\nPlot: Describe only the next step of the adventure based on the player input. Don't take any actions on the player's behalf, always let the player make the decisions. Remember there are multiple players, and descriptions of scenes should include more than just one player. The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\nBeginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\nThe player names are: ${usernames.join(', ')}.\n\nYour response:`;
-      } else {
-      prompt = `We are a group of people playing a fantasy role playing game in the world of ${sessionDetails}, and you are our game master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead. When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Don't speak for the users. Don't use Markdown, only use HTML. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(', ')}.`;
-      }
+  addMessage("prompt", "You've started the session!", hostNickname);
+  // Check which session type was selected
+  if (sessionType === "fantasyRoleplay") {
+    gameMode = true;
+    // Construct the system message to guide the AI
+    const newRole =
+      "You are now the AI Game Master guiding a roleplaying session set in the " +
+      sessionDetails +
+      " world";
+    setNewAIRole(newRole);
+    // Get the current user's usernames
+    const usernames = getCurrentUsernames();
+    console.log(usernames);
+    // Determine the prompt based on the session details
+    let prompt;
+    if (sessionDetails === "Studio Ghibli") {
+      prompt = `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others. You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\nFormatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\nMessages: Each player will respond with their own name at the beginning of the message for you to identify them. You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\nDialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. Remember there are multiple players, and dialogue is usually happening within a group.\n\nPlot: Describe only the next step of the adventure based on the player input. Don't take any actions on the player's behalf, always let the player make the decisions. Remember there are multiple players, and descriptions of scenes should include more than just one player. The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\nBeginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\nThe player names are: ${usernames.join(
+        ", "
+      )}.\n\nYour response:`;
+    } else if (sessionDetails === "Harry Potter") {
+      prompt = `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\nFormatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\nMessages: Each player will respond with their own name at the beginning of the message for you to identify them. You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\nDialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. Remember there are multiple players, and dialogue is usually happening within a group.\n\nPlot: Describe only the next step of the adventure based on the player input. Don't take any actions on the player's behalf, always let the player make the decisions. Remember there are multiple players, and descriptions of scenes should include more than just one player. The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\nBeginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\nThe player names are: ${usernames.join(
+        ", "
+      )}.\n\nYour response:`;
+    } else {
+      prompt = `We are a group of people playing a fantasy role playing game in the world of ${sessionDetails}, and you are our game master. Each user will respond with their own username at the beginning of the message for you to identify them. You can ask individual users what actions they will take. The game should be fast paced and lively. Respond with HTML formatting to use bold, italics, or other elements when needed, but don't use <br> tags, use newlines instead. When possible, make choices open-ended, but you can offer specific options if it will enhance the story. Don't speak for the users. Don't use Markdown, only use HTML. Assign each of the following users a fantasy role and briefly describe the setting, then start the game: ${usernames.join(
+        ", "
+      )}.`;
+    }
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
     for (const guestId in dataChannels) {
       if (dataChannels.hasOwnProperty(guestId)) {
         dataChannels[guestId].conn.send({
-          type: 'game-launch',
+          type: "game-launch",
           id: id,
-          message: "The host started a new " + sessionDetails + " session! Please wait while the AI Game master crafts your world...",
+          message:
+            "The host started a new " +
+            sessionDetails +
+            " session! Please wait while the AI Game master crafts your world...",
           nickname: hostNickname,
-      });
-
+        });
       }
     }
     const response = await fetchOpenAITextResponse(prompt);
@@ -1952,44 +1998,48 @@ async function startSession(sessionType, sessionDetails) {
     for (const guestId in dataChannels) {
       if (dataChannels.hasOwnProperty(guestId)) {
         dataChannels[guestId].conn.send({
-          type: 'ai-response',
+          type: "ai-response",
           id: id,
           message: response,
           nickname: selectedModelNickname,
-      });
+        });
       }
     }
-    } else {
-      console.log("No session type selected");
-      // other session types later
-    }
+  } else {
+    console.log("No session type selected");
+    // other session types later
+  }
 }
 
 function updateSessionTypeOptions(sessionType) {
-  const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
-  const sessionTypeDescription = document.getElementById('sessionTypeDescription');
+  const sessionTypeDetailsSelect = document.getElementById(
+    "sessionTypeDetailsSelect"
+  );
+  const sessionTypeDescription = document.getElementById(
+    "sessionTypeDescription"
+  );
 
   // Clear existing options and description
-  sessionTypeDetailsSelect.innerHTML = '';
-  sessionTypeDescription.innerHTML = '';
+  sessionTypeDetailsSelect.innerHTML = "";
+  sessionTypeDescription.innerHTML = "";
 
   let options;
   let description;
 
-  if (sessionType === 'fantasyRoleplay') {
+  if (sessionType === "fantasyRoleplay") {
     groupSessionType = "fantasyRoleplay";
     options = [
-      { value: 'traditional fantasy', text: 'Traditional roleplaying' },
-      { value: 'Conan', text: 'Conan' },
-      { value: 'Norse', text: 'Norse Mythology' },
-      { value: 'Harry Potter', text: 'Harry Potter' },
-      { value: 'Studio Ghibli', text: 'Studio Ghibli' },
+      { value: "traditional fantasy", text: "Traditional roleplaying" },
+      { value: "Conan", text: "Conan" },
+      { value: "Norse", text: "Norse Mythology" },
+      { value: "Harry Potter", text: "Harry Potter" },
+      { value: "Studio Ghibli", text: "Studio Ghibli" },
     ];
     description = `
       <h2>Fantasy Roleplaying:</h2>
       <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
     `;
-  } else if (sessionType === 'trivianight') {
+  } else if (sessionType === "trivianight") {
     options = [
       // Add trivia night options here
     ];
@@ -1997,7 +2047,7 @@ function updateSessionTypeOptions(sessionType) {
       <h3>Trivia Night:</h3>
       <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
     `;
-  } else if (sessionType === 'explorefiction') {
+  } else if (sessionType === "explorefiction") {
     options = [
       // Add explore fiction options here
     ];
@@ -2010,63 +2060,66 @@ function updateSessionTypeOptions(sessionType) {
   }
 
   // Add the new options to the dropdown menu
-  options.forEach(option => {
-    const opt = document.createElement('option');
+  options.forEach((option) => {
+    const opt = document.createElement("option");
     opt.value = option.value;
     opt.textContent = option.text;
     sessionTypeDetailsSelect.appendChild(opt);
   });
 
-   // Add the description to the sessionTypeDescription div
-   sessionTypeDescription.innerHTML = description;
-   displayHashModal(sessionType);
+  // Add the description to the sessionTypeDescription div
+  sessionTypeDescription.innerHTML = description;
+  displayHashModal(sessionType);
+}
+
+function displayHashModal(sessionType) {
+  // Display the API key modal
+  const submitHashModal = document.getElementById(
+    "submitOnVisitHashModalButton"
+  );
+  const onVisitHashModal = document.getElementById("onVisitHashModal");
+  const hashApiKey = document.getElementById("hashApiKeyInput");
+  const apiKeyError = document.getElementById("apiKeyError"); // Add this line to get the error element
+
+  // Check if the API key is already set in local storage
+  const storedApiKey = localStorage.getItem("openai_api_key");
+  if (storedApiKey) {
+    // Update the input field's placeholder text and disable the input
+    hashApiKey.disabled = true;
+    hashApiKey.placeholder = "Already set!";
   }
 
-  function displayHashModal(sessionType) {
-    // Display the API key modal
-    const submitHashModal = document.getElementById('submitOnVisitHashModalButton');
-    const onVisitHashModal = document.getElementById('onVisitHashModal');
-    const hashApiKey = document.getElementById('hashApiKeyInput');
-    const apiKeyError = document.getElementById('apiKeyError'); // Add this line to get the error element
-  
-    // Check if the API key is already set in local storage
-    const storedApiKey = localStorage.getItem('openai_api_key');
-    if (storedApiKey) {
-      // Update the input field's placeholder text and disable the input
-      hashApiKey.disabled = true;
-      hashApiKey.placeholder = "Already set!";
+  onVisitHashModal.style.display = "block";
+  const sessionTypeDetailsSelect = document.getElementById(
+    "sessionTypeDetailsSelect"
+  );
+  let selectedSessionTypeDetails;
+  // Add event listener for the submit button
+  submitHashModal.addEventListener("click", () => {
+    if (!hashApiKey.disabled && hashApiKey.value.trim() === "") {
+      apiKeyError.style.display = "block"; // Show the error message
+      return;
     }
-  
-    onVisitHashModal.style.display = 'block';
-    const sessionTypeDetailsSelect = document.getElementById('sessionTypeDetailsSelect');
-    let selectedSessionTypeDetails;
-    // Add event listener for the submit button
-    submitHashModal.addEventListener('click', () => {
-      if (!hashApiKey.disabled && hashApiKey.value.trim() === '') {
-        apiKeyError.style.display = 'block'; // Show the error message
-        return;
-      }
-      // Only set the API key in local storage if the input is not disabled
-      if (!hashApiKey.disabled) {
-        localStorage.setItem('openai_api_key', hashApiKey.value);
-      }
-      groupSessionDetails = sessionTypeDetailsSelect.value;
-      console.log("Group session world: " + groupSessionDetails);
-      onVisitHashModal.style.display = 'none';
-      // Start the session with the selected session type
-      if (sessionType === 'fantasyRoleplay') {
-        startRoleplaySession();
-      } else {
-        // Add other session types here
-      }
-    });
-  }
-  
-function endAdventure() {
-    gameMode = false;
-    // Trigger the visual indicator (e.g., change the background color)
-    document.body.style.backgroundColor = "#333";
+    // Only set the API key in local storage if the input is not disabled
+    if (!hashApiKey.disabled) {
+      localStorage.setItem("openai_api_key", hashApiKey.value);
+    }
+    groupSessionDetails = sessionTypeDetailsSelect.value;
+    console.log("Group session world: " + groupSessionDetails);
+    onVisitHashModal.style.display = "none";
+    // Start the session with the selected session type
+    if (sessionType === "fantasyRoleplay") {
+      startRoleplaySession();
+    } else {
+      // Add other session types here
+    }
+  });
+}
 
+function endAdventure() {
+  gameMode = false;
+  // Trigger the visual indicator (e.g., change the background color)
+  document.body.style.backgroundColor = "#333";
 }
 
 function getCurrentUsernames() {
@@ -2083,23 +2136,27 @@ function getCurrentUsernames() {
 
 // This changes the display for the roleplay session in order to create a waiting room for players to join
 function startRoleplaySession() {
-    // Trigger the visual indicator
-    var userPanelh2Element = document.querySelector('.userPanel .header h2');
-    var guestChatH2 = document.querySelector('.chatPanel .header h2');
-    var peersH2 = document.querySelector('.connectedUsers .header h2');
+  // Trigger the visual indicator
+  var userPanelh2Element = document.querySelector(".userPanel .header h2");
+  var guestChatH2 = document.querySelector(".chatPanel .header h2");
+  var peersH2 = document.querySelector(".connectedUsers .header h2");
 
-    // Change the content of the h2 element
-    userPanelh2Element.innerHTML = 'AI GAME MASTER';
-    guestChatH2.innerHTML = "Players' Chat";
-    peersH2.innerHTML = 'Players';
+  // Change the content of the h2 element
+  userPanelh2Element.innerHTML = "AI GAME MASTER";
+  guestChatH2.innerHTML = "Players' Chat";
+  peersH2.innerHTML = "Players";
 
-    document.getElementById('aiSelectionBlock').style.display = "none"; 
-    
-    if(isHost) {
+  document.getElementById("aiSelectionBlock").style.display = "none";
+
+  if (isHost) {
     const inviteLink = makeInviteLink(id);
-    addMessage("welcome-message", `<p>Welcome to your roleplaying session, set in the <b>${groupSessionDetails}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`, "HaveWords.ai");
-    }
-    playOminousSound();
+    addMessage(
+      "welcome-message",
+      `<p>Welcome to your roleplaying session, set in the <b>${groupSessionDetails}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      "HaveWords.ai"
+    );
+  }
+  playOminousSound();
 }
 
 function playOminousSound() {
@@ -2113,7 +2170,7 @@ function playOminousSound() {
     const gainNode = audioContext.createGain();
 
     oscillator.frequency.value = note;
-    oscillator.type = index % 2 === 0 ? 'sine' : 'triangle';
+    oscillator.type = index % 2 === 0 ? "sine" : "triangle";
     gainNode.gain.setValueAtTime(0.2, startTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
 
@@ -2136,12 +2193,15 @@ function playSendBeep() {
 
   notes.forEach((note, index) => {
     const oscillator = context.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(note, context.currentTime + index * 0.1);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(
+      note,
+      context.currentTime + index * 0.1
+    );
 
     oscillator.connect(gainNode);
     oscillator.start(context.currentTime + index * 0.1);
-    oscillator.stop(context.currentTime + (index * 0.1) + 0.1);
+    oscillator.stop(context.currentTime + index * 0.1 + 0.1);
   });
 }
 
@@ -2156,236 +2216,234 @@ function playReceiveBeep() {
 
   notes.forEach((note, index) => {
     const oscillator = context.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(note, context.currentTime + index * 0.1);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(
+      note,
+      context.currentTime + index * 0.1
+    );
 
     oscillator.connect(gainNode);
     oscillator.start(context.currentTime + index * 0.1);
-    oscillator.stop(context.currentTime + (index * 0.1) + 0.1);
+    oscillator.stop(context.currentTime + index * 0.1 + 0.1);
   });
 }
 
-window.addEventListener('load', () => {
-
-});
+window.addEventListener("load", () => {});
 
 // This section is for creating a random nickname for the users
 const adjectives = [
-  'wacky',
-  'spunky',
-  'quirky',
-  'zany',
-  'kooky',
-  'cranky',
-  'sassy',
-  'snarky',
-  'dorky',
-  'goofy',
-  'dizzy',
-  'silly',
-  'sneaky',
-  'bizarre',
-  'nutty',
-  'loopy',
-  'whimsical',
-  'rambunctious',
-  'witty',
-  'zesty',
-  'bouncy',
-  'peppy',
-  'jazzy',
-  'zippy',
-  'fuzzy',
-  'fizzy',
-  'dizzying',
-  'snappy',
-  'flashy',
-  'giddy',
-  'hilarious',
-  'absurd',
-  'eccentric',
-  'bizarre',
-  'groovy',
-  'boisterous',
-  'ridiculous',
-  'zonked',
-  'kooky',
-  'blazing',
-  'snarling',
-  'gnarly',
-  'scowling',
-  'grumpy',
-  'fiery',
-  'spiteful',
-  'malevolent',
-  'sinister',
-  'nasty',
-  'cynical',
-  'cranky',
-  'wicked',
-  'vicious',
-  'brutish',
-  'malicious',
-  'sardonic',
-  'scathing',
-  'venomous',
-  'rude',
-  'insolent',
+  "wacky",
+  "spunky",
+  "quirky",
+  "zany",
+  "kooky",
+  "cranky",
+  "sassy",
+  "snarky",
+  "dorky",
+  "goofy",
+  "dizzy",
+  "silly",
+  "sneaky",
+  "bizarre",
+  "nutty",
+  "loopy",
+  "whimsical",
+  "rambunctious",
+  "witty",
+  "zesty",
+  "bouncy",
+  "peppy",
+  "jazzy",
+  "zippy",
+  "fuzzy",
+  "fizzy",
+  "dizzying",
+  "snappy",
+  "flashy",
+  "giddy",
+  "hilarious",
+  "absurd",
+  "eccentric",
+  "bizarre",
+  "groovy",
+  "boisterous",
+  "ridiculous",
+  "zonked",
+  "kooky",
+  "blazing",
+  "snarling",
+  "gnarly",
+  "scowling",
+  "grumpy",
+  "fiery",
+  "spiteful",
+  "malevolent",
+  "sinister",
+  "nasty",
+  "cynical",
+  "cranky",
+  "wicked",
+  "vicious",
+  "brutish",
+  "malicious",
+  "sardonic",
+  "scathing",
+  "venomous",
+  "rude",
+  "insolent",
 ];
- 
-  const nouns = [
-    'cheese-sculptor',
-    'llama-farmer',
-    'plumber-from-mars',
-    'pro-thumb-wrestler',
-    'underwater-basket-weaver',
-    'fortune-cookie-writer',
-    'pro-goose-caller',
-    'ninja-warrior',
-    'yo-yo-champion',
-    'extreme-couponer',
-    'cat-acrobat',
-    'roadkill-collector',
-    'cactus-whisperer',
-    'quilt-sniffer',
-    'stilt-walker',
-    'cheese-grater',
-    'gum-chewer',
-    'lint-collector',
-    'toe-wrestler',
-    'pizza-acrobat',
-    'bubble-wrap-popper',
-    'dance-machine',
-    'dream-interpreter',
-    'taco-taster',
-    'circus-clown',
-    'pogo-stick-champion',
-    'pillow-fight-champion',
-    'speed-talker',
-    'disco-ball-spinner',
-    'gum-bubble-blower',
-    'electric-scooter-rider',
-    'balloon-animal-maker',
-    'chicken-whisperer',
-    'juggler-extraordinaire',
-    'glow-stick-dancer',
-    'sock-collector',
-    'pineapple-juggler',
-    'extreme-hiker',
-    'karaoke-superstar',
-    'chainsaw-juggler',
-    'garbage-collector',
-    'sewer-inspector',
-    'human-ashtray',
-    'rat-tamer',
-    'insect-farmer',
-    'denture-collector',
-    'professional-complainer',
-    'rotten-egg-collector',
-    'cigarette-licker',
-    'taxidermist-apprentice',
-    'snail-racer',
-    'feral-cat-wrangler',
-  ];
-  
-  
 
-  const hostAdjectives = [
-    'authoritative',
-    'confident',
-    'decisive',
-    'determined',
-    'focused',
-    'smug',
-    'influential',
-    'inspiring',
-    'knowledgeable',
-    'motivated',
-    'powerful',
-    'proactive',
-    'professional',
-    'respected',
-    'strategic',
-    'successful',
-    'visionary',
-    'wise',
-    'ambitious',
-    'charismatic',
-    'jocund',
-    'halcyon',
-    'ephemeral',
-    'furtive',
-    'incognito',
-    'scintillating',
-    'quixotic',
-    'mellifluous',
-    'susurrant',
-    'penultimate',
-    'euphonious',
-    'ethereal',
-    'effervescent',
-    'fecund',
-    'serendipitous',
-    'melismatic',
-    'obfuscating',
-    'quintessential',
-    'nebulous',
-    'luminous',
-  ];
-  
-  const hostNouns = [
-    'kite-surfer',
-    'glass-blower',
-    'lightning-catcher',
-    'ice-sculptor',
-    'cloud-watcher',
-    'waterfall-climber',
-    'fire-breather',
-    'snowboarder',
-    'flower-arranger',
-    'labyrinth-builder',
-    'skydiver',
-    'volcano-tracker',
-    'bird-whisperer',
-    'meteor-watcher',
-    'moon-walker',
-    'aurora-chaser',
-    'tide-pool-explorer',
-    'forest-ranger',
-    'wilderness-explorer',
-    'glacier-trekker',
-    'rainbow-chaser',
-    'thunderbolt-rider',
-    'desert-navigator',
-    'jungle-explorer',
-    'storm-chaser',
-    'tropical-paradise-traveler',
-    'mushroom-hunter',
-    'sahara-trekker',
-  ];
-  
+const nouns = [
+  "cheese-sculptor",
+  "llama-farmer",
+  "plumber-from-mars",
+  "pro-thumb-wrestler",
+  "underwater-basket-weaver",
+  "fortune-cookie-writer",
+  "pro-goose-caller",
+  "ninja-warrior",
+  "yo-yo-champion",
+  "extreme-couponer",
+  "cat-acrobat",
+  "roadkill-collector",
+  "cactus-whisperer",
+  "quilt-sniffer",
+  "stilt-walker",
+  "cheese-grater",
+  "gum-chewer",
+  "lint-collector",
+  "toe-wrestler",
+  "pizza-acrobat",
+  "bubble-wrap-popper",
+  "dance-machine",
+  "dream-interpreter",
+  "taco-taster",
+  "circus-clown",
+  "pogo-stick-champion",
+  "pillow-fight-champion",
+  "speed-talker",
+  "disco-ball-spinner",
+  "gum-bubble-blower",
+  "electric-scooter-rider",
+  "balloon-animal-maker",
+  "chicken-whisperer",
+  "juggler-extraordinaire",
+  "glow-stick-dancer",
+  "sock-collector",
+  "pineapple-juggler",
+  "extreme-hiker",
+  "karaoke-superstar",
+  "chainsaw-juggler",
+  "garbage-collector",
+  "sewer-inspector",
+  "human-ashtray",
+  "rat-tamer",
+  "insect-farmer",
+  "denture-collector",
+  "professional-complainer",
+  "rotten-egg-collector",
+  "cigarette-licker",
+  "taxidermist-apprentice",
+  "snail-racer",
+  "feral-cat-wrangler",
+];
 
+const hostAdjectives = [
+  "authoritative",
+  "confident",
+  "decisive",
+  "determined",
+  "focused",
+  "smug",
+  "influential",
+  "inspiring",
+  "knowledgeable",
+  "motivated",
+  "powerful",
+  "proactive",
+  "professional",
+  "respected",
+  "strategic",
+  "successful",
+  "visionary",
+  "wise",
+  "ambitious",
+  "charismatic",
+  "jocund",
+  "halcyon",
+  "ephemeral",
+  "furtive",
+  "incognito",
+  "scintillating",
+  "quixotic",
+  "mellifluous",
+  "susurrant",
+  "penultimate",
+  "euphonious",
+  "ethereal",
+  "effervescent",
+  "fecund",
+  "serendipitous",
+  "melismatic",
+  "obfuscating",
+  "quintessential",
+  "nebulous",
+  "luminous",
+];
 
-function convertToParagraphs(text) {  
+const hostNouns = [
+  "kite-surfer",
+  "glass-blower",
+  "lightning-catcher",
+  "ice-sculptor",
+  "cloud-watcher",
+  "waterfall-climber",
+  "fire-breather",
+  "snowboarder",
+  "flower-arranger",
+  "labyrinth-builder",
+  "skydiver",
+  "volcano-tracker",
+  "bird-whisperer",
+  "meteor-watcher",
+  "moon-walker",
+  "aurora-chaser",
+  "tide-pool-explorer",
+  "forest-ranger",
+  "wilderness-explorer",
+  "glacier-trekker",
+  "rainbow-chaser",
+  "thunderbolt-rider",
+  "desert-navigator",
+  "jungle-explorer",
+  "storm-chaser",
+  "tropical-paradise-traveler",
+  "mushroom-hunter",
+  "sahara-trekker",
+];
+
+function convertToParagraphs(text) {
   // Split the text into paragraphs using double newline characters
   const paragraphs = text.split(/\n{2,}/g);
 
   // Wrap each paragraph in a <p> tag
-  const html = paragraphs.map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
+  const html = paragraphs
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("");
 
   return html;
 }
 
-
 function generateHostNickname() {
-    const adjective = hostAdjectives[Math.floor(Math.random() * hostAdjectives.length)];
-    const noun = hostNouns[Math.floor(Math.random() * hostNouns.length)];
-    return `${adjective}-${noun}`;
-  }
+  const adjective =
+    hostAdjectives[Math.floor(Math.random() * hostAdjectives.length)];
+  const noun = hostNouns[Math.floor(Math.random() * hostNouns.length)];
+  return `${adjective}-${noun}`;
+}
 
 function generateNickname() {
-      const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-      const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      return `${adjective}-${noun}`;
-    }
-
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  return `${adjective}-${noun}`;
+}
