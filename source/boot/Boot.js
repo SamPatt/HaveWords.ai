@@ -7,6 +7,7 @@ class Boot extends Object {
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
       "source/app/App.js",
+      "source/app/Nickname.js",
       "app.js"
     ]
   }

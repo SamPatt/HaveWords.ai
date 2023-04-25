@@ -1,18 +1,19 @@
 "use strict";
 
 /* 
-    App
+    
 
 */
 
-(class App extends Base {
+(class AiSession extends Base {
     initPrototypeSlots () {
         //this.newSlot("idb", null)
     }
 
     init () {
         super.init()
-        this.setIsDebugging(true)
+        this.setIdb(IndexedDBFolder.clone())
+        this.setIsDebugging(false)
     }
 
     static launch () {
