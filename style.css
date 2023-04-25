@@ -146,11 +146,6 @@ a:hover {
     /* Add underline when hovering */
 }
 
-a:visited {
-    /* Set the color for visited links, e.g., Indian red */
-}
-
-
 ul {
     list-style-type: none;
     padding-left: 0;
@@ -662,8 +657,8 @@ button {
 }
 
 .message-text p {
-    margin: 0px;
-    padding: 0px;
+    margin: 7px;
+    padding: 3px;
 }
 
 .message-content.right .message-text {
