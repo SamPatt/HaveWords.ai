@@ -158,6 +158,23 @@ function requestMicAccess () {
   );
 }
 
+/*
+function muteMicrophone () {
+  if (userAudioStream) {
+    // Create a MediaStreamAudioSourceNode from the microphone stream
+    const source = audioContext.createMediaStreamSource(userAudioStream);
+
+    // Create a GainNode and set its gain value to 0 (mute)
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0;
+
+    // Connect the source to the gain node and the gain node to the destination
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+  }
+}
+*/
+
 /* --------------------- */
 
 peer.on('open', function () {
