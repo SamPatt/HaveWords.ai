@@ -146,11 +146,6 @@ a:hover {
     /* Add underline when hovering */
 }
 
-a:visited {
-    /* Set the color for visited links, e.g., Indian red */
-}
-
-
 ul {
     list-style-type: none;
     padding-left: 0;
@@ -662,8 +657,8 @@ button {
 }
 
 .message-text p {
-    margin: 0px;
-    padding: 0px;
+    margin: 7px;
+    padding: 3px;
 }
 
 .message-content.right .message-text {
@@ -675,7 +670,48 @@ button {
     flex-direction: column;
     overflow-wrap: anywhere;
     width: 100%;
+    position: relative;
 }
+
+.generate-image-prompt-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-left: 10px;
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+  
+  .generate-image-prompt-button:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -30px; /* Adjust this value to position the tooltip vertically */
+    right: 30px; /* Adjust this value to position the tooltip horizontally */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  
+.message-image {
+    width: 512px;
+    height: 512px;
+    object-fit: cover;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
 
 .message-content.right {
     align-items: flex-end;
