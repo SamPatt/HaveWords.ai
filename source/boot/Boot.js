@@ -4,10 +4,13 @@ class Boot extends Object {
 
   files () {
     return [
+      "https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js",
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
       "source/app/App.js",
       "source/app/Nickname.js",
+      "source/app/Sounds.js",
       "app.js"
     ]
   }
