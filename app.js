@@ -13,6 +13,7 @@ let guestNickname;
 let hostWelcomeMessage = false;
 let groupSessionType;
 let groupSessionDetails;
+let groupSessionFirstAIResponse;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
@@ -813,8 +814,8 @@ async function sendAIResponse(message, nickname) {
   // Get AI Response and post locally
     const response = await fetchOpenAITextResponse(message);
     if (gameMode) {
-      console.log("Calling triggerBot with AI response:", response);
-      triggerBot(response, groupSessionType, groupSessionDetails);
+      //console.log("Calling triggerBot with AI response:", response);
+      //triggerBot(response, groupSessionType, groupSessionDetails);
       console.log("Game mode is on, sending response to bot: " + response);
     }
     
@@ -892,6 +893,39 @@ async function fetchOpenAITextResponse(prompt) {
       addMessage("system-message", "Error fetching AI response. Make sure the model is selected and the API key is correct.", "Host");
     }
   }
+
+// ImageBot function it triggered when the host requests an image description of the current scene
+async function triggerImageBot(response) {
+    const apiKey = localStorage.getItem('openai_api_key');
+    if (!apiKey) {
+      console.error("API key is missing.");
+      addMessage("system-message", "API key is missing.", "System");
+      return;
+    }
+    const message = "We are playing a roleplaying game and need a description of the current scene in order to generate an image. I will give you the background information for the characters and setting, and then the details of the current scene. Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. Do not use character's names, or location names. No proper nouns. Here is the background for the scene: \n\n" + groupSessionFirstAIResponse + "\n\nHere is the current scene: \n\n " + response + "\n\n Image description: ";
+    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": message}]
+      }),
+    };
+    const AIresponse = await fetch(apiUrl, requestOptions);
+    const data = await AIresponse.json();
+    const imageDescription = data.choices[0].message.content;
+    const imageURL = await fetchOpenAIImageResponse(imageDescription, groupSessionType, groupSessionDetails);
+    console.log("event triggered, image: " + imageURL);
+    sendImage(imageURL);
+    addImage(imageURL);
+    console.log(`Image description: ${imageDescription}`);
+    
+  }
+
 // Calls the OpenAI Image API and returns the image URL
 async function fetchOpenAIImageResponse(prompt, sessionType, sessionDetails) {
   const apiKey = localStorage.getItem('openai_api_key');
@@ -906,7 +940,7 @@ async function fetchOpenAIImageResponse(prompt, sessionType, sessionDetails) {
   if (sessionType === "fantasyRoleplay") {
     // Change prompt based on session details
     if (sessionDetails === "Studio Ghibli") {
-      imagePrompt = "A cute still of " + prompt + " in Spirited Away (2001).";
+      imagePrompt = "A cute animated still from Spirited Away (2001) showing " + prompt;
     } else if (sessionDetails === "Harry Potter") {
       imagePrompt = "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
     } else {
@@ -933,7 +967,7 @@ async function fetchOpenAIImageResponse(prompt, sessionType, sessionDetails) {
   return imageURL;
 }
 
-// Sends AI responses from fetchOpenAITextResponse to ChatGPT to determine if it should trigger actions
+/* // Sends AI responses from fetchOpenAITextResponse to ChatGPT to determine if it should trigger actions
 async function triggerBot(response, sessionType, sessionDetails) {
   const apiKey = localStorage.getItem('openai_api_key');
   if (!apiKey) {
@@ -988,7 +1022,7 @@ async function triggerBot(response, sessionType, sessionDetails) {
     console.log("No event triggered");
   }
   
-}
+} */
 
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
@@ -1039,6 +1073,8 @@ function addMessage(type, message, nickname) {
     if (message === "" || message === undefined) {
       return;
     }
+
+    const messageContent = document.createElement('div');
     let icon;
     let isUser = false;
     if (type === "prompt") {
@@ -1048,6 +1084,24 @@ function addMessage(type, message, nickname) {
     } else if (type === "ai-response") {
       loadingAnimation.style.display = "none";
       icon = "🤖";
+       // Create a new icon/button element for the AI responses
+        const generateImagePromptButton = document.createElement('button');
+        generateImagePromptButton.textContent = "🎨";
+        generateImagePromptButton.className = "generate-image-prompt-button";
+        generateImagePromptButton.setAttribute('data-tooltip', 'Show this scene');
+
+        // Add an event listener to the icon/button
+        generateImagePromptButton.addEventListener('click', () => {
+          triggerImageBot(sanitizedHtml);
+          // Your desired action to generate an image prompt from the AI response
+          console.log("Generate image prompt for:", sanitizedHtml);
+          
+          // Optional: Hide the button after it has been clicked
+          generateImagePromptButton.style.display = 'none';
+        });
+
+        // Append the icon/button to the message content
+        messageContent.appendChild(generateImagePromptButton);
     } else if (type === "system-message") {
       icon = "🔧";
     } else {
@@ -1064,12 +1118,14 @@ function addMessage(type, message, nickname) {
     iconDiv.className = 'icon';
     iconDiv.innerHTML = icon;
 
-    const messageContent = document.createElement('div');
+    
     messageContent.className = 'message-content';
 
     if (!isUser) {
       messageWrapper.className += " aiMessage"; 
     }
+
+   
 
     const messageNickname = document.createElement('div');
     messageNickname.className = 'message-nickname';
@@ -1121,7 +1177,13 @@ function addImage(imageURL) {
 
   const imageElement = document.createElement('img');
   imageElement.src = imageURL;
-  messageContent.appendChild(imageElement);
+  imageElement.className = 'message-image';
+
+  const imageContainer = document.createElement('div'); // Create a new div for the image container
+  imageContainer.className = 'image-container'; // Set the new class for the image container
+
+  imageContainer.appendChild(imageElement); // Append the image to the image container
+  messageContent.appendChild(imageContainer); // Append the image container to the message content
 
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);
@@ -1129,6 +1191,7 @@ function addImage(imageURL) {
   messagesDiv.appendChild(messageWrapper);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
 
 
 function addChatMessage(type, message, nickname) {
@@ -1868,7 +1931,9 @@ async function startSession(sessionType, sessionDetails) {
       }
     }
     const response = await fetchOpenAITextResponse(prompt);
-    triggerBot(response, "fantasyRoleplay", sessionDetails);
+    // Stores initial AI response, which contains character descriptions, for later use
+    groupSessionFirstAIResponse = response;
+    //triggerBot(response, "fantasyRoleplay", sessionDetails);
     addAIReponse(response);
 
     // Send the response to all connected guests
