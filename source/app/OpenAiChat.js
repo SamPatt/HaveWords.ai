@@ -95,16 +95,14 @@
         role: "assistant",
         content: aiResponse,
       });
-      
+
       // Save the conversation history to local storage
-      const sessionData = loadSessionData();
-      sessionData.history.push({
+      Session.shared().addToHistory({
         type: "ai-response",
         data: aiResponse,
         id: id,
         nickname: selectedModelNickname,
       });
-      saveSessionData(sessionData);
   
       return aiResponse;
     } catch (error) {

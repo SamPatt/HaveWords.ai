@@ -83,7 +83,7 @@ peer.on("open", function () {
   console.log("PeerJS client is ready. Peer ID:", id);
 
   if (isHost) {
-    loadSessionData();
+    //Session.shared().load() // loadSessionData();
     displaySessionHistory();
     if (!hostNickname) {
       hostNickname = Nickname.generateHostNickname() + " (host)";
@@ -395,10 +395,9 @@ async function setupHostSession() {
             const newGuestUserList = updateGuestUserlist();
             guestUserList = newGuestUserList;
             // Send the session history to the guest
-            const sessionData = loadSessionData();
             dataChannels[conn.peer].conn.send({
               type: "session-history",
-              history: sessionData.history,
+              history: Session.shared().history(),
               nickname: hostNickname,
               guestUserList: newGuestUserList,
             });
@@ -427,14 +426,12 @@ async function setupHostSession() {
         if (data.type === "remote-prompt") {
           // Add prompt to prompt history
           if (dataChannels[conn.peer].canSendPrompts) {
-            const sessionData = loadSessionData();
-            sessionData.history.push({
+            Session.shared().addToHistory({
               type: "prompt",
               data: data.message,
               id: data.id,
               nickname: data.nickname,
             });
-            saveSessionData(sessionData);
             // Send prompt to guests
             for (const guestId in dataChannels) {
               if (dataChannels.hasOwnProperty(guestId)) {
@@ -462,14 +459,12 @@ async function setupHostSession() {
         if (data.type === "remote-system-message") {
           // Add remote system message update to history if guest is allowed to send prompts
           if (dataChannels[conn.peer].canSendPrompts) {
-            const sessionData = loadSessionData();
-            sessionData.history.push({
+            Session.shared().addToHistory({
               type: "system-message",
               data: data.message,
               id: data.id,
               nickname: data.nickname,
             });
-            saveSessionData(sessionData);
             // Update system message and display it TO DO SEND TO ALL
             addMessage("system-message", data.message, data.nickname);
             guestChangeSystemMessage(data);
@@ -483,14 +478,12 @@ async function setupHostSession() {
         }
         if (data.type === "chat") {
           // Add chat to chat history
-          const sessionData = loadSessionData();
-          sessionData.history.push({
+          Session.shared().addToHistory({
             type: "chat",
             data: data.message,
             id: data.id,
             nickname: data.nickname,
           });
-          saveSessionData(sessionData);
           // Display chat message
           addChatMessage(data.type, data.message, data.nickname);
 
@@ -710,14 +703,12 @@ function sendChatMessage() {
 
     if (isHost) {
       // Add chat to chat history
-      const sessionData = loadSessionData();
-      sessionData.history.push({
+      Session.shared().addToHistory({
         type: "chat",
         data: message,
         id: id,
         nickname: hostNickname,
       });
-      saveSessionData(sessionData);
       // Display chat message
       addLocalChatMessage(message);
       // Broadcast chat message to all connected guests
@@ -785,14 +776,12 @@ async function sendAIResponse(message, nickname) {
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
   //Save into session history
-  const sessionData = loadSessionData();
-  sessionData.history.push({
+  Session.shared().addToHistory({
     type: "image-link",
     data: imageURL,
     id: id,
     nickname: hostNickname,
   });
-  saveSessionData(sessionData);
 
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
@@ -1001,14 +990,12 @@ async function addAIReponse(response) {
 }
 
 async function addLocalChatMessage(message) {
-  const sessionData = loadSessionData();
-  sessionData.history.push({
+  Session.shared().addToHistory({
     type: "chat",
     data: message,
     id: id,
     nickname: hostNickname,
   });
-  saveSessionData(sessionData);
   addChatMessage("chat", message, hostNickname);
 }
 
@@ -1022,14 +1009,12 @@ async function addPrompt() {
   const message = input.value.trim();
   if (message === "") return;
   input.value = "";
-  const sessionData = loadSessionData();
-  sessionData.history.push({
+  Session.shared().addToHistory({
     type: "prompt",
     data: message,
     id: id,
     nickname: hostNickname,
   });
-  saveSessionData(sessionData);
   addMessage("prompt", message, hostNickname);
   sendPrompt(message);
 }
@@ -1526,7 +1511,7 @@ function guestChangeSystemMessage(data) {
 
 
 function guestDisplayHostSessionHistory(sessionData) {
-  sessionData.forEach((item) => {
+  Session.shared().data().forEach((item) => {
     if (item.type === "prompt") {
       addMessage(item.type, item.data, item.nickname);
     } else if (item.type === "ai-response") {
@@ -1542,8 +1527,7 @@ function guestDisplayHostSessionHistory(sessionData) {
 }
 
 function displaySessionHistory() {
-  const sessionData = loadSessionData();
-  sessionData.history.forEach((item) => {
+  Session.shared().history().forEach((item) => {
     if (item.type === "prompt") {
       addMessage(item.type, item.data, item.nickname);
     } else if (item.type === "ai-response") {

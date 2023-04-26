@@ -12,69 +12,76 @@
 
     init () {
         super.init()
-        //this.setData([])
+        this.load()
         this.setIsDebugging(true)
     }
 
-    addToData (json) {
-        this.data().push(json)
-        return this
+    save () {
+      const json = JSON.stringify(this.data());
+      localStorage.setItem("sessionData", json);
+    }
+
+    load () {
+      const json = JSON.parse(localStorage.getItem("sessionData"));
+
+      if (!json) {
+        json = {
+          history: [],
+        };
+      }
+
+      if (!json.history) {
+        json.history = [];
+      }
+
+      this.setData(json);
+    
+      return this;
+    }
+    
+    clear () {
+      localStorage.removeItem("sessionData");
+      localStorage.removeItem("hostId");
+      localStorage.removeItem("hostNickname");
+      this.load()
+    }
+
+    history () {
+      return this.data().history
+    }
+
+    addToHistory (json) {
+      this.history().push(json)
+      this.save()
+      return this
     }
 
 }.initThisClass());
+  
+// Add event listener to trigger the resetSession function when the resetSessionButton is clicked
+resetSessionButton.addEventListener("click", resetSession);
 
+function resetSession() {
+  const userChoice = confirm(
+    "Do you want to start a new session? This will delete the previous session data and create a new invite link."
+  );
+  // Clear the session data
+  Session.shared().clear();
+  // Reload the page
+  window.location.reload();
+}
 
-
-// These functions save, load, and clear the session data from local storage
-function saveSessionData(sessionData) {
-    localStorage.setItem("sessionData", JSON.stringify(sessionData));
-  }
-  
-  function loadSessionData() {
-    const sessionData = JSON.parse(localStorage.getItem("sessionData"));
-    if (!sessionData) {
-      return {
-        history: [],
-      };
-    }
-  
-    if (!sessionData.history) {
-      sessionData.history = [];
-    }
-  
-    return sessionData;
-  }
-  
-  function clearSessionData() {
-    localStorage.removeItem("sessionData");
-    localStorage.removeItem("hostId");
-    localStorage.removeItem("hostNickname");
-  }
-  
-  // Add event listener to trigger the resetSession function when the resetSessionButton is clicked
-  resetSessionButton.addEventListener("click", resetSession);
-  
-  function resetSession() {
+// You can call this function when the host starts a new session
+async function checkForExistingSession() {
+  const sessionData = Session.shared().data();
+  if (sessionData) {
     const userChoice = confirm(
-      "Do you want to start a new session? This will delete the previous session data and create a new invite link."
+      "Do you want to restore the previous session? Cancel to start a new session."
     );
-    // Clear the session data
-    clearSessionData();
-    // Reload the page
-    window.location.reload();
-  }
-  
-  // You can call this function when the host starts a new session
-  async function checkForExistingSession() {
-    const sessionData = loadSessionData();
-    if (sessionData) {
-      const userChoice = confirm(
-        "Do you want to restore the previous session? Cancel to start a new session."
-      );
-      if (userChoice) {
-      } else {
-        // Start a new session
-        clearSessionData();
-      }
+    if (userChoice) {
+    } else {
+      // Start a new session
+      Session.shared().clear();
     }
   }
+}
