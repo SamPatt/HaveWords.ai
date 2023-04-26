@@ -17,8 +17,8 @@ class Boot extends Object {
       "source/app/Sounds.js",
       "source/app/Microphone.js",
       "source/app/OpenAiChat.js",
-      //"source/app/Session.js",
-      //"source/app/OpenAiImageGen.js",
+      "source/app/OpenAiImageGen.js",
+      "source/app/Session.js",
       "app.js"
     ]
   }

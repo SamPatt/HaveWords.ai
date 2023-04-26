@@ -67,12 +67,12 @@ const peer = new Peer(id, {
 });
 
 let content = "You are a helpful assistant.";
-const conversationHistory = [
-  {
-    role: "system",
-    content: content,
-  },
-];
+
+OpenAiChat.shared().addToConversation({
+  role: "system",
+  content: content,
+})
+
 const loadingAnimation = document.getElementById("loadingHost");
 const startGameButton = document.getElementById("startGameButton");
 let guestUserList = [];
@@ -754,7 +754,10 @@ async function sendAIResponse(message, nickname) {
   }
 
   // Get AI Response and post locally
-  const response = await fetchOpenAITextResponse(message);
+  
+  
+
+  const response = await OpenAiChat.shared().asyncFetch(message);
   if (gameMode) {
     //console.log("Calling triggerBot with AI response:", response);
     //triggerBot(response, groupSessionType, groupSessionDetails);
@@ -1431,10 +1434,11 @@ const systemMessage = document.getElementById("systemMessage");
 function setNewAIRole(newRole) {
   content = newRole;
   systemMessage.value = content;
-  conversationHistory.push({
+  OpenAiChat.shared().addToConversation({
     role: "system",
     content: content,
-  });
+  })
+
   // Check to see if host or guest and send message to appropriate party
   if (isHost) {
     //sendSystemMessage(content);
@@ -1449,12 +1453,11 @@ function setNewAIRole(newRole) {
   systemMessage.addEventListener('input', () => {
       //systemMessage.style.width = `${systemMessage.value.length}ch`;
       content = systemMessage.value;
-      conversationHistory = [
-        {
-          role: 'system',
-          content: content,
-        },
-      ];
+      OpenAiChat.shared().addToConversation({
+        role: 'system',
+        content: content,
+      })
+
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
       if (isHost) {
@@ -1469,12 +1472,13 @@ function setNewAIRole(newRole) {
 /*
   document.getElementById('submitSystemMessage').addEventListener('click', () => {    
       content = systemMessage.value;
-      conversationHistory = [
-        {
+
+      OpenAiChat.shared().clearConversationHistory()
+      OpenAiChat.shared().addToConversation(
           role: 'system',
           content: content,
-        },
-      ];
+        })
+
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
       if (isHost) {
@@ -1501,7 +1505,7 @@ async function sendSystemMessage(message) {
 
 function guestChangeSystemMessage(data) {
   content = data.message;
-  conversationHistory.push({
+  OpenAiChat.shared().addToConversation({
     role: "user",
     content: prompt,
   });
@@ -1520,59 +1524,6 @@ function guestChangeSystemMessage(data) {
   }
 }
 
-// These functions save, load, and clear the session data from local storage
-function saveSessionData(sessionData) {
-  localStorage.setItem("sessionData", JSON.stringify(sessionData));
-}
-
-function loadSessionData() {
-  const sessionData = JSON.parse(localStorage.getItem("sessionData"));
-  if (!sessionData) {
-    return {
-      history: [],
-    };
-  }
-
-  if (!sessionData.history) {
-    sessionData.history = [];
-  }
-
-  return sessionData;
-}
-
-function clearSessionData() {
-  localStorage.removeItem("sessionData");
-  localStorage.removeItem("hostId");
-  localStorage.removeItem("hostNickname");
-}
-
-// Add event listener to trigger the resetSession function when the resetSessionButton is clicked
-resetSessionButton.addEventListener("click", resetSession);
-
-function resetSession() {
-  const userChoice = confirm(
-    "Do you want to start a new session? This will delete the previous session data and create a new invite link."
-  );
-  // Clear the session data
-  clearSessionData();
-  // Reload the page
-  window.location.reload();
-}
-
-// You can call this function when the host starts a new session
-async function checkForExistingSession() {
-  const sessionData = loadSessionData();
-  if (sessionData) {
-    const userChoice = confirm(
-      "Do you want to restore the previous session? Cancel to start a new session."
-    );
-    if (userChoice) {
-    } else {
-      // Start a new session
-      clearSessionData();
-    }
-  }
-}
 
 function guestDisplayHostSessionHistory(sessionData) {
   sessionData.forEach((item) => {
@@ -1695,7 +1646,7 @@ async function startSession(sessionType, sessionDetails) {
         });
       }
     }
-    const response = await fetchOpenAITextResponse(prompt);
+    const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
     groupSessionFirstAIResponse = response;
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
