@@ -3,19 +3,120 @@
 /* 
     OpenAi
 
+    OpenAiChat.shared().conversationHistory()
+
 */
 
-(class OpenAi extends Base {
+(class OpenAiChat extends Base {
   initPrototypeSlots () {
-    //this.newSlot("idb", null)
+    this.newSlot("aiModel", null)
+    //this.newSlot("apiKey", null)
+    this.newSlot("aiRole", null)
+    this.newSlot("conversationHistory", null)
+    //this.newSlot("activeRequests", null)
+  }
+
+  init () {
+    super.init();
+    this.setActiveRequests([])
+  }
+
+  setApiKey (key) {
+    localStorage.setItem("openai_api_key", key)
+    return this
+  }
+
+  apiKey () {
+    return localStorage.getItem("openai_api_key")
+  }
+
+  /*
+  newRequest () {
+    const request = OpenAiChatRequest.clone()
+    request.setApiKey(this.apiKey())
+    request.send()
+    this.activeRequests().push(request)
+  }
+  */
+
+}.initThisClass());
+
+/* -------------------------------------------------------- */
+
+(class OpenAiChatRequest extends Base {
+  initPrototypeSlots () {
+    this.newSlot("prompt", null)
+    this.newSlot("apiKey", null)
+    this.newSlot("apiUrl", "https://api.openai.com/v1/chat/completions")
   }
 
   init () {
     super.init();
   }
 
-}.initThisClass());
+  /*
+  async fetch (prompt) {
+    const apiKey = this.apiKey();
+    if (!apiKey) {
+      console.error("API key is missing.");
+      addMessage("system-message", "API key is missing.", "System");
+      return;
+    }
+    
+    const aiModelSelect = document.getElementById("aiModel");
+    const selectedModel = aiModelSelect.value;
+  
+    // Add the user's message to the conversation history
+    conversationHistory.push({
+      role: "user",
+      content: prompt,
+    });
+  
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: selectedModel,
+        messages: conversationHistory,
+      }),
+    };
+  
+    try {
+      const response = await fetch(this.apiUrl(), requestOptions);
+      const data = await response.json();
+      const aiResponse = data.choices[0].message.content;
+  
+      // Add the assistant's response to the conversation history
+      conversationHistory.push({
+        role: "assistant",
+        content: aiResponse,
+      });
+      // Save the conversation history to local storage
+      const sessionData = loadSessionData();
+      sessionData.history.push({
+        type: "ai-response",
+        data: aiResponse,
+        id: id,
+        nickname: selectedModelNickname,
+      });
+      saveSessionData(sessionData);
+  
+      return aiResponse;
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      addMessage(
+        "system-message",
+        "Error fetching AI response. Make sure the model is selected and the API key is correct.",
+        "Host"
+      );
+    }
+  }
+  */
 
+}.initThisClass());
 
 
 /* --- being openai calls --- */

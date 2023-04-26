@@ -1,23 +1,42 @@
 "use strict";
 
 /* 
+    Session
+
+    Session info like:
+    - ai model
+    - api key
+    - ai role
+    - conversation history
+
+    // example use:
     
+    // get history
+    const history = Session.shared().conversationHistory()
+
+    // add to history
+    Session.shared().addToConversation(json)
 
 */
 
-(class AiSession extends Base {
+(class Session extends Base {
     initPrototypeSlots () {
-        //this.newSlot("idb", null)
+        this.newSlot("aiModel", null)
+        this.newSlot("apiKey", null)
+        this.newSlot("aiRole", null)
+        this.newSlot("conversationHistory", null)
     }
 
     init () {
         super.init()
-        this.setIdb(IndexedDBFolder.clone())
-        this.setIsDebugging(false)
+        this.setConversationHistory([])
+        this.setIsDebugging(true)
     }
 
-    static launch () {
-        console.log("App launch")
+    addToConversation (json) {
+        //assert(isValidJson(json))?
+        this.conversationHistory().push(json)
+        return this
     }
 
 }.initThisClass());
