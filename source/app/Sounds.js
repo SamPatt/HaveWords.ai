@@ -16,7 +16,7 @@
 
   audioContext () {
     const context = new (window.AudioContext || window.webkitAudioContext)();
-    return content
+    return context
   }
 
   playOminousSound () {
