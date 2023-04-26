@@ -81,7 +81,7 @@
   
 }.initThisClass());
 
-/* --- microphone button ---*/
+/* --- microphone button --- */
 
 const micButton = document.getElementById("micButton");
 micButton._onIcon = "mic-fill-svgrepo-com.svg";

@@ -16,6 +16,7 @@ class Boot extends Object {
       "source/app/Nickname.js",
       "source/app/Sounds.js",
       "source/app/Microphone.js",
+      "source/app/OpenAi.js",
       "app.js"
     ]
   }
