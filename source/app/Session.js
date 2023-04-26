@@ -85,3 +85,35 @@ async function checkForExistingSession() {
     }
   }
 }
+
+function guestDisplayHostSessionHistory(sessionData) {
+  Session.shared().data().forEach((item) => {
+    if (item.type === "prompt") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "ai-response") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "system-message") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "chat") {
+      addChatMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "image-link") {
+      addImage(item.data);
+    }
+  });
+}
+
+function displaySessionHistory() {
+  Session.shared().history().forEach((item) => {
+    if (item.type === "prompt") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "ai-response") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "system-message") {
+      addMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "chat") {
+      addChatMessage(item.type, item.data, item.nickname);
+    } else if (item.type === "image-link") {
+      addImage(item.data);
+    }
+  });
+}

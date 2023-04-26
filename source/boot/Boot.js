@@ -12,6 +12,7 @@ class Boot extends Object {
       "source/external/purify2.3.3.min.js",
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
+      "source/app/helpers.js",
       "source/app/App.js",
       "source/app/Nickname.js",
       "source/app/Sounds.js",
@@ -50,7 +51,7 @@ class Boot extends Object {
     }
     script.onload = callback;
     script.onerror = (error) => {
-      console.log("Boot ERROR loading: '" + this.src + "'")
+      console.log("Boot ERROR loading: '" + error.target.src + "'")
     }
     head.appendChild(script);
   }

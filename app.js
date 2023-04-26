@@ -855,7 +855,7 @@ function addMessage(type, message, nickname) {
     icon = "🦔";
   }
 
-  const formattedResponse = convertToParagraphs(message);
+  const formattedResponse = message.convertToParagraphs();
   const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
   const messagesDiv = document.querySelector(".messages");
   const messageWrapper = document.createElement("div");
@@ -955,7 +955,7 @@ function addChatMessage(type, message, nickname) {
     icon = "🔧";
   }
 
-  const formattedResponse = convertToParagraphs(message);
+  const formattedResponse = message.convertToParagraphs();
   const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
   const messagesDiv = document.querySelector(".chatMessages");
   const messageWrapper = document.createElement("div");
@@ -1509,39 +1509,6 @@ function guestChangeSystemMessage(data) {
   }
 }
 
-
-function guestDisplayHostSessionHistory(sessionData) {
-  Session.shared().data().forEach((item) => {
-    if (item.type === "prompt") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "ai-response") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "system-message") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "chat") {
-      addChatMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "image-link") {
-      addImage(item.data);
-    }
-  });
-}
-
-function displaySessionHistory() {
-  Session.shared().history().forEach((item) => {
-    if (item.type === "prompt") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "ai-response") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "system-message") {
-      addMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "chat") {
-      addChatMessage(item.type, item.data, item.nickname);
-    } else if (item.type === "image-link") {
-      addImage(item.data);
-    }
-  });
-}
-
 const messageInput = document.getElementById("messageInput");
 const chatInput = document.getElementById("chatInput");
 const messageInputRemote = document.getElementById("messageInputRemote");
@@ -1801,16 +1768,3 @@ function startRoleplaySession() {
   Sounds.shared().playOminousSound();
 }
 
-window.addEventListener("load", () => {});
-
-function convertToParagraphs(text) {
-  // Split the text into paragraphs using double newline characters
-  const paragraphs = text.split(/\n{2,}/g);
-
-  // Wrap each paragraph in a <p> tag
-  const html = paragraphs
-    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
-    .join("");
-
-  return html;
-}
