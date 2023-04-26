@@ -8,97 +8,92 @@
 
 (class Microphone extends Base {
   initPrototypeSlots () {
-    //this.newSlot("idb", null)
+    this.newSlot("isOn", false)
+    this.newSlot("isRequestingMicAccess", false)
+    this.newSlot("userAudioStream", null)
   }
 
   init () {
     super.init();
   }
 
+  toggleState () {
+    if (this.isRequestingMicAccess()) {
+      return this
+    }
+
+    if (this.isOn()) {
+      this.turnOff();
+    } else {
+      this.turnOn();
+    }
+  }
+
+  turnOff () {
+    console.warn("need to implement this")
+  }
+
+  turnOn () {
+    if (!this.hasMicAccess()) {
+      this.requestMicAccess()
+    }
+  }
+
+  hasMicAccess () {
+    return this.userAudioStream() !== null;
+  }
+  
+  requestMicAccess () {
+    if (this.hasMicAccess() || this.isRequestingMicAccess()) {
+      return;
+    }
+
+    this.micButton().style.opacity = 0.5;
+  
+    this.setIsRequestingMicAccess(true);
+  
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        this.setIsRequestingMicAccess(false);
+        this.setUserAudioStream(stream);
+        this.setIsOn(true)
+      })
+      .catch((error) => {
+        this.setIsRequestingMicAccess(false);
+        this.setIsOn(false)
+        console.error("Error getting audio stream:", error);
+      });
+  }
+
+  setIsOn (aBool) {
+    this._isOn = aBool
+    if (this.micButton()) {
+      this.micButton().style.opacity = 1;
+      this.micButton().setOnState(this.isOn()) // TODO: move to notification so we don't know about UI
+    }
+    return this
+  }
+
+  micButton () {
+    return document.getElementById("micButton")
+  }
   
 }.initThisClass());
 
-
-
-/* --- microphone input ---*/
+/* --- microphone button ---*/
 
 const micButton = document.getElementById("micButton");
-micButton._isOn = false;
 micButton._onIcon = "mic-fill-svgrepo-com.svg";
 micButton._offIcon = "mic-slash-fill-svgrepo-com.svg";
 
-micButton.toggleState = function () {
-  if (this._isOn) {
-    this.turnOff();
-  } else {
-    this.turnOn();
-  }
-};
-
-micButton.setIsOn = function (bool) {
-  this._isOn = bool;
-  this.updateIcon();
-};
-
-micButton.svgObject = function () {
-  return document.getElementById("micSvgIcon");
-};
-
-micButton.updateIcon = function () {
-  const icon = this._isOn ? this._onIcon : this._offIcon;
-  this.svgObject().setAttribute("data", "resources/icons/" + icon);
-};
-
-micButton.turnOn = function () {
-  this.setIsOn(true);
-};
-
-micButton.turnOff = function () {
-  this.setIsOn(false);
+micButton.setOnState = function (isOn) {
+  const icon = isOn ? this._onIcon : this._offIcon;
+  const svgObject = document.getElementById("micSvgIcon");
+  svgObject.setAttribute("data", "resources/icons/" + icon);
 };
 
 micButton.addEventListener("click", (event) => {
-  const self = event.target;
-  //this.toggleState()
-  if (self._isOn) {
-    if (hasMicAccess()) {
-      userAudioStream.muted = true; // not sure if this works
-    }
-    self.setIsOn(false);
-  } else {
-    if (hasMicAccess()) {
-      userAudioStream.muted = false; // not sure if this works
-      //userAudioStream = undefined;
-      self.setIsOn(true);
-    } else {
-      requestMicAccess();
-    }
-  }
+  //const self = event.target;
+  Microphone.shared().toggleState()
 });
-
-function hasMicAccess() {
-  return userAudioStream !== undefined;
-}
-
-let isRequestingMicAccess = false;
-
-function requestMicAccess() {
-  if (hasMicAccess() || isRequestingMicAccess) {
-    return;
-  }
-
-  isRequestingMicAccess = true;
-
-  navigator.mediaDevices
-    .getUserMedia({ audio: true })
-    .then((stream) => {
-      isRequestingMicAccess = false;
-      userAudioStream = stream;
-      micButton.setIsOn(true);
-    })
-    .catch((error) => {
-      isRequestingMicAccess = false;
-      micButton.setIsOn(false);
-      console.error("Error getting audio stream:", error);
-    });
-}
