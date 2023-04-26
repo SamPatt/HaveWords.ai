@@ -14,6 +14,7 @@ let hostWelcomeMessage = false;
 let groupSessionType;
 let groupSessionDetails;
 let groupSessionFirstAIResponse;
+let inSession = false;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
@@ -206,7 +207,7 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 }
 
 const copyToClipboard = (str) => {
-  Sounds.shared().playSendBeep()();
+  Sounds.shared().playSendBeep();
   if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(str);
   }
@@ -292,7 +293,6 @@ const apiKeyInput = document.getElementById("apiKey");
 
 document.addEventListener("DOMContentLoaded", () => {
   const aiModel = document.getElementById("aiModel");
-  const sendButton = document.getElementById("sendButton");
   const submitApiKeyButton = document.getElementById("submitApiKey");
   updateSendButtonState();
   modelSelect.addEventListener("change", updateSelectedModelNickname);
@@ -318,18 +318,27 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKeyInput.value = storedApiKey;
   }
 
-  chatSendButton.addEventListener("click", () => {
-    sendChatMessage();
-  });
 
-  sendButton.addEventListener("click", () => {
-    addPrompt();
-  });
-
-  sendButtonRemote.addEventListener("click", () => {
-    guestSendPrompt();
-  });
 });
+
+function handleChatSendButtonClick() {
+  console.log("chatSendButton clicked");
+  sendChatMessage();
+}
+
+function handleSendButtonClick() {
+  console.log("sendButton clicked");
+  addPrompt();
+  console.log("Sending prompt to AI");
+}
+
+function handleSendButtonRemoteClick() {
+  console.log("sendButtonRemote clicked");
+  guestSendPrompt();
+  console.log("Sending remote prompt to AI");
+}
+
+
 
 //PeerJS webRTC section
 
@@ -610,7 +619,7 @@ async function setupJoinSession() {
         displayKickedMessage();
       }
       if (data.type === "chat") {
-        Sounds.shared().playReceiveBeep()();
+        Sounds.shared().playReceiveBeep();
         addChatMessage(data.type, data.message, data.nickname);
       }
       if (data.type === "prompt") {
@@ -696,7 +705,7 @@ async function setupJoinSession() {
 function sendChatMessage() {
   const input = document.getElementById("chatInput");
   const message = input.value;
-  Sounds.shared().playSendBeep()();
+  Sounds.shared().playSendBeep();
 
   if (message.trim() !== "") {
     input.value = "";
@@ -1033,20 +1042,21 @@ function addMessage(type, message, nickname) {
   } else if (type === "ai-response") {
     loadingAnimation.style.display = "none";
     icon = "🤖";
-    // Check if host, and if so, add a button to generate an image prompt
-    if (isHost) {
-      // Create a new icon/button element for the AI responses
-      const generateImagePromptButton = document.createElement("button");
-      generateImagePromptButton.textContent = "🎨";
-      generateImagePromptButton.className = "generate-image-prompt-button";
-      generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
+    // Check if in session, then if host, and if so, add a button to generate an image prompt
+    
+      if (isHost && inSession) {
+        // Create a new icon/button element for the AI responses
+        const generateImagePromptButton = document.createElement("button");
+        generateImagePromptButton.textContent = "🎨";
+        generateImagePromptButton.className = "generate-image-prompt-button";
+        generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
 
-      // Add an event listener to the icon/button
-      generateImagePromptButton.addEventListener("click", () => {
-        triggerImageBot(sanitizedHtml);
-        // Optional: Hide the button after it has been clicked
-        generateImagePromptButton.style.display = "none";
-      });
+        // Add an event listener to the icon/button
+        generateImagePromptButton.addEventListener("click", () => {
+          triggerImageBot(sanitizedHtml);
+          // Optional: Hide the button after it has been clicked
+          generateImagePromptButton.style.display = "none";
+        });
 
       // Append the icon/button to the message content
       messageContent.appendChild(generateImagePromptButton);
@@ -1187,7 +1197,7 @@ function addChatMessage(type, message, nickname) {
 }
 
 async function addAIReponse(response) {
-  Sounds.shared().playReceiveBeep()();
+  Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, selectedModelNickname);
 }
 
@@ -1208,7 +1218,7 @@ async function guestAddLocalChatMessage(message) {
 }
 
 async function addPrompt() {
-  Sounds.shared().playSendBeep()();
+  Sounds.shared().playSendBeep();
   const input = document.getElementById("messageInput");
   const message = input.value.trim();
   if (message === "") return;
@@ -1226,22 +1236,22 @@ async function addPrompt() {
 }
 
 async function guestAddPrompt(data) {
-  Sounds.shared().playReceiveBeep()();
+  Sounds.shared().playReceiveBeep();
   addMessage("prompt", data.message, data.nickname);
 }
 
 async function guestAddSystemMessage(data) {
-  Sounds.shared().playReceiveBeep()();
+  Sounds.shared().playReceiveBeep();
   addMessage("system-message", data.message, data.nickname);
 }
 
 async function guestAddLocalPrompt(prompt) {
-  Sounds.shared().playSendBeep()();
+  Sounds.shared().playSendBeep();
   addMessage("prompt", prompt, guestNickname);
 }
 
 async function guestAddHostAIResponse(response, nickname) {
-  Sounds.shared().playReceiveBeep()();
+  Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, nickname);
 }
 
@@ -1827,11 +1837,11 @@ function handleEnterKeyPress(event) {
       event.preventDefault(); // Prevent the default action (newline)
 
       if (document.activeElement === messageInput) {
-        sendButton.click();
+        handleSendButtonClick();
       } else if (document.activeElement === chatInput) {
-        chatSendButton.click();
+        handleChatSendButtonClick();
       } else if (document.activeElement === messageInputRemote) {
-        sendButtonRemote.click();
+        handleSendButtonRemoteClick();
       }
     }
   }
@@ -1846,6 +1856,7 @@ startGameButton.addEventListener("click", () => {
 
 async function startSession(sessionType, sessionDetails) {
   addMessage("prompt", "You've started the session!", hostNickname);
+  inSession = true;
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
     gameMode = true;
