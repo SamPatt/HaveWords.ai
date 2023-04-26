@@ -312,7 +312,7 @@ function setupSessionUI () {
   });
 
   // Load the stored API key from localStorage if it exists
-  const storedApiKey = localStorage.getItem("openai_api_key");
+  const storedApiKey = OpenAiChat.shared().apiKey();
   if (storedApiKey) {
     apiKeyInput.value = storedApiKey;
   }
@@ -1672,7 +1672,7 @@ function displayHashModal(sessionType) {
   const apiKeyError = document.getElementById("apiKeyError"); // Add this line to get the error element
 
   // Check if the API key is already set in local storage
-  const storedApiKey = localStorage.getItem("openai_api_key");
+  const storedApiKey = OpenAiChat.shared().apiKey();
   if (storedApiKey) {
     // Update the input field's placeholder text and disable the input
     hashApiKey.disabled = true;
@@ -1692,7 +1692,7 @@ function displayHashModal(sessionType) {
     }
     // Only set the API key in local storage if the input is not disabled
     if (!hashApiKey.disabled) {
-      localStorage.setItem("openai_api_key", hashApiKey.value);
+      const storedApiKey = OpenAiChat.shared().setApiKey(hashApiKey.value);
     }
     groupSessionDetails = sessionTypeDetailsSelect.value;
     console.log("Group session world: " + groupSessionDetails);
