@@ -14,6 +14,7 @@ let hostWelcomeMessage = false;
 let groupSessionType;
 let groupSessionDetails;
 let groupSessionFirstAIResponse;
+let inSession = false;
 
 // If user is host, check if there is an existing hostId in local storage
 if (isHost) {
@@ -1141,20 +1142,21 @@ function addMessage(type, message, nickname) {
   } else if (type === "ai-response") {
     loadingAnimation.style.display = "none";
     icon = "🤖";
-    // Check if host, and if so, add a button to generate an image prompt
-    if (isHost) {
-      // Create a new icon/button element for the AI responses
-      const generateImagePromptButton = document.createElement("button");
-      generateImagePromptButton.textContent = "🎨";
-      generateImagePromptButton.className = "generate-image-prompt-button";
-      generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
+    // Check if in session, then if host, and if so, add a button to generate an image prompt
+    
+      if (isHost && inSession) {
+        // Create a new icon/button element for the AI responses
+        const generateImagePromptButton = document.createElement("button");
+        generateImagePromptButton.textContent = "🎨";
+        generateImagePromptButton.className = "generate-image-prompt-button";
+        generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
 
-      // Add an event listener to the icon/button
-      generateImagePromptButton.addEventListener("click", () => {
-        triggerImageBot(sanitizedHtml);
-        // Optional: Hide the button after it has been clicked
-        generateImagePromptButton.style.display = "none";
-      });
+        // Add an event listener to the icon/button
+        generateImagePromptButton.addEventListener("click", () => {
+          triggerImageBot(sanitizedHtml);
+          // Optional: Hide the button after it has been clicked
+          generateImagePromptButton.style.display = "none";
+        });
 
       // Append the icon/button to the message content
       messageContent.appendChild(generateImagePromptButton);
@@ -1954,6 +1956,7 @@ startGameButton.addEventListener("click", () => {
 
 async function startSession(sessionType, sessionDetails) {
   addMessage("prompt", "You've started the session!", hostNickname);
+  inSession = true;
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
     gameMode = true;
