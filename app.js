@@ -76,7 +76,6 @@ const conversationHistory = [
 const loadingAnimation = document.getElementById("loadingHost");
 const startGameButton = document.getElementById("startGameButton");
 let guestUserList = [];
-let userAudioStream;
 
 /* --------------------- */
 
@@ -156,7 +155,7 @@ peer.on("call", (call) => {
   const acceptCall = confirm(`Incoming call. Do you want to accept the call?`);
 
   if (acceptCall) {
-    call.answer(userAudioStream);
+    call.answer(Microphone.shared().userAudioStream());
     console.log("Answering incoming call from:", call.peer);
 
     call.on("stream", (remoteStream) => {
@@ -1462,7 +1461,7 @@ function handleVoiceRequestButton(userActions, calleeID) {
       // Start the voice call
       console.log("Requesting voice call with " + calleeID);
       voiceRequestButton.textContent = "End Voice Call";
-      const call = peer.call(calleeID, userAudioStream);
+      const call = peer.call(calleeID, Microphone.shared().userAudioStream());
       activeCalls[calleeID] = call;
 
       call.on("stream", (remoteStream) => {

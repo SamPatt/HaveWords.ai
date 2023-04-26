@@ -30,7 +30,7 @@
   }
 
   turnOff () {
-    console.warn("need to implement this")
+    console.warn("WARNING: Microphone.turnOff(): need to implement this.")
   }
 
   turnOn () {
