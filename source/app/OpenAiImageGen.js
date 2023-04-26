@@ -112,8 +112,8 @@ async function triggerBot(response, sessionType, sessionDetails) {
   const data = await AIresponse.json();
   const rawTrigger = data.choices[0].message.content;
   let trigger;
-  if (isValidJSON(rawTrigger)) {
-    const cleanedResponse = removeWhitespace(rawTrigger);
+  if (rawTrigger.isValidJSON()) {
+    const cleanedResponse = rawTrigger.removeWhitespace();
     trigger = JSON.parse(cleanedResponse);
 
     // Rest of the code...

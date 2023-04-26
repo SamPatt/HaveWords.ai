@@ -794,25 +794,6 @@ function sendImage(imageURL) {
   }
 }
 
-function isValidJSON(jsonString) {
-  try {
-    const parsedJSON = JSON.parse(jsonString);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-function removeWhitespace(jsonString) {
-  try {
-    const parsedJSON = JSON.parse(jsonString);
-    const cleanedJSONString = JSON.stringify(parsedJSON);
-    return cleanedJSONString;
-  } catch (error) {
-    console.error("Error while removing whitespace from JSON:", error);
-    return jsonString;
-  }
-}
 
 function addMessage(type, message, nickname) {
   // If the string is empty, don't add it
