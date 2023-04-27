@@ -35,7 +35,7 @@ async function triggerImageBot(response) {
     groupSessionFirstAIResponse +
     "\n\nHere is the current scene: \n\n " +
     response +
-    "\n\n Image description: ";
+    "\n\n Image description of current scene: ";
   const apiUrl = "https://api.openai.com/v1/chat/completions";
   const requestOptions = {
     method: "POST",
@@ -60,7 +60,6 @@ async function triggerImageBot(response) {
   addImage(imageURL);
   console.log(`Image description: ${imageDescription}`);
 }
-
 
 /* -------------------------------------------------------- */
 
