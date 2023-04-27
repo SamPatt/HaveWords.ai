@@ -1,22 +1,4 @@
 
-
-// --- invite link ------------------
-
-const displayInviteLink = document.getElementById("displayInviteLink");
-
-const displayInviteText = document.getElementById("displayInviteText");
-displayInviteText.addEventListener("click", (event) => {
-  const oldColor = event.target.style.color;
-  event.target.style.color = "white";
-  setTimeout(() => {
-    event.target.style.color = oldColor;
-  }, 0.2 * 1000);
-  Sounds.shared().playSendBeep();
-  displayInviteText._link.copyToClipboard()
-});
-
-// ---------------------
-
 OpenAiChat.shared().addToConversation({
   role: "system",
   content: "You are a helpful assistant.",
@@ -167,16 +149,7 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
 function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
-function makeInviteLink(hostRoomId) {
-  const inviteLink = `${window.location.href}?room=${hostRoomId}`;
-  //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
-  return inviteLink;
-}
-const copyInviteLinkButton = document.getElementById("copyInviteLink");
-copyInviteLinkButton.addEventListener("click", () => {
-  displayInviteLink.select();
-  document.execCommand("copy");
-});
+
 
 // Creates a token for guest identity across sessions
 function generateToken() {
@@ -275,17 +248,20 @@ function handleSendButtonRemoteClick() {
   console.log("Sending remote prompt to AI");
 }
 
-
-
 //PeerJS webRTC section
+
+
+function makeInviteLink(hostRoomId) {
+  const inviteLink = `${window.location.href}?room=${hostRoomId}`;
+  //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
+  return inviteLink;
+}
 
 async function setupHostSession() {
   console.log("Setting up host session");
   displayHostHTMLChanges();
   const inviteLink = makeInviteLink(id);
-  displayInviteLink.value = inviteLink;
-  displayInviteText._link = inviteLink;
-  displayInviteText.style.opacity = 1;
+  InviteButton.shared().setLink(inviteLink)
 
   if (!fantasyRoleplay) {
     addMessage(

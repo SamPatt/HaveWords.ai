@@ -34,5 +34,12 @@
     this.element().innerHTML = s
     return this
   }
+
+  listenForClick () {
+    this.element().addEventListener("click", (event) => {
+      this.onClick(event)
+    })
+    return this
+  }
   
 }.initThisClass());
