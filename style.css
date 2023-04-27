@@ -700,9 +700,10 @@ button {
   }
   
 .message-image {
-    width: 512px;
-    height: 512px;
+    width: 100%;
+    height: auto;
     object-fit: cover;
+    border-radius: 0.5em;
 }
 
 .image-container {
