@@ -18,6 +18,9 @@
   setId (id) {
     this._id = id
     const e = document.getElementById(id);
+    if (!e) {
+      throw new Error("no element found for id '" + id + "'")
+    }
     this.setElement(e)
     return this
   }
