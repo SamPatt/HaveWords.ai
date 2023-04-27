@@ -822,6 +822,7 @@ function addMessage(type, message, nickname) {
 
         // Add an event listener to the icon/button
         generateImagePromptButton.addEventListener("click", () => {
+          addMessage("image-gen", "Generating image...", "Host");
           triggerImageBot(sanitizedHtml);
           // Optional: Hide the button after it has been clicked
           generateImagePromptButton.style.display = "none";
@@ -830,7 +831,10 @@ function addMessage(type, message, nickname) {
       // Append the icon/button to the message content
       messageContent.appendChild(generateImagePromptButton);
     }
-  } else if (type === "system-message") {
+  } else if (type === "image-gen") {
+    loadingAnimation.style.display = "inline";
+    icon = "🎨";  }
+  else if (type === "system-message") {
     icon = "🔧";
   } else {
     icon = "🦔";
@@ -890,6 +894,7 @@ function addMessage(type, message, nickname) {
 function addImage(imageURL) {
   let icon;
   let isUser = false;
+  loadingAnimation.style.display = "none";
   const messagesDiv = document.querySelector(".messages");
   const messageWrapper = document.createElement("div");
   messageWrapper.className = "message-wrapper";
