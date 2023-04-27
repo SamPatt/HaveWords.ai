@@ -66,11 +66,10 @@ const peer = new Peer(id, {
   port: 443,
 });
 
-let content = "You are a helpful assistant.";
 
 OpenAiChat.shared().addToConversation({
   role: "system",
-  content: content,
+  content: "You are a helpful assistant.",
 })
 
 const loadingAnimation = document.getElementById("loadingHost");
@@ -212,14 +211,6 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
   };
 }
 
-const copyToClipboard = (str) => {
-  Sounds.shared().playSendBeep();
-  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-    return navigator.clipboard.writeText(str);
-  }
-  return Promise.reject("The Clipboard API is not available.");
-};
-
 const displayInviteLink = document.getElementById("displayInviteLink");
 
 const displayInviteText = document.getElementById("displayInviteText");
@@ -229,7 +220,8 @@ displayInviteText.addEventListener("click", (event) => {
   setTimeout(() => {
     event.target.style.color = oldColor;
   }, 0.2 * 1000);
-  copyToClipboard(displayInviteText._link);
+  Sounds.shared().playSendBeep();
+  displayInviteText._link.copyToClipboard()
 });
 
 // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
@@ -237,7 +229,8 @@ function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
 function makeInviteLink(hostRoomId) {
-  const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
+  const inviteLink = `${window.location.href}?room=${hostRoomId}`;
+  //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
   return inviteLink;
 }
 const copyInviteLinkButton = document.getElementById("copyInviteLink");
@@ -408,21 +401,17 @@ async function setupHostSession() {
               nickname: hostNickname,
               guestUserList: newGuestUserList,
             });
+
             // Send a new message to all connected guests to notify them of the new guest
-            for (const guestId in dataChannels) {
-              if (dataChannels.hasOwnProperty(guestId)) {
-                if (data.id !== guestId) {
-                  dataChannels[guestId].conn.send({
-                    type: "guest-join",
-                    message: `${data.nickname} has joined the session!`,
-                    nickname: hostNickname,
-                    joiningGuestNickname: data.nickname,
-                    joiningGuestId: data.id,
-                    guestUserList: guestUserList,
-                  });
-                }
-              }
-            }
+            Peers.shared().broadcastExceptTo({
+              type: "guest-join",
+              message: `${data.nickname} has joined the session!`,
+              nickname: hostNickname,
+              joiningGuestNickname: data.nickname,
+              joiningGuestId: data.id,
+              guestUserList: guestUserList,
+            }, data.id )
+
             addChatMessage(
               "system-message",
               `${data.nickname} has joined the session!`,
@@ -439,19 +428,15 @@ async function setupHostSession() {
               id: data.id,
               nickname: data.nickname,
             });
+
             // Send prompt to guests
-            for (const guestId in dataChannels) {
-              if (dataChannels.hasOwnProperty(guestId)) {
-                if (data.id !== guestId) {
-                  dataChannels[guestId].conn.send({
-                    type: "prompt",
-                    id: data.id,
-                    message: data.message,
-                    nickname: data.nickname,
-                  });
-                }
-              }
-            }
+            Peers.shared().broadcastExceptTo({
+              type: "prompt",
+              id: data.id,
+              message: data.message,
+              nickname: data.nickname,
+            }, data.id);
+
             // Display prompt
             addMessage("prompt", data.message, data.nickname);
             sendAIResponse(data.message, data.nickname);
@@ -495,18 +480,12 @@ async function setupHostSession() {
           addChatMessage(data.type, data.message, data.nickname);
 
           // Broadcast chat message to all connected guests
-          for (const guestId in dataChannels) {
-            if (dataChannels.hasOwnProperty(guestId)) {
-              if (data.id !== guestId) {
-                dataChannels[guestId].conn.send({
-                  type: "chat",
-                  id: data.id,
-                  message: data.message,
-                  nickname: data.nickname,
-                });
-              }
-            }
-          }
+          Peers.shared().broadcastExceptTo({
+            type: "chat",
+            id: data.id,
+            message: data.message,
+            nickname: data.nickname,
+          }, data.id )
         }
 
         if (data.type === "nickname-update") {
@@ -523,18 +502,14 @@ async function setupHostSession() {
           const updatedGuestUserList = updateGuestUserlist();
           guestUserList = updatedGuestUserList;
           // Send updated guest user list to all guests
-          for (const guestId in dataChannels) {
-            if (dataChannels.hasOwnProperty(guestId)) {
-              dataChannels[guestId].conn.send({
-                type: "nickname-update",
-                message: `${oldNickname} is now ${data.newNickname}.`,
-                nickname: hostNickname,
-                oldNickname: oldNickname,
-                newNickname: data.newNickname,
-                guestUserList: updatedGuestUserList,
-              });
-            }
-          }
+          Peers.shared().broadcast({
+            type: "nickname-update",
+            message: `${oldNickname} is now ${data.newNickname}.`,
+            nickname: hostNickname,
+            oldNickname: oldNickname,
+            newNickname: data.newNickname,
+            guestUserList: updatedGuestUserList,
+          })
         }
       });
 
@@ -547,18 +522,16 @@ async function setupHostSession() {
         delete dataChannels[conn.peer];
         const updatedGuestUserList = updateGuestUserlist();
         guestUserList = updatedGuestUserList;
-        for (const guestId in dataChannels) {
-          if (dataChannels.hasOwnProperty(guestId)) {
-            dataChannels[guestId].conn.send({
-              type: "guest-leave",
-              message: `${closedPeerNickname} has left the session.`,
-              nickname: hostNickname,
-              leavingGuestNickname: closedPeerNickname,
-              leavingGuestId: closedPeerId,
-              guestUserList: updatedGuestUserList,
-            });
-          }
-        }
+
+        Peers.shared().broadcast({
+          type: "guest-leave",
+          message: `${closedPeerNickname} has left the session.`,
+          nickname: hostNickname,
+          leavingGuestNickname: closedPeerNickname,
+          leavingGuestId: closedPeerId,
+          guestUserList: updatedGuestUserList,
+        });
+
         addChatMessage(
           "system-message",
           `${closedPeerNickname} has left the session.`,
@@ -719,16 +692,12 @@ function sendChatMessage() {
       // Display chat message
       addLocalChatMessage(message);
       // Broadcast chat message to all connected guests
-      for (const guestId in dataChannels) {
-        if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-            type: "chat",
-            id: id,
-            message: message,
-            nickname: hostNickname,
-          });
-        }
-      }
+      Peers.shared().broadcast({
+        type: "chat",
+        id: id,
+        message: message,
+        nickname: hostNickname,
+      });
     } else {
       // Send chat message to host
       conn.send({
@@ -762,27 +731,18 @@ async function sendAIResponse(message, nickname) {
   }
 
   addAIReponse(response);
-  // Send the response to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "ai-response",
-        id: id,
-        message: response,
-        nickname: selectedModelNickname,
-      });
-    }
-  }
-}
 
-/* --- being openai calls --- */
-// NOTE: openai calls have been moved to source/app/OpenAi.js
-/* --- end openai calls --- */
+  Peers.shared().broadcast({
+    type: "ai-response",
+    id: id,
+    message: response,
+    nickname: selectedModelNickname,
+  });
+}
 
 
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
-  //Save into session history
   Session.shared().addToHistory({
     type: "image-link",
     data: imageURL,
@@ -790,260 +750,22 @@ function sendImage(imageURL) {
     nickname: hostNickname,
   });
 
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "image-link",
-        message: imageURL,
-        nickname: hostNickname,
-      });
-    }
-  }
-}
-
-
-function addMessage(type, message, nickname) {
-  // If the string is empty, don't add it
-  if (message === "" || message === undefined) {
-    return;
-  }
-
-  const messageContent = document.createElement("div");
-  let icon;
-  let isUser = false;
-  if (type === "prompt") {
-    loadingAnimation.style.display = "inline";
-    icon = "👤";
-    isUser = true;
-  } else if (type === "ai-response") {
-    loadingAnimation.style.display = "none";
-    icon = "🤖";
-    // Check if in session, then if host, and if so, add a button to generate an image prompt
-    
-      if (isHost && inSession) {
-        // Create a new icon/button element for the AI responses
-        const generateImagePromptButton = document.createElement("button");
-        generateImagePromptButton.textContent = "🎨";
-        generateImagePromptButton.className = "generate-image-prompt-button";
-        generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
-
-        // Add an event listener to the icon/button
-        generateImagePromptButton.addEventListener("click", () => {
-          addMessage("image-gen", "Generating image...", "Host");
-          triggerImageBot(sanitizedHtml);
-          // Optional: Hide the button after it has been clicked
-          generateImagePromptButton.style.display = "none";
-        });
-
-      // Append the icon/button to the message content
-      messageContent.appendChild(generateImagePromptButton);
-    }
-  } else if (type === "image-gen") {
-    loadingAnimation.style.display = "inline";
-    icon = "🎨";  }
-  else if (type === "system-message") {
-    icon = "🔧";
-  } else {
-    icon = "🦔";
-  }
-
-  const formattedResponse = message.convertToParagraphs();
-  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-  const messagesDiv = document.querySelector(".messages");
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "message-wrapper";
-
-  const iconDiv = document.createElement("div");
-  iconDiv.className = "icon";
-  iconDiv.innerHTML = icon;
-
-  messageContent.className = "message-content";
-
-  if (!isUser) {
-    messageWrapper.className += " aiMessage";
-  }
-
-  const messageNickname = document.createElement("div");
-  messageNickname.className = "message-nickname";
-  messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
-
-  const messageText = document.createElement("div");
-  messageText.className = "message-text";
-  messageText.innerHTML = sanitizedHtml;
-  messageContent.appendChild(messageText);
-  messageWrapper.appendChild(iconDiv);
-  messageWrapper.appendChild(messageContent);
-
-  // Add "Begin Session" button for welcome messages
-  if (type === "welcome-message") {
-    const beginSessionButton = document.createElement("button");
-    beginSessionButton.textContent = "Begin Session";
-    beginSessionButton.className = "begin-session-button";
-    beginSessionButton.addEventListener("click", () => {
-      // Add your desired action when the "Begin Session" button is clicked
-      startSession(groupSessionType, groupSessionDetails);
-      console.log(
-        "Begin Session button clicked " +
-          groupSessionType +
-          " " +
-          groupSessionDetails
-      );
-    });
-    messageContent.appendChild(beginSessionButton);
-  }
-  messagesDiv.appendChild(messageWrapper);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  //const scrollView = messagesDiv.parentNode
-  //scrollView.scrollTop = scrollView.scrollHeight;
-}
-
-function addImage(imageURL) {
-  let icon;
-  let isUser = false;
-  loadingAnimation.style.display = "none";
-  const messagesDiv = document.querySelector(".messages");
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "message-wrapper";
-
-  const iconDiv = document.createElement("div");
-  iconDiv.className = "icon";
-  iconDiv.innerHTML = icon;
-
-  const messageContent = document.createElement("div");
-  messageContent.className = "message-content";
-
-  if (!isUser) {
-    messageWrapper.className += " aiMessage";
-  }
-
-  const imageElement = document.createElement("img");
-  imageElement.src = imageURL;
-  imageElement.className = "message-image";
-
-  const imageContainer = document.createElement("div"); // Create a new div for the image container
-  imageContainer.className = "image-container"; // Set the new class for the image container
-
-  imageContainer.appendChild(imageElement); // Append the image to the image container
-  messageContent.appendChild(imageContainer); // Append the image container to the message content
-
-  messageWrapper.appendChild(iconDiv);
-  messageWrapper.appendChild(messageContent);
-
-  messagesDiv.appendChild(messageWrapper);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-function addChatMessage(type, message, nickname) {
-  // If the string is empty, don't add it
-  if (message === "") {
-    return;
-  }
-  let icon;
-  if (type === "chat") {
-    icon = "🗯️";
-  } else if (type === "ai-response") {
-    icon = "🤖";
-  } else {
-    icon = "🔧";
-  }
-
-  const formattedResponse = message.convertToParagraphs();
-  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-  const messagesDiv = document.querySelector(".chatMessages");
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "message-wrapper";
-
-  const iconDiv = document.createElement("div");
-  iconDiv.className = "icon";
-  iconDiv.innerHTML = icon;
-
-  const messageContent = document.createElement("div");
-  messageContent.className = "message-content";
-
-  const messageNickname = document.createElement("div");
-  messageNickname.className = "message-nickname";
-  messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
-
-  const messageText = document.createElement("div");
-  messageText.className = "message-text";
-  messageText.innerHTML = sanitizedHtml;
-  messageContent.appendChild(messageText);
-  messageWrapper.appendChild(iconDiv);
-  messageWrapper.appendChild(messageContent);
-  messagesDiv.appendChild(messageWrapper);
-  const scrollView = messagesDiv.parentNode;
-  scrollView.scrollTop = scrollView.scrollHeight;
-}
-
-async function addAIReponse(response) {
-  Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, selectedModelNickname);
-}
-
-async function addLocalChatMessage(message) {
-  Session.shared().addToHistory({
-    type: "chat",
-    data: message,
-    id: id,
+  Peers.shared().broadcast({
+    type: "image-link",
+    message: imageURL,
     nickname: hostNickname,
   });
-  addChatMessage("chat", message, hostNickname);
 }
 
-async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, guestNickname);
-}
-
-async function addPrompt() {
-  Sounds.shared().playSendBeep();
-  const input = document.getElementById("messageInput");
-  const message = input.value.trim();
-  if (message === "") return;
-  input.value = "";
-  Session.shared().addToHistory({
-    type: "prompt",
-    data: message,
-    id: id,
-    nickname: hostNickname,
-  });
-  addMessage("prompt", message, hostNickname);
-  sendPrompt(message);
-}
-
-async function guestAddPrompt(data) {
-  Sounds.shared().playReceiveBeep();
-  addMessage("prompt", data.message, data.nickname);
-}
-
-async function guestAddSystemMessage(data) {
-  Sounds.shared().playReceiveBeep();
-  addMessage("system-message", data.message, data.nickname);
-}
-
-async function guestAddLocalPrompt(prompt) {
-  Sounds.shared().playSendBeep();
-  addMessage("prompt", prompt, guestNickname);
-}
-
-async function guestAddHostAIResponse(response, nickname) {
-  Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, nickname);
-}
 
 async function sendPrompt(message) {
-  // Send the prompt to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "prompt",
-        id: id,
-        message: message,
-        nickname: hostNickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "prompt",
+    id: id,
+    message: message,
+    nickname: hostNickname,
+  });
+
   if (gameMode) {
     message = hostNickname + ": " + message;
   }
@@ -1068,164 +790,6 @@ async function guestSendPrompt() {
   }
 }
 
-// These functions update the list of connected guests and display the user actions menu
-
-function updateUserList() {
-  const userList = document.getElementById("userList");
-  userList.innerHTML = "";
-
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      const guestToken = dataChannels[guestId].token;
-      const guestNickname = dataChannels[guestId].nickname;
-
-      // Create a container for the user and their actions
-      const userContainer = document.createElement("div");
-      userContainer.classList.add("user-container");
-
-      // Create the user list item and add an arrow indicator
-      const listItem = document.createElement("li");
-      listItem.textContent = guestNickname;
-      listItem.setAttribute("data-id", guestId);
-      listItem.setAttribute("data-token", guestToken);
-
-      const arrowIndicator = document.createElement("span");
-      arrowIndicator.textContent = " ▼";
-      arrowIndicator.classList.add("arrow-indicator");
-      listItem.appendChild(arrowIndicator);
-
-      // Create user action buttons
-      const userActions = document.createElement("div");
-      userActions.classList.add("user-actions");
-
-      // AI Access button
-      const canSendPromptsButton = document.createElement("button");
-      canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts
-        ? "Revoke AI access"
-        : "Grant AI access";
-      canSendPromptsButton.onclick = () => {
-        dataChannels[guestId].canSendPrompts =
-          !dataChannels[guestId].canSendPrompts;
-
-        canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts
-          ? "Revoke AI access"
-          : "Grant AI access";
-
-        if (dataChannels[guestId].canSendPrompts) {
-          dataChannels[guestId].conn.send({ type: "grant-ai-access" });
-        } else {
-          dataChannels[guestId].conn.send({ type: "revoke-ai-access" });
-        }
-      };
-      userActions.appendChild(canSendPromptsButton);
-
-      userContainer.appendChild(listItem);
-
-      // Voice request button
-      handleVoiceRequestButton(userActions, guestId);
-
-      // Kick button
-      const kickButton = document.createElement("button");
-      kickButton.textContent = "Kick";
-      kickButton.onclick = () => {
-        // Kick logic
-        console.log("Kicking user " + guestId);
-        kickUser(guestId);
-      };
-      userActions.appendChild(kickButton);
-
-      const muteButton = document.createElement("button");
-      muteButton.textContent = "Mute";
-      muteButton.onclick = () => {
-        // Mute logic
-      };
-      userActions.appendChild(muteButton);
-
-      const banButton = document.createElement("button");
-      banButton.textContent = "Ban";
-      banButton.onclick = () => {
-        // Ban logic
-        banUser(guestId, guestToken);
-      };
-      userActions.appendChild(banButton);
-
-      // Add user actions to the user container and set it to be hidden by default
-      userActions.style.display = "none";
-      userContainer.appendChild(userActions);
-
-      // Show or hide user actions when the arrow indicator is clicked
-      arrowIndicator.onclick = () => {
-        if (userActions.style.display === "none") {
-          userActions.style.display = "block";
-        } else {
-          userActions.style.display = "none";
-        }
-      };
-
-      // Add the user container to the user list
-      userList.appendChild(userContainer);
-    }
-  }
-}
-
-function displayGuestUserList() {
-  const userList = document.getElementById("userList");
-  userList.innerHTML = "";
-
-  for (const id in guestUserList) {
-    if (guestUserList.hasOwnProperty(id)) {
-      const guestNickname = guestUserList[id].nickname;
-
-      // Create a container for the user and their actions
-      const userContainer = document.createElement("div");
-      userContainer.classList.add("user-container");
-
-      // Create the user list item and add an arrow indicator
-      const listItem = document.createElement("li");
-      listItem.textContent = guestNickname;
-      listItem.setAttribute("data-id", guestUserList[id].id);
-
-      const arrowIndicator = document.createElement("span");
-      arrowIndicator.textContent = " ▼";
-      arrowIndicator.classList.add("arrow-indicator");
-      listItem.appendChild(arrowIndicator);
-
-      userContainer.appendChild(listItem);
-
-      // Create user action buttons
-      const userActions = document.createElement("div");
-      userActions.classList.add("user-actions");
-
-      // Voice request button
-
-      handleVoiceRequestButton(userActions, guestUserList[id].id);
-
-      // Mute button
-      const muteButton = document.createElement("button");
-      muteButton.textContent = "Mute";
-      muteButton.onclick = () => {
-        // Mute logic
-      };
-      userActions.appendChild(muteButton);
-
-      // Add user actions to the user container and set it to be hidden by default
-      userActions.style.display = "none";
-      userContainer.appendChild(userActions);
-
-      // Show or hide user actions when the arrow indicator is clicked
-      arrowIndicator.onclick = () => {
-        if (userActions.style.display === "none") {
-          userActions.style.display = "block";
-        } else {
-          userActions.style.display = "none";
-        }
-      };
-
-      // Add the user container to the user list
-      userList.appendChild(userContainer);
-    }
-  }
-}
 
 function handleVoiceRequestButton(userActions, calleeID) {
   // Voice request button
@@ -1280,127 +844,6 @@ function handleRemoteStream(remoteStream) {
   stereoPanner.connect(audioContext.destination);
 }
 
-function displayUserActions(event) {
-  const guestId = event.currentTarget.getAttribute("data-id");
-  const userActions = document.getElementById("userActions");
-  userActions.style.display = "block";
-  userActions.setAttribute("data-id", guestId);
-}
-
-function kickUser(kickedUserId) {
-  if (dataChannels.hasOwnProperty(kickedUserId)) {
-    const guestConn = dataChannels[kickedUserId].conn;
-    guestConn.send({ type: "kick" });
-
-    setTimeout(() => {
-      guestConn.close();
-      console.log(`Kicked guest: ${kickedUserId}`);
-      delete dataChannels[kickedUserId];
-      updateUserList();
-    }, 500); // Adjust the delay (in milliseconds) as needed
-  }
-  const userActions = document.getElementById("user-actions");
-  userActions.style.display = "none";
-}
-
-function displayKickedMessage() {
-  const chatOutput = document.getElementById("chatOutput");
-  const kickedMessage = document.createElement("li");
-  kickedMessage.classList.add("kicked-message");
-  kickedMessage.textContent = "You've been kicked.";
-  chatOutput.appendChild(kickedMessage);
-
-  const chatSendButton = document.getElementById("chatSendButton");
-  chatSendButton.disabled = true;
-}
-
-function banUser(id, token) {
-  if (dataChannels.hasOwnProperty(id)) {
-    const guestConn = dataChannels[id].conn;
-    guestConn.send({ type: "ban" });
-
-    setTimeout(() => {
-      guestConn.close();
-      console.log(`Banned guest: ${id}`);
-      bannedGuests.push(token);
-      console.log(token);
-      console.log(bannedGuests);
-      delete dataChannels[id];
-      updateUserList();
-    }, 500); // Adjust the delay (in milliseconds) as needed
-  }
-  const userActions = document.getElementById("user-actions");
-  userActions.style.display = "none";
-}
-
-const usernameField = document.getElementById("username");
-
-usernameField.addEventListener("keyup", (event) => {
-  const target = event.target;
-  //console.log("event.key: '" + event.key + "'")
-  if (event.key === "Enter") {
-    updateUserName();
-    event.target.blur();
-  }
-  updateInputField(target);
-});
-
-function updateInputField(target) {
-  const size = target.value.length
-    ? target.value.length
-    : target.placeholder.length;
-  //console.log("size:", size)
-  target.setAttribute("size", size + "em");
-}
-
-function updateUserName() {
-  const username = usernameField.value;
-  if (username.trim() !== "") {
-    if (isHost) {
-      // Set new host nickname and send to all guests
-      const oldNickname = hostNickname;
-      if (hostNickname === username) {
-        return;
-      }
-      hostNickname = username;
-      // Update the host nickname in localstorage
-      localStorage.setItem("hostNickname", hostNickname);
-      addChatMessage(
-        "chat",
-        `${oldNickname} is now ${hostNickname}.`,
-        hostNickname
-      );
-      const updatedGuestUserList = updateGuestUserlist();
-      for (const guestId in dataChannels) {
-        if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-            type: "nickname-update",
-            message: `${oldNickname} is now ${hostNickname}.`,
-            nickname: hostNickname,
-            oldNickname: oldNickname,
-            newNickname: hostNickname,
-            guestUserList: updatedGuestUserList,
-          });
-        }
-      }
-    } else {
-      // Set new guest nickname and send to host
-      guestNickname = username;
-      // Update the guest nickname in localstorage
-      localStorage.setItem("guestNickname", guestNickname);
-      sendUsername(username);
-    }
-  }
-}
-
-function sendUsername(username) {
-  // Send chat message to host
-  conn.send({
-    type: "nickname-update",
-    id: id,
-    newNickname: username,
-  });
-}
 
 const systemMessage = document.getElementById("systemMessage");
 /*
@@ -1410,7 +853,7 @@ const systemMessage = document.getElementById("systemMessage");
     */
 
 function setNewAIRole(newRole) {
-  content = newRole;
+  const content = newRole;
   systemMessage.value = content;
   OpenAiChat.shared().addToConversation({
     role: "system",
@@ -1430,7 +873,7 @@ function setNewAIRole(newRole) {
 /*
   systemMessage.addEventListener('input', () => {
       //systemMessage.style.width = `${systemMessage.value.length}ch`;
-      content = systemMessage.value;
+      const content = systemMessage.value;
       OpenAiChat.shared().addToConversation({
         role: 'system',
         content: content,
@@ -1449,7 +892,7 @@ function setNewAIRole(newRole) {
     */
 /*
   document.getElementById('submitSystemMessage').addEventListener('click', () => {    
-      content = systemMessage.value;
+      const content = systemMessage.value;
 
       OpenAiChat.shared().clearConversationHistory()
       OpenAiChat.shared().addToConversation(
@@ -1468,21 +911,16 @@ function setNewAIRole(newRole) {
     */
 
 async function sendSystemMessage(message) {
-  // Send the updated system message to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "system-message",
-        id: id,
-        message: message,
-        nickname: hostNickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "system-message",
+    id: id,
+    message: message,
+    nickname: hostNickname,
+  });
 }
 
 function guestChangeSystemMessage(data) {
-  content = data.message;
+  const content = data.message;
   OpenAiChat.shared().addToConversation({
     role: "user",
     content: prompt,
@@ -1490,16 +928,12 @@ function guestChangeSystemMessage(data) {
   // Update system message input
   systemMessage.value = content;
   // Relay to connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "system-message",
-        id: data.id,
-        message: data.message,
-        nickname: data.nickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "system-message",
+    id: data.id,
+    message: data.message,
+    nickname: data.nickname,
+  });
 }
 
 const messageInput = document.getElementById("messageInput");
@@ -1577,19 +1011,16 @@ async function startSession(sessionType, sessionDetails) {
     }
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send({
-          type: "game-launch",
-          id: id,
-          message:
-            "The host started a new " +
-            sessionDetails +
-            " session! Please wait while the AI Game master crafts your world...",
-          nickname: hostNickname,
-        });
-      }
-    }
+    Peers.shared().broadcast({
+      type: "game-launch",
+      id: id,
+      message:
+        "The host started a new " +
+        sessionDetails +
+        " session! Please wait while the AI Game master crafts your world...",
+      nickname: hostNickname,
+    });
+
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
     groupSessionFirstAIResponse = response;
@@ -1597,16 +1028,12 @@ async function startSession(sessionType, sessionDetails) {
     addAIReponse(response);
 
     // Send the response to all connected guests
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send({
-          type: "ai-response",
-          id: id,
-          message: response,
-          nickname: selectedModelNickname,
-        });
-      }
-    }
+    Peers.shared().broadcast({
+      type: "ai-response",
+      id: id,
+      message: response,
+      nickname: selectedModelNickname,
+    });
   } else {
     console.log("No session type selected");
     // other session types later

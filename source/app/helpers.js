@@ -39,3 +39,11 @@ String.prototype.removeWhitespace = function () {
     return jsonString;
   }
 };
+
+
+String.prototype.copyToClipboard = function () { // not the right place for this, but ok for now
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(this);
+  }
+  return Promise.reject("The Clipboard API is not available.");
+};
