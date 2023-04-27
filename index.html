@@ -115,26 +115,33 @@
     </div>
     <div id="onVisitHashModal" class="modal">
         <div class="modal-content">
-            <h2>Welcome to your group AI adventure!</h2>
-            <p>As the host, you are sharing your AI with your friends and helping craft their experience. First, you need to input your API key, then select the details for your adventure.</p>
-            <label for="hashApiKeyInput">API Key:</label>
-            <input type="password" id="hashApiKeyInput" placeholder="Enter API key...">
-            <span id="apiKeyError" style="color: red; display: none;">Please enter a valid API key.</span>
-
-            <label for="sessionTypeDetailsSelect">Session Type:</label>
+          <h2>Welcome to your group AI session!</h2>
+          <p>As the host, you are sharing your AI with your friends and helping craft their experience. First, you need to input your API key, then select the details for your session.</p>
+          <label for="hashApiKeyInput">API Key:</label>
+          <input type="password" id="hashApiKeyInput" placeholder="Enter API key...">
+          <span id="apiKeyError" style="color: red; display: none;">Please enter a valid API key.</span>
+      
+          <div id="sessionTypeDescription">
+            <!-- Description will be added dynamically using the updateSessionTypeOptions function -->
+          </div>
+      
+          <label for="dropdownContainer">Session Type:</label>
+          <div id="dropdownContainer">
             <select id="sessionTypeDetailsSelect">
                 <!-- Options will be added dynamically using the updateSessionTypeOptions function -->
             </select>
-            
-            <div id="sessionTypeDescription">
-                <!-- Description will be added dynamically using the updateSessionTypeOptions function -->
-            </div>
-            
-            <div class="modal-footer">
-                <button id="submitOnVisitHashModalButton">Start</button>
-            </div>
+          </div>
+      
+          <div id="customInputContainer">
+            <!-- Custom input and label will be added dynamically using the updateSessionTypeOptions function -->
+          </div>
+      
+          <div class="modal-footer">
+            <button id="submitOnVisitHashModalButton">Start</button>
+          </div>
         </div>
-    </div>
+      </div>
+           
 </body>
 
 </html>
