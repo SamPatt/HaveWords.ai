@@ -32,7 +32,7 @@
       // Change prompt based on session details
       if (sessionDetails === "Studio Ghibli") {
         imagePrompt =
-          "A cute animated still from Spirited Away (2001) showing " + prompt;
+        prompt + " | anime oil painting high resolution ghibli inspired 4k";
       } else if (sessionDetails === "Harry Potter") {
         imagePrompt =
           "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
@@ -93,7 +93,7 @@ async function triggerImageBot(response) {
     groupSessionFirstAIResponse +
     "\n\nHere is the current scene: \n\n " +
     response +
-    "\n\n Image description: ";
+    "\n\n Image description of current scene: ";
   const apiUrl = "https://api.openai.com/v1/chat/completions";
   const requestOptions = {
     method: "POST",
