@@ -22,6 +22,10 @@ class Boot extends Object {
       "source/app/openai/OpenAiChat.js",
       "source/app/openai/OpenAiTriggerBot.js",
       "source/app/Session.js",
+      "source/app/views/View.js",
+      "source/app/views/PlayersView.js",
+      "source/app/views/GroupChatView.js",
+      "source/app/views/AiChatView.js",
       "app.js"
     ]
   }

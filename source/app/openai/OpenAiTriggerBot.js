@@ -5,7 +5,6 @@
 
 */
 
-/*
 (class OpenAiTriggerBot extends OpenAiService {
   initPrototypeSlots() {
     this.newSlot("aiModel", null);
@@ -20,7 +19,6 @@
   }
 
 }.initThisClass());
-*/
 
 // ImageBot function it triggered when the host requests an image description of the current scene
 async function triggerImageBot(response) {
