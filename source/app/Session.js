@@ -22,7 +22,7 @@
     }
 
     load () {
-      const json = JSON.parse(localStorage.getItem("sessionData"));
+      let json = JSON.parse(localStorage.getItem("sessionData"));
 
       if (!json) {
         json = {
