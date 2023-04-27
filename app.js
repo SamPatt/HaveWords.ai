@@ -25,16 +25,6 @@ OpenAiChat.shared().addToConversation({
 const loadingAnimation = document.getElementById("loadingHost");
 const startGameButton = document.getElementById("startGameButton");
 
-function checkURLPath() {
-  const hash = window.location.hash;
-  console.log("Current hash:", hash); // Add this line for debugging
-  if (hash === "#adventure") {
-    console.log("URL includes #adventure");
-    fantasyRoleplay = true;
-    updateSessionTypeOptions("fantasyRoleplay");
-  }
-}
-
 // --- peer code ------------------
 
 peer.on("open", function () {
@@ -72,6 +62,24 @@ peer.on("open", function () {
     setupJoinSession(); // Call the function to set up the join session
   }
 });
+
+
+function checkURLPath() {
+  const hash = window.location.hash;
+  console.log("Current hash:", hash); // Add this line for debugging
+  if (hash === "#adventure") {
+    console.log("URL includes #adventure");
+    fantasyRoleplay = true;
+    updateSessionTypeOptions("fantasyRoleplay");
+  } else if (hash === "#trivia") {
+    console.log("URL includes #trivia");
+    gameMode = true;
+    updateSessionTypeOptions("trivia");
+  } else if (hash === "#exploreFiction") {
+    console.log("URL includes #exploreFiction");
+    updateSessionTypeOptions("exploreFiction");
+  }
+}
 
 let retryCount = 0;
 const maxRetries = 5;
@@ -972,15 +980,20 @@ async function startSession(sessionType, sessionDetails) {
 }
 
 function updateSessionTypeOptions(sessionType) {
-  const sessionTypeDetailsSelect = document.getElementById(
-    "sessionTypeDetailsSelect"
-  );
-  const sessionTypeDescription = document.getElementById(
-    "sessionTypeDescription"
-  );
+  const dropdownContainer = document.getElementById("dropdownContainer");
+  const customInputContainer = document.getElementById("customInputContainer");
+  const sessionTypeDescription = document.getElementById("sessionTypeDescription");
+
+  const customInput = document.createElement("input");
+  customInput.type = "text";
+  customInput.id = "customSessionDetailsInput";
+  customInput.placeholder = "Enter custom details...";
+  const customInputLabel = document.createElement("p");
+  customInputLabel.innerHTML = "Or create your own session:";
 
   // Clear existing options and description
-  sessionTypeDetailsSelect.innerHTML = "";
+  dropdownContainer.innerHTML = "";
+  customInputContainer.innerHTML = "";
   sessionTypeDescription.innerHTML = "";
 
   let options;
@@ -999,12 +1012,15 @@ function updateSessionTypeOptions(sessionType) {
       <h2>Fantasy Roleplaying:</h2>
       <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
     `;
-  } else if (sessionType === "trivianight") {
+  } else if (sessionType === "trivia") {
     options = [
-      // Add trivia night options here
+      { value: "Variety", text: "Variety" },
+      { value: "Sports", text: "Sports" },
+      { value: "History", text: "History" },
+      { value: "Pop Culture", text: "Pop Culture" },
     ];
     description = `
-      <h3>Trivia Night:</h3>
+      <h2>Trivia:</h2>
       <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
     `;
   } else if (sessionType === "explorefiction") {
@@ -1012,7 +1028,7 @@ function updateSessionTypeOptions(sessionType) {
       // Add explore fiction options here
     ];
     description = `
-      <h3>Explore Fiction:</h3>
+      <h2>Explore Fiction:</h2>
       <p>Travel to various fictional universes with the AI's help. Discover new worlds, interact with famous characters, and engage in thrilling adventures as you explore the limits of your imagination.</p>
     `;
   } else {
@@ -1020,17 +1036,23 @@ function updateSessionTypeOptions(sessionType) {
   }
 
   // Add the new options to the dropdown menu
+  const selectElement = document.createElement("select");
   options.forEach((option) => {
     const opt = document.createElement("option");
     opt.value = option.value;
     opt.textContent = option.text;
-    sessionTypeDetailsSelect.appendChild(opt);
+    selectElement.appendChild(opt);
   });
+
+  dropdownContainer.appendChild(selectElement);
+  customInputContainer.appendChild(customInputLabel);
+  customInputContainer.appendChild(customInput);
 
   // Add the description to the sessionTypeDescription div
   sessionTypeDescription.innerHTML = description;
   displayHashModal(sessionType);
 }
+
 
 function displayHashModal(sessionType) {
   // Display the API key modal
@@ -1039,7 +1061,7 @@ function displayHashModal(sessionType) {
   );
   const onVisitHashModal = document.getElementById("onVisitHashModal");
   const hashApiKey = document.getElementById("hashApiKeyInput");
-  const apiKeyError = document.getElementById("apiKeyError"); // Add this line to get the error element
+  const apiKeyError = document.getElementById("apiKeyError");
 
   // Check if the API key is already set in local storage
   const storedApiKey = OpenAiChat.shared().apiKey();
@@ -1064,14 +1086,26 @@ function displayHashModal(sessionType) {
     if (!hashApiKey.disabled) {
       const storedApiKey = OpenAiChat.shared().setApiKey(hashApiKey.value);
     }
-    groupSessionDetails = sessionTypeDetailsSelect.value;
+    const customDetailsInput = document.getElementById("customSessionDetailsInput");
+    const customDetails = customDetailsInput.value.trim();
+    
+    if (customDetails !== "") {
+      groupSessionDetails = customDetails;
+    } else {
+      groupSessionDetails = sessionTypeDetails.value;
+    }
     console.log("Group session world: " + groupSessionDetails);
     onVisitHashModal.style.display = "none";
     // Start the session with the selected session type
     if (sessionType === "fantasyRoleplay") {
       startRoleplaySession();
+    } else if (sessionType === "trivia") {
+      startTriviaSession();
+    } else if (sessionType === "explorefiction") {
+      startExploreFictionSession();
     } else {
       // Add other session types here
+      console.log("No session type selected");
     }
   });
 }
