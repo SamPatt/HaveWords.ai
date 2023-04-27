@@ -222,7 +222,8 @@ function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
 function makeInviteLink(hostRoomId) {
-  const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
+  const inviteLink = `${window.location.href}?room=${hostRoomId}`;
+  //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
   return inviteLink;
 }
 const copyInviteLinkButton = document.getElementById("copyInviteLink");
