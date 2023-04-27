@@ -1,11 +1,11 @@
 "use strict";
 
 /* 
-    PlayersView
+    UsersView
 
 */
 
-(class PlayersView extends View {
+(class UsersView extends View {
   initPrototypeSlots () {
 
   }
