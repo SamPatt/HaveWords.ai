@@ -22,7 +22,7 @@
     }
 
     load () {
-      const json = JSON.parse(localStorage.getItem("sessionData"));
+      let json = JSON.parse(localStorage.getItem("sessionData"));
 
       if (!json) {
         json = {
@@ -87,7 +87,7 @@ async function checkForExistingSession() {
 }
 
 function guestDisplayHostSessionHistory(sessionData) {
-  Session.shared().data().forEach((item) => {
+  Session.shared().history().forEach((item) => {
     if (item.type === "prompt") {
       addMessage(item.type, item.data, item.nickname);
     } else if (item.type === "ai-response") {

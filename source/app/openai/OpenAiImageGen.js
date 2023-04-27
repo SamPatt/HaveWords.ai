@@ -29,7 +29,7 @@
       // Change prompt based on session details
       if (sessionDetails === "Studio Ghibli") {
         imagePrompt =
-          "A cute animated still from Spirited Away (2001) showing " + prompt;
+        prompt + " | anime oil painting high resolution ghibli inspired 4k";
       } else if (sessionDetails === "Harry Potter") {
         imagePrompt =
           "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
@@ -81,4 +81,4 @@
   }
 
 }.initThisClass());
-*/
+
