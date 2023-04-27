@@ -18,14 +18,17 @@ class Boot extends Object {
       "source/app/Sounds.js",
       "source/app/Microphone.js",
       "source/app/Peers.js",
+
       "source/app/openai/OpenAiRequest.js",
       "source/app/openai/OpenAiService.js",
       "source/app/openai/OpenAiChat.js",
       "source/app/openai/OpenAiImageGen.js",
       "source/app/openai/OpenAiTriggerBot.js",
       "source/app/Session.js",
+
       "source/app/views/View.js",
       "source/app/views/InviteButton.js",
+      "source/app/views/SessionOptionsView.js",
       "source/app/views/UsersView.js",
       "source/app/views/GroupChatView.js",
       "source/app/views/AiChatView.js",
