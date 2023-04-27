@@ -14,3 +14,4 @@
   }
 }.initThisClass());
 
+const startGameButton = document.getElementById("startGameButton");

@@ -14,7 +14,67 @@
   }
 }.initThisClass());
 
-// ----------------------------------------------------------------
+function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const message = input.value;
+  Sounds.shared().playSendBeep();
+
+  if (message.trim() !== "") {
+    input.value = "";
+
+    if (isHost) {
+      // Add chat to chat history
+      Session.shared().addToHistory({
+        type: "chat",
+        data: message,
+        id: id,
+        nickname: hostNickname,
+      });
+      // Display chat message
+      addLocalChatMessage(message);
+      // Broadcast chat message to all connected guests
+      Peers.shared().broadcast({
+        type: "chat",
+        id: id,
+        message: message,
+        nickname: hostNickname,
+      });
+    } else {
+      // Send chat message to host
+      conn.send({
+        type: "chat",
+        id: id,
+        message: message,
+        nickname: guestNickname,
+      });
+      guestAddLocalChatMessage(message);
+    }
+  }
+}
+
+// Disables the chat send button until the data channel is open
+const chatSendButton = document.getElementById("chatSendButton");
+chatSendButton.addEventListener("click", sendChatMessage);
+
+function handleChatSendButtonClick() {
+  console.log("chatSendButton clicked");
+  sendChatMessage();
+}
+
+// --- chat input ---
+
+const chatInput = document.getElementById("chatInput");
+chatInput.addEventListener("keypress", (event) => {
+  const enterKeyCode = 13;
+  if (enterKeyCode === 13 && !event.shiftKey) {
+    event.preventDefault(); // prevent new line
+    handleChatSendButtonClick();
+  }
+});
+
+// --- username ---
+
+// ---
 
 async function addLocalChatMessage(message) {
   Session.shared().addToHistory({

@@ -57,7 +57,93 @@
     }
 
 }.initThisClass());
-  
+
+
+
+
+function displayHostHTMLChanges() {
+  document.getElementById("hostAIContainer").style.display = "block";
+  document.getElementById("aiSelection").style.display = "block";
+  document.getElementById("inputSection").style.display = "block";
+  document.getElementById("resetSessionButton").style.display = "block";
+  startGameButton.style.display = "block";
+}
+
+function displayGuestHTMLChanges() {
+  document.getElementById("hostAIContainer").style.display = "block";
+  document.getElementById("remoteSystemPrompt").style.display = "block";
+  document.getElementById("inputSectionRemote").style.display = "block";
+  messageInputRemote.disabled = true;
+  document.getElementById("aiSelection").style.display = "none";
+}
+
+const modelSelect = document.getElementById("aiModel");
+let selectedModelNickname = "";
+
+function updateSelectedModelNickname() {
+  const selectedOption = modelSelect.options[modelSelect.selectedIndex];
+  selectedModelNickname = selectedOption.getAttribute("data-nickname");
+}
+updateSelectedModelNickname();
+
+
+function updateSendButtonState() {
+  if (aiModel.value === "gpt-3.5-turbo" || aiModel.value === "gpt-4") {
+    sendButton.disabled = false;
+  } else {
+    sendButton.disabled = true;
+  }
+}
+
+
+function checkURLPath() {
+  const hash = window.location.hash;
+  console.log("Current hash:", hash); // Add this line for debugging
+  if (hash === "#adventure") {
+    console.log("URL includes #adventure");
+    fantasyRoleplay = true;
+    updateSessionTypeOptions("fantasyRoleplay");
+  } else if (hash === "#trivia") {
+    console.log("URL includes #trivia");
+    gameMode = true;
+    updateSessionTypeOptions("trivia");
+  } else if (hash === "#exploreFiction") {
+    console.log("URL includes #exploreFiction");
+    updateSessionTypeOptions("exploreFiction");
+  }
+}
+
+const apiKeyInput = document.getElementById("apiKey");
+
+function setupSessionUI () {
+  const aiModel = document.getElementById("aiModel");
+  const submitApiKeyButton = document.getElementById("submitApiKey");
+  updateSendButtonState();
+  modelSelect.addEventListener("change", updateSelectedModelNickname);
+  checkURLPath();
+
+  aiModel.addEventListener("change", () => {
+    selectedOption = modelSelect.options[modelSelect.selectedIndex];
+    selectedModelNickname = selectedOption.getAttribute("data-nickname");
+    updateSendButtonState();
+  });
+
+  submitApiKeyButton.addEventListener("click", () => {
+    localStorage.setItem("openai_api_key", apiKeyInput.value);
+    submitApiKeyButton.textContent = "Saved!";
+    setTimeout(() => {
+      submitApiKeyButton.style.display = "none";
+    }, 1000);
+  });
+
+  // Load the stored API key from localStorage if it exists
+  const storedApiKey = OpenAiChat.shared().apiKey();
+  if (storedApiKey) {
+    apiKeyInput.value = storedApiKey;
+  }
+}
+setupSessionUI()
+
 // Add event listener to trigger the resetSession function when the resetSessionButton is clicked
 resetSessionButton.addEventListener("click", resetSession);
 

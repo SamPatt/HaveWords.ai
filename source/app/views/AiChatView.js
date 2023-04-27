@@ -14,6 +14,41 @@
   }
 }.initThisClass());
 
+const loadingAnimation = document.getElementById("loadingHost");
+const displayUsername = document.getElementById("username");
+
+const messageInput = document.getElementById("messageInput");
+messageInput.addEventListener("keypress", (event) => {
+  const enterKeyCode = 13
+  if (enterKeyCode === 13 && !event.shiftKey) {
+    event.preventDefault(); // prevent new line
+    handleSendButtonClick();
+  }
+});
+
+const messageInputRemote = document.getElementById("messageInputRemote");
+messageInputRemote.addEventListener("keypress", (event) => {
+  const enterKeyCode = 13
+  if (enterKeyCode === 13 && !event.shiftKey) {
+    event.preventDefault(); // prevent new line
+    handleSendButtonRemoteClick();
+  }
+});
+
+function handleSendButtonClick() {
+  console.log("sendButton clicked");
+  addPrompt();
+  console.log("Sending prompt to AI");
+}
+
+function handleSendButtonRemoteClick() {
+  console.log("sendButtonRemote clicked");
+  guestSendPrompt();
+  console.log("Sending remote prompt to AI");
+}
+
+
+
 
 function addMessage(type, message, nickname) {
   // If the string is empty, don't add it
@@ -243,4 +278,34 @@ async function guestAddLocalPrompt(prompt) {
 async function guestAddHostAIResponse(response, nickname) {
   Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, nickname);
+}
+
+
+
+
+async function sendAIResponse(message, nickname) {
+  // If in game mode, add username to the start of each prompt
+  if (gameMode) {
+    if (!isHost) {
+      message = nickname + ": " + message;
+    }
+  } else {
+  }
+
+  // Get AI Response and post locally
+  
+  const response = await OpenAiChat.shared().asyncFetch(message);
+  if (gameMode) {
+    //console.log("Calling triggerBot with AI response:", response);
+    //triggerBot(response, groupSessionType, groupSessionDetails);
+  }
+
+  addAIReponse(response);
+
+  Peers.shared().broadcast({
+    type: "ai-response",
+    id: id,
+    message: response,
+    nickname: selectedModelNickname,
+  });
 }

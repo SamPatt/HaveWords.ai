@@ -455,3 +455,240 @@ async function setupJoinSession() {
     });
   });
 }
+
+// --- peer code ------------------
+
+peer.on("open", function () {
+  console.log("PeerJS client is ready. Peer ID:", id);
+
+  if (isHost) {
+    //Session.shared().load() // loadSessionData();
+    displaySessionHistory();
+    if (!hostNickname) {
+      hostNickname = Nickname.generateHostNickname() + " (host)";
+      // Add host nickname to localstorage
+      localStorage.setItem("hostNickname", hostNickname);
+      console.log("Host nickname:", hostNickname);
+      displayUsername.value = hostNickname;
+      updateInputField(displayUsername);
+    } else {
+      console.log("Host nickname is already set:", hostNickname);
+    }
+    if (hostWelcomeMessage == false) {
+      setupHostSession(); // Call the function to set up the host session
+      hostWelcomeMessage = true;
+    }
+  } else {
+    if (!guestNickname) {
+      guestNickname = Nickname.generateNickname();
+      // Add guest nickname to localstorage
+      localStorage.setItem("guestNickname", guestNickname);
+      displayUsername.value = guestNickname;
+      updateInputField(displayUsername);
+
+      console.log("Guest nickname:", guestNickname);
+    } else {
+      console.log("Guest nickname is already set:", guestNickname);
+    }
+    setupJoinSession(); // Call the function to set up the join session
+  }
+});
+
+let retryCount = 0;
+const maxRetries = 5;
+
+peer.on("error", function (err) {
+  console.log("PeerJS error:", err);
+
+  if (retryCount < maxRetries) {
+    setTimeout(() => {
+      console.log("Attempting to reconnect to PeerJS server...");
+      peer.reconnect();
+      retryCount++;
+    }, 5000);
+  } else {
+    console.log(
+      "Reached maximum number of retries. Displaying system message."
+    );
+    // Display a system message here, e.g. by updating the UI
+    addChatMessage(
+      "system-message",
+      `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`,
+      "System"
+    );
+  }
+});
+
+// Answer incoming voice calls
+peer.on("call", (call) => {
+  const acceptCall = confirm(`Incoming call. Do you want to accept the call?`);
+
+  if (acceptCall) {
+    call.answer(Microphone.shared().userAudioStream());
+    console.log("Answering incoming call from:", call.peer);
+
+    call.on("stream", (remoteStream) => {
+      handleRemoteStream(remoteStream);
+      updateCalleeVoiceRequestButton(call.peer, call);
+    });
+
+    call.on("close", () => {
+      // Handle call close event
+      console.log("Call with peer:", call.peer, "has ended");
+    });
+  } else {
+    console.log("Call from", call.peer, "rejected");
+  }
+});
+
+function updateCalleeVoiceRequestButton(calleeID, call) {
+  const listItem = document.querySelector(`li[data-id="${calleeID}"]`);
+  if (!listItem) {
+    console.error("Couldn't find list item element for callee ID:", calleeID);
+    return;
+  }
+
+  const userActions = listItem.parentNode.querySelector(".user-actions");
+  if (!userActions) {
+    console.error(
+      "Couldn't find user actions element for callee ID:",
+      calleeID
+    );
+    return;
+  }
+
+  const voiceRequestButton = userActions.querySelector("button");
+  if (!voiceRequestButton) {
+    console.error(
+      "Couldn't find voice request button for callee ID:",
+      calleeID
+    );
+    return;
+  }
+
+  voiceRequestButton.textContent = "End Voice Call";
+  voiceRequestButton.onclick = () => {
+    call.close();
+    voiceRequestButton.textContent = "Request Voice Call";
+    voiceRequestButton.onclick = null;
+  };
+}
+
+// These functions are called if the user is the host, to generate room IDs and create and copy the invite link
+function generateId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+// Creates a token for guest identity across sessions
+function generateToken() {
+  console.log("Generating token...");
+  return (
+    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
+  );
+}
+let guestToken = localStorage.getItem("guestToken");
+if (!guestToken) {
+  guestToken = generateToken();
+  localStorage.setItem("guestToken", guestToken);
+}
+
+// Send imageURL to all connected guests
+function sendImage(imageURL) {
+  Session.shared().addToHistory({
+    type: "image-link",
+    data: imageURL,
+    id: id,
+    nickname: hostNickname,
+  });
+
+  Peers.shared().broadcast({
+    type: "image-link",
+    message: imageURL,
+    nickname: hostNickname,
+  });
+}
+
+async function sendPrompt(message) {
+  Peers.shared().broadcast({
+    type: "prompt",
+    id: id,
+    message: message,
+    nickname: hostNickname,
+  });
+
+  if (gameMode) {
+    message = hostNickname + ": " + message;
+  }
+  sendAIResponse(message);
+}
+
+async function guestSendPrompt() {
+  const input = document.getElementById("messageInputRemote");
+  const message = input.value;
+
+  if (message.trim() !== "") {
+    input.value = "";
+
+    // Send chat message to host
+    conn.send({
+      type: "remote-prompt",
+      id: id,
+      message: message,
+      nickname: guestNickname,
+    });
+    guestAddLocalPrompt(message);
+  }
+}
+
+function handleVoiceRequestButton(userActions, calleeID) {
+  // Voice request button
+  const voiceRequestButton = document.createElement("button");
+  voiceRequestButton.textContent = "Request Voice Call";
+  let isVoiceCallActive = false;
+  let activeCalls = {}; // Store active calls
+
+  voiceRequestButton.onclick = () => {
+    if (!isVoiceCallActive) {
+      // Start the voice call
+      console.log("Requesting voice call with " + calleeID);
+      voiceRequestButton.textContent = "End Voice Call";
+      const call = peer.call(calleeID, Microphone.shared().userAudioStream());
+      activeCalls[calleeID] = call;
+
+      call.on("stream", (remoteStream) => {
+        handleRemoteStream(remoteStream);
+      });
+      call.on("close", () => {
+        console.log("Call with peer:", call.peer, "has ended");
+        voiceRequestButton.textContent = "Request Voice Call";
+        isVoiceCallActive = false;
+        delete activeCalls[calleeID]; // Remove the call from activeCalls
+      });
+    } else {
+      // End the voice call
+      const call = activeCalls[calleeID];
+      if (call) {
+        call.close();
+        delete activeCalls[calleeID];
+      }
+      voiceRequestButton.textContent = "Request Voice Call";
+    }
+    isVoiceCallActive = !isVoiceCallActive;
+  };
+  userActions.appendChild(voiceRequestButton);
+}
+
+function handleRemoteStream(remoteStream) {
+  const audioContext = new AudioContext();
+  const audioElement = new Audio();
+
+  audioElement.srcObject = remoteStream;
+  audioElement.play();
+
+  const audioSource = audioContext.createMediaStreamSource(remoteStream);
+  const stereoPanner = audioContext.createStereoPanner();
+  stereoPanner.pan.value = 0; // Pan the audio evenly between left and right channels
+
+  audioSource.connect(stereoPanner);
+  stereoPanner.connect(audioContext.destination);
+}
