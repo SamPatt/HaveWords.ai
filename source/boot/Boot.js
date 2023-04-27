@@ -31,8 +31,7 @@ class Boot extends Object {
       "source/app/views/SessionOptionsView.js",
       "source/app/views/AiChatView.js",
       "source/app/views/GroupChatView.js",
-      "source/app/views/UsersView.js",
-      "app.js"
+      "source/app/views/UsersView.js"
     ]
   }
 
