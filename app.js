@@ -66,11 +66,10 @@ const peer = new Peer(id, {
   port: 443,
 });
 
-let content = "You are a helpful assistant.";
 
 OpenAiChat.shared().addToConversation({
   role: "system",
-  content: content,
+  content: "You are a helpful assistant.",
 })
 
 const loadingAnimation = document.getElementById("loadingHost");
@@ -394,21 +393,17 @@ async function setupHostSession() {
               nickname: hostNickname,
               guestUserList: newGuestUserList,
             });
+
             // Send a new message to all connected guests to notify them of the new guest
-            for (const guestId in dataChannels) {
-              if (dataChannels.hasOwnProperty(guestId)) {
-                if (data.id !== guestId) {
-                  dataChannels[guestId].conn.send({
-                    type: "guest-join",
-                    message: `${data.nickname} has joined the session!`,
-                    nickname: hostNickname,
-                    joiningGuestNickname: data.nickname,
-                    joiningGuestId: data.id,
-                    guestUserList: guestUserList,
-                  });
-                }
-              }
-            }
+            Peers.shared().broadcastExceptTo({
+              type: "guest-join",
+              message: `${data.nickname} has joined the session!`,
+              nickname: hostNickname,
+              joiningGuestNickname: data.nickname,
+              joiningGuestId: data.id,
+              guestUserList: guestUserList,
+            }, data.id )
+
             addChatMessage(
               "system-message",
               `${data.nickname} has joined the session!`,
@@ -425,19 +420,15 @@ async function setupHostSession() {
               id: data.id,
               nickname: data.nickname,
             });
+
             // Send prompt to guests
-            for (const guestId in dataChannels) {
-              if (dataChannels.hasOwnProperty(guestId)) {
-                if (data.id !== guestId) {
-                  dataChannels[guestId].conn.send({
-                    type: "prompt",
-                    id: data.id,
-                    message: data.message,
-                    nickname: data.nickname,
-                  });
-                }
-              }
-            }
+            Peers.shared().broadcastExceptTo({
+              type: "prompt",
+              id: data.id,
+              message: data.message,
+              nickname: data.nickname,
+            }, data.id);
+
             // Display prompt
             addMessage("prompt", data.message, data.nickname);
             sendAIResponse(data.message, data.nickname);
@@ -481,18 +472,12 @@ async function setupHostSession() {
           addChatMessage(data.type, data.message, data.nickname);
 
           // Broadcast chat message to all connected guests
-          for (const guestId in dataChannels) {
-            if (dataChannels.hasOwnProperty(guestId)) {
-              if (data.id !== guestId) {
-                dataChannels[guestId].conn.send({
-                  type: "chat",
-                  id: data.id,
-                  message: data.message,
-                  nickname: data.nickname,
-                });
-              }
-            }
-          }
+          Peers.shared().broadcastExceptTo({
+            type: "chat",
+            id: data.id,
+            message: data.message,
+            nickname: data.nickname,
+          }, data.id )
         }
 
         if (data.type === "nickname-update") {
@@ -509,18 +494,14 @@ async function setupHostSession() {
           const updatedGuestUserList = updateGuestUserlist();
           guestUserList = updatedGuestUserList;
           // Send updated guest user list to all guests
-          for (const guestId in dataChannels) {
-            if (dataChannels.hasOwnProperty(guestId)) {
-              dataChannels[guestId].conn.send({
-                type: "nickname-update",
-                message: `${oldNickname} is now ${data.newNickname}.`,
-                nickname: hostNickname,
-                oldNickname: oldNickname,
-                newNickname: data.newNickname,
-                guestUserList: updatedGuestUserList,
-              });
-            }
-          }
+          Peers.shared().broadcast({
+            type: "nickname-update",
+            message: `${oldNickname} is now ${data.newNickname}.`,
+            nickname: hostNickname,
+            oldNickname: oldNickname,
+            newNickname: data.newNickname,
+            guestUserList: updatedGuestUserList,
+          })
         }
       });
 
@@ -533,18 +514,16 @@ async function setupHostSession() {
         delete dataChannels[conn.peer];
         const updatedGuestUserList = updateGuestUserlist();
         guestUserList = updatedGuestUserList;
-        for (const guestId in dataChannels) {
-          if (dataChannels.hasOwnProperty(guestId)) {
-            dataChannels[guestId].conn.send({
-              type: "guest-leave",
-              message: `${closedPeerNickname} has left the session.`,
-              nickname: hostNickname,
-              leavingGuestNickname: closedPeerNickname,
-              leavingGuestId: closedPeerId,
-              guestUserList: updatedGuestUserList,
-            });
-          }
-        }
+
+        Peers.shared().broadcast({
+          type: "guest-leave",
+          message: `${closedPeerNickname} has left the session.`,
+          nickname: hostNickname,
+          leavingGuestNickname: closedPeerNickname,
+          leavingGuestId: closedPeerId,
+          guestUserList: updatedGuestUserList,
+        });
+
         addChatMessage(
           "system-message",
           `${closedPeerNickname} has left the session.`,
@@ -705,16 +684,12 @@ function sendChatMessage() {
       // Display chat message
       addLocalChatMessage(message);
       // Broadcast chat message to all connected guests
-      for (const guestId in dataChannels) {
-        if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-            type: "chat",
-            id: id,
-            message: message,
-            nickname: hostNickname,
-          });
-        }
-      }
+      Peers.shared().broadcast({
+        type: "chat",
+        id: id,
+        message: message,
+        nickname: hostNickname,
+      });
     } else {
       // Send chat message to host
       conn.send({
@@ -748,27 +723,18 @@ async function sendAIResponse(message, nickname) {
   }
 
   addAIReponse(response);
-  // Send the response to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "ai-response",
-        id: id,
-        message: response,
-        nickname: selectedModelNickname,
-      });
-    }
-  }
-}
 
-/* --- being openai calls --- */
-// NOTE: openai calls have been moved to source/app/OpenAi.js
-/* --- end openai calls --- */
+  Peers.shared().broadcast({
+    type: "ai-response",
+    id: id,
+    message: response,
+    nickname: selectedModelNickname,
+  });
+}
 
 
 // Send imageURL to all connected guests
 function sendImage(imageURL) {
-  //Save into session history
   Session.shared().addToHistory({
     type: "image-link",
     data: imageURL,
@@ -776,30 +742,22 @@ function sendImage(imageURL) {
     nickname: hostNickname,
   });
 
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "image-link",
-        message: imageURL,
-        nickname: hostNickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "image-link",
+    message: imageURL,
+    nickname: hostNickname,
+  });
 }
 
 
 async function sendPrompt(message) {
-  // Send the prompt to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "prompt",
-        id: id,
-        message: message,
-        nickname: hostNickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "prompt",
+    id: id,
+    message: message,
+    nickname: hostNickname,
+  });
+
   if (gameMode) {
     message = hostNickname + ": " + message;
   }
@@ -887,7 +845,7 @@ const systemMessage = document.getElementById("systemMessage");
     */
 
 function setNewAIRole(newRole) {
-  content = newRole;
+  const content = newRole;
   systemMessage.value = content;
   OpenAiChat.shared().addToConversation({
     role: "system",
@@ -907,7 +865,7 @@ function setNewAIRole(newRole) {
 /*
   systemMessage.addEventListener('input', () => {
       //systemMessage.style.width = `${systemMessage.value.length}ch`;
-      content = systemMessage.value;
+      const content = systemMessage.value;
       OpenAiChat.shared().addToConversation({
         role: 'system',
         content: content,
@@ -926,7 +884,7 @@ function setNewAIRole(newRole) {
     */
 /*
   document.getElementById('submitSystemMessage').addEventListener('click', () => {    
-      content = systemMessage.value;
+      const content = systemMessage.value;
 
       OpenAiChat.shared().clearConversationHistory()
       OpenAiChat.shared().addToConversation(
@@ -945,21 +903,16 @@ function setNewAIRole(newRole) {
     */
 
 async function sendSystemMessage(message) {
-  // Send the updated system message to all connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "system-message",
-        id: id,
-        message: message,
-        nickname: hostNickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "system-message",
+    id: id,
+    message: message,
+    nickname: hostNickname,
+  });
 }
 
 function guestChangeSystemMessage(data) {
-  content = data.message;
+  const content = data.message;
   OpenAiChat.shared().addToConversation({
     role: "user",
     content: prompt,
@@ -967,16 +920,12 @@ function guestChangeSystemMessage(data) {
   // Update system message input
   systemMessage.value = content;
   // Relay to connected guests
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      dataChannels[guestId].conn.send({
-        type: "system-message",
-        id: data.id,
-        message: data.message,
-        nickname: data.nickname,
-      });
-    }
-  }
+  Peers.shared().broadcast({
+    type: "system-message",
+    id: data.id,
+    message: data.message,
+    nickname: data.nickname,
+  });
 }
 
 const messageInput = document.getElementById("messageInput");
@@ -1054,19 +1003,16 @@ async function startSession(sessionType, sessionDetails) {
     }
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send({
-          type: "game-launch",
-          id: id,
-          message:
-            "The host started a new " +
-            sessionDetails +
-            " session! Please wait while the AI Game master crafts your world...",
-          nickname: hostNickname,
-        });
-      }
-    }
+    Peers.shared().broadcast({
+      type: "game-launch",
+      id: id,
+      message:
+        "The host started a new " +
+        sessionDetails +
+        " session! Please wait while the AI Game master crafts your world...",
+      nickname: hostNickname,
+    });
+
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
     groupSessionFirstAIResponse = response;
@@ -1074,16 +1020,12 @@ async function startSession(sessionType, sessionDetails) {
     addAIReponse(response);
 
     // Send the response to all connected guests
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send({
-          type: "ai-response",
-          id: id,
-          message: response,
-          nickname: selectedModelNickname,
-        });
-      }
-    }
+    Peers.shared().broadcast({
+      type: "ai-response",
+      id: id,
+      message: response,
+      nickname: selectedModelNickname,
+    });
   } else {
     console.log("No session type selected");
     // other session types later
