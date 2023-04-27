@@ -14,7 +14,6 @@
   }
 }.initThisClass());
 
-// ----------------------------------------------------------------
 
 function addMessage(type, message, nickname) {
   // If the string is empty, don't add it
@@ -33,25 +32,29 @@ function addMessage(type, message, nickname) {
     loadingAnimation.style.display = "none";
     icon = "🤖";
     // Check if in session, then if host, and if so, add a button to generate an image prompt
+    
+      if (isHost && inSession) {
+        // Create a new icon/button element for the AI responses
+        const generateImagePromptButton = document.createElement("button");
+        generateImagePromptButton.textContent = "🎨";
+        generateImagePromptButton.className = "generate-image-prompt-button";
+        generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
 
-    if (isHost && inSession) {
-      // Create a new icon/button element for the AI responses
-      const generateImagePromptButton = document.createElement("button");
-      generateImagePromptButton.textContent = "🎨";
-      generateImagePromptButton.className = "generate-image-prompt-button";
-      generateImagePromptButton.setAttribute("data-tooltip", "Show this scene");
-
-      // Add an event listener to the icon/button
-      generateImagePromptButton.addEventListener("click", () => {
-        triggerImageBot(sanitizedHtml);
-        // Optional: Hide the button after it has been clicked
-        generateImagePromptButton.style.display = "none";
-      });
+        // Add an event listener to the icon/button
+        generateImagePromptButton.addEventListener("click", () => {
+          addMessage("image-gen", "Generating image...", "Host");
+          triggerImageBot(sanitizedHtml);
+          // Optional: Hide the button after it has been clicked
+          generateImagePromptButton.style.display = "none";
+        });
 
       // Append the icon/button to the message content
       messageContent.appendChild(generateImagePromptButton);
     }
-  } else if (type === "system-message") {
+  } else if (type === "image-gen") {
+    loadingAnimation.style.display = "inline";
+    icon = "🎨";  }
+  else if (type === "system-message") {
     icon = "🔧";
   } else {
     icon = "🦔";
@@ -111,6 +114,7 @@ function addMessage(type, message, nickname) {
 function addImage(imageURL) {
   let icon;
   let isUser = false;
+  loadingAnimation.style.display = "none";
   const messagesDiv = document.querySelector(".messages");
   const messageWrapper = document.createElement("div");
   messageWrapper.className = "message-wrapper";
@@ -143,9 +147,66 @@ function addImage(imageURL) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+function addChatMessage(type, message, nickname) {
+  // If the string is empty, don't add it
+  if (message === "") {
+    return;
+  }
+  let icon;
+  if (type === "chat") {
+    icon = "🗯️";
+  } else if (type === "ai-response") {
+    icon = "🤖";
+  } else {
+    icon = "🔧";
+  }
+
+  const formattedResponse = message.convertToParagraphs();
+  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
+  const messagesDiv = document.querySelector(".chatMessages");
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
+
+  const iconDiv = document.createElement("div");
+  iconDiv.className = "icon";
+  iconDiv.innerHTML = icon;
+
+  const messageContent = document.createElement("div");
+  messageContent.className = "message-content";
+
+  const messageNickname = document.createElement("div");
+  messageNickname.className = "message-nickname";
+  messageNickname.textContent = nickname;
+  messageContent.appendChild(messageNickname);
+
+  const messageText = document.createElement("div");
+  messageText.className = "message-text";
+  messageText.innerHTML = sanitizedHtml;
+  messageContent.appendChild(messageText);
+  messageWrapper.appendChild(iconDiv);
+  messageWrapper.appendChild(messageContent);
+  messagesDiv.appendChild(messageWrapper);
+  const scrollView = messagesDiv.parentNode;
+  scrollView.scrollTop = scrollView.scrollHeight;
+}
+
 async function addAIReponse(response) {
   Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, selectedModelNickname);
+}
+
+async function addLocalChatMessage(message) {
+  Session.shared().addToHistory({
+    type: "chat",
+    data: message,
+    id: id,
+    nickname: hostNickname,
+  });
+  addChatMessage("chat", message, hostNickname);
+}
+
+async function guestAddLocalChatMessage(message) {
+  addChatMessage("chat", message, guestNickname);
 }
 
 async function addPrompt() {
