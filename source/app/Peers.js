@@ -24,7 +24,7 @@
   }
 
   isHost() {
-    return this.inviteId() !== undefined;
+    return this.inviteId() === null;
   }
 
   broadcast(json) {
