@@ -372,7 +372,7 @@ async function setupJoinSession() {
       if (data.type === "kick") {
         conn.close();
         console.log("You have been kicked from the session.");
-        displayKickedMessage();
+        UsersView.shared().displayKickedMessage();
       }
       if (data.type === "chat") {
         Sounds.shared().playReceiveBeep();
