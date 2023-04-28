@@ -21,7 +21,7 @@
     for (const guestId in dataChannels) {
       if (dataChannels.hasOwnProperty(guestId)) {
         const guestToken = dataChannels[guestId].token;
-        const guestNickname = dataChannels[guestId].nickname;
+        const aGuestNickname = dataChannels[guestId].nickname;
 
         // Create a container for the user and their actions
         const userContainer = document.createElement("div");
@@ -29,7 +29,7 @@
 
         // Create the user list item and add an arrow indicator
         const listItem = document.createElement("li");
-        listItem.textContent = guestNickname;
+        listItem.textContent = aGuestNickname;
         listItem.setAttribute("data-id", guestId);
         listItem.setAttribute("data-token", guestToken);
 
@@ -119,7 +119,7 @@
 
     for (const id in guestUserList) {
       if (guestUserList.hasOwnProperty(id)) {
-        const guestNickname = guestUserList[id].nickname;
+        const aGuestNickname = guestUserList[id].nickname;
 
         // Create a container for the user and their actions
         const userContainer = document.createElement("div");
@@ -127,7 +127,7 @@
 
         // Create the user list item and add an arrow indicator
         const listItem = document.createElement("li");
-        listItem.textContent = guestNickname;
+        listItem.textContent = aGuestNickname;
         listItem.setAttribute("data-id", guestUserList[id].id);
 
         const arrowIndicator = document.createElement("span");
@@ -192,7 +192,7 @@
         if (oldNickname === username) {
           return;
         }
-        Session.shared().setHostNickname(username)
+        Session.shared().setHostNickname(username);
         addChatMessage(
           "chat",
           `${oldNickname} is now ${Session.shared().hostNickname()}.`,
@@ -213,15 +213,9 @@
         }
       } else {
         // Set new guest nickname and send to host
-        guestNickname = username;
-        // Update the guest nickname in localstorage
-        localStorage.setItem("guestNickname", guestNickname);
+        Session.shared().setGuestNickname(username);
         Peers.shared().sendUsername(username);
       }
     }
   }
-
-
 }.initThisClass());
-
-

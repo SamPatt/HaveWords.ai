@@ -147,11 +147,11 @@ if (Peers.shared().isHost()) {
 } else {
   // If user is guest, generate a new id
   const existingGuestId = localStorage.getItem("guestId");
-  const existingGuestNickname = localStorage.getItem("guestNickname");
+  const existingGuestNickname = Session.shared().guestNickname();
   if (existingGuestId) {
     // If there is an existing guestId, set the guestId to the existing one
     id = existingGuestId;
-    guestNickname = existingGuestNickname;
+    Session.shared().setGuestNickname(existingGuestNickname);
   } else {
     // If there is no existing guestId, generate a new one and save it to local storage
     id = Peers.shared().generateId();
@@ -422,7 +422,7 @@ async function setupJoinSession() {
     conn.send({
       type: "nickname",
       id: id,
-      nickname: guestNickname,
+      nickname: Session.shared().guestNickname(),
       token: guestToken,
     });
 
@@ -555,15 +555,12 @@ function setupPeer() {
         hostWelcomeMessage = true;
       }
     } else {
-      if (!guestNickname) {
-        guestNickname = Nickname.generateNickname();
-        // Add guest nickname to localstorage
-        localStorage.setItem("guestNickname", guestNickname);
-        UsernameView.shared().setString(guestNickname);
-
-        console.log("Guest nickname:", guestNickname);
+      if (!Session.shared().guestNickname()) {
+        Session.shared().setGuestNickname(Nickname.generateNickname())
+        UsernameView.shared().setString(Session.shared().guestNickname());
+        console.log("Guest nickname:", Session.shared().guestNickname());
       } else {
-        console.log("Guest nickname is already set:", guestNickname);
+        console.log("Guest nickname is already set:", Session.shared().guestNickname());
       }
       setupJoinSession(); // Call the function to set up the join session
     }

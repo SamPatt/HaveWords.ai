@@ -211,7 +211,7 @@ async function guestAddSystemMessage(data) {
 
 async function guestAddLocalPrompt(prompt) {
   Sounds.shared().playSendBeep();
-  addMessage("prompt", prompt, guestNickname);
+  addMessage("prompt", prompt, Session.shared().guestNickname());
 }
 
 async function guestAddHostAIResponse(response, nickname) {

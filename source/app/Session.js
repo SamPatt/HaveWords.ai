@@ -101,9 +101,6 @@
 
 let id;
 
-//let hostNickname;
-let guestNickname;
-
 let hostWelcomeMessage = false;
 let groupSessionType;
 let groupSessionDetails;

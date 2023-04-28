@@ -46,7 +46,7 @@ function sendChatMessage() {
         type: "chat",
         id: id,
         message: message,
-        nickname: guestNickname,
+        nickname: Session.shared().guestNickname(),
       });
       guestAddLocalChatMessage(message);
     }
@@ -82,7 +82,7 @@ async function addLocalChatMessage(message) {
 }
 
 async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, guestNickname);
+  addChatMessage("chat", message, Session.shared().guestNickname());
 }
 
 function addChatMessage(type, message, nickname) {
