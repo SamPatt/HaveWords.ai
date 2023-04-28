@@ -62,7 +62,7 @@ chatSendButton.addEventListener("click", sendChatMessage);
 const chatInput = document.getElementById("chatInput");
 chatInput.addEventListener("keypress", (event) => {
   const enterKeyCode = 13;
-  if (enterKeyCode === 13 && !event.shiftKey) {
+  if (event.keyCode === enterKeyCode && !event.shiftKey) {
     event.preventDefault(); // prevent new line
     sendChatMessage();
   }

@@ -20,7 +20,7 @@ const displayUsername = document.getElementById("username");
 const messageInput = document.getElementById("messageInput");
 messageInput.addEventListener("keypress", (event) => {
   const enterKeyCode = 13
-  if (enterKeyCode === 13 && !event.shiftKey) {
+  if (event.keyCode === enterKeyCode && !event.shiftKey) {
     event.preventDefault(); // prevent new line
     handleSendButtonClick();
   }
@@ -29,7 +29,7 @@ messageInput.addEventListener("keypress", (event) => {
 const messageInputRemote = document.getElementById("messageInputRemote");
 messageInputRemote.addEventListener("keypress", (event) => {
   const enterKeyCode = 13
-  if (enterKeyCode === 13 && !event.shiftKey) {
+  if (event.keyCode === enterKeyCode && !event.shiftKey) {
     event.preventDefault(); // prevent new line
     handleSendButtonRemoteClick();
   }
