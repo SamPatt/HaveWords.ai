@@ -6,48 +6,42 @@
 */
 
 (class AiChatView extends View {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("messageInput", null)
+    this.newSlot("messageInputRemote", null)
+    //this.newSlot("usernameField", null)
+  }
 
   init() {
     super.init();
-    this.setId("messages");
+    this.setId("userPanel");
+    //this.setUsernameField(UsernameView.shared())
+    this.setupMessageInput()
+    this.setupMessageInputRemote()
   }
+
+  setupMessageInput () {
+    const textArea = TextAreaInputView.clone().setId("messageInput").setSubmitFunc(() => { 
+      addPrompt();
+    });
+
+    this.setMessageInput(textArea)
+  }
+
+  setupMessageInputRemote () {
+    const textArea = TextAreaInputView.clone().setId("messageInputRemote").setSubmitFunc(() => { 
+      guestSendPrompt();
+    });
+
+    this.setMessageInputRemote(textArea)
+  }
+
+
 }.initThisClass());
 
+AiChatView.shared() // so a shared instance gets created
+
 const loadingAnimation = document.getElementById("loadingHost");
-const displayUsername = document.getElementById("username");
-
-const messageInput = document.getElementById("messageInput");
-messageInput.addEventListener("keypress", (event) => {
-  const enterKeyCode = 13
-  if (event.keyCode === enterKeyCode && !event.shiftKey) {
-    event.preventDefault(); // prevent new line
-    handleSendButtonClick();
-  }
-});
-
-const messageInputRemote = document.getElementById("messageInputRemote");
-messageInputRemote.addEventListener("keypress", (event) => {
-  const enterKeyCode = 13
-  if (event.keyCode === enterKeyCode && !event.shiftKey) {
-    event.preventDefault(); // prevent new line
-    handleSendButtonRemoteClick();
-  }
-});
-
-function handleSendButtonClick() {
-  console.log("sendButton clicked");
-  addPrompt();
-  console.log("Sending prompt to AI");
-}
-
-function handleSendButtonRemoteClick() {
-  console.log("sendButtonRemote clicked");
-  guestSendPrompt();
-  console.log("Sending remote prompt to AI");
-}
-
-
 
 
 function addMessage(type, message, nickname) {
@@ -182,67 +176,12 @@ function addImage(imageURL) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function addChatMessage(type, message, nickname) {
-  // If the string is empty, don't add it
-  if (message === "") {
-    return;
-  }
-  let icon;
-  if (type === "chat") {
-    icon = "🗯️";
-  } else if (type === "ai-response") {
-    icon = "🤖";
-  } else {
-    icon = "🔧";
-  }
-
-  const formattedResponse = message.convertToParagraphs();
-  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-  const messagesDiv = document.querySelector(".chatMessages");
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "message-wrapper";
-
-  const iconDiv = document.createElement("div");
-  iconDiv.className = "icon";
-  iconDiv.innerHTML = icon;
-
-  const messageContent = document.createElement("div");
-  messageContent.className = "message-content";
-
-  const messageNickname = document.createElement("div");
-  messageNickname.className = "message-nickname";
-  messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
-
-  const messageText = document.createElement("div");
-  messageText.className = "message-text";
-  messageText.innerHTML = sanitizedHtml;
-  messageContent.appendChild(messageText);
-  messageWrapper.appendChild(iconDiv);
-  messageWrapper.appendChild(messageContent);
-  messagesDiv.appendChild(messageWrapper);
-  const scrollView = messagesDiv.parentNode;
-  scrollView.scrollTop = scrollView.scrollHeight;
-}
 
 async function addAIReponse(response) {
   Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, selectedModelNickname);
 }
 
-async function addLocalChatMessage(message) {
-  Session.shared().addToHistory({
-    type: "chat",
-    data: message,
-    id: id,
-    nickname: hostNickname,
-  });
-  addChatMessage("chat", message, hostNickname);
-}
-
-async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, guestNickname);
-}
 
 async function addPrompt() {
   Sounds.shared().playSendBeep();

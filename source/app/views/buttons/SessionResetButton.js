@@ -5,19 +5,16 @@
 
 */
 
-(class SessionResetButton extends View {
+(class SessionResetButton extends Button {
   initPrototypeSlots() {
-    this.newSlot("link", null)
   }
 
   init() {
     super.init();
     this.setId("resetSessionButton");
-    this.listenForClick()
-  }
-
-  onClick (event) {
-    Session.shared().reset();
+    this.setSubmitFunct(() => {
+      Session.shared().reset();
+    })
   }
 
 }.initThisClass());

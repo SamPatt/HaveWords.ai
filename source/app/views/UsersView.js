@@ -228,28 +228,8 @@ function banUser(id, token) {
   userActions.style.display = "none";
 }
 
-const usernameField = document.getElementById("username");
-
-usernameField.addEventListener("keyup", (event) => {
-  const target = event.target;
-  //console.log("event.key: '" + event.key + "'")
-  if (event.key === "Enter") {
-    updateUserName();
-    event.target.blur();
-  }
-  updateInputField(target);
-});
-
-function updateInputField(target) {
-  const size = target.value.length
-    ? target.value.length
-    : target.placeholder.length;
-  //console.log("size:", size)
-  target.setAttribute("size", size + "em");
-}
-
 function updateUserName() {
-  const username = usernameField.value;
+  const username = UsernameView.shared().string()
   if (username.trim() !== "") {
     if (Peers.shared().isHost()) {
       // Set new host nickname and send to all guests

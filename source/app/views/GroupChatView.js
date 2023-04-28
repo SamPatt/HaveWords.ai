@@ -70,6 +70,7 @@ chatInput.addEventListener("keypress", (event) => {
 
 // --- username ---
 
+
 async function addLocalChatMessage(message) {
   Session.shared().addToHistory({
     type: "chat",

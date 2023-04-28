@@ -24,7 +24,9 @@
   }
 
   isHost() {
-    return this.inviteId() === undefined;
+    const isHost = !this.inviteId();
+    //console.log("isHost:" + isHost)
+    return isHost;
   }
 
   broadcast(json) {
@@ -475,8 +477,8 @@ function setupPeer() {
         // Add host nickname to localstorage
         localStorage.setItem("hostNickname", hostNickname);
         console.log("Host nickname:", hostNickname);
-        displayUsername.value = hostNickname;
-        updateInputField(displayUsername);
+        UsernameView.shared().setString(hostNickname);
+
       } else {
         console.log("Host nickname is already set:", hostNickname);
       }
@@ -489,8 +491,7 @@ function setupPeer() {
         guestNickname = Nickname.generateNickname();
         // Add guest nickname to localstorage
         localStorage.setItem("guestNickname", guestNickname);
-        displayUsername.value = guestNickname;
-        updateInputField(displayUsername);
+        UsernameView.shared().setString(guestNickname);
 
         console.log("Guest nickname:", guestNickname);
       } else {

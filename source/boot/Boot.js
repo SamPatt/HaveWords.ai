@@ -27,8 +27,15 @@ class Boot extends Object {
       "source/app/Session.js",
 
       "source/app/views/View.js",
+
+      "source/app/views/buttons/Button.js",
       "source/app/views/buttons/InviteButton.js",
       "source/app/views/buttons/SessionResetButton.js",
+
+      "source/app/views/inputs/TextAreaInputView.js",
+      "source/app/views/inputs/TextFieldView.js",
+      "source/app/views/inputs/UsernameView.js",
+
       "source/app/views/SessionOptionsView.js",
       "source/app/views/AiChatView.js",
       "source/app/views/GroupChatView.js",
