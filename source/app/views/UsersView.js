@@ -73,9 +73,7 @@
         const kickButton = document.createElement("button");
         kickButton.textContent = "Kick";
         kickButton.onclick = () => {
-          // Kick logic
-          console.log("Kicking user " + guestId);
-          kickUser(guestId);
+          Peers.shared().kickUser(guestId);
         };
         userActions.appendChild(kickButton);
 
@@ -90,7 +88,7 @@
         banButton.textContent = "Ban";
         banButton.onclick = () => {
           // Ban logic
-          banUser(guestId, guestToken);
+          Peers.shared().banUser(guestId, guestToken);
         };
         userActions.appendChild(banButton);
 
@@ -224,48 +222,10 @@
       }
     }
   }
+
+
 }.initThisClass());
 
 // ----------------------------------------------------------------
 
-function displayUserActions(event) {
-  const guestId = event.currentTarget.getAttribute("data-id");
-  const userActions = document.getElementById("userActions");
-  userActions.style.display = "block";
-  userActions.setAttribute("data-id", guestId);
-}
 
-function kickUser(kickedUserId) {
-  if (dataChannels.hasOwnProperty(kickedUserId)) {
-    const guestConn = dataChannels[kickedUserId].conn;
-    guestConn.send({ type: "kick" });
-
-    setTimeout(() => {
-      guestConn.close();
-      console.log(`Kicked guest: ${kickedUserId}`);
-      delete dataChannels[kickedUserId];
-      UsersView.shared().updateUserList();
-    }, 500); // Adjust the delay (in milliseconds) as needed
-  }
-  const userActions = document.getElementById("user-actions");
-  userActions.style.display = "none";
-}
-
-function banUser(id, token) {
-  if (dataChannels.hasOwnProperty(id)) {
-    const guestConn = dataChannels[id].conn;
-    guestConn.send({ type: "ban" });
-
-    setTimeout(() => {
-      guestConn.close();
-      console.log(`Banned guest: ${id}`);
-      bannedGuests.push(token);
-      console.log(token);
-      console.log(bannedGuests);
-      delete dataChannels[id];
-      UsersView.shared().updateUserList();
-    }, 500); // Adjust the delay (in milliseconds) as needed
-  }
-  const userActions = document.getElementById("user-actions");
-  userActions.style.display = "none";
-}

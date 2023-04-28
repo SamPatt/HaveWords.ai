@@ -56,9 +56,65 @@
     });
   }
 
+  // --- get channel / connection for a userId ---
+
+  channelForUserId(userId) {
+    if (dataChannels.hasOwnProperty(userId)) {
+      return dataChannels[userId];
+    }
+    return undefined;
+  }
+
+  connectionForUserId(userId) {
+    const channel = this.channelForUserId(userId);
+    if (channel) {
+      return channel.conn;
+    }
+    return undefined;
+  }
+
+  // --- user actions ---
+
+  kickUser(userId) {
+    console.log("Kicked guest: " + userId);
+
+    const conn = this.connectionForUserId(userId);
+    if (conn) {
+      conn.send({ type: "kick" });
+      setTimeout(() => {
+        this.closeConnectionForUser(userId);
+      }, 500); // TODO: is delay needed?
+    }
+  }
+
+  banUser(userId, token) {
+    console.log("Banned guest: " + userId);
+    console.log(token);
+    console.log(bannedGuests);
+
+    bannedGuests.push(token);
+
+    const conn = this.connectionForUserId(userId);
+    if (conn) {
+      conn.send({ type: "ban" });
+      setTimeout(() => {
+        this.closeConnectionForUser(userId);
+      }, 500); // TODO: is delay needed?
+    }
+  }
+
+  closeConnectionForUser(userId) {
+    const channel = this.channelForUserId(userId);
+    if (channel) {
+      const conn = dataChannels[userId].conn;
+      conn.close();
+      delete dataChannels[userId];
+      UsersView.shared().updateUserList();
+    } else {
+      console.warn("attempt to close missing channel for userId: " + userId);
+    }
+  }
 }.initThisClass());
-
-
 
 // -----------------------------------------------------
 
@@ -164,7 +220,7 @@ async function setupHostSession() {
             //Store the guest's token
             dataChannels[conn.peer].token = data.token;
             console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
-            UsersView.shared().updateUserList()
+            UsersView.shared().updateUserList();
 
             // Create a guest user list with ids and nicknames to send to the new guest
             const newGuestUserList = updateGuestUserlist();
@@ -281,7 +337,7 @@ async function setupHostSession() {
             `${oldNickname} is now ${data.newNickname}.`,
             hostNickname
           );
-          UsersView.shared().updateUserList()
+          UsersView.shared().updateUserList();
           // Update nickname in guest user list
           const updatedGuestUserList = updateGuestUserlist();
           guestUserList = updatedGuestUserList;
@@ -322,7 +378,7 @@ async function setupHostSession() {
           hostNickname
         );
 
-        UsersView.shared().updateUserList()
+        UsersView.shared().updateUserList();
       });
     });
   });
@@ -461,7 +517,7 @@ async function setupJoinSession() {
 // --- peer code ------------------
 
 function setupPeer() {
-    /*
+  /*
   // Local peerjs server
   peer = new Peer(id, {
     host: "localhost",
@@ -490,7 +546,6 @@ function setupPeer() {
         localStorage.setItem("hostNickname", hostNickname);
         console.log("Host nickname:", hostNickname);
         UsernameView.shared().setString(hostNickname);
-
       } else {
         console.log("Host nickname is already set:", hostNickname);
       }
