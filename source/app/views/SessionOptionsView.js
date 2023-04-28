@@ -262,7 +262,8 @@ function displaySessionHistory() {
 
 async function startSession(sessionType, sessionDetails) {
   addMessage("prompt", "You've started the session!", Session.shared().hostNickname());
-  inSession = true;
+  Session.shared().setInSession(true)
+
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
     gameMode = true;

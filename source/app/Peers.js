@@ -548,9 +548,9 @@ function setupPeer() {
       } else {
         console.log("Host nickname is already set:", Session.shared().hostNickname());
       }
-      if (hostWelcomeMessage == false) {
+      if (Session.shared().hostWelcomeMessage() === false) {
         setupHostSession(); // Call the function to set up the host session
-        hostWelcomeMessage = true;
+        Session.shared().setHostWelcomeMessage(true)
       }
     } else {
       if (!Session.shared().guestNickname()) {

@@ -9,6 +9,8 @@
   initPrototypeSlots() {
     this.newSlot("data", null);
     this.newSlot("localUserId", null);
+    this.newSlot("inSession", false);
+    this.newSlot("hostWelcomeMessage", false);
   }
 
   init() {
@@ -98,8 +100,7 @@
 
 }.initThisClass());
 
-let hostWelcomeMessage = false;
 let groupSessionType;
 let groupSessionDetails;
 let groupSessionFirstAIResponse;
-let inSession = false;
+
