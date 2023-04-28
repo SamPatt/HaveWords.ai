@@ -46,7 +46,19 @@
       }
     }
   }
+
+  sendUsername(username) {
+    // Send chat message to host
+    conn.send({
+      type: "nickname-update",
+      id: id,
+      newNickname: username,
+    });
+  }
+
 }.initThisClass());
+
+
 
 // -----------------------------------------------------
 

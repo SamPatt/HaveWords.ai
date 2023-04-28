@@ -263,16 +263,7 @@ function updateUserName() {
       guestNickname = username;
       // Update the guest nickname in localstorage
       localStorage.setItem("guestNickname", guestNickname);
-      sendUsername(username);
+      Peers.shared().sendUsername(username);
     }
   }
-}
-
-function sendUsername(username) {
-  // Send chat message to host
-  conn.send({
-    type: "nickname-update",
-    id: id,
-    newNickname: username,
-  });
 }
