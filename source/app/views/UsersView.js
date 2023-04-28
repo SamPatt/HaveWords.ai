@@ -251,7 +251,7 @@ function updateInputField(target) {
 function updateUserName() {
   const username = usernameField.value;
   if (username.trim() !== "") {
-    if (isHost) {
+    if (Peers.shared().isHost()) {
       // Set new host nickname and send to all guests
       const oldNickname = hostNickname;
       if (hostNickname === username) {

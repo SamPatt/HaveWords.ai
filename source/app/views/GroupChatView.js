@@ -22,7 +22,7 @@ function sendChatMessage() {
   if (message.trim() !== "") {
     input.value = "";
 
-    if (isHost) {
+    if (Peers.shared().isHost()) {
       // Add chat to chat history
       Session.shared().addToHistory({
         type: "chat",
@@ -33,6 +33,7 @@ function sendChatMessage() {
       // Display chat message
       addLocalChatMessage(message);
       // Broadcast chat message to all connected guests
+
       Peers.shared().broadcast({
         type: "chat",
         id: id,
@@ -56,11 +57,6 @@ function sendChatMessage() {
 const chatSendButton = document.getElementById("chatSendButton");
 chatSendButton.addEventListener("click", sendChatMessage);
 
-function handleChatSendButtonClick() {
-  console.log("chatSendButton clicked");
-  sendChatMessage();
-}
-
 // --- chat input ---
 
 const chatInput = document.getElementById("chatInput");
@@ -68,13 +64,11 @@ chatInput.addEventListener("keypress", (event) => {
   const enterKeyCode = 13;
   if (enterKeyCode === 13 && !event.shiftKey) {
     event.preventDefault(); // prevent new line
-    handleChatSendButtonClick();
+    sendChatMessage();
   }
 });
 
 // --- username ---
-
-// ---
 
 async function addLocalChatMessage(message) {
   Session.shared().addToHistory({

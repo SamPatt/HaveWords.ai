@@ -68,7 +68,7 @@ function addMessage(type, message, nickname) {
     icon = "🤖";
     // Check if in session, then if host, and if so, add a button to generate an image prompt
     
-      if (isHost && inSession) {
+      if (Peers.shared().isHost() && inSession) {
         // Create a new icon/button element for the AI responses
         const generateImagePromptButton = document.createElement("button");
         generateImagePromptButton.textContent = "🎨";
@@ -286,7 +286,7 @@ async function guestAddHostAIResponse(response, nickname) {
 async function sendAIResponse(message, nickname) {
   // If in game mode, add username to the start of each prompt
   if (gameMode) {
-    if (!isHost) {
+    if (!Peers.shared().isHost()) {
       message = nickname + ": " + message;
     }
   } else {

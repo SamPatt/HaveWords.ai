@@ -16,6 +16,9 @@
     }
 
     run () {
+
+        setupPeer()
+        
         OpenAiChat.shared().addToConversation({
             role: "system",
             content: "You are a helpful assistant.",
@@ -24,7 +27,7 @@
 
 
         // This displays the user's nickname above the chat window
-        if (isHost) {
+        if (Peers.shared().isHost()) {
             displayUsername.value = hostNickname;
             updateInputField(displayUsername);
         } else {
