@@ -124,12 +124,12 @@ function addMessage(type, message, nickname) {
     beginSessionButton.className = "begin-session-button";
     beginSessionButton.addEventListener("click", () => {
       // Add your desired action when the "Begin Session" button is clicked
-      startSession(Session.shared().groupSessionType(), groupSessionDetails);
+      startSession(Session.shared().groupSessionType(), Session.shared().groupSessionDetails());
       console.log(
         "Begin Session button clicked " +
         Session.shared().groupSessionType() +
           " " +
-          groupSessionDetails
+          Session.shared().groupSessionDetails()
       );
     });
     messageContent.appendChild(beginSessionButton);
@@ -236,7 +236,7 @@ async function sendAIResponse(message, nickname) {
   const response = await OpenAiChat.shared().asyncFetch(message);
   if (gameMode) {
     //console.log("Calling triggerBot with AI response:", response);
-    //triggerBot(response, Session.shared().groupSessionType(), groupSessionDetails);
+    //triggerBot(response, Session.shared().groupSessionType(), Session.shared().groupSessionDetails());
   }
 
   addAIReponse(response);

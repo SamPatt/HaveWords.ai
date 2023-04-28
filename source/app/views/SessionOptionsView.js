@@ -305,7 +305,7 @@ async function startSession(sessionType, sessionDetails) {
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
-    groupSessionFirstAIResponse = response;
+    Session.shared().setGroupSessionFirstAIResponse(response)
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
     addAIReponse(response);
 
@@ -437,15 +437,14 @@ function displayHashModal(sessionType) {
     const customDetails = customDetailsInput.value.trim();
 
     if (customDetails !== "") {
-      groupSessionDetails = customDetails;
+      Session.shared().setGroupSessionDetails(customDetails)
     } else {
-      //groupSessionDetails = sessionTypeDetails.value;
       const sessionTypeDetailsSelect = document.getElementById(
         "sessionTypeDetailsSelect"
       );
-      groupSessionDetails = sessionTypeDetailsSelect.value;
+      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value)
     }
-    console.log("Group session world: " + groupSessionDetails);
+    console.log("Group session world: " + Session.shared().groupSessionDetails());
     onVisitHashModal.style.display = "none";
     // Start the session with the selected session type
     if (sessionType === "fantasyRoleplay") {
@@ -497,7 +496,7 @@ function startRoleplaySession() {
     const inviteLink = makeInviteLink(Session.shared().localUserId());
     addMessage(
       "welcome-message",
-      `<p>Welcome to your roleplaying session, set in the <b>${groupSessionDetails}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai"
     );
   }

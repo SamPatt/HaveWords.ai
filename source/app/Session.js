@@ -12,6 +12,8 @@
     this.newSlot("inSession", false);
     this.newSlot("hostWelcomeMessage", false);
     this.newSlot("groupSessionType", undefined);
+    this.newSlot("groupSessionDetails", undefined);
+    this.newSlot("groupSessionFirstAIResponse", undefined);
   }
 
   init() {
@@ -101,6 +103,4 @@
 
 }.initThisClass());
 
-let groupSessionDetails;
-let groupSessionFirstAIResponse;
 

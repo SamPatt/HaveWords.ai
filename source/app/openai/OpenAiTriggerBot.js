@@ -30,7 +30,7 @@ async function triggerImageBot(response) {
   }
   const message =
     "We are playing a roleplaying game and need a description of the current scene in order to generate an image. I will give you the background information for the characters and setting, and then the details of the current scene. Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. Do not use character's names, or location names. No proper nouns. Here is the background for the scene: \n\n" +
-    groupSessionFirstAIResponse +
+    Session.shared().groupSessionFirstAIResponse() +
     "\n\nHere is the current scene: \n\n " +
     response +
     "\n\n Image description of current scene: ";
@@ -52,7 +52,7 @@ async function triggerImageBot(response) {
   const imageURL = await OpenAiImageGen.shared().asyncFetch(
     imageDescription,
     Session.shared().groupSessionType(),
-    groupSessionDetails
+    Session.shared().groupSessionDetails()
   );
   sendImage(imageURL);
   addImage(imageURL);
