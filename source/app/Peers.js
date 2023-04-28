@@ -164,7 +164,7 @@ async function setupHostSession() {
             //Store the guest's token
             dataChannels[conn.peer].token = data.token;
             console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
-            updateUserList();
+            UsersView.shared().updateUserList()
 
             // Create a guest user list with ids and nicknames to send to the new guest
             const newGuestUserList = updateGuestUserlist();
@@ -281,7 +281,7 @@ async function setupHostSession() {
             `${oldNickname} is now ${data.newNickname}.`,
             hostNickname
           );
-          updateUserList();
+          UsersView.shared().updateUserList()
           // Update nickname in guest user list
           const updatedGuestUserList = updateGuestUserlist();
           guestUserList = updatedGuestUserList;
@@ -322,7 +322,7 @@ async function setupHostSession() {
           hostNickname
         );
 
-        updateUserList();
+        UsersView.shared().updateUserList()
       });
     });
   });
