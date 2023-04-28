@@ -55,6 +55,19 @@
       newNickname: username,
     });
   }
+  
+  generateId() {
+    // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  // Creates a token for guest identity across sessions
+ generateToken() {
+  console.log("Generating token...");
+  return (
+    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
+  );
+}
 
   // --- get channel / connection for a userId ---
 
@@ -118,26 +131,17 @@
 
 // -----------------------------------------------------
 
-let id;
-let hostNickname;
-let guestNickname;
-let hostWelcomeMessage = false;
-let groupSessionType;
-let groupSessionDetails;
-let groupSessionFirstAIResponse;
-let inSession = false;
-
 // If user is host, check if there is an existing hostId in local storage
 if (Peers.shared().isHost()) {
   const existingHostId = localStorage.getItem("hostId");
-  const existingHostNickname = localStorage.getItem("hostNickname");
+  const existingHostNickname = Session.shared().hostNickname();
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
     id = existingHostId;
-    hostNickname = existingHostNickname;
+    Session.shared().setHostNickname(existingHostNickname)
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
-    id = generateId();
+    id = Peers.shared().generateId();
     localStorage.setItem("hostId", id);
   }
 } else {
@@ -150,7 +154,7 @@ if (Peers.shared().isHost()) {
     guestNickname = existingGuestNickname;
   } else {
     // If there is no existing guestId, generate a new one and save it to local storage
-    id = generateId();
+    id = Peers.shared().generateId();
     localStorage.setItem("guestId", id);
   }
 }
@@ -182,7 +186,7 @@ async function setupHostSession() {
   if (!fantasyRoleplay) {
     addMessage(
       "system-message",
-      `<p>Welcome, <b> ${hostNickname} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
+      `<p>Welcome, <b> ${Session.shared().hostNickname()} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
       "HaveWords"
     );
   }
@@ -229,7 +233,7 @@ async function setupHostSession() {
             dataChannels[conn.peer].conn.send({
               type: "session-history",
               history: Session.shared().history(),
-              nickname: hostNickname,
+              nickname: Session.shared().hostNickname(),
               guestUserList: newGuestUserList,
             });
 
@@ -238,7 +242,7 @@ async function setupHostSession() {
               {
                 type: "guest-join",
                 message: `${data.nickname} has joined the session!`,
-                nickname: hostNickname,
+                nickname: Session.shared().hostNickname(),
                 joiningGuestNickname: data.nickname,
                 joiningGuestId: data.id,
                 guestUserList: guestUserList,
@@ -249,7 +253,7 @@ async function setupHostSession() {
             addChatMessage(
               "system-message",
               `${data.nickname} has joined the session!`,
-              hostNickname
+              Session.shared().hostNickname()
             );
           }
         }
@@ -335,7 +339,7 @@ async function setupHostSession() {
           addChatMessage(
             "system-message",
             `${oldNickname} is now ${data.newNickname}.`,
-            hostNickname
+            Session.shared().hostNickname()
           );
           UsersView.shared().updateUserList();
           // Update nickname in guest user list
@@ -345,7 +349,7 @@ async function setupHostSession() {
           Peers.shared().broadcast({
             type: "nickname-update",
             message: `${oldNickname} is now ${data.newNickname}.`,
-            nickname: hostNickname,
+            nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
             guestUserList: updatedGuestUserList,
@@ -366,7 +370,7 @@ async function setupHostSession() {
         Peers.shared().broadcast({
           type: "guest-leave",
           message: `${closedPeerNickname} has left the session.`,
-          nickname: hostNickname,
+          nickname: Session.shared().hostNickname(),
           leavingGuestNickname: closedPeerNickname,
           leavingGuestId: closedPeerId,
           guestUserList: updatedGuestUserList,
@@ -375,7 +379,7 @@ async function setupHostSession() {
         addChatMessage(
           "system-message",
           `${closedPeerNickname} has left the session.`,
-          hostNickname
+          Session.shared().hostNickname()
         );
 
         UsersView.shared().updateUserList();
@@ -388,7 +392,7 @@ function updateGuestUserlist() {
   let guestUserList = [];
   guestUserList.push({
     id: id,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
@@ -540,14 +544,11 @@ function setupPeer() {
     if (Peers.shared().isHost()) {
       //Session.shared().load() // loadSessionData();
       displaySessionHistory();
-      if (!hostNickname) {
-        hostNickname = Nickname.generateHostNickname() + " (host)";
-        // Add host nickname to localstorage
-        localStorage.setItem("hostNickname", hostNickname);
-        console.log("Host nickname:", hostNickname);
-        UsernameView.shared().setString(hostNickname);
+      if (!Session.shared().hostNickname()) {
+        Session.shared().setHostNickname(Nickname.generateHostNickname() + " (host)")
+        UsernameView.shared().setString(Session.shared().hostNickname());
       } else {
-        console.log("Host nickname is already set:", hostNickname);
+        console.log("Host nickname is already set:", Session.shared().hostNickname());
       }
       if (hostWelcomeMessage == false) {
         setupHostSession(); // Call the function to set up the host session
@@ -651,21 +652,10 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
   };
 }
 
-// These functions are called if the user is the host, to generate room IDs and create and copy the invite link
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
-}
 
-// Creates a token for guest identity across sessions
-function generateToken() {
-  console.log("Generating token...");
-  return (
-    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
-  );
-}
 let guestToken = localStorage.getItem("guestToken");
 if (!guestToken) {
-  guestToken = generateToken();
+  guestToken = Peers.shared().generateToken();
   localStorage.setItem("guestToken", guestToken);
 }
 
@@ -675,13 +665,13 @@ function sendImage(imageURL) {
     type: "image-link",
     data: imageURL,
     id: id,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 
   Peers.shared().broadcast({
     type: "image-link",
     message: imageURL,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 }
 
@@ -690,11 +680,11 @@ async function sendPrompt(message) {
     type: "prompt",
     id: id,
     message: message,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 
   if (gameMode) {
-    message = hostNickname + ": " + message;
+    message = Session.shared().hostNickname() + ": " + message;
   }
   sendAIResponse(message);
 }

@@ -28,7 +28,7 @@ function sendChatMessage() {
         type: "chat",
         data: message,
         id: id,
-        nickname: hostNickname,
+        nickname: Session.shared().hostNickname(),
       });
       // Display chat message
       addLocalChatMessage(message);
@@ -38,7 +38,7 @@ function sendChatMessage() {
         type: "chat",
         id: id,
         message: message,
-        nickname: hostNickname,
+        nickname: Session.shared().hostNickname(),
       });
     } else {
       // Send chat message to host
@@ -76,9 +76,9 @@ async function addLocalChatMessage(message) {
     type: "chat",
     data: message,
     id: id,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
-  addChatMessage("chat", message, hostNickname);
+  addChatMessage("chat", message, Session.shared().hostNickname());
 }
 
 async function guestAddLocalChatMessage(message) {

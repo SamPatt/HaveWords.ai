@@ -13,10 +13,13 @@ class Boot extends Object {
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
       "source/app/helpers.js",
+
       "source/app/App.js",
       "source/app/Nickname.js",
       "source/app/Sounds.js",
       "source/app/Microphone.js",
+
+      "source/app/Session.js",
       "source/app/Peers.js",
 
       "source/app/openai/OpenAiRequest.js",
@@ -24,7 +27,6 @@ class Boot extends Object {
       "source/app/openai/OpenAiChat.js",
       "source/app/openai/OpenAiImageGen.js",
       "source/app/openai/OpenAiTriggerBot.js",
-      "source/app/Session.js",
 
       "source/app/views/View.js",
 

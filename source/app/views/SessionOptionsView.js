@@ -89,7 +89,7 @@ async function sendSystemMessage(message) {
     type: "system-message",
     id: id,
     message: message,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 }
 
@@ -261,7 +261,7 @@ function displaySessionHistory() {
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-  addMessage("prompt", "You've started the session!", hostNickname);
+  addMessage("prompt", "You've started the session!", Session.shared().hostNickname());
   inSession = true;
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
@@ -299,7 +299,7 @@ async function startSession(sessionType, sessionDetails) {
         "The host started a new " +
         sessionDetails +
         " session! Please wait while the AI Game master crafts your world...",
-      nickname: hostNickname,
+      nickname: Session.shared().hostNickname(),
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
@@ -469,7 +469,7 @@ function endAdventure() {
 function getCurrentUsernames() {
   // Add all nicknames of connected guests to the guestNicknames array
   const guestNicknames = [];
-  guestNicknames.push(hostNickname);
+  guestNicknames.push(Session.shared().hostNickname());
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
       guestNicknames.push(dataChannels[guestId].nickname);

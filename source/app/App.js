@@ -24,9 +24,9 @@
         })
           
         if (Peers.shared().isHost()) {
-            UsernameView.shared().setString(hostNickname);
+            UsernameView.shared().setString(Session.shared().hostNickname());
         } else {
-            UsernameView.shared().setString(guestNickname);
+            UsernameView.shared().setString(Session.shared().guestNickname());
         }
     }
 

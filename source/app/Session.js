@@ -35,14 +35,13 @@
     }
 
     this.setData(json);
-
     return this;
   }
 
   clear() {
     localStorage.removeItem("sessionData");
     localStorage.removeItem("hostId");
-    localStorage.removeItem("hostNickname");
+    this.clearHostnickname();
     this.load();
   }
 
@@ -64,5 +63,49 @@
     window.location.reload();
   }
 
+  // hostNickname
+
+  setHostNickname (s) {
+    localStorage.setItem("hostNickname", s);
+    return this;
+  }
+
+  hostNickname (s) {
+    return localStorage.getItem("hostNickname");
+  }
+
+  clearHostnickname () {
+    localStorage.removeItem("hostNickname");
+    return this;
+  }
+
+  // guestNickname
+
+  setGuestNickname (s) {
+    localStorage.setItem("guestNickname", s);
+    return this;
+  }
+
+  guestNickname (s) {
+    return localStorage.getItem("guestNickname");
+  }
+
+  clearGuestNickname () {
+    localStorage.removeItem("guestNickname");
+    return this;
+  }
+
+
+
 }.initThisClass());
 
+let id;
+
+//let hostNickname;
+let guestNickname;
+
+let hostWelcomeMessage = false;
+let groupSessionType;
+let groupSessionDetails;
+let groupSessionFirstAIResponse;
+let inSession = false;

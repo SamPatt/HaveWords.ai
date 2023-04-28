@@ -193,9 +193,9 @@ async function addPrompt() {
     type: "prompt",
     data: message,
     id: id,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
-  addMessage("prompt", message, hostNickname);
+  addMessage("prompt", message, Session.shared().hostNickname());
   sendPrompt(message);
 }
 

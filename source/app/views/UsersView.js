@@ -188,27 +188,25 @@
     if (username.trim() !== "") {
       if (Peers.shared().isHost()) {
         // Set new host nickname and send to all guests
-        const oldNickname = hostNickname;
-        if (hostNickname === username) {
+        const oldNickname = Session.shared().hostNickname();
+        if (oldNickname === username) {
           return;
         }
-        hostNickname = username;
-        // Update the host nickname in localstorage
-        localStorage.setItem("hostNickname", hostNickname);
+        Session.shared().setHostNickname(username)
         addChatMessage(
           "chat",
-          `${oldNickname} is now ${hostNickname}.`,
-          hostNickname
+          `${oldNickname} is now ${Session.shared().hostNickname()}.`,
+          Session.shared().hostNickname()
         );
         const updatedGuestUserList = updateGuestUserlist();
         for (const guestId in dataChannels) {
           if (dataChannels.hasOwnProperty(guestId)) {
             dataChannels[guestId].conn.send({
               type: "nickname-update",
-              message: `${oldNickname} is now ${hostNickname}.`,
-              nickname: hostNickname,
+              message: `${oldNickname} is now ${Session.shared().hostNickname()}.`,
+              nickname: Session.shared().hostNickname(),
               oldNickname: oldNickname,
-              newNickname: hostNickname,
+              newNickname: Session.shared().hostNickname(),
               guestUserList: updatedGuestUserList,
             });
           }
@@ -225,7 +223,5 @@
 
 
 }.initThisClass());
-
-// ----------------------------------------------------------------
 
 
