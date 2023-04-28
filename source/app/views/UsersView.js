@@ -173,6 +173,17 @@
       }
     }
   }
+
+  displayKickedMessage() {
+    const chatOutput = document.getElementById("chatOutput");
+    const kickedMessage = document.createElement("li");
+    kickedMessage.classList.add("kicked-message");
+    kickedMessage.textContent = "You've been kicked.";
+    chatOutput.appendChild(kickedMessage);
+
+    const chatSendButton = document.getElementById("chatSendButton");
+    chatSendButton.disabled = true;
+  }
 }.initThisClass());
 
 // ----------------------------------------------------------------
@@ -198,17 +209,6 @@ function kickUser(kickedUserId) {
   }
   const userActions = document.getElementById("user-actions");
   userActions.style.display = "none";
-}
-
-function displayKickedMessage() {
-  const chatOutput = document.getElementById("chatOutput");
-  const kickedMessage = document.createElement("li");
-  kickedMessage.classList.add("kicked-message");
-  kickedMessage.textContent = "You've been kicked.";
-  chatOutput.appendChild(kickedMessage);
-
-  const chatSendButton = document.getElementById("chatSendButton");
-  chatSendButton.disabled = true;
 }
 
 function banUser(id, token) {
