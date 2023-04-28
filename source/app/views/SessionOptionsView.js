@@ -87,7 +87,7 @@ function setNewAIRole(newRole) {
 async function sendSystemMessage(message) {
   Peers.shared().broadcast({
     type: "system-message",
-    id: id,
+    id: Session.shared().localUserId(),
     message: message,
     nickname: Session.shared().hostNickname(),
   });
@@ -294,7 +294,7 @@ async function startSession(sessionType, sessionDetails) {
     // Send a message to all connected guests
     Peers.shared().broadcast({
       type: "game-launch",
-      id: id,
+      id: Session.shared().localUserId(),
       message:
         "The host started a new " +
         sessionDetails +
@@ -311,7 +311,7 @@ async function startSession(sessionType, sessionDetails) {
     // Send the response to all connected guests
     Peers.shared().broadcast({
       type: "ai-response",
-      id: id,
+      id: Session.shared().localUserId(),
       message: response,
       nickname: selectedModelNickname,
     });
@@ -493,7 +493,7 @@ function startRoleplaySession() {
   document.getElementById("aiSelectionBlock").style.display = "none";
 
   if (Peers.shared().isHost()) {
-    const inviteLink = makeInviteLink(id);
+    const inviteLink = makeInviteLink(Session.shared().localUserId());
     addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${groupSessionDetails}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,

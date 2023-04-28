@@ -192,7 +192,7 @@ async function addPrompt() {
   Session.shared().addToHistory({
     type: "prompt",
     data: message,
-    id: id,
+    id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
   addMessage("prompt", message, Session.shared().hostNickname());
@@ -243,7 +243,7 @@ async function sendAIResponse(message, nickname) {
 
   Peers.shared().broadcast({
     type: "ai-response",
-    id: id,
+    id: Session.shared().localUserId(),
     message: response,
     nickname: selectedModelNickname,
   });

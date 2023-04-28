@@ -3,9 +3,6 @@
 /* 
     Peers
 
-
-    Peers.shared().broadcast(json)
-    Peers.shared().broadcastExceptTo(json, id)
 */
 
 (class Peers extends Base {
@@ -51,7 +48,7 @@
     // Send chat message to host
     conn.send({
       type: "nickname-update",
-      id: id,
+      id: Session.shared().localUserId(),
       newNickname: username,
     });
   }
@@ -137,12 +134,13 @@ if (Peers.shared().isHost()) {
   const existingHostNickname = Session.shared().hostNickname();
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
-    id = existingHostId;
+    Session.shared().setLocalUserId(existingHostId)
+    //Session.shared().setLocalUserId(existingHostId)
     Session.shared().setHostNickname(existingHostNickname)
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
-    id = Peers.shared().generateId();
-    localStorage.setItem("hostId", id);
+    Session.shared().setLocalUserId(Peers.shared().generateId());
+    localStorage.setItem("hostId", Session.shared().localUserId());
   }
 } else {
   // If user is guest, generate a new id
@@ -150,12 +148,12 @@ if (Peers.shared().isHost()) {
   const existingGuestNickname = Session.shared().guestNickname();
   if (existingGuestId) {
     // If there is an existing guestId, set the guestId to the existing one
-    id = existingGuestId;
+    Session.shared().setLocalUserId(existingGuestId);
     Session.shared().setGuestNickname(existingGuestNickname);
   } else {
     // If there is no existing guestId, generate a new one and save it to local storage
-    id = Peers.shared().generateId();
-    localStorage.setItem("guestId", id);
+    Session.shared().setLocalUserId(Peers.shared().generateId());
+    localStorage.setItem("guestId", Session.shared().localUserId());
   }
 }
 
@@ -180,7 +178,7 @@ function makeInviteLink(hostRoomId) {
 async function setupHostSession() {
   console.log("Setting up host session");
   displayHostHTMLChanges();
-  const inviteLink = makeInviteLink(id);
+  const inviteLink = makeInviteLink(Session.shared().localUserId());
   InviteButton.shared().setLink(inviteLink);
 
   if (!fantasyRoleplay) {
@@ -391,7 +389,7 @@ async function setupHostSession() {
 function updateGuestUserlist() {
   let guestUserList = [];
   guestUserList.push({
-    id: id,
+    id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
   for (const guestId in dataChannels) {
@@ -421,7 +419,7 @@ async function setupJoinSession() {
     console.log(`Connected to host: ${inviteId}`);
     conn.send({
       type: "nickname",
-      id: id,
+      id: Session.shared().localUserId(),
       nickname: Session.shared().guestNickname(),
       token: guestToken,
     });
@@ -454,14 +452,14 @@ async function setupJoinSession() {
       }
       if (data.type === "session-history") {
         console.log("Received session history:", data.history);
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
         console.log("Received guestUserList:", guestUserList);
         UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
         guestDisplayHostSessionHistory(data.history);
       }
 
       if (data.type === "nickname-update") {
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
         UsersView.shared().displayGuestUserList();
         addChatMessage("chat", data.message, data.nickname);
       }
@@ -480,7 +478,7 @@ async function setupJoinSession() {
       if (data.type === "guest-join") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
@@ -489,7 +487,7 @@ async function setupJoinSession() {
       if (data.type === "guest-leave") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
@@ -531,7 +529,7 @@ function setupPeer() {
   */
 
   // Deployed peerjs server
-  peer = new Peer(id, {
+  peer = new Peer(Session.shared().localUserId(), {
     host: "peerjssignalserver.herokuapp.com",
     path: "/peerjs",
     secure: true,
@@ -539,7 +537,7 @@ function setupPeer() {
   });
 
   peer.on("open", function () {
-    console.log("PeerJS client is ready. Peer ID:", id);
+    console.log("PeerJS client is ready. Peer ID:", Session.shared().localUserId());
 
     if (Peers.shared().isHost()) {
       //Session.shared().load() // loadSessionData();
@@ -661,7 +659,7 @@ function sendImage(imageURL) {
   Session.shared().addToHistory({
     type: "image-link",
     data: imageURL,
-    id: id,
+    id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
 
@@ -675,7 +673,7 @@ function sendImage(imageURL) {
 async function sendPrompt(message) {
   Peers.shared().broadcast({
     type: "prompt",
-    id: id,
+    id: Session.shared().localUserId(),
     message: message,
     nickname: Session.shared().hostNickname(),
   });
@@ -696,7 +694,7 @@ async function guestSendPrompt() {
     // Send chat message to host
     conn.send({
       type: "remote-prompt",
-      id: id,
+      id: Session.shared().localUserId(),
       message: message,
       nickname: guestNickname,
     });

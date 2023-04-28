@@ -27,7 +27,7 @@ function sendChatMessage() {
       Session.shared().addToHistory({
         type: "chat",
         data: message,
-        id: id,
+        id: Session.shared().localUserId(),
         nickname: Session.shared().hostNickname(),
       });
       // Display chat message
@@ -36,7 +36,7 @@ function sendChatMessage() {
 
       Peers.shared().broadcast({
         type: "chat",
-        id: id,
+        id: Session.shared().localUserId(),
         message: message,
         nickname: Session.shared().hostNickname(),
       });
@@ -44,7 +44,7 @@ function sendChatMessage() {
       // Send chat message to host
       conn.send({
         type: "chat",
-        id: id,
+        id: Session.shared().localUserId(),
         message: message,
         nickname: Session.shared().guestNickname(),
       });
@@ -75,7 +75,7 @@ async function addLocalChatMessage(message) {
   Session.shared().addToHistory({
     type: "chat",
     data: message,
-    id: id,
+    id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
   addChatMessage("chat", message, Session.shared().hostNickname());

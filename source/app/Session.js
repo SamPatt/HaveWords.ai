@@ -8,6 +8,7 @@
 (class Session extends Base {
   initPrototypeSlots() {
     this.newSlot("data", null);
+    this.newSlot("localUserId", null);
   }
 
   init() {
@@ -95,11 +96,7 @@
     return this;
   }
 
-
-
 }.initThisClass());
-
-let id;
 
 let hostWelcomeMessage = false;
 let groupSessionType;
