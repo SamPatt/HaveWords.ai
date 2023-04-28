@@ -349,7 +349,7 @@ function updateSessionTypeOptions(sessionType) {
   let description;
 
   if (sessionType === "fantasyRoleplay") {
-    groupSessionType = "fantasyRoleplay";
+    Session.shared().setGroupSessionType("fantasyRoleplay")
     options = [
       { value: "traditional fantasy", text: "Traditional roleplaying" },
       { value: "Conan", text: "Conan" },

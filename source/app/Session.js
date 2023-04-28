@@ -11,6 +11,7 @@
     this.newSlot("localUserId", null);
     this.newSlot("inSession", false);
     this.newSlot("hostWelcomeMessage", false);
+    this.newSlot("groupSessionType", undefined);
   }
 
   init() {
@@ -100,7 +101,6 @@
 
 }.initThisClass());
 
-let groupSessionType;
 let groupSessionDetails;
 let groupSessionFirstAIResponse;
 

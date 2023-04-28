@@ -51,7 +51,7 @@ async function triggerImageBot(response) {
   const imageDescription = data.choices[0].message.content;
   const imageURL = await OpenAiImageGen.shared().asyncFetch(
     imageDescription,
-    groupSessionType,
+    Session.shared().groupSessionType(),
     groupSessionDetails
   );
   sendImage(imageURL);
