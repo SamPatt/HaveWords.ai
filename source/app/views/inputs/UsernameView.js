@@ -13,7 +13,7 @@
     super.init();
     this.setId("username")
     this.setSubmitFunc(() => { 
-      updateUserName()
+      UsersView.shared().updateUserName()
     })
   }
 

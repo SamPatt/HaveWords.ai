@@ -184,6 +184,46 @@
     const chatSendButton = document.getElementById("chatSendButton");
     chatSendButton.disabled = true;
   }
+
+  updateUserName() {
+    const username = UsernameView.shared().string();
+    if (username.trim() !== "") {
+      if (Peers.shared().isHost()) {
+        // Set new host nickname and send to all guests
+        const oldNickname = hostNickname;
+        if (hostNickname === username) {
+          return;
+        }
+        hostNickname = username;
+        // Update the host nickname in localstorage
+        localStorage.setItem("hostNickname", hostNickname);
+        addChatMessage(
+          "chat",
+          `${oldNickname} is now ${hostNickname}.`,
+          hostNickname
+        );
+        const updatedGuestUserList = updateGuestUserlist();
+        for (const guestId in dataChannels) {
+          if (dataChannels.hasOwnProperty(guestId)) {
+            dataChannels[guestId].conn.send({
+              type: "nickname-update",
+              message: `${oldNickname} is now ${hostNickname}.`,
+              nickname: hostNickname,
+              oldNickname: oldNickname,
+              newNickname: hostNickname,
+              guestUserList: updatedGuestUserList,
+            });
+          }
+        }
+      } else {
+        // Set new guest nickname and send to host
+        guestNickname = username;
+        // Update the guest nickname in localstorage
+        localStorage.setItem("guestNickname", guestNickname);
+        Peers.shared().sendUsername(username);
+      }
+    }
+  }
 }.initThisClass());
 
 // ----------------------------------------------------------------
@@ -228,44 +268,4 @@ function banUser(id, token) {
   }
   const userActions = document.getElementById("user-actions");
   userActions.style.display = "none";
-}
-
-function updateUserName() {
-  const username = UsernameView.shared().string();
-  if (username.trim() !== "") {
-    if (Peers.shared().isHost()) {
-      // Set new host nickname and send to all guests
-      const oldNickname = hostNickname;
-      if (hostNickname === username) {
-        return;
-      }
-      hostNickname = username;
-      // Update the host nickname in localstorage
-      localStorage.setItem("hostNickname", hostNickname);
-      addChatMessage(
-        "chat",
-        `${oldNickname} is now ${hostNickname}.`,
-        hostNickname
-      );
-      const updatedGuestUserList = updateGuestUserlist();
-      for (const guestId in dataChannels) {
-        if (dataChannels.hasOwnProperty(guestId)) {
-          dataChannels[guestId].conn.send({
-            type: "nickname-update",
-            message: `${oldNickname} is now ${hostNickname}.`,
-            nickname: hostNickname,
-            oldNickname: oldNickname,
-            newNickname: hostNickname,
-            guestUserList: updatedGuestUserList,
-          });
-        }
-      }
-    } else {
-      // Set new guest nickname and send to host
-      guestNickname = username;
-      // Update the guest nickname in localstorage
-      localStorage.setItem("guestNickname", guestNickname);
-      Peers.shared().sendUsername(username);
-    }
-  }
 }
