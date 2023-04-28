@@ -396,13 +396,13 @@ async function setupJoinSession() {
         console.log("Received session history:", data.history);
         guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
         console.log("Received guestUserList:", guestUserList);
-        displayGuestUserList(); // Call a function to update the UI with the new guestUserList
+        UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
         guestDisplayHostSessionHistory(data.history);
       }
 
       if (data.type === "nickname-update") {
         guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
-        displayGuestUserList();
+        UsersView.shared().displayGuestUserList();
         addChatMessage("chat", data.message, data.nickname);
       }
 
@@ -424,7 +424,7 @@ async function setupJoinSession() {
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
-        displayGuestUserList();
+        UsersView.shared().displayGuestUserList();
       }
       if (data.type === "guest-leave") {
         addChatMessage("chat", data.message, data.nickname);
@@ -433,7 +433,7 @@ async function setupJoinSession() {
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
-        displayGuestUserList();
+        UsersView.shared().displayGuestUserList();
       }
 
       const messageInputRemote = document.getElementById("messageInputRemote");

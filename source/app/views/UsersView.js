@@ -112,70 +112,70 @@
       }
     }
   }
+
+  // These functions update the list of connected guests and display the user actions menu
+
+  displayGuestUserList() {
+    const userList = document.getElementById("userList");
+    userList.innerHTML = "";
+
+    for (const id in guestUserList) {
+      if (guestUserList.hasOwnProperty(id)) {
+        const guestNickname = guestUserList[id].nickname;
+
+        // Create a container for the user and their actions
+        const userContainer = document.createElement("div");
+        userContainer.classList.add("user-container");
+
+        // Create the user list item and add an arrow indicator
+        const listItem = document.createElement("li");
+        listItem.textContent = guestNickname;
+        listItem.setAttribute("data-id", guestUserList[id].id);
+
+        const arrowIndicator = document.createElement("span");
+        arrowIndicator.textContent = " ▼";
+        arrowIndicator.classList.add("arrow-indicator");
+        listItem.appendChild(arrowIndicator);
+
+        userContainer.appendChild(listItem);
+
+        // Create user action buttons
+        const userActions = document.createElement("div");
+        userActions.classList.add("user-actions");
+
+        // Voice request button
+
+        handleVoiceRequestButton(userActions, guestUserList[id].id);
+
+        // Mute button
+        const muteButton = document.createElement("button");
+        muteButton.textContent = "Mute";
+        muteButton.onclick = () => {
+          // Mute logic
+        };
+        userActions.appendChild(muteButton);
+
+        // Add user actions to the user container and set it to be hidden by default
+        userActions.style.display = "none";
+        userContainer.appendChild(userActions);
+
+        // Show or hide user actions when the arrow indicator is clicked
+        arrowIndicator.onclick = () => {
+          if (userActions.style.display === "none") {
+            userActions.style.display = "block";
+          } else {
+            userActions.style.display = "none";
+          }
+        };
+
+        // Add the user container to the user list
+        userList.appendChild(userContainer);
+      }
+    }
+  }
 }.initThisClass());
 
 // ----------------------------------------------------------------
-
-// These functions update the list of connected guests and display the user actions menu
-
-function displayGuestUserList() {
-  const userList = document.getElementById("userList");
-  userList.innerHTML = "";
-
-  for (const id in guestUserList) {
-    if (guestUserList.hasOwnProperty(id)) {
-      const guestNickname = guestUserList[id].nickname;
-
-      // Create a container for the user and their actions
-      const userContainer = document.createElement("div");
-      userContainer.classList.add("user-container");
-
-      // Create the user list item and add an arrow indicator
-      const listItem = document.createElement("li");
-      listItem.textContent = guestNickname;
-      listItem.setAttribute("data-id", guestUserList[id].id);
-
-      const arrowIndicator = document.createElement("span");
-      arrowIndicator.textContent = " ▼";
-      arrowIndicator.classList.add("arrow-indicator");
-      listItem.appendChild(arrowIndicator);
-
-      userContainer.appendChild(listItem);
-
-      // Create user action buttons
-      const userActions = document.createElement("div");
-      userActions.classList.add("user-actions");
-
-      // Voice request button
-
-      handleVoiceRequestButton(userActions, guestUserList[id].id);
-
-      // Mute button
-      const muteButton = document.createElement("button");
-      muteButton.textContent = "Mute";
-      muteButton.onclick = () => {
-        // Mute logic
-      };
-      userActions.appendChild(muteButton);
-
-      // Add user actions to the user container and set it to be hidden by default
-      userActions.style.display = "none";
-      userContainer.appendChild(userActions);
-
-      // Show or hide user actions when the arrow indicator is clicked
-      arrowIndicator.onclick = () => {
-        if (userActions.style.display === "none") {
-          userActions.style.display = "block";
-        } else {
-          userActions.style.display = "none";
-        }
-      };
-
-      // Add the user container to the user list
-      userList.appendChild(userContainer);
-    }
-  }
-}
 
 function displayUserActions(event) {
   const guestId = event.currentTarget.getAttribute("data-id");
@@ -193,7 +193,7 @@ function kickUser(kickedUserId) {
       guestConn.close();
       console.log(`Kicked guest: ${kickedUserId}`);
       delete dataChannels[kickedUserId];
-      UsersView.shared().updateUserList()
+      UsersView.shared().updateUserList();
     }, 500); // Adjust the delay (in milliseconds) as needed
   }
   const userActions = document.getElementById("user-actions");
@@ -223,7 +223,7 @@ function banUser(id, token) {
       console.log(token);
       console.log(bannedGuests);
       delete dataChannels[id];
-      UsersView.shared().updateUserList()
+      UsersView.shared().updateUserList();
     }, 500); // Adjust the delay (in milliseconds) as needed
   }
   const userActions = document.getElementById("user-actions");
