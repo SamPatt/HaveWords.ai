@@ -5,8 +5,6 @@
 
 */
 
-
-const dataChannels = {};
 const bannedGuests = [];
 let conn;
 let guestUserList = [];
@@ -14,10 +12,9 @@ let peer;
 
 (class Peers extends Base {
   initPrototypeSlots() {
-    this.newSlot("connections", null)
-
+    this.newSlot("connections", null);
+    this.newSlot("dataChannels", null);
     /*
-    this.newSlot("dataChannels", null)
     this.newSlot("bannedGuests", null)
     this.newSlot("conn", null)
     this.newSlot("guestUserList", null)
@@ -27,10 +24,10 @@ let peer;
 
   init() {
     super.init();
-    this.setConnections(new Map())
+    this.setConnections(new Map());
+    this.setDataChannels(new Map());
     /*
-    this.setDataChannels({})
-    this.setBannedGuests({})
+    this.setBannedGuests([])
     this.setGuestUserList({})
     */
     this.setIsDebugging(true);
@@ -50,21 +47,17 @@ let peer;
   }
 
   broadcast(json) {
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        dataChannels[guestId].conn.send(json);
-      }
-    }
+    this.dataChannels().forEachKV((guestId, channel) => {
+      channel.conn.send(json);
+    });
   }
 
   broadcastExceptTo(json, excludeId) {
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        if (guestId !== excludeId) {
-          dataChannels[guestId].conn.send(json);
-        }
+    this.dataChannels().forEachKV((guestId, channel) => {
+      if (guestId !== excludeId) {
+        channel.conn.send(json);
       }
-    }
+    });
   }
 
   sendUsername(username) {
@@ -75,27 +68,25 @@ let peer;
       newNickname: username,
     });
   }
-  
+
   generateId() {
     // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
     return Math.random().toString(36).substr(2, 9);
   }
 
   // Creates a token for guest identity across sessions
- generateToken() {
-  console.log("Generating token...");
-  return (
-    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
-  );
-}
+  generateToken() {
+    console.log("Generating token...");
+    return (
+      Math.random().toString(36).substr(2) +
+      Math.random().toString(36).substr(2)
+    );
+  }
 
   // --- get channel / connection for a userId ---
 
   channelForUserId(userId) {
-    if (dataChannels.hasOwnProperty(userId)) {
-      return dataChannels[userId];
-    }
-    return undefined;
+    return this.dataChannels().get(userId);
   }
 
   connectionForUserId(userId) {
@@ -139,9 +130,9 @@ let peer;
   closeConnectionForUser(userId) {
     const channel = this.channelForUserId(userId);
     if (channel) {
-      const conn = dataChannels[userId].conn;
+      const conn = this.connectionForUserId(userId);
       conn.close();
-      delete dataChannels[userId];
+      this.dataChannels().delete(userId);
       UsersView.shared().updateUserList();
     } else {
       console.warn("attempt to close missing channel for userId: " + userId);
@@ -157,9 +148,9 @@ if (Peers.shared().isHost()) {
   const existingHostNickname = Session.shared().hostNickname();
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
-    Session.shared().setLocalUserId(existingHostId)
+    Session.shared().setLocalUserId(existingHostId);
     //Session.shared().setLocalUserId(existingHostId)
-    Session.shared().setHostNickname(existingHostNickname)
+    Session.shared().setHostNickname(existingHostNickname);
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
     Session.shared().setLocalUserId(Peers.shared().generateId());
@@ -179,7 +170,6 @@ if (Peers.shared().isHost()) {
     localStorage.setItem("guestId", Session.shared().localUserId());
   }
 }
-
 
 //PeerJS webRTC section
 
@@ -209,21 +199,22 @@ async function setupHostSession() {
       Peers.shared().connections().set(conn.peer, conn);
 
       // Adds to datachannels
-      dataChannels[conn.peer] = {
+      Peers.shared().dataChannels().set(conn.peer, {
         conn: conn,
         id: conn.peer,
         nickname: "",
         token: "",
         canSendPrompts: false,
-      };
+      });
 
       // Handle receiving messages from guests
       conn.on("data", (data) => {
         console.log(`Message from ${conn.peer}:`, data);
+        const channel = Peers.shared().dataChannels().get(conn.peer);
 
         if (data.type === "nickname") {
           if (bannedGuests.includes(data.token)) {
-            const guestConn = dataChannels[data.id].conn;
+            const guestConn = Peers.shared().dataChannels().get(data.id).conn;
             guestConn.send({ type: "ban" });
             setTimeout(() => {
               guestConn.close();
@@ -231,10 +222,11 @@ async function setupHostSession() {
             }, 500);
           } else {
             // Store the guest's nickname
-            dataChannels[conn.peer].nickname = data.nickname;
 
+            channel.nickname = data.nickname;
             //Store the guest's token
-            dataChannels[conn.peer].token = data.token;
+            channel.token = data.token;
+
             console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
             UsersView.shared().updateUserList();
 
@@ -242,7 +234,7 @@ async function setupHostSession() {
             const newGuestUserList = updateGuestUserlist();
             guestUserList = newGuestUserList;
             // Send the session history to the guest
-            dataChannels[conn.peer].conn.send({
+            channel.conn.send({
               type: "session-history",
               history: Session.shared().history(),
               nickname: Session.shared().hostNickname(),
@@ -271,7 +263,7 @@ async function setupHostSession() {
         }
         if (data.type === "remote-prompt") {
           // Add prompt to prompt history
-          if (dataChannels[conn.peer].canSendPrompts) {
+          if (channel.canSendPrompts) {
             Session.shared().addToHistory({
               type: "prompt",
               data: data.message,
@@ -295,15 +287,13 @@ async function setupHostSession() {
             sendAIResponse(data.message, data.nickname);
           } else {
             console.log(
-              `Rejected prompt from ${conn.peer} - ${
-                dataChannels[conn.peer].nickname
-              }`
+              `Rejected prompt from ${conn.peer} - ${channel.nickname}`
             );
           }
         }
         if (data.type === "remote-system-message") {
           // Add remote system message update to history if guest is allowed to send prompts
-          if (dataChannels[conn.peer].canSendPrompts) {
+          if (channel.canSendPrompts) {
             Session.shared().addToHistory({
               type: "system-message",
               data: data.message,
@@ -315,9 +305,7 @@ async function setupHostSession() {
             guestChangeSystemMessage(data);
           } else {
             console.log(
-              `Rejected system message update from ${conn.peer} - ${
-                dataChannels[conn.peer].nickname
-              }`
+              `Rejected system message update from ${conn.peer} - ${channel.nickname}`
             );
           }
         }
@@ -346,8 +334,8 @@ async function setupHostSession() {
 
         if (data.type === "nickname-update") {
           // Update nickname in datachannels
-          const oldNickname = dataChannels[conn.peer].nickname;
-          dataChannels[conn.peer].nickname = data.newNickname;
+          const oldNickname = channel.nickname;
+          channel.nickname = data.newNickname;
           addChatMessage(
             "system-message",
             `${oldNickname} is now ${data.newNickname}.`,
@@ -370,12 +358,14 @@ async function setupHostSession() {
       });
 
       conn.on("close", () => {
+        const channel = Peers.shared().dataChannels().get(conn.peer);
+
         console.log(`Guest disconnected: ${conn.peer}`);
         // Create a new guest list without the disconnected peer
-        const closedPeerId = dataChannels[conn.peer].id;
-        const closedPeerNickname = dataChannels[conn.peer].nickname;
+        const closedPeerId = channel.id;
+        const closedPeerNickname = channel.nickname;
         Peers.shared().connections().delete(conn.peer);
-        delete dataChannels[conn.peer];
+        Peers.shared().dataChannels().delete(conn.peer);
         const updatedGuestUserList = updateGuestUserlist();
         guestUserList = updatedGuestUserList;
 
@@ -406,14 +396,12 @@ function updateGuestUserlist() {
     id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      guestUserList.push({
-        id: guestId,
-        nickname: dataChannels[guestId].nickname,
-      });
-    }
-  }
+  Peers.shared().dataChannels().forEachKV((guestId, channel) => {
+    guestUserList.push({
+      id: guestId,
+      nickname: channel.nickname,
+    });
+  });
   return guestUserList;
 }
 
@@ -429,7 +417,7 @@ async function setupJoinSession() {
   conn.on("open", () => {
     console.log("Connection opened:", conn);
     Peers.shared().connections().set(inviteId, conn);
-    dataChannels[inviteId] = conn;
+    Peers.shared().dataChannels().set(inviteId, conn);
     console.log(`Connected to host: ${inviteId}`);
     conn.send({
       type: "nickname",
@@ -466,14 +454,18 @@ async function setupJoinSession() {
       }
       if (data.type === "session-history") {
         console.log("Received session history:", data.history);
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
+        guestUserList = data.guestUserList.filter(
+          (guest) => guest.id !== Session.shared().localUserId()
+        );
         console.log("Received guestUserList:", guestUserList);
         UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
         guestDisplayHostSessionHistory(data.history);
       }
 
       if (data.type === "nickname-update") {
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
+        guestUserList = data.guestUserList.filter(
+          (guest) => guest.id !== Session.shared().localUserId()
+        );
         UsersView.shared().displayGuestUserList();
         addChatMessage("chat", data.message, data.nickname);
       }
@@ -492,7 +484,9 @@ async function setupJoinSession() {
       if (data.type === "guest-join") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
+        const index = guestUserList.findIndex(
+          (guest) => guest.id === Session.shared().localUserId()
+        ); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
@@ -501,7 +495,9 @@ async function setupJoinSession() {
       if (data.type === "guest-leave") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
+        const index = guestUserList.findIndex(
+          (guest) => guest.id === Session.shared().localUserId()
+        ); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
@@ -524,7 +520,7 @@ async function setupJoinSession() {
     });
     conn.on("close", () => {
       Peers.shared().connections().delete(inviteId);
-      delete dataChannels[inviteId];
+      Peers.shared().dataChannels().delete(inviteId);
       console.log(`Disconnected from host: ${inviteId}`);
     });
   });
@@ -551,28 +547,39 @@ function setupPeer() {
   });
 
   peer.on("open", function () {
-    console.log("PeerJS client is ready. Peer ID:", Session.shared().localUserId());
+    console.log(
+      "PeerJS client is ready. Peer ID:",
+      Session.shared().localUserId()
+    );
 
     if (Peers.shared().isHost()) {
       //Session.shared().load() // loadSessionData();
       displaySessionHistory();
       if (!Session.shared().hostNickname()) {
-        Session.shared().setHostNickname(Nickname.generateHostNickname() + " (host)")
+        Session.shared().setHostNickname(
+          Nickname.generateHostNickname() + " (host)"
+        );
         UsernameView.shared().setString(Session.shared().hostNickname());
       } else {
-        console.log("Host nickname is already set:", Session.shared().hostNickname());
+        console.log(
+          "Host nickname is already set:",
+          Session.shared().hostNickname()
+        );
       }
       if (Session.shared().hostWelcomeMessage() === false) {
         setupHostSession(); // Call the function to set up the host session
-        Session.shared().setHostWelcomeMessage(true)
+        Session.shared().setHostWelcomeMessage(true);
       }
     } else {
       if (!Session.shared().guestNickname()) {
-        Session.shared().setGuestNickname(Nickname.generateNickname())
+        Session.shared().setGuestNickname(Nickname.generateNickname());
         UsernameView.shared().setString(Session.shared().guestNickname());
         console.log("Guest nickname:", Session.shared().guestNickname());
       } else {
-        console.log("Guest nickname is already set:", Session.shared().guestNickname());
+        console.log(
+          "Guest nickname is already set:",
+          Session.shared().guestNickname()
+        );
       }
       setupJoinSession(); // Call the function to set up the join session
     }
@@ -661,7 +668,6 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
   };
 }
 
-
 let guestToken = localStorage.getItem("guestToken");
 if (!guestToken) {
   guestToken = Peers.shared().generateToken();
@@ -691,7 +697,7 @@ async function sendPrompt(message) {
     message: message,
     nickname: Session.shared().hostNickname(),
   });
-  
+
   if (Session.shared().gameMode()) {
     message = Session.shared().hostNickname() + ": " + message;
   }

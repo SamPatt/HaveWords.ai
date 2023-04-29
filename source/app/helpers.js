@@ -47,3 +47,10 @@ String.prototype.copyToClipboard = function () { // not the right place for this
   }
   return Promise.reject("The Clipboard API is not available.");
 };
+
+
+Map.prototype.forEachKV = function (f) {
+  this.forEach((v, k) => { 
+    f(k, v);
+   })
+}

@@ -470,11 +470,10 @@ function getCurrentUsernames() {
   // Add all nicknames of connected guests to the guestNicknames array
   const guestNicknames = [];
   guestNicknames.push(Session.shared().hostNickname());
-  for (const guestId in dataChannels) {
-    if (dataChannels.hasOwnProperty(guestId)) {
-      guestNicknames.push(dataChannels[guestId].nickname);
-    }
-  }
+
+  Peers.shared().dataChannels().forEachKV((guestId, channel) => {
+    guestNicknames.push(channel.nickname);
+  });
   return guestNicknames;
 }
 

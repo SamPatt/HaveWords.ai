@@ -18,10 +18,11 @@
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
 
-    for (const guestId in dataChannels) {
-      if (dataChannels.hasOwnProperty(guestId)) {
-        const guestToken = dataChannels[guestId].token;
-        const aGuestNickname = dataChannels[guestId].nickname;
+    Peers.shared()
+      .dataChannels()
+      .forEachKV((guestId, channel) => {
+        const guestToken = channel.token;
+        const aGuestNickname = channel.nickname;
 
         // Create a container for the user and their actions
         const userContainer = document.createElement("div");
@@ -44,22 +45,20 @@
 
         // AI Access button
         const canSendPromptsButton = document.createElement("button");
-        canSendPromptsButton.textContent = dataChannels[guestId].canSendPrompts
+        canSendPromptsButton.textContent = channel.canSendPrompts
           ? "Revoke AI access"
           : "Grant AI access";
         canSendPromptsButton.onclick = () => {
-          dataChannels[guestId].canSendPrompts =
-            !dataChannels[guestId].canSendPrompts;
+          channel.canSendPrompts = !channel.canSendPrompts;
 
-          canSendPromptsButton.textContent = dataChannels[guestId]
-            .canSendPrompts
+          canSendPromptsButton.textContent = channel.canSendPrompts
             ? "Revoke AI access"
             : "Grant AI access";
 
-          if (dataChannels[guestId].canSendPrompts) {
-            dataChannels[guestId].conn.send({ type: "grant-ai-access" });
+          if (channel.canSendPrompts) {
+            channel.conn.send({ type: "grant-ai-access" });
           } else {
-            dataChannels[guestId].conn.send({ type: "revoke-ai-access" });
+            channel.conn.send({ type: "revoke-ai-access" });
           }
         };
         userActions.appendChild(canSendPromptsButton);
@@ -107,8 +106,7 @@
 
         // Add the user container to the user list
         userList.appendChild(userContainer);
-      }
-    }
+      });
   }
 
   // These functions update the list of connected guests and display the user actions menu
@@ -199,9 +197,11 @@
           Session.shared().hostNickname()
         );
         const updatedGuestUserList = updateGuestUserlist();
-        for (const guestId in dataChannels) {
-          if (dataChannels.hasOwnProperty(guestId)) {
-            dataChannels[guestId].conn.send({
+
+        Peers.shared()
+          .dataChannels()
+          .forEachKV((guestId, channel) => {
+            channel.conn.send({
               type: "nickname-update",
               message: `${oldNickname} is now ${Session.shared().hostNickname()}.`,
               nickname: Session.shared().hostNickname(),
@@ -209,8 +209,7 @@
               newNickname: Session.shared().hostNickname(),
               guestUserList: updatedGuestUserList,
             });
-          }
-        }
+          });
       } else {
         // Set new guest nickname and send to host
         Session.shared().setGuestNickname(username);
