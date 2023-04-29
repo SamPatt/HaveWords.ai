@@ -3,9 +3,6 @@
 /* 
     Peers
 
-
-    Peers.shared().broadcast(json)
-    Peers.shared().broadcastExceptTo(json, id)
 */
 
 (class Peers extends Base {
@@ -24,7 +21,9 @@
   }
 
   isHost() {
-    return this.inviteId() === null;
+    const isHost = !this.inviteId();
+    //console.log("isHost:" + isHost)
+    return isHost;
   }
 
   broadcast(json) {
@@ -44,44 +43,117 @@
       }
     }
   }
+
+  sendUsername(username) {
+    // Send chat message to host
+    conn.send({
+      type: "nickname-update",
+      id: Session.shared().localUserId(),
+      newNickname: username,
+    });
+  }
+  
+  generateId() {
+    // These functions are called if the user is the host, to generate room IDs and create and copy the invite link
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  // Creates a token for guest identity across sessions
+ generateToken() {
+  console.log("Generating token...");
+  return (
+    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
+  );
+}
+
+  // --- get channel / connection for a userId ---
+
+  channelForUserId(userId) {
+    if (dataChannels.hasOwnProperty(userId)) {
+      return dataChannels[userId];
+    }
+    return undefined;
+  }
+
+  connectionForUserId(userId) {
+    const channel = this.channelForUserId(userId);
+    if (channel) {
+      return channel.conn;
+    }
+    return undefined;
+  }
+
+  // --- user actions ---
+
+  kickUser(userId) {
+    console.log("Kicked guest: " + userId);
+
+    const conn = this.connectionForUserId(userId);
+    if (conn) {
+      conn.send({ type: "kick" });
+      setTimeout(() => {
+        this.closeConnectionForUser(userId);
+      }, 500); // TODO: is delay needed?
+    }
+  }
+
+  banUser(userId, token) {
+    console.log("Banned guest: " + userId);
+    console.log(token);
+    console.log(bannedGuests);
+
+    bannedGuests.push(token);
+
+    const conn = this.connectionForUserId(userId);
+    if (conn) {
+      conn.send({ type: "ban" });
+      setTimeout(() => {
+        this.closeConnectionForUser(userId);
+      }, 500); // TODO: is delay needed?
+    }
+  }
+
+  closeConnectionForUser(userId) {
+    const channel = this.channelForUserId(userId);
+    if (channel) {
+      const conn = dataChannels[userId].conn;
+      conn.close();
+      delete dataChannels[userId];
+      UsersView.shared().updateUserList();
+    } else {
+      console.warn("attempt to close missing channel for userId: " + userId);
+    }
+  }
 }.initThisClass());
 
 // -----------------------------------------------------
 
-let id;
-let hostNickname;
-let guestNickname;
-let hostWelcomeMessage = false;
-let groupSessionType;
-let groupSessionDetails;
-let groupSessionFirstAIResponse;
-let inSession = false;
-
 // If user is host, check if there is an existing hostId in local storage
 if (Peers.shared().isHost()) {
   const existingHostId = localStorage.getItem("hostId");
-  const existingHostNickname = localStorage.getItem("hostNickname");
+  const existingHostNickname = Session.shared().hostNickname();
   if (existingHostId) {
     // If there is an existing hostId, set the hostId to the existing one
-    id = existingHostId;
-    hostNickname = existingHostNickname;
+    Session.shared().setLocalUserId(existingHostId)
+    //Session.shared().setLocalUserId(existingHostId)
+    Session.shared().setHostNickname(existingHostNickname)
   } else {
     // If there is no existing hostId, generate a new one and save it to local storage
-    id = generateId();
-    localStorage.setItem("hostId", id);
+    Session.shared().setLocalUserId(Peers.shared().generateId());
+    localStorage.setItem("hostId", Session.shared().localUserId());
   }
 } else {
   // If user is guest, generate a new id
   const existingGuestId = localStorage.getItem("guestId");
-  const existingGuestNickname = localStorage.getItem("guestNickname");
+  const existingGuestNickname = Session.shared().guestNickname();
   if (existingGuestId) {
     // If there is an existing guestId, set the guestId to the existing one
-    id = existingGuestId;
-    guestNickname = existingGuestNickname;
+    Session.shared().setLocalUserId(existingGuestId);
+    Session.shared().setGuestNickname(existingGuestNickname);
   } else {
     // If there is no existing guestId, generate a new one and save it to local storage
-    id = generateId();
-    localStorage.setItem("guestId", id);
+    Session.shared().setLocalUserId(Peers.shared().generateId());
+    localStorage.setItem("guestId", Session.shared().localUserId());
   }
 }
 
@@ -106,13 +178,13 @@ function makeInviteLink(hostRoomId) {
 async function setupHostSession() {
   console.log("Setting up host session");
   displayHostHTMLChanges();
-  const inviteLink = makeInviteLink(id);
+  const inviteLink = makeInviteLink(Session.shared().localUserId());
   InviteButton.shared().setLink(inviteLink);
 
   if (!fantasyRoleplay) {
     addMessage(
       "system-message",
-      `<p>Welcome, <b> ${hostNickname} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
+      `<p>Welcome, <b> ${Session.shared().hostNickname()} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
       "HaveWords"
     );
   }
@@ -150,7 +222,7 @@ async function setupHostSession() {
             //Store the guest's token
             dataChannels[conn.peer].token = data.token;
             console.log(`Guest connected: ${conn.peer} - ${data.nickname}`);
-            updateUserList();
+            UsersView.shared().updateUserList();
 
             // Create a guest user list with ids and nicknames to send to the new guest
             const newGuestUserList = updateGuestUserlist();
@@ -159,7 +231,7 @@ async function setupHostSession() {
             dataChannels[conn.peer].conn.send({
               type: "session-history",
               history: Session.shared().history(),
-              nickname: hostNickname,
+              nickname: Session.shared().hostNickname(),
               guestUserList: newGuestUserList,
             });
 
@@ -168,7 +240,7 @@ async function setupHostSession() {
               {
                 type: "guest-join",
                 message: `${data.nickname} has joined the session!`,
-                nickname: hostNickname,
+                nickname: Session.shared().hostNickname(),
                 joiningGuestNickname: data.nickname,
                 joiningGuestId: data.id,
                 guestUserList: guestUserList,
@@ -179,7 +251,7 @@ async function setupHostSession() {
             addChatMessage(
               "system-message",
               `${data.nickname} has joined the session!`,
-              hostNickname
+              Session.shared().hostNickname()
             );
           }
         }
@@ -265,9 +337,9 @@ async function setupHostSession() {
           addChatMessage(
             "system-message",
             `${oldNickname} is now ${data.newNickname}.`,
-            hostNickname
+            Session.shared().hostNickname()
           );
-          updateUserList();
+          UsersView.shared().updateUserList();
           // Update nickname in guest user list
           const updatedGuestUserList = updateGuestUserlist();
           guestUserList = updatedGuestUserList;
@@ -275,7 +347,7 @@ async function setupHostSession() {
           Peers.shared().broadcast({
             type: "nickname-update",
             message: `${oldNickname} is now ${data.newNickname}.`,
-            nickname: hostNickname,
+            nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
             guestUserList: updatedGuestUserList,
@@ -296,7 +368,7 @@ async function setupHostSession() {
         Peers.shared().broadcast({
           type: "guest-leave",
           message: `${closedPeerNickname} has left the session.`,
-          nickname: hostNickname,
+          nickname: Session.shared().hostNickname(),
           leavingGuestNickname: closedPeerNickname,
           leavingGuestId: closedPeerId,
           guestUserList: updatedGuestUserList,
@@ -305,10 +377,10 @@ async function setupHostSession() {
         addChatMessage(
           "system-message",
           `${closedPeerNickname} has left the session.`,
-          hostNickname
+          Session.shared().hostNickname()
         );
 
-        updateUserList();
+        UsersView.shared().updateUserList();
       });
     });
   });
@@ -317,8 +389,8 @@ async function setupHostSession() {
 function updateGuestUserlist() {
   let guestUserList = [];
   guestUserList.push({
-    id: id,
-    nickname: hostNickname,
+    id: Session.shared().localUserId(),
+    nickname: Session.shared().hostNickname(),
   });
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
@@ -347,8 +419,8 @@ async function setupJoinSession() {
     console.log(`Connected to host: ${inviteId}`);
     conn.send({
       type: "nickname",
-      id: id,
-      nickname: guestNickname,
+      id: Session.shared().localUserId(),
+      nickname: Session.shared().guestNickname(),
       token: guestToken,
     });
 
@@ -358,7 +430,7 @@ async function setupJoinSession() {
       if (data.type === "kick") {
         conn.close();
         console.log("You have been kicked from the session.");
-        displayKickedMessage();
+        UsersView.shared().displayKickedMessage();
       }
       if (data.type === "chat") {
         Sounds.shared().playReceiveBeep();
@@ -380,15 +452,15 @@ async function setupJoinSession() {
       }
       if (data.type === "session-history") {
         console.log("Received session history:", data.history);
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
         console.log("Received guestUserList:", guestUserList);
-        displayGuestUserList(); // Call a function to update the UI with the new guestUserList
+        UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
         guestDisplayHostSessionHistory(data.history);
       }
 
       if (data.type === "nickname-update") {
-        guestUserList = data.guestUserList.filter((guest) => guest.id !== id);
-        displayGuestUserList();
+        guestUserList = data.guestUserList.filter((guest) => guest.id !== Session.shared().localUserId());
+        UsersView.shared().displayGuestUserList();
         addChatMessage("chat", data.message, data.nickname);
       }
 
@@ -406,20 +478,20 @@ async function setupJoinSession() {
       if (data.type === "guest-join") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
-        displayGuestUserList();
+        UsersView.shared().displayGuestUserList();
       }
       if (data.type === "guest-leave") {
         addChatMessage("chat", data.message, data.nickname);
         guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex((guest) => guest.id === id); // Use a function to test each element
+        const index = guestUserList.findIndex((guest) => guest.id === Session.shared().localUserId()); // Use a function to test each element
         if (index !== -1) {
           guestUserList.splice(index, 1);
         }
-        displayGuestUserList();
+        UsersView.shared().displayGuestUserList();
       }
 
       const messageInputRemote = document.getElementById("messageInputRemote");
@@ -447,7 +519,7 @@ async function setupJoinSession() {
 // --- peer code ------------------
 
 function setupPeer() {
-    /*
+  /*
   // Local peerjs server
   peer = new Peer(id, {
     host: "localhost",
@@ -457,7 +529,7 @@ function setupPeer() {
   */
 
   // Deployed peerjs server
-  peer = new Peer(id, {
+  peer = new Peer(Session.shared().localUserId(), {
     host: "peerjssignalserver.herokuapp.com",
     path: "/peerjs",
     secure: true,
@@ -465,36 +537,28 @@ function setupPeer() {
   });
 
   peer.on("open", function () {
-    console.log("PeerJS client is ready. Peer ID:", id);
+    console.log("PeerJS client is ready. Peer ID:", Session.shared().localUserId());
 
     if (Peers.shared().isHost()) {
       //Session.shared().load() // loadSessionData();
       displaySessionHistory();
-      if (!hostNickname) {
-        hostNickname = Nickname.generateHostNickname() + " (host)";
-        // Add host nickname to localstorage
-        localStorage.setItem("hostNickname", hostNickname);
-        console.log("Host nickname:", hostNickname);
-        displayUsername.value = hostNickname;
-        updateInputField(displayUsername);
+      if (!Session.shared().hostNickname()) {
+        Session.shared().setHostNickname(Nickname.generateHostNickname() + " (host)")
+        UsernameView.shared().setString(Session.shared().hostNickname());
       } else {
-        console.log("Host nickname is already set:", hostNickname);
+        console.log("Host nickname is already set:", Session.shared().hostNickname());
       }
-      if (hostWelcomeMessage == false) {
+      if (Session.shared().hostWelcomeMessage() === false) {
         setupHostSession(); // Call the function to set up the host session
-        hostWelcomeMessage = true;
+        Session.shared().setHostWelcomeMessage(true)
       }
     } else {
-      if (!guestNickname) {
-        guestNickname = Nickname.generateNickname();
-        // Add guest nickname to localstorage
-        localStorage.setItem("guestNickname", guestNickname);
-        displayUsername.value = guestNickname;
-        updateInputField(displayUsername);
-
-        console.log("Guest nickname:", guestNickname);
+      if (!Session.shared().guestNickname()) {
+        Session.shared().setGuestNickname(Nickname.generateNickname())
+        UsernameView.shared().setString(Session.shared().guestNickname());
+        console.log("Guest nickname:", Session.shared().guestNickname());
       } else {
-        console.log("Guest nickname is already set:", guestNickname);
+        console.log("Guest nickname is already set:", Session.shared().guestNickname());
       }
       setupJoinSession(); // Call the function to set up the join session
     }
@@ -583,21 +647,10 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
   };
 }
 
-// These functions are called if the user is the host, to generate room IDs and create and copy the invite link
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
-}
 
-// Creates a token for guest identity across sessions
-function generateToken() {
-  console.log("Generating token...");
-  return (
-    Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2)
-  );
-}
 let guestToken = localStorage.getItem("guestToken");
 if (!guestToken) {
-  guestToken = generateToken();
+  guestToken = Peers.shared().generateToken();
   localStorage.setItem("guestToken", guestToken);
 }
 
@@ -606,27 +659,27 @@ function sendImage(imageURL) {
   Session.shared().addToHistory({
     type: "image-link",
     data: imageURL,
-    id: id,
-    nickname: hostNickname,
+    id: Session.shared().localUserId(),
+    nickname: Session.shared().hostNickname(),
   });
 
   Peers.shared().broadcast({
     type: "image-link",
     message: imageURL,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 }
 
 async function sendPrompt(message) {
   Peers.shared().broadcast({
     type: "prompt",
-    id: id,
+    id: Session.shared().localUserId(),
     message: message,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 
   if (gameMode) {
-    message = hostNickname + ": " + message;
+    message = Session.shared().hostNickname() + ": " + message;
   }
   sendAIResponse(message);
 }
@@ -641,7 +694,7 @@ async function guestSendPrompt() {
     // Send chat message to host
     conn.send({
       type: "remote-prompt",
-      id: id,
+      id: Session.shared().localUserId(),
       message: message,
       nickname: guestNickname,
     });

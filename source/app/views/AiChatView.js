@@ -6,48 +6,42 @@
 */
 
 (class AiChatView extends View {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("messageInput", null)
+    this.newSlot("messageInputRemote", null)
+    //this.newSlot("usernameField", null)
+  }
 
   init() {
     super.init();
-    this.setId("messages");
+    this.setId("userPanel");
+    //this.setUsernameField(UsernameView.shared())
+    this.setupMessageInput()
+    this.setupMessageInputRemote()
   }
+
+  setupMessageInput () {
+    const textArea = TextAreaInputView.clone().setId("messageInput").setSubmitFunc(() => { 
+      addPrompt();
+    });
+
+    this.setMessageInput(textArea)
+  }
+
+  setupMessageInputRemote () {
+    const textArea = TextAreaInputView.clone().setId("messageInputRemote").setSubmitFunc(() => { 
+      guestSendPrompt();
+    });
+
+    this.setMessageInputRemote(textArea)
+  }
+
+
 }.initThisClass());
 
+AiChatView.shared() // so a shared instance gets created
+
 const loadingAnimation = document.getElementById("loadingHost");
-const displayUsername = document.getElementById("username");
-
-const messageInput = document.getElementById("messageInput");
-messageInput.addEventListener("keypress", (event) => {
-  const enterKeyCode = 13
-  if (enterKeyCode === 13 && !event.shiftKey) {
-    event.preventDefault(); // prevent new line
-    handleSendButtonClick();
-  }
-});
-
-const messageInputRemote = document.getElementById("messageInputRemote");
-messageInputRemote.addEventListener("keypress", (event) => {
-  const enterKeyCode = 13
-  if (enterKeyCode === 13 && !event.shiftKey) {
-    event.preventDefault(); // prevent new line
-    handleSendButtonRemoteClick();
-  }
-});
-
-function handleSendButtonClick() {
-  console.log("sendButton clicked");
-  addPrompt();
-  console.log("Sending prompt to AI");
-}
-
-function handleSendButtonRemoteClick() {
-  console.log("sendButtonRemote clicked");
-  guestSendPrompt();
-  console.log("Sending remote prompt to AI");
-}
-
-
 
 
 function addMessage(type, message, nickname) {
@@ -68,7 +62,7 @@ function addMessage(type, message, nickname) {
     icon = "🤖";
     // Check if in session, then if host, and if so, add a button to generate an image prompt
     
-      if (Peers.shared().isHost() && inSession) {
+      if (Peers.shared().isHost() && Session.shared().inSession()) {
         // Create a new icon/button element for the AI responses
         const generateImagePromptButton = document.createElement("button");
         generateImagePromptButton.textContent = "🎨";
@@ -130,12 +124,12 @@ function addMessage(type, message, nickname) {
     beginSessionButton.className = "begin-session-button";
     beginSessionButton.addEventListener("click", () => {
       // Add your desired action when the "Begin Session" button is clicked
-      startSession(groupSessionType, groupSessionDetails);
+      startSession(Session.shared().groupSessionType(), Session.shared().groupSessionDetails());
       console.log(
         "Begin Session button clicked " +
-          groupSessionType +
+        Session.shared().groupSessionType() +
           " " +
-          groupSessionDetails
+          Session.shared().groupSessionDetails()
       );
     });
     messageContent.appendChild(beginSessionButton);
@@ -182,67 +176,12 @@ function addImage(imageURL) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function addChatMessage(type, message, nickname) {
-  // If the string is empty, don't add it
-  if (message === "") {
-    return;
-  }
-  let icon;
-  if (type === "chat") {
-    icon = "🗯️";
-  } else if (type === "ai-response") {
-    icon = "🤖";
-  } else {
-    icon = "🔧";
-  }
-
-  const formattedResponse = message.convertToParagraphs();
-  const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-  const messagesDiv = document.querySelector(".chatMessages");
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "message-wrapper";
-
-  const iconDiv = document.createElement("div");
-  iconDiv.className = "icon";
-  iconDiv.innerHTML = icon;
-
-  const messageContent = document.createElement("div");
-  messageContent.className = "message-content";
-
-  const messageNickname = document.createElement("div");
-  messageNickname.className = "message-nickname";
-  messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
-
-  const messageText = document.createElement("div");
-  messageText.className = "message-text";
-  messageText.innerHTML = sanitizedHtml;
-  messageContent.appendChild(messageText);
-  messageWrapper.appendChild(iconDiv);
-  messageWrapper.appendChild(messageContent);
-  messagesDiv.appendChild(messageWrapper);
-  const scrollView = messagesDiv.parentNode;
-  scrollView.scrollTop = scrollView.scrollHeight;
-}
 
 async function addAIReponse(response) {
   Sounds.shared().playReceiveBeep();
   addMessage("ai-response", response, selectedModelNickname);
 }
 
-async function addLocalChatMessage(message) {
-  Session.shared().addToHistory({
-    type: "chat",
-    data: message,
-    id: id,
-    nickname: hostNickname,
-  });
-  addChatMessage("chat", message, hostNickname);
-}
-
-async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, guestNickname);
-}
 
 async function addPrompt() {
   Sounds.shared().playSendBeep();
@@ -253,10 +192,10 @@ async function addPrompt() {
   Session.shared().addToHistory({
     type: "prompt",
     data: message,
-    id: id,
-    nickname: hostNickname,
+    id: Session.shared().localUserId(),
+    nickname: Session.shared().hostNickname(),
   });
-  addMessage("prompt", message, hostNickname);
+  addMessage("prompt", message, Session.shared().hostNickname());
   sendPrompt(message);
 }
 
@@ -272,7 +211,7 @@ async function guestAddSystemMessage(data) {
 
 async function guestAddLocalPrompt(prompt) {
   Sounds.shared().playSendBeep();
-  addMessage("prompt", prompt, guestNickname);
+  addMessage("prompt", prompt, Session.shared().guestNickname());
 }
 
 async function guestAddHostAIResponse(response, nickname) {
@@ -297,14 +236,14 @@ async function sendAIResponse(message, nickname) {
   const response = await OpenAiChat.shared().asyncFetch(message);
   if (gameMode) {
     //console.log("Calling triggerBot with AI response:", response);
-    //triggerBot(response, groupSessionType, groupSessionDetails);
+    //triggerBot(response, Session.shared().groupSessionType(), Session.shared().groupSessionDetails());
   }
 
   addAIReponse(response);
 
   Peers.shared().broadcast({
     type: "ai-response",
-    id: id,
+    id: Session.shared().localUserId(),
     message: response,
     nickname: selectedModelNickname,
   });

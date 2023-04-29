@@ -16,25 +16,18 @@
     }
 
     run () {
-
         setupPeer()
-        
+
         OpenAiChat.shared().addToConversation({
             role: "system",
             content: "You are a helpful assistant.",
         })
           
-
-
-        // This displays the user's nickname above the chat window
         if (Peers.shared().isHost()) {
-            displayUsername.value = hostNickname;
-            updateInputField(displayUsername);
+            UsernameView.shared().setString(Session.shared().hostNickname());
         } else {
-            displayUsername.value = guestNickname;
-            updateInputField(displayUsername);
+            UsernameView.shared().setString(Session.shared().guestNickname());
         }
-
     }
 
     static launch () {

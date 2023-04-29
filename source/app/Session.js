@@ -8,6 +8,12 @@
 (class Session extends Base {
   initPrototypeSlots() {
     this.newSlot("data", null);
+    this.newSlot("localUserId", null);
+    this.newSlot("inSession", false);
+    this.newSlot("hostWelcomeMessage", false);
+    this.newSlot("groupSessionType", undefined);
+    this.newSlot("groupSessionDetails", undefined);
+    this.newSlot("groupSessionFirstAIResponse", undefined);
   }
 
   init() {
@@ -35,14 +41,13 @@
     }
 
     this.setData(json);
-
     return this;
   }
 
   clear() {
     localStorage.removeItem("sessionData");
     localStorage.removeItem("hostId");
-    localStorage.removeItem("hostNickname");
+    this.clearHostnickname();
     this.load();
   }
 
@@ -64,5 +69,38 @@
     window.location.reload();
   }
 
+  // hostNickname
+
+  setHostNickname (s) {
+    localStorage.setItem("hostNickname", s);
+    return this;
+  }
+
+  hostNickname (s) {
+    return localStorage.getItem("hostNickname");
+  }
+
+  clearHostnickname () {
+    localStorage.removeItem("hostNickname");
+    return this;
+  }
+
+  // guestNickname
+
+  setGuestNickname (s) {
+    localStorage.setItem("guestNickname", s);
+    return this;
+  }
+
+  guestNickname (s) {
+    return localStorage.getItem("guestNickname");
+  }
+
+  clearGuestNickname () {
+    localStorage.removeItem("guestNickname");
+    return this;
+  }
+
 }.initThisClass());
+
 

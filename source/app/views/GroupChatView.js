@@ -27,8 +27,8 @@ function sendChatMessage() {
       Session.shared().addToHistory({
         type: "chat",
         data: message,
-        id: id,
-        nickname: hostNickname,
+        id: Session.shared().localUserId(),
+        nickname: Session.shared().hostNickname(),
       });
       // Display chat message
       addLocalChatMessage(message);
@@ -36,17 +36,17 @@ function sendChatMessage() {
 
       Peers.shared().broadcast({
         type: "chat",
-        id: id,
+        id: Session.shared().localUserId(),
         message: message,
-        nickname: hostNickname,
+        nickname: Session.shared().hostNickname(),
       });
     } else {
       // Send chat message to host
       conn.send({
         type: "chat",
-        id: id,
+        id: Session.shared().localUserId(),
         message: message,
-        nickname: guestNickname,
+        nickname: Session.shared().guestNickname(),
       });
       guestAddLocalChatMessage(message);
     }
@@ -62,7 +62,7 @@ chatSendButton.addEventListener("click", sendChatMessage);
 const chatInput = document.getElementById("chatInput");
 chatInput.addEventListener("keypress", (event) => {
   const enterKeyCode = 13;
-  if (enterKeyCode === 13 && !event.shiftKey) {
+  if (event.keyCode === enterKeyCode && !event.shiftKey) {
     event.preventDefault(); // prevent new line
     sendChatMessage();
   }
@@ -70,18 +70,19 @@ chatInput.addEventListener("keypress", (event) => {
 
 // --- username ---
 
+
 async function addLocalChatMessage(message) {
   Session.shared().addToHistory({
     type: "chat",
     data: message,
-    id: id,
-    nickname: hostNickname,
+    id: Session.shared().localUserId(),
+    nickname: Session.shared().hostNickname(),
   });
-  addChatMessage("chat", message, hostNickname);
+  addChatMessage("chat", message, Session.shared().hostNickname());
 }
 
 async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, guestNickname);
+  addChatMessage("chat", message, Session.shared().guestNickname());
 }
 
 function addChatMessage(type, message, nickname) {

@@ -76,7 +76,7 @@
     Session.shared().addToHistory({
       type: "ai-response",
       data: aiResponse,
-      id: id,
+      id: Session.shared().localUserId(),
       nickname: selectedModelNickname,
     });
 

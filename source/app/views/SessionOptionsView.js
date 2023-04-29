@@ -87,9 +87,9 @@ function setNewAIRole(newRole) {
 async function sendSystemMessage(message) {
   Peers.shared().broadcast({
     type: "system-message",
-    id: id,
+    id: Session.shared().localUserId(),
     message: message,
-    nickname: hostNickname,
+    nickname: Session.shared().hostNickname(),
   });
 }
 
@@ -261,8 +261,9 @@ function displaySessionHistory() {
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-  addMessage("prompt", "You've started the session!", hostNickname);
-  inSession = true;
+  addMessage("prompt", "You've started the session!", Session.shared().hostNickname());
+  Session.shared().setInSession(true)
+
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
     gameMode = true;
@@ -294,24 +295,24 @@ async function startSession(sessionType, sessionDetails) {
     // Send a message to all connected guests
     Peers.shared().broadcast({
       type: "game-launch",
-      id: id,
+      id: Session.shared().localUserId(),
       message:
         "The host started a new " +
         sessionDetails +
         " session! Please wait while the AI Game master crafts your world...",
-      nickname: hostNickname,
+      nickname: Session.shared().hostNickname(),
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
-    groupSessionFirstAIResponse = response;
+    Session.shared().setGroupSessionFirstAIResponse(response)
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
     addAIReponse(response);
 
     // Send the response to all connected guests
     Peers.shared().broadcast({
       type: "ai-response",
-      id: id,
+      id: Session.shared().localUserId(),
       message: response,
       nickname: selectedModelNickname,
     });
@@ -348,7 +349,7 @@ function updateSessionTypeOptions(sessionType) {
   let description;
 
   if (sessionType === "fantasyRoleplay") {
-    groupSessionType = "fantasyRoleplay";
+    Session.shared().setGroupSessionType("fantasyRoleplay")
     options = [
       { value: "traditional fantasy", text: "Traditional roleplaying" },
       { value: "Conan", text: "Conan" },
@@ -436,15 +437,14 @@ function displayHashModal(sessionType) {
     const customDetails = customDetailsInput.value.trim();
 
     if (customDetails !== "") {
-      groupSessionDetails = customDetails;
+      Session.shared().setGroupSessionDetails(customDetails)
     } else {
-      //groupSessionDetails = sessionTypeDetails.value;
       const sessionTypeDetailsSelect = document.getElementById(
         "sessionTypeDetailsSelect"
       );
-      groupSessionDetails = sessionTypeDetailsSelect.value;
+      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value)
     }
-    console.log("Group session world: " + groupSessionDetails);
+    console.log("Group session world: " + Session.shared().groupSessionDetails());
     onVisitHashModal.style.display = "none";
     // Start the session with the selected session type
     if (sessionType === "fantasyRoleplay") {
@@ -469,7 +469,7 @@ function endAdventure() {
 function getCurrentUsernames() {
   // Add all nicknames of connected guests to the guestNicknames array
   const guestNicknames = [];
-  guestNicknames.push(hostNickname);
+  guestNicknames.push(Session.shared().hostNickname());
   for (const guestId in dataChannels) {
     if (dataChannels.hasOwnProperty(guestId)) {
       guestNicknames.push(dataChannels[guestId].nickname);
@@ -493,10 +493,10 @@ function startRoleplaySession() {
   document.getElementById("aiSelectionBlock").style.display = "none";
 
   if (Peers.shared().isHost()) {
-    const inviteLink = makeInviteLink(id);
+    const inviteLink = makeInviteLink(Session.shared().localUserId());
     addMessage(
       "welcome-message",
-      `<p>Welcome to your roleplaying session, set in the <b>${groupSessionDetails}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai"
     );
   }
