@@ -693,7 +693,7 @@ async function guestSendPrompt() {
       type: "remote-prompt",
       id: Session.shared().localUserId(),
       message: message,
-      nickname: guestNickname,
+      nickname: Session.shared().guestNickname(),
     });
     guestAddLocalPrompt(message);
   }
