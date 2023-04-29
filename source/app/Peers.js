@@ -173,16 +173,11 @@ if (Peers.shared().isHost()) {
 
 //PeerJS webRTC section
 
-function makeInviteLink(hostRoomId) {
-  const inviteLink = `${window.location.href}?room=${hostRoomId}`;
-  //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
-  return inviteLink;
-}
 
 async function setupHostSession() {
   console.log("Setting up host session");
   displayHostHTMLChanges();
-  const inviteLink = makeInviteLink(Session.shared().localUserId());
+  const inviteLink = Session.shared().inviteLink();
   InviteButton.shared().setLink(inviteLink);
 
   if (!Session.shared().fantasyRoleplay()) {

@@ -492,7 +492,7 @@ function startRoleplaySession() {
   document.getElementById("aiSelectionBlock").style.display = "none";
 
   if (Peers.shared().isHost()) {
-    const inviteLink = makeInviteLink(Session.shared().localUserId());
+    const inviteLink = Session.shared().inviteLink();
     addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,

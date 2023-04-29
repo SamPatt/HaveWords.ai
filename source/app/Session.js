@@ -104,6 +104,13 @@
     return this;
   }
 
+  inviteLink () {
+    const hostRoomId = this.localUserId();
+    const inviteLink = `${window.location.href}?room=${hostRoomId}`;
+    //const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
+    return inviteLink;
+  }
+
 }.initThisClass());
 
 
