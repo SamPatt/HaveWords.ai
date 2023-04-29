@@ -21,6 +21,7 @@ class Boot extends Object {
 
       "source/app/Session.js",
       "source/app/Peers.js",
+      "source/app/PeerConnection.js",
 
       "source/app/openai/OpenAiRequest.js",
       "source/app/openai/OpenAiService.js",
