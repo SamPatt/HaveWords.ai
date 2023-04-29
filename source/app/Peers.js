@@ -5,7 +5,6 @@
 
 */
 
-const bannedGuests = [];
 let conn;
 let peer;
 
@@ -14,10 +13,14 @@ let peer;
     this.newSlot("connections", null);
     this.newSlot("dataChannels", null);
     this.newSlot("guestUserList", null)
-    /*
     this.newSlot("bannedGuests", null)
-    this.newSlot("conn", null)
     this.newSlot("peer", null)
+
+    this.newSlot("retryCount", 0)
+    this.newSlot("maxRetries", 5)
+
+    /*
+    this.newSlot("conn", null)
     */
   }
 
@@ -26,10 +29,7 @@ let peer;
     this.setConnections(new Map());
     this.setDataChannels(new Map());
     this.setGuestUserList([])
-    /*
-    this.setBannedGuests([])
-    this.setGuestUserList({})
-    */
+    this.setBannedGuests(new Set())
     this.setIsDebugging(true);
   }
 
@@ -116,7 +116,7 @@ let peer;
     console.log(token);
     console.log(bannedGuests);
 
-    bannedGuests.push(token);
+    this.bannedGuests().add(token);
 
     const conn = this.connectionForUserId(userId);
     if (conn) {
@@ -156,8 +156,143 @@ let peer;
     this.setGuestUserList(userList)
     return userList;
   }
+
+  // --- peer setup ---
+
+  setupPeer() {
+    /*
+    // Local peerjs server
+    const newPeer = new Peer(id, {
+      host: "localhost",
+      port: 9000,
+      path: "/myapp",
+    });
+    */
+  
+    // Deployed peerjs server
+    const newPeer = new Peer(Session.shared().localUserId(), {
+      host: "peerjssignalserver.herokuapp.com",
+      path: "/peerjs",
+      secure: true,
+      port: 443,
+    });
+
+    this.setPeer(newPeer)
+    newPeer.on("open", () => this.onOpenPeer());
+    newPeer.on("error", (error) => { this.onPeerError(error); });  
+    newPeer.on("call", (call) => { this.onPeerCall(call); });
+    return this
+  }
+
+  onOpenPeer () {
+    console.log(
+      "PeerJS client is ready. Peer ID:",
+      Session.shared().localUserId()
+    );
+
+    if (Peers.shared().isHost()) {
+      //Session.shared().load() // loadSessionData();
+      displaySessionHistory();
+      if (!Session.shared().hostNickname()) {
+        Session.shared().setHostNickname(
+          Nickname.generateHostNickname() + " (host)"
+        );
+        UsernameView.shared().setString(Session.shared().hostNickname());
+      } else {
+        console.log(
+          "Host nickname is already set:",
+          Session.shared().hostNickname()
+        );
+      }
+      if (Session.shared().hostWelcomeMessage() === false) {
+        setupHostSession(); // Call the function to set up the host session
+        Session.shared().setHostWelcomeMessage(true);
+      }
+    } else {
+      if (!Session.shared().guestNickname()) {
+        Session.shared().setGuestNickname(Nickname.generateNickname());
+        UsernameView.shared().setString(Session.shared().guestNickname());
+        console.log("Guest nickname:", Session.shared().guestNickname());
+      } else {
+        console.log(
+          "Guest nickname is already set:",
+          Session.shared().guestNickname()
+        );
+      }
+      setupJoinSession(); // Call the function to set up the join session
+    }
+  }
+
+  onPeerError (err) {
+    console.log("PeerJS error:", err);
+
+    if (this.retryCount() < this.maxRetries()) {
+      setTimeout(() => {
+        console.log("Attempting to reconnect to PeerJS server...");
+        this.peer().reconnect();
+        this.setRetryCount(this.retryCount()+1);
+      }, 5000);
+    } else {
+      console.log(
+        "Reached maximum number of retries. Displaying system message."
+      );
+      // Display a system message here, e.g. by updating the UI
+      addChatMessage(
+        "system-message",
+        `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`,
+        "System"
+      );
+    }
+  }
+
+  onPeerCall (call) {
+    // Answer incoming voice call
+    const acceptCall = confirm(
+      `Incoming call. Do you want to accept the call?`
+    );
+
+    if (acceptCall) {
+      call.answer(Microphone.shared().userAudioStream());
+      console.log("Answering incoming call from:", call.peer);
+
+      call.on("stream", (remoteStream) => {
+        handleRemoteStream(remoteStream);
+        updateCalleeVoiceRequestButton(call.peer, call);
+      });
+
+      call.on("close", () => {
+        // Handle call close event
+        console.log("Call with peer:", call.peer, "has ended");
+      });
+    } else {
+      console.log("Call from", call.peer, "rejected");
+    }
+  }
+
+  
 }.initThisClass());
 
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
 // -----------------------------------------------------
 
 // If user is host, check if there is an existing hostId in local storage
@@ -206,7 +341,7 @@ async function setupHostSession() {
     );
   }
   // Handle incoming connections from guests
-  peer.on("connection", (conn) => {
+  Peers.shared().peer().on("connection", (conn) => {
     console.log("Incoming connection:", conn);
     conn.on("open", () => {
       Peers.shared().connections().set(conn.peer, conn);
@@ -226,7 +361,7 @@ async function setupHostSession() {
         const channel = Peers.shared().dataChannels().get(conn.peer);
 
         if (data.type === "nickname") {
-          if (bannedGuests.includes(data.token)) {
+          if (Peers.shared().bannedGuests().has(data.token)) {
             const guestConn = Peers.shared().dataChannels().get(data.id).conn;
             guestConn.send({ type: "ban" });
             setTimeout(() => {
@@ -406,7 +541,7 @@ async function setupJoinSession() {
 
   console.log("Attempting to connect to host with inviteId:", inviteId); // Add this line
 
-  conn = peer.connect(inviteId);
+  conn = Peers.shared().peer().connect(inviteId);
 
   conn.on("open", () => {
     console.log("Connection opened:", conn);
@@ -527,112 +662,6 @@ async function setupJoinSession() {
 
 // --- peer code ------------------
 
-function setupPeer() {
-  /*
-  // Local peerjs server
-  peer = new Peer(id, {
-    host: "localhost",
-    port: 9000,
-    path: "/myapp",
-  });
-  */
-
-  // Deployed peerjs server
-  peer = new Peer(Session.shared().localUserId(), {
-    host: "peerjssignalserver.herokuapp.com",
-    path: "/peerjs",
-    secure: true,
-    port: 443,
-  });
-
-  peer.on("open", function () {
-    console.log(
-      "PeerJS client is ready. Peer ID:",
-      Session.shared().localUserId()
-    );
-
-    if (Peers.shared().isHost()) {
-      //Session.shared().load() // loadSessionData();
-      displaySessionHistory();
-      if (!Session.shared().hostNickname()) {
-        Session.shared().setHostNickname(
-          Nickname.generateHostNickname() + " (host)"
-        );
-        UsernameView.shared().setString(Session.shared().hostNickname());
-      } else {
-        console.log(
-          "Host nickname is already set:",
-          Session.shared().hostNickname()
-        );
-      }
-      if (Session.shared().hostWelcomeMessage() === false) {
-        setupHostSession(); // Call the function to set up the host session
-        Session.shared().setHostWelcomeMessage(true);
-      }
-    } else {
-      if (!Session.shared().guestNickname()) {
-        Session.shared().setGuestNickname(Nickname.generateNickname());
-        UsernameView.shared().setString(Session.shared().guestNickname());
-        console.log("Guest nickname:", Session.shared().guestNickname());
-      } else {
-        console.log(
-          "Guest nickname is already set:",
-          Session.shared().guestNickname()
-        );
-      }
-      setupJoinSession(); // Call the function to set up the join session
-    }
-  });
-
-  let retryCount = 0;
-  const maxRetries = 5;
-
-  peer.on("error", function (err) {
-    console.log("PeerJS error:", err);
-
-    if (retryCount < maxRetries) {
-      setTimeout(() => {
-        console.log("Attempting to reconnect to PeerJS server...");
-        peer.reconnect();
-        retryCount++;
-      }, 5000);
-    } else {
-      console.log(
-        "Reached maximum number of retries. Displaying system message."
-      );
-      // Display a system message here, e.g. by updating the UI
-      addChatMessage(
-        "system-message",
-        `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`,
-        "System"
-      );
-    }
-  });
-
-  // Answer incoming voice calls
-  peer.on("call", (call) => {
-    const acceptCall = confirm(
-      `Incoming call. Do you want to accept the call?`
-    );
-
-    if (acceptCall) {
-      call.answer(Microphone.shared().userAudioStream());
-      console.log("Answering incoming call from:", call.peer);
-
-      call.on("stream", (remoteStream) => {
-        handleRemoteStream(remoteStream);
-        updateCalleeVoiceRequestButton(call.peer, call);
-      });
-
-      call.on("close", () => {
-        // Handle call close event
-        console.log("Call with peer:", call.peer, "has ended");
-      });
-    } else {
-      console.log("Call from", call.peer, "rejected");
-    }
-  });
-}
 
 function updateCalleeVoiceRequestButton(calleeID, call) {
   const listItem = document.querySelector(`li[data-id="${calleeID}"]`);
@@ -733,7 +762,7 @@ function handleVoiceRequestButton(userActions, calleeID) {
       // Start the voice call
       console.log("Requesting voice call with " + calleeID);
       voiceRequestButton.textContent = "End Voice Call";
-      const call = peer.call(calleeID, Microphone.shared().userAudioStream());
+      const call = Peers.shared().peer().call(calleeID, Microphone.shared().userAudioStream());
       activeCalls[calleeID] = call;
 
       call.on("stream", (remoteStream) => {

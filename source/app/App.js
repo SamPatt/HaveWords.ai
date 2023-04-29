@@ -16,7 +16,7 @@
     }
 
     run () {
-        setupPeer()
+        Peers.shared().setupPeer()
 
         OpenAiChat.shared().addToConversation({
             role: "system",
