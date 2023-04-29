@@ -237,7 +237,7 @@ let conn;
           Session.shared().guestNickname()
         );
       }
-      setupJoinSession(); // Call the function to set up the join session
+      PeerConnection.shared().asyncSetupJoinSession(); // Call the function to set up the join session
     }
   }
 
