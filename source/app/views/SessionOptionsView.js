@@ -10,7 +10,7 @@
 
   init() {
     super.init();
-    this.setId("messages");
+    this.setId("aiSelectionBlock");
   }
 }.initThisClass());
 
@@ -151,11 +151,11 @@ function checkURLPath() {
   console.log("Current hash:", hash); // Add this line for debugging
   if (hash === "#adventure") {
     console.log("URL includes #adventure");
-    fantasyRoleplay = true;
+    Session.shared().setFantasyRoleplay(true)
     updateSessionTypeOptions("fantasyRoleplay");
   } else if (hash === "#trivia") {
     console.log("URL includes #trivia");
-    gameMode = true;
+    Session.shared().setGameMode(true)
     updateSessionTypeOptions("trivia");
   } else if (hash === "#exploreFiction") {
     console.log("URL includes #exploreFiction");
@@ -266,7 +266,7 @@ async function startSession(sessionType, sessionDetails) {
 
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
-    gameMode = true;
+    Session.shared().setGameMode(true)
     // Construct the system message to guide the AI
     const newRole =
       "You are now the AI Game Master guiding a roleplaying session set in the " +
@@ -461,7 +461,7 @@ function displayHashModal(sessionType) {
 }
 
 function endAdventure() {
-  gameMode = false;
+  Session.shared().setGameMode(false)
   // Trigger the visual indicator (e.g., change the background color)
   document.body.style.backgroundColor = "#333";
 }

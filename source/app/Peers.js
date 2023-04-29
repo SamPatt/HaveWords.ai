@@ -157,9 +157,6 @@ if (Peers.shared().isHost()) {
   }
 }
 
-let gameMode = false;
-let fantasyRoleplay = false;
-
 const connections = {};
 const dataChannels = {};
 const bannedGuests = [];
@@ -181,7 +178,7 @@ async function setupHostSession() {
   const inviteLink = makeInviteLink(Session.shared().localUserId());
   InviteButton.shared().setLink(inviteLink);
 
-  if (!fantasyRoleplay) {
+  if (!Session.shared().fantasyRoleplay()) {
     addMessage(
       "system-message",
       `<p>Welcome, <b> ${Session.shared().hostNickname()} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
@@ -677,8 +674,8 @@ async function sendPrompt(message) {
     message: message,
     nickname: Session.shared().hostNickname(),
   });
-
-  if (gameMode) {
+  
+  if (Session.shared().gameMode()) {
     message = Session.shared().hostNickname() + ": " + message;
   }
   sendAIResponse(message);

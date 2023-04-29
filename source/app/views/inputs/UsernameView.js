@@ -36,6 +36,7 @@
     
     // assumes view is input elemet
     const size = e.value.length ? e.value.length : e.placeholder.length;
+    size *= 1.1; // TODO: actually measure the width that would be rendered instead of guessing
     e.setAttribute("size", size + "em");
     return this
   }

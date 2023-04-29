@@ -14,6 +14,9 @@
     this.newSlot("groupSessionType", undefined);
     this.newSlot("groupSessionDetails", undefined);
     this.newSlot("groupSessionFirstAIResponse", undefined);
+
+    this.newSlot("gameMode", undefined);
+    this.newSlot("fantasyRoleplay", false);
   }
 
   init() {
