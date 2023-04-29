@@ -5,11 +5,34 @@
 
 */
 
+
+const dataChannels = {};
+const bannedGuests = [];
+let conn;
+let guestUserList = [];
+let peer;
+
 (class Peers extends Base {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("connections", null)
+
+    /*
+    this.newSlot("dataChannels", null)
+    this.newSlot("bannedGuests", null)
+    this.newSlot("conn", null)
+    this.newSlot("guestUserList", null)
+    this.newSlot("peer", null)
+    */
+  }
 
   init() {
     super.init();
+    this.setConnections(new Map())
+    /*
+    this.setDataChannels({})
+    this.setBannedGuests({})
+    this.setGuestUserList({})
+    */
     this.setIsDebugging(true);
   }
 
@@ -157,12 +180,6 @@ if (Peers.shared().isHost()) {
   }
 }
 
-const connections = {};
-const dataChannels = {};
-const bannedGuests = [];
-let conn;
-let guestUserList = [];
-let peer;
 
 //PeerJS webRTC section
 
@@ -189,7 +206,7 @@ async function setupHostSession() {
   peer.on("connection", (conn) => {
     console.log("Incoming connection:", conn);
     conn.on("open", () => {
-      connections[conn.peer] = conn;
+      Peers.shared().connections().set(conn.peer, conn);
 
       // Adds to datachannels
       dataChannels[conn.peer] = {
@@ -357,7 +374,7 @@ async function setupHostSession() {
         // Create a new guest list without the disconnected peer
         const closedPeerId = dataChannels[conn.peer].id;
         const closedPeerNickname = dataChannels[conn.peer].nickname;
-        delete connections[conn.peer];
+        Peers.shared().connections().delete(conn.peer);
         delete dataChannels[conn.peer];
         const updatedGuestUserList = updateGuestUserlist();
         guestUserList = updatedGuestUserList;
@@ -411,7 +428,7 @@ async function setupJoinSession() {
 
   conn.on("open", () => {
     console.log("Connection opened:", conn);
-    connections[inviteId] = conn;
+    Peers.shared().connections().set(inviteId, conn);
     dataChannels[inviteId] = conn;
     console.log(`Connected to host: ${inviteId}`);
     conn.send({
@@ -506,7 +523,7 @@ async function setupJoinSession() {
       console.log("Connection error:", err);
     });
     conn.on("close", () => {
-      delete connections[inviteId];
+      Peers.shared().connections().delete(inviteId);
       delete dataChannels[inviteId];
       console.log(`Disconnected from host: ${inviteId}`);
     });
