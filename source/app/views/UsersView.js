@@ -115,9 +115,10 @@
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
 
-    for (const id in guestUserList) {
-      if (guestUserList.hasOwnProperty(id)) {
-        const aGuestNickname = guestUserList[id].nickname;
+    Peers.shared()
+      .guestUserList()
+      .forEach((guestUser, id) => {
+        const aGuestNickname = guestUser.nickname;
 
         // Create a container for the user and their actions
         const userContainer = document.createElement("div");
@@ -126,7 +127,7 @@
         // Create the user list item and add an arrow indicator
         const listItem = document.createElement("li");
         listItem.textContent = aGuestNickname;
-        listItem.setAttribute("data-id", guestUserList[id].id);
+        listItem.setAttribute("data-id", guestUser.id);
 
         const arrowIndicator = document.createElement("span");
         arrowIndicator.textContent = " ▼";
@@ -141,7 +142,7 @@
 
         // Voice request button
 
-        handleVoiceRequestButton(userActions, guestUserList[id].id);
+        handleVoiceRequestButton(userActions, guestUser.id);
 
         // Mute button
         const muteButton = document.createElement("button");
@@ -166,8 +167,7 @@
 
         // Add the user container to the user list
         userList.appendChild(userContainer);
-      }
-    }
+      });
   }
 
   displayKickedMessage() {
@@ -196,7 +196,6 @@
           `${oldNickname} is now ${Session.shared().hostNickname()}.`,
           Session.shared().hostNickname()
         );
-        const updatedGuestUserList = updateGuestUserlist();
 
         Peers.shared()
           .dataChannels()
@@ -207,7 +206,7 @@
               nickname: Session.shared().hostNickname(),
               oldNickname: oldNickname,
               newNickname: Session.shared().hostNickname(),
-              guestUserList: updatedGuestUserList,
+              guestUserList: Peers.shared().updateGuestUserlist(),
             });
           });
       } else {

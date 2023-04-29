@@ -7,17 +7,16 @@
 
 const bannedGuests = [];
 let conn;
-let guestUserList = [];
 let peer;
 
 (class Peers extends Base {
   initPrototypeSlots() {
     this.newSlot("connections", null);
     this.newSlot("dataChannels", null);
+    this.newSlot("guestUserList", null)
     /*
     this.newSlot("bannedGuests", null)
     this.newSlot("conn", null)
-    this.newSlot("guestUserList", null)
     this.newSlot("peer", null)
     */
   }
@@ -26,6 +25,7 @@ let peer;
     super.init();
     this.setConnections(new Map());
     this.setDataChannels(new Map());
+    this.setGuestUserList([])
     /*
     this.setBannedGuests([])
     this.setGuestUserList({})
@@ -138,6 +138,24 @@ let peer;
       console.warn("attempt to close missing channel for userId: " + userId);
     }
   }
+
+  updateGuestUserlist() {
+    let userList = [];
+
+    userList.push({
+      id: Session.shared().localUserId(),
+      nickname: Session.shared().hostNickname(),
+    });
+    Peers.shared().dataChannels().forEachKV((guestId, channel) => {
+      userList.push({
+        id: guestId,
+        nickname: channel.nickname,
+      });
+    });
+
+    this.setGuestUserList(userList)
+    return userList;
+  }
 }.initThisClass());
 
 // -----------------------------------------------------
@@ -226,14 +244,12 @@ async function setupHostSession() {
             UsersView.shared().updateUserList();
 
             // Create a guest user list with ids and nicknames to send to the new guest
-            const newGuestUserList = updateGuestUserlist();
-            guestUserList = newGuestUserList;
             // Send the session history to the guest
             channel.conn.send({
               type: "session-history",
               history: Session.shared().history(),
               nickname: Session.shared().hostNickname(),
-              guestUserList: newGuestUserList,
+              guestUserList: Peers.shared().updateGuestUserlist(),
             });
 
             // Send a new message to all connected guests to notify them of the new guest
@@ -244,7 +260,7 @@ async function setupHostSession() {
                 nickname: Session.shared().hostNickname(),
                 joiningGuestNickname: data.nickname,
                 joiningGuestId: data.id,
-                guestUserList: guestUserList,
+                guestUserList: Peers.shared().guestUserList(),
               },
               data.id
             );
@@ -338,8 +354,6 @@ async function setupHostSession() {
           );
           UsersView.shared().updateUserList();
           // Update nickname in guest user list
-          const updatedGuestUserList = updateGuestUserlist();
-          guestUserList = updatedGuestUserList;
           // Send updated guest user list to all guests
           Peers.shared().broadcast({
             type: "nickname-update",
@@ -347,7 +361,7 @@ async function setupHostSession() {
             nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
-            guestUserList: updatedGuestUserList,
+            guestUserList: Peers.shared().updateGuestUserlist(),
           });
         }
       });
@@ -361,8 +375,6 @@ async function setupHostSession() {
         const closedPeerNickname = channel.nickname;
         Peers.shared().connections().delete(conn.peer);
         Peers.shared().dataChannels().delete(conn.peer);
-        const updatedGuestUserList = updateGuestUserlist();
-        guestUserList = updatedGuestUserList;
 
         Peers.shared().broadcast({
           type: "guest-leave",
@@ -370,7 +382,7 @@ async function setupHostSession() {
           nickname: Session.shared().hostNickname(),
           leavingGuestNickname: closedPeerNickname,
           leavingGuestId: closedPeerId,
-          guestUserList: updatedGuestUserList,
+          guestUserList: Peers.shared().updateGuestUserlist(),
         });
 
         addChatMessage(
@@ -385,20 +397,7 @@ async function setupHostSession() {
   });
 }
 
-function updateGuestUserlist() {
-  let guestUserList = [];
-  guestUserList.push({
-    id: Session.shared().localUserId(),
-    nickname: Session.shared().hostNickname(),
-  });
-  Peers.shared().dataChannels().forEachKV((guestId, channel) => {
-    guestUserList.push({
-      id: guestId,
-      nickname: channel.nickname,
-    });
-  });
-  return guestUserList;
-}
+
 
 async function setupJoinSession() {
   console.log("Setting up join session");
@@ -449,18 +448,18 @@ async function setupJoinSession() {
       }
       if (data.type === "session-history") {
         console.log("Received session history:", data.history);
-        guestUserList = data.guestUserList.filter(
+        Peers.shared().setGuestUserList(data.guestUserList.filter(
           (guest) => guest.id !== Session.shared().localUserId()
-        );
-        console.log("Received guestUserList:", guestUserList);
+        ));
+        console.log("Received guestUserList:", data.guestUserList);
         UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
         guestDisplayHostSessionHistory(data.history);
       }
 
       if (data.type === "nickname-update") {
-        guestUserList = data.guestUserList.filter(
+        Peers.shared().setGuestUserList(data.guestUserList.filter(
           (guest) => guest.id !== Session.shared().localUserId()
-        );
+        ));
         UsersView.shared().displayGuestUserList();
         addChatMessage("chat", data.message, data.nickname);
       }
@@ -468,6 +467,7 @@ async function setupJoinSession() {
       if (data.type === "system-message") {
         guestAddSystemMessage(data);
       }
+
       if (data.type === "image-link") {
         addImage(data.message);
       }
@@ -476,26 +476,30 @@ async function setupJoinSession() {
         startRoleplaySession();
         addMessage("prompt", data.message, data.nickname);
       }
+
       if (data.type === "guest-join") {
         addChatMessage("chat", data.message, data.nickname);
-        guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex(
+        const newGuestUserList = data.guestUserList;
+        const index = newGuestUserList.findIndex(
           (guest) => guest.id === Session.shared().localUserId()
         ); // Use a function to test each element
         if (index !== -1) {
-          guestUserList.splice(index, 1);
+          newGuestUserList.splice(index, 1);
         }
+        Peers.shared().setGuestUserList(newGuestUserList)
         UsersView.shared().displayGuestUserList();
       }
+
       if (data.type === "guest-leave") {
         addChatMessage("chat", data.message, data.nickname);
-        guestUserList = data.guestUserList;
-        const index = guestUserList.findIndex(
+        const newGuestUserList = data.guestUserList;
+        const index = newGuestUserList.findIndex(
           (guest) => guest.id === Session.shared().localUserId()
         ); // Use a function to test each element
         if (index !== -1) {
-          guestUserList.splice(index, 1);
+          newGuestUserList.splice(index, 1);
         }
+        Peers.shared().setGuestUserList(newGuestUserList)
         UsersView.shared().displayGuestUserList();
       }
 
