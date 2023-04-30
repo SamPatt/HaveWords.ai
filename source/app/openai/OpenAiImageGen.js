@@ -21,15 +21,14 @@
 
   // Calls the OpenAI Image API and returns the image URL
   // fetchOpenAIImageResponse
-  async asyncFetch (prompt, sessionType, sessionDetails) {
-
+  async asyncFetch(prompt, sessionType, sessionDetails) {
     // Changes prompt based on session type
     let imagePrompt;
     if (sessionType === "fantasyRoleplay") {
       // Change prompt based on session details
       if (sessionDetails === "Studio Ghibli") {
         imagePrompt =
-        prompt + " | anime oil painting high resolution ghibli inspired 4k";
+          prompt + " | anime oil painting high resolution ghibli inspired 4k";
       } else if (sessionDetails === "Harry Potter") {
         imagePrompt =
           "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
@@ -41,10 +40,13 @@
           sessionDetails +
           " world.";
       }
+    } else if (sessionType === "trivia") {
+      imagePrompt = "Illustration of a trivia game with a question about " + prompt;
+    } else if (sessionType === "explore") {
+      imagePrompt = prompt + " | oil painting high resolution 4k"
     } else {
       // other session types later
     }
-
     const request = this.newRequest().setBodyJson({
       prompt: imagePrompt,
       n: 1,

@@ -95,7 +95,19 @@
         }
 
         if (data.type === "game-launch") {
+          Session.shared().setGameMode(true)
+          if (data.sessionType === "fantasyRoleplay") {
           startRoleplaySession();
+          console.log("Guest sees Fantasy Roleplay Session Started");
+          } else if (data.sessionType === "trivia") {
+            startTriviaSession();
+            console.log("Guest sees Trivia Session Started");
+          } else if (data.sessionType === "explore") {
+            startExploreSession();
+            console.log("Guest sees Explore Session Started");
+          } else {
+            console.log("Error: Invalid session type");
+          }
           addMessage("prompt", data.message, data.nickname);
         }
 

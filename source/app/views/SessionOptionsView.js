@@ -149,17 +149,17 @@ function updateSendButtonState() {
 function checkURLPath() {
   const hash = window.location.hash;
   console.log("Current hash:", hash); // Add this line for debugging
-  if (hash === "#adventure") {
-    console.log("URL includes #adventure");
+  if (hash === "#fantasyRoleplay") {
+    console.log("URL includes #fantasyRoleplay");
     Session.shared().setFantasyRoleplay(true)
     updateSessionTypeOptions("fantasyRoleplay");
   } else if (hash === "#trivia") {
     console.log("URL includes #trivia");
     Session.shared().setGameMode(true)
     updateSessionTypeOptions("trivia");
-  } else if (hash === "#exploreFiction") {
-    console.log("URL includes #exploreFiction");
-    updateSessionTypeOptions("exploreFiction");
+  } else if (hash === "#explore") {
+    console.log("URL includes #explore");
+    updateSessionTypeOptions("explore");
   }
 }
 
@@ -301,12 +301,84 @@ async function startSession(sessionType, sessionDetails) {
         sessionDetails +
         " session! Please wait while the AI Game master crafts your world...",
       nickname: Session.shared().hostNickname(),
+      sessionType: "fantasyRoleplay",
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response)
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
+    addAIReponse(response);
+
+    // Send the response to all connected guests
+    Peers.shared().broadcast({
+      type: "ai-response",
+      id: Session.shared().localUserId(),
+      message: response,
+      nickname: selectedModelNickname,
+    });
+  } else if (sessionType === "trivia") {
+    Session.shared().setGameMode(true);
+    // Construct the system message to guide the AI
+    const newRole =
+      "You are now the AI Trivia Master for a trivia session in the " +
+      sessionDetails +
+      " category";
+    setNewAIRole(newRole);
+    // Get the current user's usernames
+    const usernames = getCurrentUsernames();
+    console.log(usernames);
+
+    // Beginning the session
+    const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(", ")}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
+
+    // Send a message to all connected guests
+    Peers.shared().broadcast({
+      type: "game-launch",
+      id: Session.shared().localUserId(),
+      message:
+        "The host started a new " +
+        sessionDetails +
+        " trivia session! Please wait while the AI Trivia Master prepares the first question...",
+      nickname: Session.shared().hostNickname(),
+      sessionType: "trivia",
+    });
+
+    const response = await OpenAiChat.shared().asyncFetch(prompt);
+    addAIReponse(response);
+
+    // Send the response to all connected guests
+    Peers.shared().broadcast({
+      type: "ai-response",
+      id: Session.shared().localUserId(),
+      message: response,
+      nickname: selectedModelNickname,
+    });
+  }  else if (sessionType === "explore") {
+    Session.shared().setGameMode(true);
+    // Construct the system message to guide the AI
+    const newRole =
+      "You are now the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more";
+    setNewAIRole(newRole);
+    // Get the current user's usernames
+    const usernames = getCurrentUsernames();
+    console.log(usernames);
+
+    // Beginning the session
+    const userPrompt = Session.shared().groupSessionDetails()
+    const prompt = `You are the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. The player names are: ${usernames.join(", ")}. Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: ${userPrompt}. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. Do not write dialogue for the users, only for the characters in the scene. Let the users speak for themselves. Emphasize aspects of the settings and characters that are relevant to the exploration. Respond to the users' actions and questions, and guide them through the exploration.`;
+
+    // Send a message to all connected guests
+    Peers.shared().broadcast({
+      type: "game-launch",
+      id: Session.shared().localUserId(),
+      message:
+        "The host started a new exploration session! Please wait while the AI Guide prepares to start the session...",
+      nickname: Session.shared().hostNickname(),
+      sessionType: "explore",
+    });
+
+    const response = await OpenAiChat.shared().asyncFetch(prompt);
     addAIReponse(response);
 
     // Send the response to all connected guests
@@ -341,7 +413,7 @@ function updateSessionTypeOptions(sessionType) {
 
   // Clear existing options and description
   //dropdownContainer.innerHTML = "";
-  sessionTypeDetailsSelect.innerHTML = "";
+  //sessionTypeDetailsSelect.innerHTML = "";
   customInputContainer.innerHTML = "";
   sessionTypeDescription.innerHTML = "";
 
@@ -362,6 +434,7 @@ function updateSessionTypeOptions(sessionType) {
       <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
     `;
   } else if (sessionType === "trivia") {
+    Session.shared().setGroupSessionType("trivia")
     options = [
       { value: "Variety", text: "Variety" },
       { value: "Sports", text: "Sports" },
@@ -372,13 +445,15 @@ function updateSessionTypeOptions(sessionType) {
       <h2>Trivia:</h2>
       <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
     `;
-  } else if (sessionType === "explorefiction") {
+  } else if (sessionType === "explore") {
+    Session.shared().setGroupSessionType("explore")
     options = [
-      // Add explore fiction options here
+      { value: "Explore", text: "Explore" },
     ];
+    // Add examples here
     description = `
-      <h2>Explore Fiction:</h2>
-      <p>Travel to various fictional universes with the AI's help. Discover new worlds, interact with famous characters, and engage in thrilling adventures as you explore the limits of your imagination.</p>
+      <h2>Explore:</h2>
+      <p>Investigate historical events. Interview celebrities. Jump into your favorite sitcom. Travel to fictional universes. Explore the limits of your imagination by telling the AI whatever you want to do.</p>
     `;
   } else {
     // Add different options and descriptions for other session types
@@ -386,6 +461,7 @@ function updateSessionTypeOptions(sessionType) {
 
   // Add the new options to the dropdown menu
   const selectElement = document.createElement("select");
+  selectElement.id = "sessionTypeDetailsSelect";
   options.forEach((option) => {
     const opt = document.createElement("option");
     opt.value = option.value;
@@ -437,12 +513,17 @@ function displayHashModal(sessionType) {
     const customDetails = customDetailsInput.value.trim();
 
     if (customDetails !== "") {
-      Session.shared().setGroupSessionDetails(customDetails)
+      Session.shared().setGroupSessionDetails(customDetails);
+      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
+
     } else {
       const sessionTypeDetailsSelect = document.getElementById(
         "sessionTypeDetailsSelect"
       );
-      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value)
+      console.log("Session type details select value: " + sessionTypeDetailsSelect.value);
+      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value);
+      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
+
     }
     console.log("Group session world: " + Session.shared().groupSessionDetails());
     onVisitHashModal.style.display = "none";
@@ -451,8 +532,8 @@ function displayHashModal(sessionType) {
       startRoleplaySession();
     } else if (sessionType === "trivia") {
       startTriviaSession();
-    } else if (sessionType === "explorefiction") {
-      startExploreFictionSession();
+    } else if (sessionType === "explore") {
+      startExploreSession();
     } else {
       // Add other session types here
       console.log("No session type selected");
@@ -496,6 +577,56 @@ function startRoleplaySession() {
     addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      "HaveWords.ai"
+    );
+  }
+  Sounds.shared().playOminousSound();
+}
+
+async function startTriviaSession() {
+  // Trigger the visual indicator
+  const userPanelh2Element = document.querySelector(".userPanel .header h2");
+  const guestChatH2 = document.querySelector(".chatPanel .header h2");
+  const peersH2 = document.querySelector(".connectedUsers .header h2");
+
+  // Change the content of the h2 element
+  userPanelh2Element.innerHTML = "AI TRIVIA MASTER";
+  guestChatH2.innerHTML = "Players' Chat";
+  peersH2.innerHTML = "Players";
+
+  document.getElementById("aiSelectionBlock").style.display = "none";
+
+  if (Peers.shared().isHost()) {
+    const inviteLink = Session.shared().inviteLink();
+    const selectedCategory = Session.shared().groupSessionDetails();
+    addMessage(
+      "welcome-message",
+      `<p>Welcome to your trivia session in the <b>${selectedCategory}</b> category!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Trivia Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      "HaveWords.ai"
+    );
+  }
+  Sounds.shared().playOminousSound();
+}
+
+async function startExploreSession() {
+  // Trigger the visual indicator
+  const userPanelh2Element = document.querySelector(".userPanel .header h2");
+  const guestChatH2 = document.querySelector(".chatPanel .header h2");
+  const peersH2 = document.querySelector(".connectedUsers .header h2");
+
+  // Change the content of the h2 element
+  userPanelh2Element.innerHTML = "AI EXPLORER";
+  guestChatH2.innerHTML = "Explorers' Chat";
+  peersH2.innerHTML = "Explorers";
+
+  document.getElementById("aiSelectionBlock").style.display = "none";
+
+  if (Peers.shared().isHost()) {
+    const inviteLink = Session.shared().inviteLink();
+    const selectedCategory = Session.shared().groupSessionDetails();
+    addMessage(
+      "welcome-message",
+      `<p>Welcome to your exploration session, where you will <b>${selectedCategory}</b>!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Explorer will be available to guide you through your journey when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai"
     );
   }
