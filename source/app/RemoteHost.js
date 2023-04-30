@@ -25,6 +25,16 @@
     });
   }
 
+  sendAvatar(avatar) {
+    // Send avatar to host
+    this.connToHost().send({
+      type: 'avatar-update',
+      id: Session.shared().localUserId(),
+      nickname: Session.shared().guestNickname(),
+      avatar: avatar,
+    });
+  }
+
   async asyncSetupJoinSession() {
     console.log("Setting up join session");
     displayGuestHTMLChanges();
@@ -94,6 +104,18 @@
           UsersView.shared().displayGuestUserList();
           addChatMessage("chat", data.message, data.nickname);
         }
+
+        if (data.type === "avatar-update") {
+          LocalHost.shared().setGuestUserList(
+            data.guestUserList.filter(
+              (guest) => guest.id !== Session.shared().localUserId()
+            )
+          );
+          UsersView.shared().displayGuestUserList();
+          addChatMessage("chat", data.message, data.nickname);
+          console.log("Received avatar-update:", data.avatar);
+        }
+        
 
         if (data.type === "system-message") {
           guestAddSystemMessage(data);

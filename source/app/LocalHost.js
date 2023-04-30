@@ -377,6 +377,7 @@ async function setupHostSession() {
         nickname: "",
         token: "",
         canSendPrompts: false,
+        avatar: "",
       });
 
       // Handle receiving messages from guests
@@ -529,6 +530,21 @@ async function setupHostSession() {
             nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
+            guestUserList: LocalHost.shared().updateGuestUserlist(),
+          });
+        } 
+        
+        if (data.type === "avatar-update") {
+          // Update avatar in datachannels
+          channel.avatar = data.avatar;
+          UsersView.shared().updateUserList();
+          // Update avatar in guest user list
+          // Send updated guest user list to all guests
+          LocalHost.shared().broadcast({
+            type: "avatar-update",
+            avatar: data.avatar,
+            userId: data.id,
+            message: `${data.nickname} has updated their avatar.`,
             guestUserList: LocalHost.shared().updateGuestUserlist(),
           });
         }
