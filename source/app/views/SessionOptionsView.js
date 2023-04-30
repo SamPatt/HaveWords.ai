@@ -379,7 +379,7 @@ function updateSessionTypeOptions(sessionType) {
 
   // Clear existing options and description
   //dropdownContainer.innerHTML = "";
-  sessionTypeDetailsSelect.innerHTML = "";
+  //sessionTypeDetailsSelect.innerHTML = "";
   customInputContainer.innerHTML = "";
   sessionTypeDescription.innerHTML = "";
 
@@ -425,6 +425,7 @@ function updateSessionTypeOptions(sessionType) {
 
   // Add the new options to the dropdown menu
   const selectElement = document.createElement("select");
+  selectElement.id = "sessionTypeDetailsSelect";
   options.forEach((option) => {
     const opt = document.createElement("option");
     opt.value = option.value;
@@ -476,12 +477,17 @@ function displayHashModal(sessionType) {
     const customDetails = customDetailsInput.value.trim();
 
     if (customDetails !== "") {
-      Session.shared().setGroupSessionDetails(customDetails)
+      Session.shared().setGroupSessionDetails(customDetails);
+      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
+
     } else {
       const sessionTypeDetailsSelect = document.getElementById(
         "sessionTypeDetailsSelect"
       );
-      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value)
+      console.log("Session type details select value: " + sessionTypeDetailsSelect.value);
+      Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value);
+      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
+
     }
     console.log("Group session world: " + Session.shared().groupSessionDetails());
     onVisitHashModal.style.display = "none";

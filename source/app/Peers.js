@@ -45,7 +45,6 @@ let conn;
       const urlParams = new URLSearchParams(window.location.search);
       roomId = urlParams.get("room");
     }
-    console.log("Room ID:", roomId)
     return roomId;
   }  
 
