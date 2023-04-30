@@ -101,6 +101,9 @@
           } else if (data.sessionType === "trivia") {
             startTriviaSession();
             console.log("Guest sees Trivia Session Started");
+          } else if (data.sessionType === "explore") {
+            startExploreSession();
+            console.log("Guest sees Explore Session Started");
           } else {
             console.log("Error: Invalid session type");
           }
