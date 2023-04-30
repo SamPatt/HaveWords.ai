@@ -49,7 +49,12 @@ function addMessage(type, message, nickname, userId) {
   if (message === "" || message === undefined) {
     return;
   }
-  const avatar = Session.shared().getUserAvatar(userId);
+  let avatar;
+  if(userId === Session.shared().localUserId()) {
+    avatar = Session.shared().localUserAvatar();
+  } else {
+  avatar = Session.shared().getUserAvatar(userId);
+  }
   const messageContent = document.createElement("div");
   let icon;
   let isUser = false;
@@ -115,7 +120,13 @@ function addMessage(type, message, nickname, userId) {
   const messageNickname = document.createElement("div");
   messageNickname.className = "message-nickname";
   messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
+
+  const avatarAndNameWrapper = document.createElement('div');
+  avatarAndNameWrapper.className = 'avatar-and-name-wrapper';
+  avatarAndNameWrapper.appendChild(img);
+  avatarAndNameWrapper.appendChild(messageNickname);
+  
+  messageContent.appendChild(avatarAndNameWrapper);
 
   const messageText = document.createElement("div");
   messageText.className = "message-text";

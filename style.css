@@ -817,3 +817,8 @@ button {
     border-radius: 50%;
   }
   
+  .avatar-and-name-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  

@@ -99,7 +99,12 @@ function addChatMessage(type, message, nickname, userId) {
   } else {
     icon = "🔧";
   }
-  const avatar = Session.shared().getUserAvatar(userId);
+  let avatar;
+  if(userId === Session.shared().localUserId()) {
+    avatar = Session.shared().localUserAvatar();
+  } else {
+  avatar = Session.shared().getUserAvatar(userId);
+  }
   const formattedResponse = message.convertToParagraphs();
   const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
   const messagesDiv = document.querySelector(".chatMessages");
@@ -116,19 +121,24 @@ function addChatMessage(type, message, nickname, userId) {
   const messageNickname = document.createElement("div");
   messageNickname.className = "message-nickname";
   messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
-
-  const messageText = document.createElement("div");
-  messageText.className = "message-text";
-  messageText.innerHTML = sanitizedHtml;
-  messageContent.appendChild(messageText);
 
   const img = document.createElement('img');
   img.className = 'message-avatar';
   img.width = 50;
   img.height = 50;
   img.src = avatar || 'resources/icons/default-avatar.png'; // Use a default avatar image if the user doesn't have one
-   messageContent.appendChild(img);
+
+  const avatarAndNameWrapper = document.createElement('div');
+  avatarAndNameWrapper.className = 'avatar-and-name-wrapper';
+  avatarAndNameWrapper.appendChild(img);
+  avatarAndNameWrapper.appendChild(messageNickname);
+
+  messageContent.appendChild(avatarAndNameWrapper);
+
+  const messageText = document.createElement("div");
+  messageText.className = "message-text";
+  messageText.innerHTML = sanitizedHtml;
+  messageContent.appendChild(messageText);
 
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);

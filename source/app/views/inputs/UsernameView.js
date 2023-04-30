@@ -83,7 +83,7 @@ class UsernameView extends TextFieldView {
         this.storeAvatar(base64Image);
         this.displayAvatar(base64Image);
       } else {
-        alert("Image size is too large. Please choose an image smaller than 10KB.");
+        alert("Image size is too large. Please choose a smaller image.");
       }
     }
   }

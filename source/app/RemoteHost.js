@@ -97,19 +97,13 @@
         }
 
         if (data.type === "nickname-update") {
-          LocalHost.shared().setGuestUserList(
-            data.guestUserList.filter(
-              (guest) => guest.id !== Session.shared().localUserId()
-            )
-          );
-          UsersView.shared().displayGuestUserList();
-          addChatMessage("chat", data.message, data.nickname, data.id);
+          addChatMessage("chat", data.message, data.newNickname, data.userId);
         }
 
         if (data.type === "avatar-update") {
           Session.shared().setUserAvatar(data.userId, data.avatar);
-          addChatMessage("chat", data.message, data.nickname, data.id);
-          console.log("Received avatar-update:", data.avatar);
+          addChatMessage("chat", data.message, data.nickname, data.userId);
+          console.log("Received avatar-update");
         }
         
 
@@ -139,7 +133,7 @@
         }
 
         if (data.type === "guest-join") {
-          addChatMessage("chat", data.message, data.nickname, data.id);
+          addChatMessage("chat", data.message, data.nickname, data.joiningGuestId);
           const newGuestUserList = data.guestUserList;
           const index = newGuestUserList.findIndex(
             (guest) => guest.id === Session.shared().localUserId()

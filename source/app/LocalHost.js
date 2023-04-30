@@ -546,6 +546,7 @@ async function setupHostSession() {
             nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
+            userId: data.id,
             guestUserList: LocalHost.shared().updateGuestUserlist(),
           });
         } 
@@ -556,11 +557,18 @@ async function setupHostSession() {
           UsersView.shared().updateUserList();
           // Update avatar in guest user list
           Session.shared().setUserAvatar(data.id, data.avatar);
+          addChatMessage(
+            "system-message",
+            `${data.nickname} updated their avatar.`,
+            data.nickname,
+            data.id
+          );
           // Send updated guest user list to all guests
           LocalHost.shared().broadcast({
             type: "avatar-update",
             avatar: data.avatar,
             userId: data.id,
+            nickname: data.nickname,
             message: `${data.nickname} has updated their avatar.`,
             guestUserList: LocalHost.shared().updateGuestUserlist(),
           });
