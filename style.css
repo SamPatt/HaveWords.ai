@@ -801,3 +801,24 @@ button {
 #chatSendButton {
     display: none;
 }
+
+.avatar-image {
+    width: 50px;
+    height: 50px;
+    display: inline;
+    cursor: pointer;
+    margin-right: 10px; /* Add some space between the avatar and the input field */
+  }
+
+  .message-avatar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    border-radius: 50%;
+  }
+  
+  .avatar-and-name-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  

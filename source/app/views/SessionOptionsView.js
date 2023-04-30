@@ -228,13 +228,13 @@ function guestDisplayHostSessionHistory(sessionData) {
     .history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "ai-response") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "system-message") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
-        addChatMessage(item.type, item.data, item.nickname);
+        addChatMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "image-link") {
         addImage(item.data);
       }
@@ -245,13 +245,13 @@ function displaySessionHistory() {
   Session.shared().history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "ai-response") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "system-message") {
-        addMessage(item.type, item.data, item.nickname);
+        addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
-        addChatMessage(item.type, item.data, item.nickname);
+        addChatMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "image-link") {
         addImage(item.data);
       }
@@ -261,7 +261,7 @@ function displaySessionHistory() {
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-  addMessage("prompt", "You've started the session!", Session.shared().hostNickname());
+  addMessage("prompt", "You've started the session!", Session.shared().hostNickname(), Session.shared().localUserId());
   Session.shared().setInSession(true)
 
   // Check which session type was selected
@@ -577,7 +577,8 @@ function startRoleplaySession() {
     addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
-      "HaveWords.ai"
+      "HaveWords.ai",
+      Session.shared().localUserId()
     );
   }
   Sounds.shared().playOminousSound();
@@ -602,7 +603,8 @@ async function startTriviaSession() {
     addMessage(
       "welcome-message",
       `<p>Welcome to your trivia session in the <b>${selectedCategory}</b> category!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Trivia Master will begin the session when you click <b>Begin Session</b> below.</p>`,
-      "HaveWords.ai"
+      "HaveWords.ai",
+      Session.shared().localUserId()
     );
   }
   Sounds.shared().playOminousSound();
@@ -627,7 +629,8 @@ async function startExploreSession() {
     addMessage(
       "welcome-message",
       `<p>Welcome to your exploration session, where you will <b>${selectedCategory}</b>!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Explorer will be available to guide you through your journey when you click <b>Begin Session</b> below.</p>`,
-      "HaveWords.ai"
+      "HaveWords.ai",
+      Session.shared().localUserId()
     );
   }
   Sounds.shared().playOminousSound();

@@ -25,7 +25,7 @@ async function triggerImageBot(response) {
   const apiKey = localStorage.getItem("openai_api_key");
   if (!apiKey) {
     console.error("API key is missing.");
-    addMessage("system-message", "API key is missing.", "System");
+    addMessage("system-message", "API key is missing.", "System", Session.shared().localUserId());
     return;
   }
   const message =

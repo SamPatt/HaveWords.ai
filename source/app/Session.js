@@ -111,6 +111,23 @@
     return `${base}?room=${hostRoomId}`;
   }
   
+  // Avatars
+
+  localUserAvatar() {
+    return localStorage.getItem("avatar") || null;
+  }
+
+  setLocalUserAvatar(avatar) {
+    localStorage.setItem("avatar", avatar);
+  }
+
+  getUserAvatar(userId) {
+    return localStorage.getItem(`avatar_${userId}`) || null;
+  }
+
+  setUserAvatar(userId, avatar) {
+    localStorage.setItem(`avatar_${userId}`, avatar);
+  }
 
 }.initThisClass());
 

@@ -44,12 +44,17 @@ AiChatView.shared() // so a shared instance gets created
 const loadingAnimation = document.getElementById("loadingHost");
 
 
-function addMessage(type, message, nickname) {
+function addMessage(type, message, nickname, userId) {
   // If the string is empty, don't add it
   if (message === "" || message === undefined) {
     return;
   }
-
+  let avatar;
+  if(userId === Session.shared().localUserId()) {
+    avatar = Session.shared().localUserAvatar();
+  } else {
+  avatar = Session.shared().getUserAvatar(userId);
+  }
   const messageContent = document.createElement("div");
   let icon;
   let isUser = false;
@@ -71,7 +76,7 @@ function addMessage(type, message, nickname) {
 
         // Add an event listener to the icon/button
         generateImagePromptButton.addEventListener("click", () => {
-          addMessage("image-gen", "Generating image...", "Host");
+          addMessage("image-gen", "Generating image...", "Host", Session.shared().localUserId());
           triggerImageBot(sanitizedHtml);
           // Optional: Hide the button after it has been clicked
           generateImagePromptButton.style.display = "none";
@@ -99,6 +104,13 @@ function addMessage(type, message, nickname) {
   iconDiv.className = "icon";
   iconDiv.innerHTML = icon;
 
+  const img = document.createElement('img');
+  img.className = 'message-avatar';
+  img.width = 50;
+  img.height = 50;
+  img.src = avatar || 'resources/icons/default-avatar.png'; // Use a default avatar image if the user doesn't have one
+  messageContent.appendChild(img);
+
   messageContent.className = "message-content";
 
   if (!isUser) {
@@ -108,7 +120,13 @@ function addMessage(type, message, nickname) {
   const messageNickname = document.createElement("div");
   messageNickname.className = "message-nickname";
   messageNickname.textContent = nickname;
-  messageContent.appendChild(messageNickname);
+
+  const avatarAndNameWrapper = document.createElement('div');
+  avatarAndNameWrapper.className = 'avatar-and-name-wrapper';
+  avatarAndNameWrapper.appendChild(img);
+  avatarAndNameWrapper.appendChild(messageNickname);
+  
+  messageContent.appendChild(avatarAndNameWrapper);
 
   const messageText = document.createElement("div");
   messageText.className = "message-text";
@@ -179,7 +197,7 @@ function addImage(imageURL) {
 
 async function addAIReponse(response) {
   Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, selectedModelNickname);
+  addMessage("ai-response", response, selectedModelNickname, "AiAvatar");
 }
 
 
@@ -195,28 +213,28 @@ async function addPrompt() {
     id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
-  addMessage("prompt", message, Session.shared().hostNickname());
+  addMessage("prompt", message, Session.shared().hostNickname(), Session.shared().localUserId());
   sendPrompt(message);
 }
 
 async function guestAddPrompt(data) {
   Sounds.shared().playReceiveBeep();
-  addMessage("prompt", data.message, data.nickname);
+  addMessage("prompt", data.message, data.nickname, data.id);
 }
 
 async function guestAddSystemMessage(data) {
   Sounds.shared().playReceiveBeep();
-  addMessage("system-message", data.message, data.nickname);
+  addMessage("system-message", data.message, data.nickname, data.id);
 }
 
 async function guestAddLocalPrompt(prompt) {
   Sounds.shared().playSendBeep();
-  addMessage("prompt", prompt, Session.shared().guestNickname());
+  addMessage("prompt", prompt, Session.shared().guestNickname(), Session.shared().localUserId());
 }
 
 async function guestAddHostAIResponse(response, nickname) {
   Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, nickname);
+  addMessage("ai-response", response, nickname, "AiAvatar");
 }
 
 

@@ -184,6 +184,19 @@
     }
   }
 
+  updateHostAvatar(newAvatar) {
+    const json = {
+      type: "avatar-update",
+      message: `Host updated their avatar.`,
+      nickname: Session.shared().hostNickname(),
+      userId: Session.shared().localUserId(),
+      avatar: newAvatar,
+      guestUserList: this.updateGuestUserlist(),
+    };
+  
+    this.broadcast(json);
+  }
+
   updateGuestUserlist() {
     let userList = [];
 
@@ -338,7 +351,8 @@ async asyncSetupHostSession() {
     addMessage(
       "system-message",
       `<p>Welcome, <b> ${Session.shared().hostNickname()} </b>!</p><p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above. Your key is stored <i>locally in your browser</i>.</p><p>Then send this invite link to your friends: <a href="${inviteLink}">${inviteLink}</a>.  Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p> <p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>`,
-      "HaveWords"
+      "HaveWords",
+      Session.shared().localUserId()
     );
   }
   // Handle incoming connections from guests
@@ -354,6 +368,7 @@ async asyncSetupHostSession() {
         nickname: "",
         token: "",
         canSendPrompts: false,
+        avatar: "",
       });
 
       // Handle receiving messages from guests
@@ -404,7 +419,8 @@ async asyncSetupHostSession() {
             addChatMessage(
               "system-message",
               `${data.nickname} has joined the session!`,
-              Session.shared().hostNickname()
+              Session.shared().hostNickname(),
+              data.id
             );
           }
         }
@@ -430,7 +446,7 @@ async asyncSetupHostSession() {
             );
 
             // Display prompt
-            addMessage("prompt", data.message, data.nickname);
+            addMessage("prompt", data.message, data.nickname, data.id);
 
             // If in game mode, add username to prompt
             if (Session.shared().gameMode()) {
@@ -457,7 +473,7 @@ async asyncSetupHostSession() {
               nickname: data.nickname,
             });
             // Update system message and display it TO DO SEND TO ALL
-            addMessage("system-message", data.message, data.nickname);
+            addMessage("system-message", data.message, data.nickname, data.id);
             guestChangeSystemMessage(data);
           } else {
             console.log(
@@ -474,7 +490,7 @@ async asyncSetupHostSession() {
             nickname: data.nickname,
           });
           // Display chat message
-          addChatMessage(data.type, data.message, data.nickname);
+          addChatMessage(data.type, data.message, data.nickname, data.id);
 
           // Broadcast chat message to all connected guests
           LocalHost.shared().broadcastExceptTo(
@@ -495,7 +511,8 @@ async asyncSetupHostSession() {
           addChatMessage(
             "system-message",
             `${oldNickname} is now ${data.newNickname}.`,
-            Session.shared().hostNickname()
+            Session.shared().hostNickname(),
+            data.id
           );
           UsersView.shared().updateUserList();
           // Update nickname in guest user list
@@ -506,6 +523,30 @@ async asyncSetupHostSession() {
             nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
+            userId: data.id,
+            guestUserList: LocalHost.shared().updateGuestUserlist(),
+          });
+        } 
+        
+        if (data.type === "avatar-update") {
+          // Update avatar in datachannels
+          channel.avatar = data.avatar;
+          UsersView.shared().updateUserList();
+          // Update avatar in guest user list
+          Session.shared().setUserAvatar(data.id, data.avatar);
+          addChatMessage(
+            "system-message",
+            `${data.nickname} updated their avatar.`,
+            data.nickname,
+            data.id
+          );
+          // Send updated guest user list to all guests
+          LocalHost.shared().broadcast({
+            type: "avatar-update",
+            avatar: data.avatar,
+            userId: data.id,
+            nickname: data.nickname,
+            message: `${data.nickname} has updated their avatar.`,
             guestUserList: LocalHost.shared().updateGuestUserlist(),
           });
         }
@@ -533,7 +574,8 @@ async asyncSetupHostSession() {
         addChatMessage(
           "system-message",
           `${closedPeerNickname} has left the session.`,
-          Session.shared().hostNickname()
+          Session.shared().hostNickname(),
+          closedPeerId
         );
 
         UsersView.shared().updateUserList();
@@ -648,7 +690,7 @@ async function guestSendPrompt() {
   if (message.trim() !== "") {
     input.value = "";
     // Send chat message to host
-    conn.send({
+    RemoteHost.shared().connToHost().send({
       type: "remote-prompt",
       id: Session.shared().localUserId(),
       message: message,
@@ -657,6 +699,7 @@ async function guestSendPrompt() {
     guestAddLocalPrompt(message);
   }
 }
+
 
 function handleVoiceRequestButton(userActions, calleeID) {
   // Voice request button

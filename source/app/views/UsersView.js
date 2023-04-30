@@ -194,7 +194,8 @@
         addChatMessage(
           "chat",
           `${oldNickname} is now ${Session.shared().hostNickname()}.`,
-          Session.shared().hostNickname()
+          Session.shared().hostNickname(),
+          Session.shared().localUserId()
         );
 
         const json = {
@@ -222,4 +223,23 @@
       }
     }
   }
+
+  updateAvatar(avatar) { // update from UI
+    if (avatar !== "") {
+      if (LocalHost.shared().isHost()) {
+        // Update host avatar and send to all guests
+        const oldAvatar = Session.shared().hostAvatar();
+        if (oldAvatar === avatar) {
+          return;
+        }
+        Session.shared().setHostAvatar(avatar);
+        LocalHost.shared().updateHostAvatar(oldAvatar, avatar);
+      } else {
+        // Set new guest avatar and send to host
+        Session.shared().setGuestAvatar(avatar);
+        RemoteHost.shared().sendAvatar(avatar);
+      }
+    }
+  }
+
 }.initThisClass());

@@ -59,7 +59,8 @@
       addMessage(
         "system-message",
         "Error fetching AI response. Make sure the model is selected and the API key is correct.",
-        "Host"
+        "Host",
+        Session.shared().localUserId()
       );
       return undefined
     }
