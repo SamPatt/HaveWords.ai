@@ -454,7 +454,16 @@ async function setupHostSession() {
 
             // Display prompt
             addMessage("prompt", data.message, data.nickname);
-            sendAIResponse(data.message, data.nickname);
+
+            // If in game mode, add username to prompt
+            if (Session.shared().gameMode()) {
+              let newMessage;
+              newMessage = data.nickname + ": " + data.message;
+              console.log("Game mode on, adding guest username to prompt");
+              sendAIResponse(newMessage, data.nickname);
+            } else {
+              sendAIResponse(data.message, data.nickname);
+            }
           } else {
             console.log(
               `Rejected prompt from ${conn.peer} - ${channel.nickname}`
@@ -633,12 +642,6 @@ async function guestSendPrompt() {
 
   if (message.trim() !== "") {
     input.value = "";
-
-    // If in game mode, add username to prompt
-    if (Session.shared().gameMode()) {
-      message = Session.shared().guestNickname() + ": " + message;
-      console.log("Game mode on, guest adds username to prompt");
-    }
     // Send chat message to host
     conn.send({
       type: "remote-prompt",
