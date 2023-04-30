@@ -223,21 +223,9 @@ async function guestAddHostAIResponse(response, nickname) {
 
 
 async function sendAIResponse(message, nickname) {
-  // If in game mode, add username to the start of each prompt
-  if (Session.shared().gameMode()) {
-    if (!Peers.shared().isHost()) {
-      message = nickname + ": " + message;
-    }
-  } else {
-  }
-
   // Get AI Response and post locally
   
   const response = await OpenAiChat.shared().asyncFetch(message);
-  if (Session.shared().gameMode()) {
-    //console.log("Calling triggerBot with AI response:", response);
-    //triggerBot(response, Session.shared().groupSessionType(), Session.shared().groupSessionDetails());
-  }
 
   addAIReponse(response);
 

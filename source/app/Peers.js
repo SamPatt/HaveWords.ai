@@ -35,11 +35,19 @@ let conn;
   }
 
   inviteId() {
-    // If the user is a guest this will set the room id to the one in the url
-    const urlParams = new URLSearchParams(window.location.search);
-    const inviteId = urlParams.get("room");
-    return inviteId;
-  }
+    let roomId;
+    const hashParams = new URLSearchParams(window.location.hash.substr(1));
+    if (hashParams.has("room")) {
+      // If the room ID is in the hash, use it
+      roomId = hashParams.get("room");
+    } else {
+      // Otherwise, try to get it from the query string
+      const urlParams = new URLSearchParams(window.location.search);
+      roomId = urlParams.get("room");
+    }
+    console.log("Room ID:", roomId)
+    return roomId;
+  }  
 
   isHost() {
     const isHost = !this.inviteId();
@@ -615,17 +623,23 @@ async function sendPrompt(message) {
 
   if (Session.shared().gameMode()) {
     message = Session.shared().hostNickname() + ": " + message;
+    console.log("Game mode on, host adds username to prompt");
   }
   sendAIResponse(message);
 }
 
 async function guestSendPrompt() {
   const input = document.getElementById("messageInputRemote");
-  const message = input.value;
+  let message = input.value;
 
   if (message.trim() !== "") {
     input.value = "";
 
+    // If in game mode, add username to prompt
+    if (Session.shared().gameMode()) {
+      message = Session.shared().guestNickname() + ": " + message;
+      console.log("Game mode on, guest adds username to prompt");
+    }
     // Send chat message to host
     conn.send({
       type: "remote-prompt",

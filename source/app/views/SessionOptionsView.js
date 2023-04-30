@@ -149,8 +149,8 @@ function updateSendButtonState() {
 function checkURLPath() {
   const hash = window.location.hash;
   console.log("Current hash:", hash); // Add this line for debugging
-  if (hash === "#adventure") {
-    console.log("URL includes #adventure");
+  if (hash === "#fantasyRoleplay") {
+    console.log("URL includes #fantasyRoleplay");
     Session.shared().setFantasyRoleplay(true)
     updateSessionTypeOptions("fantasyRoleplay");
   } else if (hash === "#trivia") {
@@ -301,12 +301,50 @@ async function startSession(sessionType, sessionDetails) {
         sessionDetails +
         " session! Please wait while the AI Game master crafts your world...",
       nickname: Session.shared().hostNickname(),
+      sessionType: "fantasyRoleplay",
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response)
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
+    addAIReponse(response);
+
+    // Send the response to all connected guests
+    Peers.shared().broadcast({
+      type: "ai-response",
+      id: Session.shared().localUserId(),
+      message: response,
+      nickname: selectedModelNickname,
+    });
+  } else if (sessionType === "trivia") {
+    Session.shared().setGameMode(true);
+    // Construct the system message to guide the AI
+    const newRole =
+      "You are now the AI Trivia Master for a trivia session in the " +
+      sessionDetails +
+      " category";
+    setNewAIRole(newRole);
+    // Get the current user's usernames
+    const usernames = getCurrentUsernames();
+    console.log(usernames);
+
+    // Beginning the session
+    const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(", ")}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
+
+    // Send a message to all connected guests
+    Peers.shared().broadcast({
+      type: "game-launch",
+      id: Session.shared().localUserId(),
+      message:
+        "The host started a new " +
+        sessionDetails +
+        " trivia session! Please wait while the AI Trivia Master prepares the first question...",
+      nickname: Session.shared().hostNickname(),
+      sessionType: "trivia",
+    });
+
+    const response = await OpenAiChat.shared().asyncFetch(prompt);
     addAIReponse(response);
 
     // Send the response to all connected guests
@@ -362,6 +400,7 @@ function updateSessionTypeOptions(sessionType) {
       <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
     `;
   } else if (sessionType === "trivia") {
+    Session.shared().setGroupSessionType("trivia")
     options = [
       { value: "Variety", text: "Variety" },
       { value: "Sports", text: "Sports" },
@@ -496,6 +535,31 @@ function startRoleplaySession() {
     addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
+      "HaveWords.ai"
+    );
+  }
+  Sounds.shared().playOminousSound();
+}
+
+async function startTriviaSession() {
+  // Trigger the visual indicator
+  const userPanelh2Element = document.querySelector(".userPanel .header h2");
+  const guestChatH2 = document.querySelector(".chatPanel .header h2");
+  const peersH2 = document.querySelector(".connectedUsers .header h2");
+
+  // Change the content of the h2 element
+  userPanelh2Element.innerHTML = "AI TRIVIA MASTER";
+  guestChatH2.innerHTML = "Players' Chat";
+  peersH2.innerHTML = "Players";
+
+  document.getElementById("aiSelectionBlock").style.display = "none";
+
+  if (Peers.shared().isHost()) {
+    const inviteLink = Session.shared().inviteLink();
+    const selectedCategory = Session.shared().groupSessionDetails();
+    addMessage(
+      "welcome-message",
+      `<p>Welcome to your trivia session in the <b>${selectedCategory}</b> category!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Trivia Master will begin the session when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai"
     );
   }
