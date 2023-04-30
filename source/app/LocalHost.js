@@ -675,7 +675,7 @@ async function guestSendPrompt() {
   if (message.trim() !== "") {
     input.value = "";
     // Send chat message to host
-    conn.send({
+    RemoteHost.shared().connToHost().send({
       type: "remote-prompt",
       id: Session.shared().localUserId(),
       message: message,
@@ -684,6 +684,7 @@ async function guestSendPrompt() {
     guestAddLocalPrompt(message);
   }
 }
+
 
 function handleVoiceRequestButton(userActions, calleeID) {
   // Voice request button
