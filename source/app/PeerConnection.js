@@ -7,7 +7,7 @@
 
 (class PeerConnection extends Base {
   initPrototypeSlots() {
-    this.newSlot("conn", null);
+    this.newSlot("connToHost", null);
   }
 
   init() {
@@ -24,6 +24,7 @@
     console.log("Attempting to connect to host with inviteId:", inviteId); // Add this line
 
     conn = Peers.shared().peer().connect(inviteId);
+    //Peers.shared().setConnToHost(conn)
 
     conn.on("open", () => {
       console.log("Connection opened:", conn);

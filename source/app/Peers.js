@@ -7,18 +7,20 @@
 
 */
 
-let conn;
+//let conn;
 
 (class Peers extends Base {
   initPrototypeSlots() {
     this.newSlot("connections", null);
     this.newSlot("dataChannels", null);
     this.newSlot("guestUserList", null);
+    
     this.newSlot("bannedGuests", null);
     this.newSlot("peer", null);
 
     this.newSlot("retryCount", 0);
     this.newSlot("maxRetries", 5);
+    this.newSlot("connToHost", null);
 
     /*
     this.newSlot("conn", null)
@@ -32,6 +34,39 @@ let conn;
     this.setGuestUserList([]);
     this.setBannedGuests(new Set());
     this.setIsDebugging(true);
+  }
+
+  // --- ids ---
+
+  setupIds() {
+    // If user is host, check if there is an existing hostId in local storage
+    if (Peers.shared().isHost()) {
+      const existingHostId = localStorage.getItem("hostId");
+      const existingHostNickname = Session.shared().hostNickname();
+      if (existingHostId) {
+        // If there is an existing hostId, set the hostId to the existing one
+        Session.shared().setLocalUserId(existingHostId);
+        //Session.shared().setLocalUserId(existingHostId)
+        Session.shared().setHostNickname(existingHostNickname);
+      } else {
+        // If there is no existing hostId, generate a new one and save it to local storage
+        Session.shared().setLocalUserId(Peers.shared().generateId());
+        localStorage.setItem("hostId", Session.shared().localUserId());
+      }
+    } else {
+      // If user is guest, generate a new id
+      const existingGuestId = localStorage.getItem("guestId");
+      const existingGuestNickname = Session.shared().guestNickname();
+      if (existingGuestId) {
+        // If there is an existing guestId, set the guestId to the existing one
+        Session.shared().setLocalUserId(existingGuestId);
+        Session.shared().setGuestNickname(existingGuestNickname);
+      } else {
+        // If there is no existing guestId, generate a new one and save it to local storage
+        Session.shared().setLocalUserId(Peers.shared().generateId());
+        localStorage.setItem("guestId", Session.shared().localUserId());
+      }
+    }
   }
 
   inviteId() {
@@ -63,7 +98,7 @@ let conn;
 
   sendUsername(username) {
     // Send chat message to host
-    conn.send({
+    this.connToHost().send({
       type: "nickname-update",
       id: Session.shared().localUserId(),
       newNickname: username,
@@ -83,7 +118,7 @@ let conn;
       guestToken = this.generateToken();
       localStorage.setItem("guestToken", guestToken);
     }
-    return guestToken
+    return guestToken;
   }
 
   // Creates a token for guest identity across sessions
@@ -287,60 +322,34 @@ let conn;
     }
   }
 
+
   // --- message events ---
 }.initThisClass());
 
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
+Peers.shared().setupIds()
 
-// If user is host, check if there is an existing hostId in local storage
-if (Peers.shared().isHost()) {
-  const existingHostId = localStorage.getItem("hostId");
-  const existingHostNickname = Session.shared().hostNickname();
-  if (existingHostId) {
-    // If there is an existing hostId, set the hostId to the existing one
-    Session.shared().setLocalUserId(existingHostId);
-    //Session.shared().setLocalUserId(existingHostId)
-    Session.shared().setHostNickname(existingHostNickname);
-  } else {
-    // If there is no existing hostId, generate a new one and save it to local storage
-    Session.shared().setLocalUserId(Peers.shared().generateId());
-    localStorage.setItem("hostId", Session.shared().localUserId());
-  }
-} else {
-  // If user is guest, generate a new id
-  const existingGuestId = localStorage.getItem("guestId");
-  const existingGuestNickname = Session.shared().guestNickname();
-  if (existingGuestId) {
-    // If there is an existing guestId, set the guestId to the existing one
-    Session.shared().setLocalUserId(existingGuestId);
-    Session.shared().setGuestNickname(existingGuestNickname);
-  } else {
-    // If there is no existing guestId, generate a new one and save it to local storage
-    Session.shared().setLocalUserId(Peers.shared().generateId());
-    localStorage.setItem("guestId", Session.shared().localUserId());
-  }
-}
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
+// -----------------------------------------------------
 
 
 
@@ -548,8 +557,6 @@ async function setupHostSession() {
     });
   });
 }
-
-
 
 // --- peer code ------------------
 

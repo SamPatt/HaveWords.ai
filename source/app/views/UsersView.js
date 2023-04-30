@@ -181,7 +181,7 @@
     chatSendButton.disabled = true;
   }
 
-  updateUserName() {
+  updateUserName() { // update from UI
     const username = UsernameView.shared().string();
     if (username.trim() !== "") {
       if (Peers.shared().isHost()) {
