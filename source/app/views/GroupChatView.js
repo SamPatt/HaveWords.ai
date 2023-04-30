@@ -78,18 +78,19 @@ async function addLocalChatMessage(message) {
     id: Session.shared().localUserId(),
     nickname: Session.shared().hostNickname(),
   });
-  addChatMessage("chat", message, Session.shared().hostNickname());
+  addChatMessage("chat", message, Session.shared().hostNickname(), Session.shared().localUserId());
 }
 
 async function guestAddLocalChatMessage(message) {
-  addChatMessage("chat", message, Session.shared().guestNickname());
+  addChatMessage("chat", message, Session.shared().guestNickname(), Session.shared().localUserId());
 }
 
-function addChatMessage(type, message, nickname) {
+function addChatMessage(type, message, nickname, userId) {
   // If the string is empty, don't add it
   if (message === "") {
     return;
   }
+
   let icon;
   if (type === "chat") {
     icon = "🗯️";
@@ -98,7 +99,7 @@ function addChatMessage(type, message, nickname) {
   } else {
     icon = "🔧";
   }
-
+  const avatar = Session.shared().getUserAvatar(userId);
   const formattedResponse = message.convertToParagraphs();
   const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
   const messagesDiv = document.querySelector(".chatMessages");
@@ -121,6 +122,14 @@ function addChatMessage(type, message, nickname) {
   messageText.className = "message-text";
   messageText.innerHTML = sanitizedHtml;
   messageContent.appendChild(messageText);
+
+  const img = document.createElement('img');
+  img.className = 'message-avatar';
+  img.width = 50;
+  img.height = 50;
+  img.src = avatar || 'resources/icons/default-avatar.png'; // Use a default avatar image if the user doesn't have one
+   messageContent.appendChild(img);
+
   messageWrapper.appendChild(iconDiv);
   messageWrapper.appendChild(messageContent);
   messagesDiv.appendChild(messageWrapper);

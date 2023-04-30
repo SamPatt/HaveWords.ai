@@ -67,7 +67,7 @@
         }
         if (data.type === "chat") {
           Sounds.shared().playReceiveBeep();
-          addChatMessage(data.type, data.message, data.nickname);
+          addChatMessage(data.type, data.message, data.nickname, data.id);
         }
         if (data.type === "prompt") {
           guestAddPrompt(data);
@@ -80,7 +80,8 @@
           addChatMessage(
             "chat",
             "You have been banned from the session.",
-            "System"
+            "System",
+            data.id
           );
         }
         if (data.type === "session-history") {
@@ -102,17 +103,12 @@
             )
           );
           UsersView.shared().displayGuestUserList();
-          addChatMessage("chat", data.message, data.nickname);
+          addChatMessage("chat", data.message, data.nickname, data.id);
         }
 
         if (data.type === "avatar-update") {
-          LocalHost.shared().setGuestUserList(
-            data.guestUserList.filter(
-              (guest) => guest.id !== Session.shared().localUserId()
-            )
-          );
-          UsersView.shared().displayGuestUserList();
-          addChatMessage("chat", data.message, data.nickname);
+          Session.shared().setUserAvatar(data.userId, data.avatar);
+          addChatMessage("chat", data.message, data.nickname, data.id);
           console.log("Received avatar-update:", data.avatar);
         }
         
@@ -139,11 +135,11 @@
           } else {
             console.log("Error: Invalid session type");
           }
-          addMessage("prompt", data.message, data.nickname);
+          addMessage("prompt", data.message, data.nickname, data.id);
         }
 
         if (data.type === "guest-join") {
-          addChatMessage("chat", data.message, data.nickname);
+          addChatMessage("chat", data.message, data.nickname, data.id);
           const newGuestUserList = data.guestUserList;
           const index = newGuestUserList.findIndex(
             (guest) => guest.id === Session.shared().localUserId()
@@ -156,7 +152,7 @@
         }
 
         if (data.type === "guest-leave") {
-          addChatMessage("chat", data.message, data.nickname);
+          addChatMessage("chat", data.message, data.nickname), data.id;
           const newGuestUserList = data.guestUserList;
           const index = newGuestUserList.findIndex(
             (guest) => guest.id === Session.shared().localUserId()
@@ -173,11 +169,11 @@
         if (data.type === "grant-ai-access") {
           messageInputRemote.disabled = false;
           messageInputRemote.placeholder = "Send a prompt to the AI...";
-          addChatMessage("chat", "You've been granted AI access!", "Host");
+          addChatMessage("chat", "You've been granted AI access!", "Host", data.id);
         } else if (data.type === "revoke-ai-access") {
           messageInputRemote.disabled = true;
           messageInputRemote.placeholder = "No prompt permission";
-          addChatMessage("chat", "You've lost AI access.", "Host");
+          addChatMessage("chat", "You've lost AI access.", "Host", data.id);
         }
       });
       conn.on("error", (err) => {

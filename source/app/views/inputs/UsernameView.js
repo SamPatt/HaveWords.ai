@@ -109,10 +109,17 @@ class UsernameView extends TextFieldView {
   }
 
   storeAvatar(base64Image) {
-    localStorage.setItem("avatar", base64Image);
-    // Sends update to host
-    RemoteHost.shared().sendAvatar(base64Image);
+    Session.shared().setLocalUserAvatar(base64Image);
+        
+    // If the user is the host, update the host avatar
+    if (LocalHost.shared().isHost()) {
+      LocalHost.shared().updateHostAvatar(base64Image);
+    } else {
+      // If the user is a guest, send the avatar update to the host
+      RemoteHost.shared().sendAvatar(base64Image);
+    }
   }
+  
 
   displayAvatar(base64Image) {
     this.avatarDisplay.src = base64Image;
