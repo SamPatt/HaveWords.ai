@@ -22,7 +22,7 @@ function sendChatMessage() {
   if (message.trim() !== "") {
     input.value = "";
 
-    if (Peers.shared().isHost()) {
+    if (LocalHost.shared().isHost()) {
       // Add chat to chat history
       Session.shared().addToHistory({
         type: "chat",
@@ -34,7 +34,7 @@ function sendChatMessage() {
       addLocalChatMessage(message);
       // Broadcast chat message to all connected guests
 
-      Peers.shared().broadcast({
+      LocalHost.shared().broadcast({
         type: "chat",
         id: Session.shared().localUserId(),
         message: message,
@@ -42,7 +42,7 @@ function sendChatMessage() {
       });
     } else {
       // Send chat message to host
-      conn.send({
+      RemoteHost.shared().connToHost().send({
         type: "chat",
         id: Session.shared().localUserId(),
         message: message,

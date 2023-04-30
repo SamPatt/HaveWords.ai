@@ -35,7 +35,7 @@ function setNewAIRole(newRole) {
   })
 
   // Check to see if host or guest and send message to appropriate party
-  if (Peers.shared().isHost()) {
+  if (LocalHost.shared().isHost()) {
     //sendSystemMessage(content);
     // Disable for now
   } else {
@@ -55,7 +55,7 @@ function setNewAIRole(newRole) {
 
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
-      if (Peers.shared().isHost()) {
+      if (LocalHost.shared().isHost()) {
         sendSystemMessage(content);
       } else {
         sendSystemMessageToHost(content);
@@ -76,7 +76,7 @@ function setNewAIRole(newRole) {
 
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
-      if (Peers.shared().isHost()) {
+      if (LocalHost.shared().isHost()) {
         sendSystemMessage(content);
       } else {
         sendSystemMessageToHost(content);
@@ -85,7 +85,7 @@ function setNewAIRole(newRole) {
     */
 
 async function sendSystemMessage(message) {
-  Peers.shared().broadcast({
+  LocalHost.shared().broadcast({
     type: "system-message",
     id: Session.shared().localUserId(),
     message: message,
@@ -104,7 +104,7 @@ function guestChangeSystemMessage(data) {
   systemMessage.value = content;
 
   // Relay to connected guests
-  Peers.shared().broadcast({
+  LocalHost.shared().broadcast({
     type: "system-message",
     id: data.id,
     message: data.message,
@@ -293,7 +293,7 @@ async function startSession(sessionType, sessionDetails) {
     }
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "game-launch",
       id: Session.shared().localUserId(),
       message:
@@ -311,7 +311,7 @@ async function startSession(sessionType, sessionDetails) {
     addAIReponse(response);
 
     // Send the response to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "ai-response",
       id: Session.shared().localUserId(),
       message: response,
@@ -333,7 +333,7 @@ async function startSession(sessionType, sessionDetails) {
     const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(", ")}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
 
     // Send a message to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "game-launch",
       id: Session.shared().localUserId(),
       message:
@@ -348,7 +348,7 @@ async function startSession(sessionType, sessionDetails) {
     addAIReponse(response);
 
     // Send the response to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "ai-response",
       id: Session.shared().localUserId(),
       message: response,
@@ -369,7 +369,7 @@ async function startSession(sessionType, sessionDetails) {
     const prompt = `You are the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. The player names are: ${usernames.join(", ")}. Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: ${userPrompt}. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. Do not write dialogue for the users, only for the characters in the scene. Let the users speak for themselves. Emphasize aspects of the settings and characters that are relevant to the exploration. Respond to the users' actions and questions, and guide them through the exploration.`;
 
     // Send a message to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "game-launch",
       id: Session.shared().localUserId(),
       message:
@@ -382,7 +382,7 @@ async function startSession(sessionType, sessionDetails) {
     addAIReponse(response);
 
     // Send the response to all connected guests
-    Peers.shared().broadcast({
+    LocalHost.shared().broadcast({
       type: "ai-response",
       id: Session.shared().localUserId(),
       message: response,
@@ -552,7 +552,7 @@ function getCurrentUsernames() {
   const guestNicknames = [];
   guestNicknames.push(Session.shared().hostNickname());
 
-  Peers.shared().dataChannels().forEachKV((guestId, channel) => {
+  LocalHost.shared().dataChannels().forEachKV((guestId, channel) => {
     guestNicknames.push(channel.nickname);
   });
   return guestNicknames;
@@ -572,7 +572,7 @@ function startRoleplaySession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (Peers.shared().isHost()) {
+  if (LocalHost.shared().isHost()) {
     const inviteLink = Session.shared().inviteLink();
     addMessage(
       "welcome-message",
@@ -596,7 +596,7 @@ async function startTriviaSession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (Peers.shared().isHost()) {
+  if (LocalHost.shared().isHost()) {
     const inviteLink = Session.shared().inviteLink();
     const selectedCategory = Session.shared().groupSessionDetails();
     addMessage(
@@ -621,7 +621,7 @@ async function startExploreSession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (Peers.shared().isHost()) {
+  if (LocalHost.shared().isHost()) {
     const inviteLink = Session.shared().inviteLink();
     const selectedCategory = Session.shared().groupSessionDetails();
     addMessage(

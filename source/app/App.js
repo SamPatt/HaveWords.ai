@@ -16,14 +16,14 @@
     }
 
     run () {
-        Peers.shared().setupPeer()
+        LocalHost.shared().setupPeer()
 
         OpenAiChat.shared().addToConversation({
             role: "system",
             content: "You are a helpful assistant.",
         })
           
-        if (Peers.shared().isHost()) {
+        if (LocalHost.shared().isHost()) {
             UsernameView.shared().setString(Session.shared().hostNickname());
         } else {
             UsernameView.shared().setString(Session.shared().guestNickname());

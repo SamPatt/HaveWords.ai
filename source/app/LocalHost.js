@@ -1,7 +1,7 @@
 "use strict";
 
 /* 
-    Peers
+    LocalHost
 
     PeerJS webRTC code
 
@@ -9,7 +9,7 @@
 
 //let conn;
 
-(class Peers extends Base {
+(class LocalHost extends Base {
   initPrototypeSlots() {
     this.newSlot("connections", null);
     this.newSlot("dataChannels", null);
@@ -40,7 +40,7 @@
 
   setupIds() {
     // If user is host, check if there is an existing hostId in local storage
-    if (Peers.shared().isHost()) {
+    if (LocalHost.shared().isHost()) {
       const existingHostId = localStorage.getItem("hostId");
       const existingHostNickname = Session.shared().hostNickname();
       if (existingHostId) {
@@ -50,7 +50,7 @@
         Session.shared().setHostNickname(existingHostNickname);
       } else {
         // If there is no existing hostId, generate a new one and save it to local storage
-        Session.shared().setLocalUserId(Peers.shared().generateId());
+        Session.shared().setLocalUserId(LocalHost.shared().generateId());
         localStorage.setItem("hostId", Session.shared().localUserId());
       }
     } else {
@@ -63,7 +63,7 @@
         Session.shared().setGuestNickname(existingGuestNickname);
       } else {
         // If there is no existing guestId, generate a new one and save it to local storage
-        Session.shared().setLocalUserId(Peers.shared().generateId());
+        Session.shared().setLocalUserId(LocalHost.shared().generateId());
         localStorage.setItem("guestId", Session.shared().localUserId());
       }
     }
@@ -100,15 +100,6 @@
       if (guestId !== excludeId) {
         channel.conn.send(json);
       }
-    });
-  }
-
-  sendUsername(username) {
-    // Send chat message to host
-    this.connToHost().send({
-      type: "nickname-update",
-      id: Session.shared().localUserId(),
-      newNickname: username,
     });
   }
 
@@ -200,7 +191,7 @@
       id: Session.shared().localUserId(),
       nickname: Session.shared().hostNickname(),
     });
-    Peers.shared()
+    LocalHost.shared()
       .dataChannels()
       .forEachKV((guestId, channel) => {
         userList.push({
@@ -250,7 +241,7 @@
       Session.shared().localUserId()
     );
 
-    if (Peers.shared().isHost()) {
+    if (LocalHost.shared().isHost()) {
       //Session.shared().load() // loadSessionData();
       displaySessionHistory();
       if (!Session.shared().hostNickname()) {
@@ -279,7 +270,7 @@
           Session.shared().guestNickname()
         );
       }
-      PeerConnection.shared().asyncSetupJoinSession(); // Call the function to set up the join session
+      RemoteHost.shared().asyncSetupJoinSession(); // Call the function to set up the join session
     }
   }
 
@@ -333,7 +324,7 @@
   // --- message events ---
 }.initThisClass());
 
-Peers.shared().setupIds()
+LocalHost.shared().setupIds()
 
 // -----------------------------------------------------
 // -----------------------------------------------------
@@ -374,13 +365,13 @@ async function setupHostSession() {
     );
   }
   // Handle incoming connections from guests
-  Peers.shared().peer().on("connection", (conn) => {
+  LocalHost.shared().peer().on("connection", (conn) => {
     console.log("Incoming connection:", conn);
     conn.on("open", () => {
-      Peers.shared().connections().set(conn.peer, conn);
+      LocalHost.shared().connections().set(conn.peer, conn);
 
       // Adds to datachannels
-      Peers.shared().dataChannels().set(conn.peer, {
+      LocalHost.shared().dataChannels().set(conn.peer, {
         conn: conn,
         id: conn.peer,
         nickname: "",
@@ -391,11 +382,11 @@ async function setupHostSession() {
       // Handle receiving messages from guests
       conn.on("data", (data) => {
         console.log(`Message from ${conn.peer}:`, data);
-        const channel = Peers.shared().dataChannels().get(conn.peer);
+        const channel = LocalHost.shared().dataChannels().get(conn.peer);
 
         if (data.type === "nickname") {
-          if (Peers.shared().bannedGuests().has(data.token)) {
-            const guestConn = Peers.shared().dataChannels().get(data.id).conn;
+          if (LocalHost.shared().bannedGuests().has(data.token)) {
+            const guestConn = LocalHost.shared().dataChannels().get(data.id).conn;
             guestConn.send({ type: "ban" });
             setTimeout(() => {
               guestConn.close();
@@ -417,18 +408,18 @@ async function setupHostSession() {
               type: "session-history",
               history: Session.shared().history(),
               nickname: Session.shared().hostNickname(),
-              guestUserList: Peers.shared().updateGuestUserlist(),
+              guestUserList: LocalHost.shared().updateGuestUserlist(),
             });
 
             // Send a new message to all connected guests to notify them of the new guest
-            Peers.shared().broadcastExceptTo(
+            LocalHost.shared().broadcastExceptTo(
               {
                 type: "guest-join",
                 message: `${data.nickname} has joined the session!`,
                 nickname: Session.shared().hostNickname(),
                 joiningGuestNickname: data.nickname,
                 joiningGuestId: data.id,
-                guestUserList: Peers.shared().guestUserList(),
+                guestUserList: LocalHost.shared().guestUserList(),
               },
               data.id
             );
@@ -451,7 +442,7 @@ async function setupHostSession() {
             });
 
             // Send prompt to guests
-            Peers.shared().broadcastExceptTo(
+            LocalHost.shared().broadcastExceptTo(
               {
                 type: "prompt",
                 id: data.id,
@@ -509,7 +500,7 @@ async function setupHostSession() {
           addChatMessage(data.type, data.message, data.nickname);
 
           // Broadcast chat message to all connected guests
-          Peers.shared().broadcastExceptTo(
+          LocalHost.shared().broadcastExceptTo(
             {
               type: "chat",
               id: data.id,
@@ -532,34 +523,34 @@ async function setupHostSession() {
           UsersView.shared().updateUserList();
           // Update nickname in guest user list
           // Send updated guest user list to all guests
-          Peers.shared().broadcast({
+          LocalHost.shared().broadcast({
             type: "nickname-update",
             message: `${oldNickname} is now ${data.newNickname}.`,
             nickname: Session.shared().hostNickname(),
             oldNickname: oldNickname,
             newNickname: data.newNickname,
-            guestUserList: Peers.shared().updateGuestUserlist(),
+            guestUserList: LocalHost.shared().updateGuestUserlist(),
           });
         }
       });
 
       conn.on("close", () => {
-        const channel = Peers.shared().dataChannels().get(conn.peer);
+        const channel = LocalHost.shared().dataChannels().get(conn.peer);
 
         console.log(`Guest disconnected: ${conn.peer}`);
         // Create a new guest list without the disconnected peer
         const closedPeerId = channel.id;
         const closedPeerNickname = channel.nickname;
-        Peers.shared().connections().delete(conn.peer);
-        Peers.shared().dataChannels().delete(conn.peer);
+        LocalHost.shared().connections().delete(conn.peer);
+        LocalHost.shared().dataChannels().delete(conn.peer);
 
-        Peers.shared().broadcast({
+        LocalHost.shared().broadcast({
           type: "guest-leave",
           message: `${closedPeerNickname} has left the session.`,
           nickname: Session.shared().hostNickname(),
           leavingGuestNickname: closedPeerNickname,
           leavingGuestId: closedPeerId,
-          guestUserList: Peers.shared().updateGuestUserlist(),
+          guestUserList: LocalHost.shared().updateGuestUserlist(),
         });
 
         addChatMessage(
@@ -621,7 +612,7 @@ function sendImage(imageURL) {
     nickname: Session.shared().hostNickname(),
   });
 
-  Peers.shared().broadcast({
+  LocalHost.shared().broadcast({
     type: "image-link",
     message: imageURL,
     nickname: Session.shared().hostNickname(),
@@ -629,7 +620,7 @@ function sendImage(imageURL) {
 }
 
 async function sendPrompt(message) {
-  Peers.shared().broadcast({
+  LocalHost.shared().broadcast({
     type: "prompt",
     id: Session.shared().localUserId(),
     message: message,
@@ -672,7 +663,7 @@ function handleVoiceRequestButton(userActions, calleeID) {
       // Start the voice call
       console.log("Requesting voice call with " + calleeID);
       voiceRequestButton.textContent = "End Voice Call";
-      const call = Peers.shared().peer().call(calleeID, Microphone.shared().userAudioStream());
+      const call = LocalHost.shared().peer().call(calleeID, Microphone.shared().userAudioStream());
       activeCalls[calleeID] = call;
 
       call.on("stream", (remoteStream) => {

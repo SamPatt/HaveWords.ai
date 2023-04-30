@@ -1,11 +1,11 @@
 "use strict";
 
 /* 
-    PeerConnection
+    RemoteHost
 
 */
 
-(class PeerConnection extends Base {
+(class RemoteHost extends Base {
   initPrototypeSlots() {
     this.newSlot("connToHost", null);
   }
@@ -16,26 +16,35 @@
     this.setIsDebugging(true);
   }
 
+  sendUsername(username) {
+    // Send chat message to host
+    this.connToHost().send({
+      type: "nickname-update",
+      id: Session.shared().localUserId(),
+      newNickname: username,
+    });
+  }
+
   async asyncSetupJoinSession() {
     console.log("Setting up join session");
     displayGuestHTMLChanges();
-    const inviteId = Peers.shared().inviteId();
+    const inviteId = LocalHost.shared().inviteId();
 
     console.log("Attempting to connect to host with inviteId:", inviteId); // Add this line
 
-    conn = Peers.shared().peer().connect(inviteId);
-    //Peers.shared().setConnToHost(conn)
+    const conn = LocalHost.shared().peer().connect(inviteId);
+    this.setConnToHost(conn)
 
     conn.on("open", () => {
       console.log("Connection opened:", conn);
-      Peers.shared().connections().set(inviteId, conn);
-      Peers.shared().dataChannels().set(inviteId, conn);
+      LocalHost.shared().connections().set(inviteId, conn);
+      LocalHost.shared().dataChannels().set(inviteId, conn);
       console.log(`Connected to host: ${inviteId}`);
       conn.send({
         type: "nickname",
         id: Session.shared().localUserId(),
         nickname: Session.shared().guestNickname(),
-        token: Peers.shared().guestToken(),
+        token: LocalHost.shared().guestToken(),
       });
 
       // Handle receiving messages from the host
@@ -66,7 +75,7 @@
         }
         if (data.type === "session-history") {
           console.log("Received session history:", data.history);
-          Peers.shared().setGuestUserList(
+          LocalHost.shared().setGuestUserList(
             data.guestUserList.filter(
               (guest) => guest.id !== Session.shared().localUserId()
             )
@@ -77,7 +86,7 @@
         }
 
         if (data.type === "nickname-update") {
-          Peers.shared().setGuestUserList(
+          LocalHost.shared().setGuestUserList(
             data.guestUserList.filter(
               (guest) => guest.id !== Session.shared().localUserId()
             )
@@ -120,7 +129,7 @@
           if (index !== -1) {
             newGuestUserList.splice(index, 1);
           }
-          Peers.shared().setGuestUserList(newGuestUserList);
+          LocalHost.shared().setGuestUserList(newGuestUserList);
           UsersView.shared().displayGuestUserList();
         }
 
@@ -133,7 +142,7 @@
           if (index !== -1) {
             newGuestUserList.splice(index, 1);
           }
-          Peers.shared().setGuestUserList(newGuestUserList);
+          LocalHost.shared().setGuestUserList(newGuestUserList);
           UsersView.shared().displayGuestUserList();
         }
 
@@ -153,8 +162,8 @@
         console.log("Connection error:", err);
       });
       conn.on("close", () => {
-        Peers.shared().connections().delete(inviteId);
-        Peers.shared().dataChannels().delete(inviteId);
+        LocalHost.shared().connections().delete(inviteId);
+        LocalHost.shared().dataChannels().delete(inviteId);
         console.log(`Disconnected from host: ${inviteId}`);
       });
     });

@@ -62,7 +62,7 @@ function addMessage(type, message, nickname) {
     icon = "🤖";
     // Check if in session, then if host, and if so, add a button to generate an image prompt
     
-      if (Peers.shared().isHost() && Session.shared().inSession()) {
+      if (LocalHost.shared().isHost() && Session.shared().inSession()) {
         // Create a new icon/button element for the AI responses
         const generateImagePromptButton = document.createElement("button");
         generateImagePromptButton.textContent = "🎨";
@@ -229,7 +229,7 @@ async function sendAIResponse(message, nickname) {
 
   addAIReponse(response);
 
-  Peers.shared().broadcast({
+  LocalHost.shared().broadcast({
     type: "ai-response",
     id: Session.shared().localUserId(),
     message: response,

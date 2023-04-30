@@ -106,8 +106,9 @@
 
   inviteLink() {
     const hostRoomId = this.localUserId();
-    const inviteLink = `${window.location.origin}/?room=${hostRoomId}`;
-    return inviteLink;
+    const isFile = window.location.protocol === "file:";
+    const base = isFile ? window.location.href : window.location.origin + "/";
+    return `${base}?room=${hostRoomId}`;
   }
   
 

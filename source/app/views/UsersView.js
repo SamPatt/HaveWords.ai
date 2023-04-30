@@ -18,7 +18,7 @@
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
 
-    Peers.shared()
+    LocalHost.shared()
       .dataChannels()
       .forEachKV((guestId, channel) => {
         const guestToken = channel.token;
@@ -72,7 +72,7 @@
         const kickButton = document.createElement("button");
         kickButton.textContent = "Kick";
         kickButton.onclick = () => {
-          Peers.shared().kickUser(guestId);
+          LocalHost.shared().kickUser(guestId);
         };
         userActions.appendChild(kickButton);
 
@@ -87,7 +87,7 @@
         banButton.textContent = "Ban";
         banButton.onclick = () => {
           // Ban logic
-          Peers.shared().banUser(guestId, guestToken);
+          LocalHost.shared().banUser(guestId, guestToken);
         };
         userActions.appendChild(banButton);
 
@@ -115,7 +115,7 @@
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
 
-    Peers.shared()
+    LocalHost.shared()
       .guestUserList()
       .forEach((guestUser, id) => {
         const aGuestNickname = guestUser.nickname;
@@ -184,7 +184,7 @@
   updateUserName() { // update from UI
     const username = UsernameView.shared().string();
     if (username.trim() !== "") {
-      if (Peers.shared().isHost()) {
+      if (LocalHost.shared().isHost()) {
         // Set new host nickname and send to all guests
         const oldNickname = Session.shared().hostNickname();
         if (oldNickname === username) {
@@ -197,22 +197,28 @@
           Session.shared().hostNickname()
         );
 
-        Peers.shared()
+        const json = {
+          type: "nickname-update",
+          message: `${oldNickname} is now ${Session.shared().hostNickname()}.`,
+          nickname: Session.shared().hostNickname(),
+          oldNickname: oldNickname,
+          newNickname: Session.shared().hostNickname(),
+          guestUserList: LocalHost.shared().updateGuestUserlist(),
+        };
+
+        LocalHost.shared().broadcast(json)
+
+        /*
+        LocalHost.shared()
           .dataChannels()
           .forEachKV((guestId, channel) => {
-            channel.conn.send({
-              type: "nickname-update",
-              message: `${oldNickname} is now ${Session.shared().hostNickname()}.`,
-              nickname: Session.shared().hostNickname(),
-              oldNickname: oldNickname,
-              newNickname: Session.shared().hostNickname(),
-              guestUserList: Peers.shared().updateGuestUserlist(),
-            });
+            channel.conn.send(json);
           });
+          */
       } else {
         // Set new guest nickname and send to host
         Session.shared().setGuestNickname(username);
-        Peers.shared().sendUsername(username);
+        RemoteHost.shared().sendUsername(username);
       }
     }
   }
