@@ -278,7 +278,7 @@
                   data.id
                 );
 
-                addChatMessage(
+                GroupChatView.shared().addChatMessage(
                   "system-message",
                   `${data.nickname} has joined the session!`,
                   Session.shared().hostNickname(),
@@ -357,7 +357,7 @@
                 nickname: data.nickname,
               });
               // Display chat message
-              addChatMessage(data.type, data.message, data.nickname, data.id);
+              GroupChatView.shared().addChatMessage(data.type, data.message, data.nickname, data.id);
 
               // Broadcast chat message to all connected guests
               LocalHost.shared().broadcastExceptTo(
@@ -375,7 +375,7 @@
               // Update nickname in datachannels
               const oldNickname = channel.nickname;
               channel.nickname = data.newNickname;
-              addChatMessage(
+              GroupChatView.shared().addChatMessage(
                 "system-message",
                 `${oldNickname} is now ${data.newNickname}.`,
                 Session.shared().hostNickname(),
@@ -401,7 +401,7 @@
               UsersView.shared().updateUserList();
               // Update avatar in guest user list
               Session.shared().setUserAvatar(data.id, data.avatar);
-              addChatMessage(
+              GroupChatView.shared().addChatMessage(
                 "system-message",
                 `${data.nickname} updated their avatar.`,
                 data.nickname,
@@ -438,7 +438,7 @@
               guestUserList: LocalHost.shared().updateGuestUserlist(),
             });
 
-            addChatMessage(
+            GroupChatView.shared().addChatMessage(
               "system-message",
               `${closedPeerNickname} has left the session.`,
               Session.shared().hostNickname(),

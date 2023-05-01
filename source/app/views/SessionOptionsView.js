@@ -234,7 +234,7 @@ function guestDisplayHostSessionHistory(sessionData) {
       } else if (item.type === "system-message") {
         addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
-        addChatMessage(item.type, item.data, item.nickname, item.id);
+        GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "image-link") {
         addImage(item.data);
       }
@@ -251,7 +251,7 @@ function displaySessionHistory() {
       } else if (item.type === "system-message") {
         addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
-        addChatMessage(item.type, item.data, item.nickname, item.id);
+        GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "image-link") {
         addImage(item.data);
       }

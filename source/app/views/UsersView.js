@@ -191,7 +191,7 @@
           return;
         }
         Session.shared().setHostNickname(username);
-        addChatMessage(
+        GroupChatView.shared().addChatMessage(
           "chat",
           `${oldNickname} is now ${Session.shared().hostNickname()}.`,
           Session.shared().hostNickname(),

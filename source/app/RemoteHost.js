@@ -82,7 +82,7 @@
         }
         if (data.type === "chat") {
           Sounds.shared().playReceiveBeep();
-          addChatMessage(data.type, data.message, data.nickname, data.id);
+          GroupChatView.shared().addChatMessage(data.type, data.message, data.nickname, data.id);
         }
         if (data.type === "prompt") {
           guestAddPrompt(data);
@@ -92,7 +92,7 @@
         }
         if (data.type === "ban") {
           document.getElementById("chatInput").disabled = true;
-          addChatMessage(
+          GroupChatView.shared().addChatMessage(
             "chat",
             "You have been banned from the session.",
             "System",
@@ -112,12 +112,12 @@
         }
 
         if (data.type === "nickname-update") {
-          addChatMessage("chat", data.message, data.newNickname, data.userId);
+          GroupChatView.shared().addChatMessage("chat", data.message, data.newNickname, data.userId);
         }
 
         if (data.type === "avatar-update") {
           Session.shared().setUserAvatar(data.userId, data.avatar);
-          addChatMessage("chat", data.message, data.nickname, data.userId);
+          GroupChatView.shared().addChatMessage("chat", data.message, data.nickname, data.userId);
           console.log("Received avatar-update");
         }
 
@@ -147,7 +147,7 @@
         }
 
         if (data.type === "guest-join") {
-          addChatMessage(
+          GroupChatView.shared().addChatMessage(
             "chat",
             data.message,
             data.nickname,
@@ -165,7 +165,7 @@
         }
 
         if (data.type === "guest-leave") {
-          addChatMessage("chat", data.message, data.nickname), data.id;
+          GroupChatView.shared().addChatMessage("chat", data.message, data.nickname), data.id;
           const newGuestUserList = data.guestUserList;
           const index = newGuestUserList.findIndex(
             (guest) => guest.id === Session.shared().localUserId()
@@ -182,7 +182,7 @@
         if (data.type === "grant-ai-access") {
           messageInputRemote.disabled = false;
           messageInputRemote.placeholder = "Send a prompt to the AI...";
-          addChatMessage(
+          GroupChatView.shared().addChatMessage(
             "chat",
             "You've been granted AI access!",
             "Host",
@@ -191,7 +191,7 @@
         } else if (data.type === "revoke-ai-access") {
           messageInputRemote.disabled = true;
           messageInputRemote.placeholder = "No prompt permission";
-          addChatMessage("chat", "You've lost AI access.", "Host", data.id);
+          GroupChatView.shared().addChatMessage("chat", "You've lost AI access.", "Host", data.id);
         }
       });
       conn.on("error", (err) => {
