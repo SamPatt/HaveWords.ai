@@ -50,10 +50,15 @@ function addMessage(type, message, nickname, userId) {
     return;
   }
   let avatar;
-  if(userId === Session.shared().localUserId()) {
+  if (type === "ai-response") {
+    avatar = 'resources/icons/AI-avatar.png'; // Set AI's avatar for "ai-response" messages
+    console.log("AI avatar set");
+  } else if (userId === Session.shared().localUserId()) {
     avatar = Session.shared().localUserAvatar();
+    console.log("Local user avatar set");
   } else {
-  avatar = Session.shared().getUserAvatar(userId);
+    avatar = Session.shared().getUserAvatar(userId);
+    console.log("Guest user avatar set");
   }
   const messageContent = document.createElement("div");
   let icon;
@@ -197,7 +202,7 @@ function addImage(imageURL) {
 
 async function addAIReponse(response) {
   Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, selectedModelNickname, "AiAvatar");
+  addMessage("ai-response", response, selectedModelNickname);
 }
 
 
@@ -234,7 +239,7 @@ async function guestAddLocalPrompt(prompt) {
 
 async function guestAddHostAIResponse(response, nickname) {
   Sounds.shared().playReceiveBeep();
-  addMessage("ai-response", response, nickname, "AiAvatar");
+  addMessage("ai-response", response, nickname);
 }
 
 
