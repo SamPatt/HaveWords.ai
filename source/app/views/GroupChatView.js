@@ -6,11 +6,22 @@
 */
 
 (class GroupChatView extends View {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("chatInput", null)
+  }
 
   init() {
     super.init();
     this.setId("chatMessages");
+    this.setupMessageInput()
+  }
+
+  setupMessageInput () {
+    const textArea = TextAreaInputView.clone().setId("chatInput").setSubmitFunc(() => { 
+      sendChatMessage();
+    });
+
+    this.setChatInput(textArea)
   }
 
   addChatMessage(type, message, nickname, userId) {
@@ -115,6 +126,9 @@ function sendChatMessage() {
   }
 }
 
+GroupChatView.shared()
+
+/*
 // Disables the chat send button until the data channel is open
 const chatSendButton = document.getElementById("chatSendButton");
 chatSendButton.addEventListener("click", sendChatMessage);
@@ -129,6 +143,7 @@ chatInput.addEventListener("keypress", (event) => {
     sendChatMessage();
   }
 });
+*/
 
 // --- username ---
 
