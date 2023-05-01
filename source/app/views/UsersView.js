@@ -16,13 +16,13 @@
   }
   
   initAvatar() {
-    console.log("Setting up avatar section")
-    const avatarSection = document.getElementById("avatarSection");
-    
+    console.log("Setting up avatar section")    
     // Add a label for the avatar file input
     this.avatarInputLabel = document.createElement("label");
     this.avatarInputLabel.innerHTML = "Upload Avatar";
     this.avatarInputLabel.htmlFor = "avatarInput";
+    const avatarSection = document.getElementById("avatarSection");
+
     avatarSection.appendChild(this.avatarInputLabel);
   
     // Avatar input
