@@ -15,12 +15,15 @@ class Boot extends Object {
       "source/app/helpers.js",
 
       "source/app/App.js",
-      "source/app/Nickname.js",
       "source/app/Sounds.js",
       "source/app/Microphone.js",
 
+      "source/app/user/CryptoIdentity.js",
+      "source/app/user/LocalUser.js",
+      "source/app/user/Nickname.js",
+
       "source/app/Session.js",
-      "source/app/LocalUser.js",
+
       "source/app/Peerable.js",
       "source/app/LocalHost.js",
       "source/app/RemoteHost.js",

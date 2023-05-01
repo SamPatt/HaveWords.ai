@@ -1,24 +1,23 @@
 "use strict";
 
 /* 
-    LocalUser
+    CryptoIdentity
 
 */
 
-(class LocalUser extends Base {
+(class CryptoIdentity extends Base {
   initPrototypeSlots() {
     this.newSlot("publicKey", null);
     this.newSlot("privateKey", null);
-    this.newSlot("nickname", null);
     this.newSlot("algorithm", "RSASSA-PKCS1-v1_5");
+    this.newSlot("hash", "SHA-256");
+    this.newSlot("serializatonFormat", "jwk");
   }
 
   init() {
     super.init();
     this.setIsDebugging(true);
   }
-
-  // crypto
 
   async generateKeyPair() {
     // Generate a public/private key pair using the RSASSA-PKCS1-v1_5 algorithm
@@ -62,13 +61,12 @@
     //const byteArray = new Uint8Array([72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100]); // "Hello World" in ASCII
   }
 
-  /*
-  async serializeCryptoKey(key, format = "jwk") {
+  async serializedKey(key, format = "jwk") {
     const serializedKey = await window.crypto.subtle.exportKey(format, key);
     return serializedKey;
   }
 
-  async unserializeCryptoKey(
+  async unserializedKey(
     serializedKey,
     algorithm,
     keyUsages,
@@ -83,7 +81,23 @@
     );
     return key;
   }
-  */
-}.initThisClass());
 
-LocalUser.shared().generateKeyPair();
+  static async test() {
+    // Serialize the public key
+    const serializedPublicKey = await serializeCryptoKey(keyPair.publicKey);
+
+    console.log("Serialized Public Key:", serializedPublicKey);
+
+    // Unserialize the public key
+    const unserializedPublicKey = await unserializeCryptoKey(
+      serializedPublicKey,
+      {
+        name: "RSASSA-PKCS1-v1_5",
+        hash: { name: "SHA-256" },
+      },
+      ["verify"]
+    );
+
+    console.log("Unserialized Public Key:", unserializedPublicKey);
+  }
+}.initThisClass());
