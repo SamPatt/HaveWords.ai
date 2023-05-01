@@ -54,3 +54,11 @@ Map.prototype.forEachKV = function (f) {
     f(k, v);
    })
 }
+
+Uint8Array.prototype.base64encoded = function () {
+  // Convert the byte array to a string with Latin-1 encoding
+  const latin1String = new TextDecoder('iso-8859-1').decode(this);
+  // Encode the Latin-1 string to a base64 string
+  const base64String = btoa(latin1String);
+  return base64String;
+}

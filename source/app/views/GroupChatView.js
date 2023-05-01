@@ -7,21 +7,23 @@
 
 (class GroupChatView extends View {
   initPrototypeSlots() {
-    this.newSlot("chatInput", null)
+    this.newSlot("chatInput", null);
   }
 
   init() {
     super.init();
     this.setId("chatMessages");
-    this.setupMessageInput()
+    this.setupMessageInput();
   }
 
-  setupMessageInput () {
-    const textArea = TextAreaInputView.clone().setId("chatInput").setSubmitFunc(() => { 
-      sendChatMessage();
-    });
+  setupMessageInput() {
+    const textArea = TextAreaInputView.clone()
+      .setId("chatInput")
+      .setSubmitFunc(() => {
+        this.sendChatMessage();
+      });
 
-    this.setChatInput(textArea)
+    this.setChatInput(textArea);
   }
 
   addChatMessage(type, message, nickname, userId) {
@@ -85,88 +87,71 @@
     const scrollView = messagesDiv.parentNode;
     scrollView.scrollTop = scrollView.scrollHeight;
   }
-}.initThisClass());
 
-function sendChatMessage() {
-  const input = document.getElementById("chatInput");
-  const message = input.value;
-  Sounds.shared().playSendBeep();
+  // ----------------------------------------------
 
-  if (message.trim() !== "") {
-    input.value = "";
+  sendChatMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value;
+    Sounds.shared().playSendBeep();
 
-    if (LocalHost.shared().isHost()) {
-      // Add chat to chat history
-      Session.shared().addToHistory({
-        type: "chat",
-        data: message,
-        id: Session.shared().localUserId(),
-        nickname: Session.shared().hostNickname(),
-      });
-      // Display chat message
-      addLocalChatMessage(message);
-      // Broadcast chat message to all connected guests
+    if (message.trim() !== "") {
+      input.value = "";
 
-      LocalHost.shared().broadcast({
-        type: "chat",
-        id: Session.shared().localUserId(),
-        message: message,
-        nickname: Session.shared().hostNickname(),
-      });
-    } else {
-      // Send chat message to host
-      RemoteHost.shared().connToHost().send({
-        type: "chat",
-        id: Session.shared().localUserId(),
-        message: message,
-        nickname: Session.shared().guestNickname(),
-      });
-      guestAddLocalChatMessage(message);
+      if (LocalHost.shared().isHost()) {
+        // Add chat to chat history
+        Session.shared().addToHistory({
+          type: "chat",
+          data: message,
+          id: Session.shared().localUserId(),
+          nickname: Session.shared().hostNickname(),
+        });
+        // Display chat message
+        this.addLocalChatMessage(message);
+        // Broadcast chat message to all connected guests
+
+        LocalHost.shared().broadcast({
+          type: "chat",
+          id: Session.shared().localUserId(),
+          message: message,
+          nickname: Session.shared().hostNickname(),
+        });
+      } else {
+        // Send chat message to host
+        RemoteHost.shared().connToHost().send({
+          type: "chat",
+          id: Session.shared().localUserId(),
+          message: message,
+          nickname: Session.shared().guestNickname(),
+        });
+        this.guestAddLocalChatMessage(message);
+      }
     }
   }
-}
 
-GroupChatView.shared()
-
-/*
-// Disables the chat send button until the data channel is open
-const chatSendButton = document.getElementById("chatSendButton");
-chatSendButton.addEventListener("click", sendChatMessage);
-
-// --- chat input ---
-
-const chatInput = document.getElementById("chatInput");
-chatInput.addEventListener("keypress", (event) => {
-  const enterKeyCode = 13;
-  if (event.keyCode === enterKeyCode && !event.shiftKey) {
-    event.preventDefault(); // prevent new line
-    sendChatMessage();
+  addLocalChatMessage(message) {
+    Session.shared().addToHistory({
+      type: "chat",
+      data: message,
+      id: Session.shared().localUserId(),
+      nickname: Session.shared().hostNickname(),
+    });
+    GroupChatView.shared().addChatMessage(
+      "chat",
+      message,
+      Session.shared().hostNickname(),
+      Session.shared().localUserId()
+    );
   }
-});
-*/
 
-// --- username ---
+  guestAddLocalChatMessage(message) {
+    GroupChatView.shared().addChatMessage(
+      "chat",
+      message,
+      Session.shared().guestNickname(),
+      Session.shared().localUserId()
+    );
+  }
+}.initThisClass());
 
-async function addLocalChatMessage(message) {
-  Session.shared().addToHistory({
-    type: "chat",
-    data: message,
-    id: Session.shared().localUserId(),
-    nickname: Session.shared().hostNickname(),
-  });
-  GroupChatView.shared().addChatMessage(
-    "chat",
-    message,
-    Session.shared().hostNickname(),
-    Session.shared().localUserId()
-  );
-}
-
-async function guestAddLocalChatMessage(message) {
-  GroupChatView.shared().addChatMessage(
-    "chat",
-    message,
-    Session.shared().guestNickname(),
-    Session.shared().localUserId()
-  );
-}
+GroupChatView.shared();
