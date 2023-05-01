@@ -25,7 +25,7 @@
 
   // --- ids ---
 
-  setupHostId () {
+  setupHostId() {
     const existingHostId = localStorage.getItem("hostId");
     const existingHostNickname = Session.shared().hostNickname();
     if (existingHostId) {
@@ -43,9 +43,9 @@
   setupIds() {
     // If user is host, check if there is an existing hostId in local storage
     if (LocalHost.shared().isHost()) {
-      this.setupHostId()
+      this.setupHostId();
     } else {
-      RemoteHost.shared().setupGuestId()
+      RemoteHost.shared().setupGuestId();
     }
   }
 
@@ -571,63 +571,36 @@
       });
   }
 
-  // --- message events ---
+  // Send imageURL to all connected guests
+  broadcastImage(imageURL) {
+    Session.shared().addToHistory({
+      type: "image-link",
+      data: imageURL,
+      id: Session.shared().localUserId(),
+      nickname: Session.shared().hostNickname(),
+    });
+
+    LocalHost.shared().broadcast({
+      type: "image-link",
+      message: imageURL,
+      nickname: Session.shared().hostNickname(),
+    });
+  }
+
+  async sendPrompt(message) {
+    LocalHost.shared().broadcast({
+      type: "prompt",
+      id: Session.shared().localUserId(),
+      message: message,
+      nickname: Session.shared().hostNickname(),
+    });
+
+    if (Session.shared().gameMode()) {
+      message = Session.shared().hostNickname() + ": " + message;
+      console.log("Game mode on, host adds username to prompt");
+    }
+    sendAIResponse(message);
+  }
+
 }.initThisClass());
 
-//LocalHost.shared().setupIds();
-
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-// -----------------------------------------------------
-
-// --- peer code ------------------
-
-// Send imageURL to all connected guests
-function sendImage(imageURL) {
-  Session.shared().addToHistory({
-    type: "image-link",
-    data: imageURL,
-    id: Session.shared().localUserId(),
-    nickname: Session.shared().hostNickname(),
-  });
-
-  LocalHost.shared().broadcast({
-    type: "image-link",
-    message: imageURL,
-    nickname: Session.shared().hostNickname(),
-  });
-}
-
-async function sendPrompt(message) {
-  LocalHost.shared().broadcast({
-    type: "prompt",
-    id: Session.shared().localUserId(),
-    message: message,
-    nickname: Session.shared().hostNickname(),
-  });
-
-  if (Session.shared().gameMode()) {
-    message = Session.shared().hostNickname() + ": " + message;
-    console.log("Game mode on, host adds username to prompt");
-  }
-  sendAIResponse(message);
-}

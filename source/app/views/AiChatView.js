@@ -214,7 +214,7 @@ async function addPrompt() {
     nickname: Session.shared().hostNickname(),
   });
   addMessage("prompt", message, Session.shared().hostNickname(), Session.shared().localUserId());
-  sendPrompt(message);
+  LocalHost.shared().sendPrompt(message);
 }
 
 async function guestAddPrompt(data) {

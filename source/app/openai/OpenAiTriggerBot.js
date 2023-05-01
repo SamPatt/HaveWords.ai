@@ -54,7 +54,7 @@ async function triggerImageBot(response) {
     Session.shared().groupSessionType(),
     Session.shared().groupSessionDetails()
   );
-  sendImage(imageURL);
+  LocalHost.shared().broadcastImage(imageURL);
   addImage(imageURL);
   console.log(`Image description: ${imageDescription}`);
 }
@@ -109,7 +109,7 @@ async function triggerBot(response, sessionType, sessionDetails) {
       const imageDescription = trigger["Image"];
       const imageURL = await OpenAiImageGen.shared().asyncFetch(imageDescription, "fantasyRoleplay", sessionDetails);
       console.log("event triggered, image: " + imageURL);
-      sendImage(imageURL);
+      LocalHost.shared().broadcastImage(imageURL);
       addImage(imageURL);
       console.log(`Image description: ${imageDescription}`);
     }
