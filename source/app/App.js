@@ -16,6 +16,8 @@
     }
 
     run () {
+        LocalHost.shared().setupIds();
+
         LocalHost.shared().setupPeer()
 
         OpenAiChat.shared().addToConversation({

@@ -20,8 +20,10 @@ class Boot extends Object {
       "source/app/Microphone.js",
 
       "source/app/Session.js",
+      "source/app/Peerable.js",
       "source/app/LocalHost.js",
       "source/app/RemoteHost.js",
+      "source/app/VoiceChat.js",
 
       "source/app/openai/OpenAiRequest.js",
       "source/app/openai/OpenAiService.js",

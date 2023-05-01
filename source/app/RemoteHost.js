@@ -5,7 +5,7 @@
 
 */
 
-(class RemoteHost extends Base {
+(class RemoteHost extends Peerable {
   initPrototypeSlots() {
     this.newSlot("connToHost", null);
   }
@@ -14,6 +14,21 @@
     super.init();
 
     this.setIsDebugging(true);
+  }
+
+  setupGuestId() {
+    // If user is guest, generate a new id
+    const existingGuestId = localStorage.getItem("guestId");
+    const existingGuestNickname = Session.shared().guestNickname();
+    if (existingGuestId) {
+      // If there is an existing guestId, set the guestId to the existing one
+      Session.shared().setLocalUserId(existingGuestId);
+      Session.shared().setGuestNickname(existingGuestNickname);
+    } else {
+      // If there is no existing guestId, generate a new one and save it to local storage
+      Session.shared().setLocalUserId(LocalHost.shared().generateId());
+      localStorage.setItem("guestId", Session.shared().localUserId());
+    }
   }
 
   sendUsername(username) {
@@ -28,7 +43,7 @@
   sendAvatar(avatar) {
     // Send avatar to host
     this.connToHost().send({
-      type: 'avatar-update',
+      type: "avatar-update",
       id: Session.shared().localUserId(),
       nickname: Session.shared().guestNickname(),
       avatar: avatar,
@@ -43,7 +58,7 @@
     console.log("Attempting to connect to host with inviteId:", inviteId); // Add this line
 
     const conn = LocalHost.shared().peer().connect(inviteId);
-    this.setConnToHost(conn)
+    this.setConnToHost(conn);
 
     conn.on("open", () => {
       console.log("Connection opened:", conn);
@@ -105,7 +120,6 @@
           addChatMessage("chat", data.message, data.nickname, data.userId);
           console.log("Received avatar-update");
         }
-        
 
         if (data.type === "system-message") {
           guestAddSystemMessage(data);
@@ -116,10 +130,10 @@
         }
 
         if (data.type === "game-launch") {
-          Session.shared().setGameMode(true)
+          Session.shared().setGameMode(true);
           if (data.sessionType === "fantasyRoleplay") {
-          startRoleplaySession();
-          console.log("Guest sees Fantasy Roleplay Session Started");
+            startRoleplaySession();
+            console.log("Guest sees Fantasy Roleplay Session Started");
           } else if (data.sessionType === "trivia") {
             startTriviaSession();
             console.log("Guest sees Trivia Session Started");
@@ -133,7 +147,12 @@
         }
 
         if (data.type === "guest-join") {
-          addChatMessage("chat", data.message, data.nickname, data.joiningGuestId);
+          addChatMessage(
+            "chat",
+            data.message,
+            data.nickname,
+            data.joiningGuestId
+          );
           const newGuestUserList = data.guestUserList;
           const index = newGuestUserList.findIndex(
             (guest) => guest.id === Session.shared().localUserId()
@@ -163,7 +182,12 @@
         if (data.type === "grant-ai-access") {
           messageInputRemote.disabled = false;
           messageInputRemote.placeholder = "Send a prompt to the AI...";
-          addChatMessage("chat", "You've been granted AI access!", "Host", data.id);
+          addChatMessage(
+            "chat",
+            "You've been granted AI access!",
+            "Host",
+            data.id
+          );
         } else if (data.type === "revoke-ai-access") {
           messageInputRemote.disabled = true;
           messageInputRemote.placeholder = "No prompt permission";
@@ -181,3 +205,20 @@
     });
   }
 }.initThisClass());
+
+async function guestSendPrompt() {
+  const input = document.getElementById("messageInputRemote");
+  let message = input.value;
+
+  if (message.trim() !== "") {
+    input.value = "";
+    // Send chat message to host
+    RemoteHost.shared().connToHost().send({
+      type: "remote-prompt",
+      id: Session.shared().localUserId(),
+      message: message,
+      nickname: Session.shared().guestNickname(),
+    });
+    guestAddLocalPrompt(message);
+  }
+}
