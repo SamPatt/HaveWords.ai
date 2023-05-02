@@ -101,6 +101,9 @@
         }
         if (data.type === "session-history") {
           console.log("Received session history:", data.history);
+          // Set host avatar
+          Session.shared().setUserAvatar(data.id, data.avatar);
+          // Update guest list
           LocalHost.shared().setGuestUserList(
             data.guestUserList.filter(
               (guest) => guest.id !== Session.shared().localUserId()

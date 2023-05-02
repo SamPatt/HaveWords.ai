@@ -257,12 +257,14 @@
                 UsersView.shared().updateUserList();
 
                 // Create a guest user list with ids and nicknames to send to the new guest
-                // Send the session history to the guest
+                // Send the session history to the guest along with avatar
                 channel.conn.send({
                   type: "session-history",
                   history: Session.shared().history(),
                   nickname: Session.shared().hostNickname(),
                   guestUserList: LocalHost.shared().updateGuestUserlist(),
+                  avatar: Session.shared().localUserAvatar(),
+                  id: Session.shared().localUserId(),
                 });
 
                 // Send a new message to all connected guests to notify them of the new guest
