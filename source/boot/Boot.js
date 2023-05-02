@@ -16,7 +16,8 @@ class Boot extends Object {
 
       "source/app/App.js",
       "source/app/Sounds.js",
-      "source/app/Microphone.js",
+
+      "source/app/voice/Microphone.js",
 
       "source/app/user/CryptoIdentity.js",
       "source/app/user/LocalUser.js",
@@ -24,10 +25,13 @@ class Boot extends Object {
 
       "source/app/Session.js",
 
-      "source/app/Peerable.js",
-      "source/app/LocalHost.js",
-      "source/app/RemoteHost.js",
-      "source/app/VoiceChat.js",
+      "source/app/PeerConnection.js",
+      "source/app/PeerServer.js",
+      "source/app/GuestConnection.js",
+      "source/app/HostSession.js",
+      "source/app/GuestSession.js",
+      
+      "source/app/voice/VoiceChat.js",
 
       "source/app/openai/OpenAiRequest.js",
       "source/app/openai/OpenAiService.js",
@@ -45,10 +49,10 @@ class Boot extends Object {
       "source/app/views/inputs/TextFieldView.js",
       "source/app/views/inputs/UsernameView.js",
 
-      "source/app/views/SessionOptionsView.js",
       "source/app/views/AiChatView.js",
       "source/app/views/GroupChatView.js",
-      "source/app/views/UsersView.js"
+      "source/app/views/UsersView.js",
+      "source/app/views/SessionOptionsView.js"
     ]
   }
 
@@ -85,7 +89,7 @@ class Boot extends Object {
   }
 
   didFinish () {
-    console.log("Boot: ready to run app")
+    //console.log("Boot: ready to run app")
     App.launch();
   }
 };

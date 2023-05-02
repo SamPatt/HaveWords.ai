@@ -59,11 +59,11 @@
     } catch (error) {
       debugger;
       console.error("Error fetching AI response:", error);
-      addMessage(
-        "system-message",
+      AiChatView.shared().addMessage(
+        "systemMessage",
         "Error fetching AI response. Make sure the model is selected and the API key is correct.",
         "Host",
-        Session.shared().localUserId()
+        LocalUser.shared().id()
       );
       return undefined
     }

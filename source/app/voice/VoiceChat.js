@@ -68,7 +68,7 @@ function updateCalleeVoiceRequestButton(calleeID, call) {
         // Start the voice call
         console.log("Requesting voice call with " + calleeID);
         voiceRequestButton.textContent = "End Voice Call";
-        const call = LocalHost.shared()
+        const call = HostSession.shared()
           .peer()
           .call(calleeID, Microphone.shared().userAudioStream());
         activeCalls[calleeID] = call;

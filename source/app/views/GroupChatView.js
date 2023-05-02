@@ -35,14 +35,14 @@
     let icon;
     if (type === "chat") {
       icon = "🗯️";
-    } else if (type === "ai-response") {
+    } else if (type === "aiResponse") {
       icon = "🤖";
     } else {
       icon = "🔧";
     }
     let avatar;
-    if (userId === Session.shared().localUserId()) {
-      avatar = Session.shared().localUserAvatar();
+    if (userId === LocalUser.shared().id()) {
+      avatar = LocalUser.shared().avatar();
     } else {
       avatar = Session.shared().getUserAvatar(userId);
     }
@@ -98,29 +98,29 @@
     if (message.trim() !== "") {
       input.value = "";
 
-      if (LocalHost.shared().isHost()) {
+      if (App.shared().isHost()) {
         // Add chat to chat history
         Session.shared().addToHistory({
           type: "chat",
           data: message,
-          id: Session.shared().localUserId(),
-          nickname: Session.shared().hostNickname(),
+          id: LocalUser.shared().id(),
+          nickname: LocalUser.shared().nickname(),
         });
         // Display chat message
         this.addLocalChatMessage(message);
         // Broadcast chat message to all connected guests
 
-        LocalHost.shared().broadcast({
+        HostSession.shared().broadcast({
           type: "chat",
-          id: Session.shared().localUserId(),
+          id: LocalUser.shared().id(),
           message: message,
-          nickname: Session.shared().hostNickname(),
+          nickname: LocalUser.shared().nickname(),
         });
       } else {
         // Send chat message to host
-        RemoteHost.shared().connToHost().send({
+        GuestSession.shared().send({
           type: "chat",
-          id: Session.shared().localUserId(),
+          id: LocalUser.shared().id(),
           message: message,
           nickname: Session.shared().guestNickname(),
         });
@@ -133,14 +133,14 @@
     Session.shared().addToHistory({
       type: "chat",
       data: message,
-      id: Session.shared().localUserId(),
-      nickname: Session.shared().hostNickname(),
+      id: LocalUser.shared().id(),
+      nickname: LocalUser.shared().nickname(),
     });
     GroupChatView.shared().addChatMessage(
       "chat",
       message,
-      Session.shared().hostNickname(),
-      Session.shared().localUserId()
+      LocalUser.shared().nickname(),
+      LocalUser.shared().id()
     );
   }
 
@@ -149,7 +149,7 @@
       "chat",
       message,
       Session.shared().guestNickname(),
-      Session.shared().localUserId()
+      LocalUser.shared().id()
     );
   }
 }.initThisClass());

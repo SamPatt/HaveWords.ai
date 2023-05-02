@@ -3,15 +3,28 @@
 /* 
     CryptoIdentity
 
+    - generate and serialize/deserialize a key pair
+    - sign a byteArray (using private key)
+    - verify a byteArray (for a given public key)
+    - provide a serialized version of the public key
+      - example format: "SIjVYqrmAIP7E-H5uU-djOB94D6VHU7oe_7k0Jr9p3w@-xL0nZbla8imRgu0TGZjsl9nhQPvAvFKQnsYfML7sVw"
+
 */
 
 (class CryptoIdentity extends Base {
   initPrototypeSlots() {
-    this.newSlot("publicKey", null);
-    this.newSlot("privateKey", null);
-    this.newSlot("algorithm", "RSASSA-PKCS1-v1_5");
-    this.newSlot("hash", "SHA-256");
+    this.newSlot("keyPair", null);
+    this.newSlot("algorithm", {
+      name: "ECDSA",
+      namedCurve: "P-256",
+      hash: { name: "SHA-256" },
+    });
     this.newSlot("serializatonFormat", "jwk");
+    //this.newSlot("keyUsages", ["encrypt", "decrypt", "sign", "verify"]);
+    this.newSlot("keyUsages", ["sign", "verify"]);
+    this.newSlot("extractable", true);
+    this.newSlot("serializedPublicKey", null);
+    this.newSlot("asJson", null);
   }
 
   init() {
@@ -19,27 +32,131 @@
     this.setIsDebugging(true);
   }
 
-  async generateKeyPair() {
-    // Generate a public/private key pair using the RSASSA-PKCS1-v1_5 algorithm
-    const keyPair = await window.crypto.subtle.generateKey(
-      {
-        name: this.algorithm(),
-        modulusLength: 2048,
-        publicExponent: new Uint8Array([1, 0, 1]), // 65537
-        hash: { name: "SHA-256" },
-      },
-      true,
-      ["sign", "verify"]
-    );
-    this.setPublicKey(keyPair.publicKey);
-    this.setPublicKey(keyPair.privateKey);
-    //console.log("generated pubkey: ", LocalUser.shared().publicKey().base64encoded())
+  async asyncUpdate() {
+    await this.asyncUpdateAsJson();
+    await this.asyncUpdateSerializedPublicKey();
+  }
+
+  async asyncSetKeyPair(keyPair) {
+    this._keyPair = keyPair;
+    await this.asyncUpdate();
     return this;
   }
 
+  async asyncUpdateSerializedPublicKey() {
+    this.setSerializedPublicKey(await this.calcPublicKeyAsString());
+    return this;
+  }
+
+  async calcPublicKeyAsString() {
+    const json = await window.crypto.subtle.exportKey(
+      this.serializatonFormat(),
+      this.keyPair().publicKey
+    );
+    // not sure what's safe as a seperator
+    const string = json.x + " " + json.y;
+    const encoded = string.stringToBase32Hex()
+    return encoded;
+  }
+
+  async asyncGenerate() {
+    // Generate a public/private key pair using the RSASSA-PKCS1-v1_5 algorithm
+    const keyPair = await window.crypto.subtle.generateKey(
+      this.algorithm(),
+      this.extractable(),
+      this.keyUsages()
+    );
+    await this.asyncSetKeyPair(keyPair);
+    this.debugLog(
+      "generated pubkey string: ",
+      await this.calcPublicKeyAsString()
+    );
+    return this;
+  }
+
+  async asyncUpdateAsJson() {
+    const publicKey = await window.crypto.subtle.exportKey(
+      this.serializatonFormat(),
+      this.keyPair().publicKey
+    );
+
+    const privateKey = await window.crypto.subtle.exportKey(
+      this.serializatonFormat(),
+      this.keyPair().privateKey
+    );
+
+    const json = {
+      serializatonFormat: this.serializatonFormat(),
+      publicKey: publicKey,
+      privateKey: privateKey,
+      algorithm: this.algorithm(),
+      keyUsages: this.keyUsages(),
+      extractable: this.extractable(),
+    };
+    this.setAsJson(json);
+  }
+
+  static async asyncNewFromJson(json) {
+    const cid = CryptoIdentity.clone();
+    await cid.asyncFromJson(json);
+    return cid;
+  }
+
+  async asyncFromJson(json) {
+    this.setSerializatonFormat(json.serializatonFormat);
+    this.setAlgorithm(json.algorithm);
+    this.setExtractable(json.extractable);
+    this.setKeyUsages(json.keyUsages);
+    let keyPair;
+
+    try {
+      const publicKey = await window.crypto.subtle.importKey(
+        json.serializatonFormat,
+        json.publicKey,
+        json.algorithm,
+        json.extractable,
+        ["verify"]
+      );
+
+      const privateKey = await window.crypto.subtle.importKey(
+        json.serializatonFormat,
+        json.privateKey,
+        json.algorithm,
+        json.extractable,
+        ["sign"]
+      );
+
+      keyPair = { 
+        publicKey: publicKey, 
+        privateKey: privateKey 
+      };
+  
+    } catch (e) {
+      console.warn(e);
+      debugger;
+    }
+    await this.asyncSetKeyPair(keyPair);
+    return this;
+  }
+
+  static async asyncSelfTest() {
+    const cid1 = CryptoIdentity.clone();
+
+    await cid1.asyncGenerate();
+    console.log("generated pubkey:", cid1.serializedPublicKey());
+
+    const json = cid1.asJson();
+    console.log("serialized:", json);
+
+    const cid2 = await CryptoIdentity.clone().asyncFromJson(json);
+    console.log("unserialized pubkey:", cid2.serializedPublicKey());
+    debugger;
+  }
+
+  /*
   async signatureForByteArray(byteArray) {
     const signature = await window.crypto.subtle.sign(
-      { name: this.algorithm() },
+      this.algorithm(),
       keyPair.privateKey,
       byteArray
     );
@@ -49,55 +166,14 @@
 
   async validateSignatureForPubKeyOnByteArray(publicKey, signature, byteArray) {
     const isValid = await window.crypto.subtle.verify(
-      { name: this.algorithm() },
+      this.algorithm(),
       publicKey,
       signature,
       byteArray
     );
     return isValid;
   }
+*/
+}).initThisClass();
 
-  static selfTest() {
-    //const byteArray = new Uint8Array([72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100]); // "Hello World" in ASCII
-  }
-
-  async serializedKey(key, format = "jwk") {
-    const serializedKey = await window.crypto.subtle.exportKey(format, key);
-    return serializedKey;
-  }
-
-  async unserializedKey(
-    serializedKey,
-    algorithm,
-    keyUsages,
-    format = "jwk"
-  ) {
-    const key = await window.crypto.subtle.importKey(
-      format,
-      serializedKey,
-      algorithm,
-      true,
-      keyUsages
-    );
-    return key;
-  }
-
-  static async test() {
-    // Serialize the public key
-    const serializedPublicKey = await serializeCryptoKey(keyPair.publicKey);
-
-    console.log("Serialized Public Key:", serializedPublicKey);
-
-    // Unserialize the public key
-    const unserializedPublicKey = await unserializeCryptoKey(
-      serializedPublicKey,
-      {
-        name: "RSASSA-PKCS1-v1_5",
-        hash: { name: "SHA-256" },
-      },
-      ["verify"]
-    );
-
-    console.log("Unserialized Public Key:", unserializedPublicKey);
-  }
-}.initThisClass());
+//CryptoIdentity.asyncSelfTest();

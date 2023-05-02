@@ -10,7 +10,6 @@
     this.newSlot("data", null);
     this.newSlot("localUserId", null);
     this.newSlot("inSession", false);
-    this.newSlot("hostWelcomeMessage", false);
     this.newSlot("groupSessionType", undefined);
     this.newSlot("groupSessionDetails", undefined);
     this.newSlot("groupSessionFirstAIResponse", undefined);
@@ -104,22 +103,17 @@
     return this;
   }
 
-  inviteLink() {
-    const hostRoomId = this.localUserId();
-    const isFile = window.location.protocol === "file:";
-    const base = isFile ? window.location.href : window.location.origin + "/";
-    return `${base}?room=${hostRoomId}`;
-  }
-  
   // Avatars
 
-  localUserAvatar() {
+  /*
+  localUserAvatar() {   // use LocalUser.shared().avatar() instead
     return localStorage.getItem("avatar") || null;
   }
 
-  setLocalUserAvatar(avatar) {
+  setLocalUserAvatar(avatar) {   // use LocalUser.shared().setAvatar() instead
     localStorage.setItem("avatar", avatar);
   }
+  */
 
   getUserAvatar(userId) {
     return localStorage.getItem(`avatar_${userId}`) || null;

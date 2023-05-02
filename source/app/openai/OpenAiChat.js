@@ -56,11 +56,11 @@
     } catch (error) {
       debugger;
       console.error("Error fetching AI response:", error);
-      addMessage(
-        "system-message",
+      AiChatView.shared().addMessage(
+        "systemMessage",
         "Error fetching AI response. Make sure the model is selected and the API key is correct.",
         "Host",
-        Session.shared().localUserId()
+        LocalUser.shared().id()
       );
       return undefined
     }
@@ -75,9 +75,9 @@
 
     // Save the conversation history to local storage
     Session.shared().addToHistory({
-      type: "ai-response",
+      type: "aiResponse",
       data: aiResponse,
-      id: Session.shared().localUserId(),
+      id: LocalUser.shared().id(),
       nickname: selectedModelNickname,
     });
 

@@ -69,8 +69,8 @@
   reportError (error) {
     console.error(this.type() + " error fetching response:", error, " for url: " + this.apiUrl() + " request:", this.requestOptions());
 
-    addMessage(
-      "system-message",
+    AiChatView.shared().addMessage(
+      "systemMessage",
       "Error fetching AI response. Make sure the model is selected and the API key is correct.",
       "Host"
     );

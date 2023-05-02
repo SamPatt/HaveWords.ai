@@ -21,8 +21,6 @@ startGameButton.addEventListener("click", () => {
   updateSessionTypeOptions("fantasyRoleplay");
 });
 
-
-
 const systemMessage = document.getElementById("systemMessage");
 
 
@@ -35,7 +33,7 @@ function setNewAIRole(newRole) {
   })
 
   // Check to see if host or guest and send message to appropriate party
-  if (LocalHost.shared().isHost()) {
+  if (App.shared().isHost()) {
     //sendSystemMessage(content);
     // Disable for now
   } else {
@@ -55,7 +53,7 @@ function setNewAIRole(newRole) {
 
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
-      if (LocalHost.shared().isHost()) {
+      if (App.shared().isHost()) {
         sendSystemMessage(content);
       } else {
         sendSystemMessageToHost(content);
@@ -76,7 +74,7 @@ function setNewAIRole(newRole) {
 
       document.getElementById('submitSystemMessage').style.display = 'none';
       // Check to see if host or guest and send message to appropriate party
-      if (LocalHost.shared().isHost()) {
+      if (App.shared().isHost()) {
         sendSystemMessage(content);
       } else {
         sendSystemMessageToHost(content);
@@ -85,11 +83,11 @@ function setNewAIRole(newRole) {
     */
 
 async function sendSystemMessage(message) {
-  LocalHost.shared().broadcast({
-    type: "system-message",
-    id: Session.shared().localUserId(),
+  HostSession.shared().broadcast({
+    type: "systemMessage",
+    id: LocalUser.shared().id(),
     message: message,
-    nickname: Session.shared().hostNickname(),
+    nickname: LocalUser.shared().nickname(),
   });
 }
 
@@ -104,8 +102,8 @@ function guestChangeSystemMessage(data) {
   systemMessage.value = content;
 
   // Relay to connected guests
-  LocalHost.shared().broadcast({
-    type: "system-message",
+  HostSession.shared().broadcast({
+    type: "systemMessage",
     id: data.id,
     message: data.message,
     nickname: data.nickname,
@@ -228,15 +226,15 @@ function guestDisplayHostSessionHistory(sessionData) {
     .history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        addMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "ai-response") {
-        addMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "system-message") {
-        addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+      } else if (item.type === "aiResponse") {
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+      } else if (item.type === "systemMessage") {
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
         GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "image-link") {
-        addImage(item.data);
+      } else if (item.type === "imageLink") {
+        AiChatView.shared().addImage(item.data);
       }
     });
 }
@@ -245,15 +243,15 @@ function displaySessionHistory() {
   Session.shared().history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        addMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "ai-response") {
-        addMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "system-message") {
-        addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+      } else if (item.type === "aiResponse") {
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+      } else if (item.type === "systemMessage") {
+        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
       } else if (item.type === "chat") {
         GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
-      } else if (item.type === "image-link") {
-        addImage(item.data);
+      } else if (item.type === "imageLink") {
+        AiChatView.shared().addImage(item.data);
       }
     });
 }
@@ -261,7 +259,7 @@ function displaySessionHistory() {
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-  addMessage("prompt", "You've started the session!", Session.shared().hostNickname(), Session.shared().localUserId());
+  AiChatView.shared().addMessage("prompt", "You've started the session!", LocalUser.shared().nickname(), LocalUser.shared().id());
   Session.shared().setInSession(true)
 
   // Check which session type was selected
@@ -293,14 +291,14 @@ async function startSession(sessionType, sessionDetails) {
     }
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
-    LocalHost.shared().broadcast({
-      type: "game-launch",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "gameLaunch",
+      id: LocalUser.shared().id(),
       message:
         "The host started a new " +
         sessionDetails +
         " session! Please wait while the AI Game master crafts your world...",
-      nickname: Session.shared().hostNickname(),
+      nickname: LocalUser.shared().nickname(),
       sessionType: "fantasyRoleplay",
     });
 
@@ -308,12 +306,12 @@ async function startSession(sessionType, sessionDetails) {
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response)
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
-    addAIReponse(response);
+    AiChatView.shared().addAIReponse(response);
 
     // Send the response to all connected guests
-    LocalHost.shared().broadcast({
-      type: "ai-response",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "aiResponse",
+      id: LocalUser.shared().id(),
       message: response,
       nickname: selectedModelNickname,
     });
@@ -333,24 +331,24 @@ async function startSession(sessionType, sessionDetails) {
     const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(", ")}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
 
     // Send a message to all connected guests
-    LocalHost.shared().broadcast({
-      type: "game-launch",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "gameLaunch",
+      id: LocalUser.shared().id(),
       message:
         "The host started a new " +
         sessionDetails +
         " trivia session! Please wait while the AI Trivia Master prepares the first question...",
-      nickname: Session.shared().hostNickname(),
+      nickname: LocalUser.shared().nickname(),
       sessionType: "trivia",
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
-    addAIReponse(response);
+    AiChatView.shared().addAIReponse(response);
 
     // Send the response to all connected guests
-    LocalHost.shared().broadcast({
-      type: "ai-response",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "aiResponse",
+      id: LocalUser.shared().id(),
       message: response,
       nickname: selectedModelNickname,
     });
@@ -369,22 +367,22 @@ async function startSession(sessionType, sessionDetails) {
     const prompt = `You are the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. The player names are: ${usernames.join(", ")}. Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: ${userPrompt}. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. Do not write dialogue for the users, only for the characters in the scene. Let the users speak for themselves. Emphasize aspects of the settings and characters that are relevant to the exploration. Respond to the users' actions and questions, and guide them through the exploration.`;
 
     // Send a message to all connected guests
-    LocalHost.shared().broadcast({
-      type: "game-launch",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "gameLaunch",
+      id: LocalUser.shared().id(),
       message:
         "The host started a new exploration session! Please wait while the AI Guide prepares to start the session...",
-      nickname: Session.shared().hostNickname(),
+      nickname: LocalUser.shared().nickname(),
       sessionType: "explore",
     });
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
-    addAIReponse(response);
+    AiChatView.shared().addAIReponse(response);
 
     // Send the response to all connected guests
-    LocalHost.shared().broadcast({
-      type: "ai-response",
-      id: Session.shared().localUserId(),
+    HostSession.shared().broadcast({
+      type: "aiResponse",
+      id: LocalUser.shared().id(),
       message: response,
       nickname: selectedModelNickname,
     });
@@ -550,9 +548,9 @@ function endAdventure() {
 function getCurrentUsernames() {
   // Add all nicknames of connected guests to the guestNicknames array
   const guestNicknames = [];
-  guestNicknames.push(Session.shared().hostNickname());
+  guestNicknames.push(LocalUser.shared().nickname());
 
-  LocalHost.shared().dataChannels().forEachKV((guestId, channel) => {
+  HostSession.shared().dataChannels().forEachKV((guestId, channel) => {
     guestNicknames.push(channel.nickname);
   });
   return guestNicknames;
@@ -572,13 +570,13 @@ function startRoleplaySession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (LocalHost.shared().isHost()) {
-    const inviteLink = Session.shared().inviteLink();
-    addMessage(
+  if (App.shared().isHost()) {
+    const inviteLink = App.shared().inviteLink();
+    AiChatView.shared().addMessage(
       "welcome-message",
       `<p>Welcome to your roleplaying session, set in the <b>${Session.shared().groupSessionDetails()}</b> world!</p></p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Game Master will begin the session when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai",
-      Session.shared().localUserId()
+      LocalUser.shared().id()
     );
   }
   Sounds.shared().playOminousSound();
@@ -597,14 +595,14 @@ async function startTriviaSession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (LocalHost.shared().isHost()) {
-    const inviteLink = Session.shared().inviteLink();
+  if (App.shared().isHost()) {
+    const inviteLink = App.shared().inviteLink();
     const selectedCategory = Session.shared().groupSessionDetails();
-    addMessage(
+    AiChatView.shared().addMessage(
       "welcome-message",
       `<p>Welcome to your trivia session in the <b>${selectedCategory}</b> category!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Trivia Master will begin the session when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai",
-      Session.shared().localUserId()
+      LocalUser.shared().id()
     );
   }
   Sounds.shared().playOminousSound();
@@ -623,14 +621,14 @@ async function startExploreSession() {
 
   document.getElementById("aiSelectionBlock").style.display = "none";
 
-  if (LocalHost.shared().isHost()) {
-    const inviteLink = Session.shared().inviteLink();
+  if (App.shared().isHost()) {
+    const inviteLink = App.shared().inviteLink();
     const selectedCategory = Session.shared().groupSessionDetails();
-    addMessage(
+    AiChatView.shared().addMessage(
       "welcome-message",
       `<p>Welcome to your exploration session, where you will <b>${selectedCategory}</b>!</p><p>Send your friends this invite link to join your session: <a href="${inviteLink}">${inviteLink}</a></p><p>When you're ready, the AI Explorer will be available to guide you through your journey when you click <b>Begin Session</b> below.</p>`,
       "HaveWords.ai",
-      Session.shared().localUserId()
+      LocalUser.shared().id()
     );
   }
   Sounds.shared().playOminousSound();

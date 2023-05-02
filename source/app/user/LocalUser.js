@@ -9,12 +9,81 @@
   initPrototypeSlots() {
     this.newSlot("cryptoId", null);
     this.newSlot("nickname", null);
+    this.newSlot("avatar", null);
   }
 
   init() {
     super.init();
     this.setCryptoId(CryptoIdentity.clone())
     this.setIsDebugging(true);
+  }
+
+  async asyncSetup () {
+    //this.clear()
+    // load from localStorage or generate if not found
+    const didLoad = await this.asyncLoad()
+    if (!didLoad) {
+      await this.cryptoId().asyncGenerate()
+      this.save()
+    }
+
+    if (!this.nickname()) {
+      this.setNickname(Nickname.generateNickname())
+    }
+
+    console.log(this.description())
+    return this
+  }
+
+  id () {
+    return this.cryptoId().serializedPublicKey()
+  }
+
+  description () {
+    return this.type() + " id:" + this.id() + " nickname:" + this.nickname();
+  }
+
+  // --- json ---
+
+  asJson () {
+    return {
+      cryptoId: this.cryptoId().asJson(),
+      nickname: this.nickname(),
+      avatar: this.avatar()
+    };
+  }
+
+  async asyncFromJson (json) {
+    this.setNickname(json.nickname)
+    this.setAvatar(json.avatar)
+    await this.cryptoId().asyncFromJson(json.cryptoId)
+    return this
+  }
+
+  // --- save /load ---
+
+  localStorageKey () {
+    return "localUser"
+  }
+
+  save () {
+    const data = JSON.stringify(this.asJson())
+    localStorage.setItem(this.localStorageKey(), data);
+    return this
+  }
+
+  async asyncLoad () {
+    const data = localStorage.getItem(this.localStorageKey());
+    if (data) {
+      const json = JSON.parse(data)
+      await this.asyncFromJson(json)
+      return true
+    }
+    return false
+  }
+
+  clear () {
+    localStorage.removeItem(this.localStorageKey());
   }
 
 }.initThisClass());
