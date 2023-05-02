@@ -97,7 +97,7 @@
     this.setupInviteButton();
 
     displaySessionHistory();
-    displayHostHTMLChanges();
+    SessionOptionsView.shared().displayHostHTMLChanges();
 
     if (!Session.shared().fantasyRoleplay()) {
 

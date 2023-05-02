@@ -103,6 +103,8 @@
         history: Session.shared().history(),
         nickname: LocalUser.shared().nickname(),
         guestUserList: newGuestUserList,
+        avatar: LocalUser.shared().avatar(),
+        id: LocalUser.shared().id()
       });
 
       // Send a new message to all connected guests to notify them of the new guest
@@ -176,7 +178,7 @@
       });
       // Update system message and display it TO DO SEND TO ALL
       AiChatView.shared().addMessage("systemMessage", data.message, data.nickname, data.id);
-      guestChangeSystemMessage(data);
+      SessionOptionsView.shared().guestChangeSystemMessage(data);
     } else {
       console.log(
         `Rejected system message update from ${conn.peer} - ${channel.nickname}`

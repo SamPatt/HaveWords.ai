@@ -6,126 +6,144 @@
 */
 
 (class SessionOptionsView extends View {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("startGameButton", null)
+    this.newSlot("apiKeyInput", null)
+  }
 
   init() {
     super.init();
     this.setId("aiSelectionBlock");
+    this.setupStartGameButton()
   }
-}.initThisClass());
 
-
-const startGameButton = document.getElementById("startGameButton");
-// Start the group game when the host clicks the button
-startGameButton.addEventListener("click", () => {
-  updateSessionTypeOptions("fantasyRoleplay");
-});
-
-const systemMessage = document.getElementById("systemMessage");
-
-
-function setNewAIRole(newRole) {
-  const content = newRole;
-  systemMessage.value = content;
-  OpenAiChat.shared().addToConversation({
-    role: "system",
-    content: content,
-  })
-
-  // Check to see if host or guest and send message to appropriate party
-  if (App.shared().isHost()) {
-    //sendSystemMessage(content);
-    // Disable for now
-  } else {
-    console.log("Guests cannot set new AI role");
+  startGameButton () {
+    return document.getElementById("startGameButton")
   }
-  console.log("sent system message:", content);
-}
 
-/*
-  systemMessage.addEventListener('input', () => {
-      //systemMessage.style.width = `${systemMessage.value.length}ch`;
-      const content = systemMessage.value;
-      OpenAiChat.shared().addToConversation({
-        role: 'system',
-        content: content,
-      })
+  systemMessageInput () {
+    return document.getElementById("systemMessage");
+  }
 
-      document.getElementById('submitSystemMessage').style.display = 'none';
-      // Check to see if host or guest and send message to appropriate party
-      if (App.shared().isHost()) {
-        sendSystemMessage(content);
-      } else {
-        sendSystemMessageToHost(content);
-      }
-      console.log("sent system message:", content)
+  setupStartGameButton () {
+    this.startGameButton().addEventListener("click", () => {
+      // Start the group game when the host clicks the button
+      this.updateSessionTypeOptions("fantasyRoleplay");
+    });
+  }
+
+  setNewAIRole(newRole) {
+    const content = newRole;
+    this.systemMessageInput().value = content;
+    OpenAiChat.shared().addToConversation({
+      role: "system",
+      content: content,
     });
 
-    */
-/*
-  document.getElementById('submitSystemMessage').addEventListener('click', () => {    
-      const content = systemMessage.value;
+    // Check to see if host or guest and send message to appropriate party
+    if (App.shared().isHost()) {
+      //this.sendSystemMessage(content);
+      // Disable for now
+    } else {
+      console.log("Guests cannot set new AI role");
+    }
+    console.log("sent system message:", content);
+  }
 
-      OpenAiChat.shared().clearConversationHistory()
-      OpenAiChat.shared().addToConversation(
-          role: 'system',
-          content: content,
-        })
+  sendSystemMessage(message) {
+    HostSession.shared().broadcast({
+      type: "systemMessage",
+      id: LocalUser.shared().id(),
+      message: message,
+      nickname: LocalUser.shared().nickname(),
+    });
+  }
 
-      document.getElementById('submitSystemMessage').style.display = 'none';
-      // Check to see if host or guest and send message to appropriate party
-      if (App.shared().isHost()) {
-        sendSystemMessage(content);
-      } else {
-        sendSystemMessageToHost(content);
+  guestChangeSystemMessage(data) {
+    const content = data.message;
+    OpenAiChat.shared().addToConversation({
+      role: "user",
+      content: prompt,
+    });
+
+    // Update system message input
+    this.systemMessageInput().value = content;
+
+    // Relay to connected guests
+    HostSession.shared().broadcast({
+      type: "systemMessage",
+      id: data.id,
+      message: data.message,
+      nickname: data.nickname,
+    });
+  }
+
+  displayHostHTMLChanges() {
+    document.getElementById("hostAIContainer").style.display = "block";
+    document.getElementById("aiSelection").style.display = "block";
+    document.getElementById("inputSection").style.display = "block";
+    document.getElementById("resetSessionButton").style.display = "block";
+    this.startGameButton().style.display = "block";
+  }
+
+ setupSessionUI() {
+    const aiModel = document.getElementById("aiModel");
+    updateSendButtonState();
+    modelSelect.addEventListener("change", updateSelectedModelNickname);
+    checkURLPath();
+  
+    aiModel.addEventListener("change", () => {
+      selectedOption = modelSelect.options[modelSelect.selectedIndex];
+      selectedModelNickname = selectedOption.getAttribute("data-nickname");
+      updateSendButtonState();
+    });
+  
+    this.setupApiKeyInput()
+  }
+
+  setupApiKeyInput () {
+    const field = TextFieldView.clone().setId("apiKey")
+    this.setApiKeyInput(field)
+
+    field.setValidationFunc((s) => {
+      const isValid = (s.length === 51 && s.startsWith("sk-"));
+      if (isValid) {
+        OpenAiService.shared().setApiKey(s);
       }
-    }); 
-    */
+      return isValid;
+    });
 
-async function sendSystemMessage(message) {
-  HostSession.shared().broadcast({
-    type: "systemMessage",
-    id: LocalUser.shared().id(),
-    message: message,
-    nickname: LocalUser.shared().nickname(),
-  });
-}
+    // Load the stored API key 
+    const k = OpenAiChat.shared().apiKey();
+    if (k) {
+      field.setString(k);
+    }
+  }
 
-function guestChangeSystemMessage(data) {
-  const content = data.message;
-  OpenAiChat.shared().addToConversation({
-    role: "user",
-    content: prompt,
-  });
-
-  // Update system message input
-  systemMessage.value = content;
-
-  // Relay to connected guests
-  HostSession.shared().broadcast({
-    type: "systemMessage",
-    id: data.id,
-    message: data.message,
-    nickname: data.nickname,
-  });
-}
+  displayGuestHTMLChanges() {
+    document.getElementById("hostAIContainer").style.display = "block";
+    document.getElementById("remoteSystemPrompt").style.display = "block";
+    document.getElementById("inputSectionRemote").style.display = "block";
+    messageInputRemote.disabled = true;
+    document.getElementById("aiSelection").style.display = "none";
+  }
+  
+  
+}).initThisClass();
 
 
-function displayHostHTMLChanges() {
-  document.getElementById("hostAIContainer").style.display = "block";
-  document.getElementById("aiSelection").style.display = "block";
-  document.getElementById("inputSection").style.display = "block";
-  document.getElementById("resetSessionButton").style.display = "block";
-  startGameButton.style.display = "block";
-}
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
 
-function displayGuestHTMLChanges() {
-  document.getElementById("hostAIContainer").style.display = "block";
-  document.getElementById("remoteSystemPrompt").style.display = "block";
-  document.getElementById("inputSectionRemote").style.display = "block";
-  messageInputRemote.disabled = true;
-  document.getElementById("aiSelection").style.display = "none";
-}
+
+
+
 
 const modelSelect = document.getElementById("aiModel");
 let selectedModelNickname = "";
@@ -149,11 +167,11 @@ function checkURLPath() {
   console.log("Current hash:", hash); // Add this line for debugging
   if (hash === "#fantasyRoleplay") {
     console.log("URL includes #fantasyRoleplay");
-    Session.shared().setFantasyRoleplay(true)
+    Session.shared().setFantasyRoleplay(true);
     updateSessionTypeOptions("fantasyRoleplay");
   } else if (hash === "#trivia") {
     console.log("URL includes #trivia");
-    Session.shared().setGameMode(true)
+    Session.shared().setGameMode(true);
     updateSessionTypeOptions("trivia");
   } else if (hash === "#explore") {
     console.log("URL includes #explore");
@@ -161,50 +179,7 @@ function checkURLPath() {
   }
 }
 
-const apiKeyInput = document.getElementById("apiKey");
-
-/*
-  const submitApiKeyButton = document.getElementById("submitApiKey");
-  submitApiKeyButton.addEventListener("click", () => {
-    localStorage.setItem("openai_api_key", apiKeyInput.value);
-    submitApiKeyButton.textContent = "Saved!";
-    setTimeout(() => {
-      submitApiKeyButton.style.display = "none";
-    }, 1000);
-  });
-*/
-
-function setupSessionUI() {
-  const aiModel = document.getElementById("aiModel");
-  updateSendButtonState();
-  modelSelect.addEventListener("change", updateSelectedModelNickname);
-  checkURLPath();
-
-  aiModel.addEventListener("change", () => {
-    selectedOption = modelSelect.options[modelSelect.selectedIndex];
-    selectedModelNickname = selectedOption.getAttribute("data-nickname");
-    updateSendButtonState();
-  });
-
-  apiKeyInput.addEventListener("keyup", (event) => {
-    console.log("apiKeyInput keyup")
-    const key = apiKeyInput.value
-    if (key.length === 51 && key.startsWith("sk-")) {
-      OpenAiService.shared().setApiKey(apiKeyInput.value)
-      apiKeyInput.style.color = "white"
-    } else {
-      apiKeyInput.style.color = "red"
-    }
-  });
-
-  // Load the stored API key from localStorage if it exists
-  const storedApiKey = OpenAiChat.shared().apiKey();
-  if (storedApiKey) {
-    apiKeyInput.value = storedApiKey;
-  }
-}
-
-setupSessionUI();
+SessionOptionsView.shared().setupSessionUI();
 
 // You can call this function when the host starts a new session
 async function checkForExistingSession() {
@@ -226,13 +201,33 @@ function guestDisplayHostSessionHistory(sessionData) {
     .history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "aiResponse") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "systemMessage") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "chat") {
-        GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
+        GroupChatView.shared().addChatMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "imageLink") {
         AiChatView.shared().addImage(item.data);
       }
@@ -240,16 +235,37 @@ function guestDisplayHostSessionHistory(sessionData) {
 }
 
 function displaySessionHistory() {
-  Session.shared().history()
+  Session.shared()
+    .history()
     .forEach((item) => {
       if (item.type === "prompt") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "aiResponse") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "systemMessage") {
-        AiChatView.shared().addMessage(item.type, item.data, item.nickname, item.id);
+        AiChatView.shared().addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "chat") {
-        GroupChatView.shared().addChatMessage(item.type, item.data, item.nickname, item.id);
+        GroupChatView.shared().addChatMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
       } else if (item.type === "imageLink") {
         AiChatView.shared().addImage(item.data);
       }
@@ -259,18 +275,23 @@ function displaySessionHistory() {
 //TODO: move the initial username scrape and AI prompt into the specific session functions, since users won't be connected yet
 
 async function startSession(sessionType, sessionDetails) {
-  AiChatView.shared().addMessage("prompt", "You've started the session!", LocalUser.shared().nickname(), LocalUser.shared().id());
-  Session.shared().setInSession(true)
+  AiChatView.shared().addMessage(
+    "prompt",
+    "You've started the session!",
+    LocalUser.shared().nickname(),
+    LocalUser.shared().id()
+  );
+  Session.shared().setInSession(true);
 
   // Check which session type was selected
   if (sessionType === "fantasyRoleplay") {
-    Session.shared().setGameMode(true)
+    Session.shared().setGameMode(true);
     // Construct the system message to guide the AI
     const newRole =
       "You are now the AI Game Master guiding a roleplaying session set in the " +
       sessionDetails +
       " world";
-    setNewAIRole(newRole);
+    SessionOptionsView.shared().setNewAIRole(newRole);
     // Get the current user's usernames
     const usernames = getCurrentUsernames();
     console.log(usernames);
@@ -304,7 +325,7 @@ async function startSession(sessionType, sessionDetails) {
 
     const response = await OpenAiChat.shared().asyncFetch(prompt);
     // Stores initial AI response, which contains character descriptions, for later use
-    Session.shared().setGroupSessionFirstAIResponse(response)
+    Session.shared().setGroupSessionFirstAIResponse(response);
     //triggerBot(response, "fantasyRoleplay", sessionDetails);
     AiChatView.shared().addAIReponse(response);
 
@@ -322,13 +343,15 @@ async function startSession(sessionType, sessionDetails) {
       "You are now the AI Trivia Master for a trivia session in the " +
       sessionDetails +
       " category";
-    setNewAIRole(newRole);
+    SessionOptionsView.shared().setNewAIRole(newRole);
     // Get the current user's usernames
     const usernames = getCurrentUsernames();
     console.log(usernames);
 
     // Beginning the session
-    const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(", ")}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
+    const prompt = `You are the host for a group trivia session in the ${sessionDetails} category. After you ask us your first question in the category, you will receive a response which includes the usernames followed by their answers. In your response to that message, include whether each user got the answer right or wrong, and then add points to their score, keeping record of each user throughout each round. Then ask if we're ready for the next question. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses.  The player names are: ${usernames.join(
+      ", "
+    )}, start the game by greeting the players, and asking the first question. Wait for our responses to your question.`;
 
     // Send a message to all connected guests
     HostSession.shared().broadcast({
@@ -352,19 +375,21 @@ async function startSession(sessionType, sessionDetails) {
       message: response,
       nickname: selectedModelNickname,
     });
-  }  else if (sessionType === "explore") {
+  } else if (sessionType === "explore") {
     Session.shared().setGameMode(true);
     // Construct the system message to guide the AI
     const newRole =
       "You are now the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more";
-    setNewAIRole(newRole);
+    SessionOptionsView.shared().setNewAIRole(newRole);
     // Get the current user's usernames
     const usernames = getCurrentUsernames();
     console.log(usernames);
 
     // Beginning the session
-    const userPrompt = Session.shared().groupSessionDetails()
-    const prompt = `You are the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. The player names are: ${usernames.join(", ")}. Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: ${userPrompt}. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. Do not write dialogue for the users, only for the characters in the scene. Let the users speak for themselves. Emphasize aspects of the settings and characters that are relevant to the exploration. Respond to the users' actions and questions, and guide them through the exploration.`;
+    const userPrompt = Session.shared().groupSessionDetails();
+    const prompt = `You are the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. The player names are: ${usernames.join(
+      ", "
+    )}. Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: ${userPrompt}. Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. Do not write dialogue for the users, only for the characters in the scene. Let the users speak for themselves. Emphasize aspects of the settings and characters that are relevant to the exploration. Respond to the users' actions and questions, and guide them through the exploration.`;
 
     // Send a message to all connected guests
     HostSession.shared().broadcast({
@@ -419,7 +444,7 @@ function updateSessionTypeOptions(sessionType) {
   let description;
 
   if (sessionType === "fantasyRoleplay") {
-    Session.shared().setGroupSessionType("fantasyRoleplay")
+    Session.shared().setGroupSessionType("fantasyRoleplay");
     options = [
       { value: "traditional fantasy", text: "Traditional roleplaying" },
       { value: "Conan", text: "Conan" },
@@ -432,7 +457,7 @@ function updateSessionTypeOptions(sessionType) {
       <p>Choose from various fantasy worlds to embark on an exciting roleplaying adventure with your friends. The AI Dungeon Master will guide you through the story and help you create memorable moments.</p>
     `;
   } else if (sessionType === "trivia") {
-    Session.shared().setGroupSessionType("trivia")
+    Session.shared().setGroupSessionType("trivia");
     options = [
       { value: "Variety", text: "Variety" },
       { value: "Sports", text: "Sports" },
@@ -444,10 +469,8 @@ function updateSessionTypeOptions(sessionType) {
       <p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>
     `;
   } else if (sessionType === "explore") {
-    Session.shared().setGroupSessionType("explore")
-    options = [
-      { value: "Explore", text: "Explore" },
-    ];
+    Session.shared().setGroupSessionType("explore");
+    options = [{ value: "Explore", text: "Explore" }];
     // Add examples here
     description = `
       <h2>Explore:</h2>
@@ -512,18 +535,26 @@ function displayHashModal(sessionType) {
 
     if (customDetails !== "") {
       Session.shared().setGroupSessionDetails(customDetails);
-      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
-
+      console.log(
+        "Group session details set to: " +
+          Session.shared().groupSessionDetails()
+      );
     } else {
       const sessionTypeDetailsSelect = document.getElementById(
         "sessionTypeDetailsSelect"
       );
-      console.log("Session type details select value: " + sessionTypeDetailsSelect.value);
+      console.log(
+        "Session type details select value: " + sessionTypeDetailsSelect.value
+      );
       Session.shared().setGroupSessionDetails(sessionTypeDetailsSelect.value);
-      console.log("Group session details set to: " + Session.shared().groupSessionDetails());
-
+      console.log(
+        "Group session details set to: " +
+          Session.shared().groupSessionDetails()
+      );
     }
-    console.log("Group session world: " + Session.shared().groupSessionDetails());
+    console.log(
+      "Group session world: " + Session.shared().groupSessionDetails()
+    );
     onVisitHashModal.style.display = "none";
     // Start the session with the selected session type
     if (sessionType === "fantasyRoleplay") {
@@ -540,7 +571,7 @@ function displayHashModal(sessionType) {
 }
 
 function endAdventure() {
-  Session.shared().setGameMode(false)
+  Session.shared().setGameMode(false);
   // Trigger the visual indicator (e.g., change the background color)
   document.body.style.backgroundColor = "#333";
 }
@@ -550,9 +581,11 @@ function getCurrentUsernames() {
   const guestNicknames = [];
   guestNicknames.push(LocalUser.shared().nickname());
 
-  HostSession.shared().dataChannels().forEachKV((guestId, channel) => {
-    guestNicknames.push(channel.nickname);
-  });
+  HostSession.shared()
+    .dataChannels()
+    .forEachKV((guestId, channel) => {
+      guestNicknames.push(channel.nickname);
+    });
   return guestNicknames;
 }
 

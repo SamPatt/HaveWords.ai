@@ -24,7 +24,7 @@
   joinSession(inviteId) {
     this.setHostId(inviteId);
     this.debugLog("joinSession");
-    displayGuestHTMLChanges();
+    SessionOptionsView.shared().displayGuestHTMLChanges();
     this.connect();
   }
 
@@ -95,6 +95,11 @@
 
   onReceived_sessionHistory(data) {
     console.log("Received session history:", data.history);
+
+    // Set host avatar
+    Session.shared().setUserAvatar(data.id, data.avatar);
+
+    // Update guest list
     UsersView.shared().setGuestUserList(
       data.guestUserList.filter(
         (guest) => guest.id !== LocalUser.shared().id()
