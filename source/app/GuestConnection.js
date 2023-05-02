@@ -275,7 +275,7 @@
       nickname: LocalUser.shared().nickname(),
       leavingGuestNickname: this.nickname(),
       leavingGuestId: this.id(),
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().calcGuestUserlist(),
     });
 
     GroupChatView.shared().addChatMessage(

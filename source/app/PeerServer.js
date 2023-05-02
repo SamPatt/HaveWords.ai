@@ -30,7 +30,7 @@
         path: "/peerjs",
         secure: true,
         port: 443,
-        relaible: true,
+        reliable: true,
         pingInterval: 1000, // 1 second
         debug: false
       }
