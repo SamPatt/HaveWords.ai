@@ -107,7 +107,6 @@
 
   onError(err) {
     this.debugLog("error ", err);
-    debugger;
 
     if (this.retryCount() < this.maxRetries()) {
       setTimeout(() => {

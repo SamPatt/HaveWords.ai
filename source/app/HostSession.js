@@ -104,7 +104,7 @@
       const message = `<p>Welcome, <b> ${LocalUser.shared().nickname()} </b>!</p>` + 
         '<p>To begin your AI sharing session, choose your AI model and input your OpenAI <a href="https://platform.openai.com/account/api-keys">API Key</a> key above.' +
         " Your key is stored <i>locally in your browser</i>.</p>" +
-        "<p>Then copy the invite link (using the botton on the top right of this window) to your friends.</p>" +
+        "<p>Then copy the invite link (using the button on the top right of this window) to your friends.</p>" +
         "<p>Click on their usernames in the Guest section to grant them access to your AI - or to kick them if they are behaving badly.</p>" +
         "<p>Feeling adventurous? Click <b>Start Game</b> to play an AI guided roleplaying game with your friends. Have fun!</p>";
 

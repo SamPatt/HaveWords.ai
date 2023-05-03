@@ -16,3 +16,4 @@ Statically hosted here, runs from your browser entirely, with only three externa
 2) HaveWords.ai uses two external scripts. One is peerJS, which handles the WebRTC connections. The second is DOMPurify, which ensures that no malicious HTML is displayed. Both are loaded from a CDN link you can inspect in the HTML.
 
 3) The API calls to the AI API. Currently only supporting the OpenAI API.
+
