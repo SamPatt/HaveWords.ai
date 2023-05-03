@@ -109,7 +109,7 @@
     );
 
     UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
-    guestDisplayHostSessionHistory(data.history);
+    SessionOptionsView.shared().guestDisplayHostSessionHistory(data.history);
   }
 
   onReceived_nicknameUpdate(data) {
@@ -143,13 +143,13 @@
   onReceived_gameLaunch(data) {
     Session.shared().setGameMode(true);
     if (data.sessionType === "fantasyRoleplay") {
-      startRoleplaySession();
+      SessionOptionsView.shared().startRoleplaySession();
       console.log("Guest sees Fantasy Roleplay Session Started");
     } else if (data.sessionType === "trivia") {
-      startTriviaSession();
+      SessionOptionsView.shared().startTriviaSession();
       console.log("Guest sees Trivia Session Started");
     } else if (data.sessionType === "explore") {
-      startExploreSession();
+      SessionOptionsView.shared().startExploreSession();
       console.log("Guest sees Explore Session Started");
     } else {
       console.log("Error: Invalid session type");

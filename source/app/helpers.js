@@ -84,6 +84,17 @@ Object.defineSlot(String.prototype, "base32HexToString", function() {
 
 // --- Map ---
 
+/*
+Object.defineSlot(Map.prototype, "map", function(f) {
+  return this.valuesArray().map(f)
+});
+*/
+
+Object.defineSlot(Map.prototype, "valuesArray", function() {
+  return Array.from(this.values())
+});
+
+
 Object.defineSlot(Map.prototype, "forEachKV", function(f) {
   this.forEach((v, k) => { 
     f(k, v);

@@ -45,7 +45,7 @@
     AiChatView.shared().addMessage(
       "aiResponse",
       response,
-      selectedModelNickname,
+      SessionOptionsView.shared().selectedModelNickname(),
       "AiAvatar"
     );
   }
@@ -156,7 +156,7 @@
       beginSessionButton.className = "begin-session-button";
       beginSessionButton.addEventListener("click", () => {
         // Add your desired action when the "Begin Session" button is clicked
-        startSession(
+        SessionOptionsView.shared().startSession(
           Session.shared().groupSessionType(),
           Session.shared().groupSessionDetails()
         );

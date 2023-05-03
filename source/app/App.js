@@ -30,6 +30,8 @@
 
     PeerServer.shared().setDelegate(this).setup();
 
+    SessionOptionsView.shared().setupSessionUI();
+
     OpenAiChat.shared().addToConversation({
       role: "system",
       content: "You are a helpful assistant.",

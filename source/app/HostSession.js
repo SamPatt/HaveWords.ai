@@ -96,7 +96,7 @@
     console.log("Setting up host session");
     this.setupInviteButton();
 
-    displaySessionHistory();
+    SessionOptionsView.shared().displaySessionHistory();
     SessionOptionsView.shared().displayHostHTMLChanges();
 
     if (!Session.shared().fantasyRoleplay()) {
@@ -197,7 +197,7 @@
       type: "aiResponse",
       id: LocalUser.shared().id(),
       message: response,
-      nickname: selectedModelNickname,
+      nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
   }
   

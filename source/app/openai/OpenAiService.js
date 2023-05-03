@@ -7,7 +7,6 @@
 
 (class OpenAiService extends Base {
   initPrototypeSlots () {
-    //this.newSlot("activeRequests", null)
   }
 
   init () {

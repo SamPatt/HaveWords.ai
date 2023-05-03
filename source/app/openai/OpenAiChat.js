@@ -78,7 +78,7 @@
       type: "aiResponse",
       data: aiResponse,
       id: LocalUser.shared().id(),
-      nickname: selectedModelNickname,
+      nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
 
     return aiResponse;
