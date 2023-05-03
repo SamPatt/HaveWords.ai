@@ -127,7 +127,6 @@
     document.getElementById("aiSelection").style.display = "none";
   }
   
-  
 }).initThisClass();
 
 

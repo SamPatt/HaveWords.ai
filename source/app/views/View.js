@@ -58,7 +58,12 @@
   setString (s) {
     // an abstract way to set the string value of the view content
     // which allows subclasses to override it 
-    this.setInnerHTML(s)
+    const e = this.element()
+    if (e.tagName === "INPUT") {
+       e.value = s
+    } else {
+      this.setInnerHTML(s)
+    }
     return this
   }
 
@@ -80,31 +85,31 @@
     return this
   }
 
-  listenForKeyPress () {
-    assert(this.onKeyPress)
+  listenForKeyUp () {
+    assert(this.onKeyUp)
     this.element().addEventListener("keyup", (event) => {
-      this.onKeyPress(event);
+      this.onKeyUp(event);
     })
     return this
   }
 
   // --- handling for events ---
 
-  onKeyPress (event) {
+  onKeyUp (event) {
     const enterKeyCode = 13;
     if (event.keyCode === enterKeyCode) {
       if (event.shiftKey) {
-        this.onShiftEnterKeyPress(event)
+        this.onShiftEnterKeyUp(event)
       } else {
-        this.onEnterKeyPress(event)
+        this.onEnterKeyUp(event)
       }
     }
   }
 
-  onShiftEnterKeyPress (event) {
+  onShiftEnterKeyUp (event) {
   }
 
-  onEnterKeyPress (enter) {
+  onEnterKeyUp (enter) {
   }
 
   // --- actions ---

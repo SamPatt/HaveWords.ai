@@ -16,15 +16,15 @@
 
   initElement () {
     super.initElement();
-    this.listenForKeyPress()
+    this.listenForKeyUp()
   }
 
-  onKeyPress (event) {
-    super.onKeyPress(event);
+  onKeyUp (event) {
+    super.onKeyUp(event);
     this.validate()
   }
 
-  onEnterKeyPress (event) {
+  onEnterKeyUp (event) {
     if (event.key === "Enter") {
       this.submit();
       event.target.blur();

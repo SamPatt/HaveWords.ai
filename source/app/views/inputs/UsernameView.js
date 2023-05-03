@@ -55,8 +55,8 @@ class UsernameView extends TextFieldView {
     return this.element().value;
   }
 
-  onKeyPress(event) {
-    super.onKeyPress(event);
+  onKeyUp(event) {
+    super.onKeyUp(event);
     this.resizeWidthToFitContent();
   }
 

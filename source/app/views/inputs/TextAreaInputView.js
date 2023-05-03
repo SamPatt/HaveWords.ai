@@ -15,10 +15,10 @@
 
   initElement () {
     super.initElement();
-    this.listenForKeyPress()
+    this.listenForKeyUp()
   }
 
-  onEnterKeyPress (event) {
+  onEnterKeyUp (event) {
     this.submit();
     event.preventDefault(); // prevent new line
   }
