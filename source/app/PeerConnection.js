@@ -21,6 +21,15 @@
     return null;
   }
 
+  shortId () {
+    const id = this.id() 
+    return id ? this.id().slice(6) + "..." : "null";
+  }
+
+  debugTypeId () {
+    return this.type() + " " + this.shortId();
+  }
+
   init() {
     super.init();
     this.setIsDebugging(true);
@@ -46,7 +55,7 @@
   // --- events ---
 
   onOpen() {
-    this.debugLog("opened connection to " + this.id());
+    this.debugLog("opened connection to " + this.shortId());
     this.sendDelegateMessage("onOpen");
   }
 
@@ -55,12 +64,12 @@
   }
 
   onError(error) {
-    this.debugLog("Connection error:", error);
+    this.debugLog("error:", error);
     this.sendDelegateMessage("onError", [error]);
   }
 
   onClose() {
-    console.log("Disconnected " + this.conn().peer);
+    this.debugLog("onClose " + this.shortId());
     this.server().removePeerConnection(this);
     this.setConn(null);
 

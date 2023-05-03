@@ -31,6 +31,13 @@
     }
   }
 
+  submit () {
+    this.validate()
+    if (this.isValid()) {
+      super.submit()
+    }
+  }
+
   validate () {
     if (this.isValid()) {
       this.element().style.color = "white";

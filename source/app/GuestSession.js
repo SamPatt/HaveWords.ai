@@ -100,12 +100,14 @@
     Session.shared().setUserAvatar(data.id, data.avatar);
 
     // Update guest list
+    console.log("Received guestUserList:", data.guestUserList);
+
     UsersView.shared().setGuestUserList(
       data.guestUserList.filter(
         (guest) => guest.id !== LocalUser.shared().id()
       )
     );
-    console.log("Received guestUserList:", data.guestUserList);
+
     UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
     guestDisplayHostSessionHistory(data.history);
   }

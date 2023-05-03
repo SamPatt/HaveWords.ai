@@ -51,7 +51,7 @@
 
   setup() {
     const id = LocalUser.shared().id();
-    console.log("connecting to peerjs server with host id:\n", id, "\n")
+    console.log("connecting to peerjs server with host id:\n", LocalUser.shared().shortId(), "\n")
     const peer = new Peer(id, this.peerOptions());
     this.setPeer(peer);
 

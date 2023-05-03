@@ -39,6 +39,10 @@
     return this.cryptoId().serializedPublicKey()
   }
 
+  shortId () {
+    return this.id().slice(6) + "...";
+  }
+
   description () {
     return this.type() + " id:" + this.id() + " nickname:" + this.nickname();
   }

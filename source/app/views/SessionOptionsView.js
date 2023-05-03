@@ -14,7 +14,8 @@
   init() {
     super.init();
     this.setId("aiSelectionBlock");
-    this.setupStartGameButton()
+    this.setupStartGameButton();
+    this.setupApiKeyInput()
   }
 
   startGameButton () {
@@ -97,8 +98,6 @@
       selectedModelNickname = selectedOption.getAttribute("data-nickname");
       updateSendButtonState();
     });
-  
-    this.setupApiKeyInput()
   }
 
   setupApiKeyInput () {

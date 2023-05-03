@@ -58,6 +58,7 @@ class Boot extends Object {
 
   start () {
     this._queue = this.files().slice()
+    console.log("-------")
     this.loadNext()
   }
 
@@ -89,12 +90,12 @@ class Boot extends Object {
   }
 
   didFinish () {
+    console.log("-------")
     //console.log("Boot: ready to run app")
     App.launch();
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Boot.start() after document load")
   new Boot().start()
 })

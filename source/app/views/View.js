@@ -63,6 +63,10 @@
   }
 
   string () {
+    const e = this.element()
+    if (e.tagName === "INPUT") {
+      return e.value
+    }
     return this.innerText()
   }
 
@@ -78,7 +82,7 @@
 
   listenForKeyPress () {
     assert(this.onKeyPress)
-    this.element().addEventListener("keypress", (event) => {
+    this.element().addEventListener("keyup", (event) => {
       this.onKeyPress(event);
     })
     return this
