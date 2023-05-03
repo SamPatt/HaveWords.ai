@@ -205,7 +205,7 @@
           nickname: LocalUser.shared().nickname(),
           oldNickname: oldNickname,
           newNickname: LocalUser.shared().nickname(),
-          guestUserList: UsersView.shared().updateGuestUserlist(),
+          guestUserList: UsersView.shared().calcGuestUserlist(),
         };
 
         HostSession.shared().broadcast(json)

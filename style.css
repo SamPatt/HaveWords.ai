@@ -803,17 +803,17 @@ button {
 }
 
 .avatar-image {
-    width: 50px;
-    height: 50px;
     display: inline;
     cursor: pointer;
-    margin-right: 10px; /* Add some space between the avatar and the input field */
+    margin-right: 1em; /* Add some space between the avatar and the input field */
   }
 
   .message-avatar {
+    width: 1.5em;
+    height: 1.5em;
     display: inline-block;
     vertical-align: middle;
-    margin-right: 10px;
+    margin-right: 1em;
     border-radius: 50%;
   }
   
