@@ -54,6 +54,7 @@
         userActions.classList.add("user-actions");
 
         // AI Access button
+        const peerConnection = PeerServer.shared().peerConnections().get(guestId);
         const canSendPromptsButton = document.createElement("button");
         canSendPromptsButton.textContent = canSendPrompts
           ? "Revoke AI access"
