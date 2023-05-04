@@ -49,7 +49,6 @@
   clear() {
     localStorage.removeItem("sessionData");
     localStorage.removeItem("hostId");
-    this.clearHostnickname();
     this.load();
   }
 
@@ -69,22 +68,6 @@
     );
     Session.shared().clear();
     window.location.reload();
-  }
-
-  // hostNickname
-
-  setHostNickname (s) {
-    localStorage.setItem("hostNickname", s);
-    return this;
-  }
-
-  hostNickname (s) {
-    return localStorage.getItem("hostNickname");
-  }
-
-  clearHostnickname () {
-    localStorage.removeItem("hostNickname");
-    return this;
   }
 
   // guestNickname

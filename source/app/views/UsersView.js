@@ -180,48 +180,36 @@
       });
   }
 
-
-
   updateUserName() { // update from UI
-    const username = UsernameView.shared().string();
-    if (username.trim() !== "") {
-      if (App.shared().isHost()) {
-        // Set new host nickname and send to all guests
-        const oldNickname = LocalUser.shared().nickname();
-        if (oldNickname === username) {
-          return;
-        }
-        Session.shared().setHostNickname(username);
-        GroupChatView.shared().addChatMessage(
-          "chat",
-          `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
-          LocalUser.shared().nickname(),
-          LocalUser.shared().id()
-        );
+    const newNickname = UsernameView.shared().string().trim();
+    const oldNickname = LocalUser.shared().nickname();
+    if (newNickname === "" || oldNickname === newNickname) {
+      return;
+    }
+    LocalUser.shared().setNickname(newNickname)
 
-        const json = {
-          type: "nicknameUpdate",
-          message: `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
-          nickname: LocalUser.shared().nickname(),
-          oldNickname: oldNickname,
-          newNickname: LocalUser.shared().nickname(),
-          guestUserList: UsersView.shared().calcGuestUserlist(),
-        };
+    if (App.shared().isHost()) {
+      // Set new host nickname and send to all guests
 
-        HostSession.shared().broadcast(json)
+      GroupChatView.shared().addChatMessage(
+        "chat",
+        `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        LocalUser.shared().nickname(),
+        LocalUser.shared().id()
+      );
 
-        /*
-        HostSession.shared()
-          .dataChannels()
-          .forEachKV((guestId, channel) => {
-            channel.conn.send(json);
-          });
-          */
-      } else {
-        // Set new guest nickname and send to host
-        Session.shared().setGuestNickname(username);
-        GuestSession.shared().sendUsername(username);
-      }
+      const json = {
+        type: "nicknameUpdate",
+        message: `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        nickname: LocalUser.shared().nickname(),
+        oldNickname: oldNickname,
+        newNickname: LocalUser.shared().nickname(),
+        guestUserList: HostSession.shared().calcGuestUserlist(),
+      };
+
+      HostSession.shared().broadcast(json)
+    } else {
+      GuestSession.shared().sendUsername(newNickname);
     }
   }
 
