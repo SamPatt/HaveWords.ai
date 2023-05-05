@@ -30,9 +30,10 @@
 
     this.setSessionTypeOptions(
       OptionsView.clone()
-        .setId("sessionTypeOptions")
-        .setTarget(this)
-        .setOptions(sessionOptionsArray)
+      .setId("sessionTypeOptions")
+      .setTarget(this)
+      .setOptions(sessionOptionsArray)
+      .setShouldStore(true).load()
     );
 
     this.setSessionSubtypeOptions(
@@ -86,7 +87,7 @@
 
   // --- aiModelOptions ---
 
-  onSubmit_aiModelOptions(optionsView) {}
+  onSubmit_aiModelOptions() {}
 
   selectedModelNickname() {
     return this.aiModelOptions().selectedValue();
@@ -94,22 +95,23 @@
 
   // --- sessionTypeOptions ---
 
-  onSubmit_sessionTypeOptions(optionsView) {
+  onSubmit_sessionTypeOptions() {
     const subOptionsArray =
       this.sessionTypeOptions().selectedElement()._item.options;
     this.sessionSubtypeOptions().setOptions(subOptionsArray);
-    this.sessionSubtypeOptions().unhide();
   }
 
   // --- sessionSubtypeOptions ---
 
-  onSubmit_onSubmit_sessionSubtypeOptions(optionsView) {}
+  onSubmit_onSubmit_sessionSubtypeOptions() {}
 
 
   displayHostHTMLChanges() {
     document.getElementById("appView").style.display = "block";
     this.unhide()
     document.getElementById("inputSection").style.display = "block"; // host ai chat input
+    document.getElementById("inputSectionRemote").style.display = "none"; // guest ai chat input
+
     /*
     document.getElementById("sessionResetButton").style.display = "block";
     this.sessionStartButton().style.display = "block";
@@ -119,6 +121,7 @@
   displayGuestHTMLChanges() {
     document.getElementById("appView").style.display = "block"; 
     this.hide()
+    document.getElementById("inputSection").style.display = "none"; // guest ai chat input
     document.getElementById("inputSectionRemote").style.display = "block"; // guest ai chat input
     messageInputRemote.disabled = true;
   }
@@ -287,7 +290,6 @@
       message: response,
       nickname: this.selectedModelNickname(),
     });
-
 
     Sounds.shared().playOminousSound();
   }

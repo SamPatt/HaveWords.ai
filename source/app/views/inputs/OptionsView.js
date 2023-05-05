@@ -23,10 +23,12 @@
   }
 
   setSelectedValue (s) {
-    this.element().children.forEach(option => {
+    const children = this.element().children;
+    for (var i = 0; i < children.length; i++) {
+      const option = children[i];
       const match = option.value === s;
       option.selected = match;
-    })
+    }
     return this;
   }
 

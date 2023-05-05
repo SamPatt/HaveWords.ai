@@ -14,13 +14,20 @@
     super.init();
   }
 
+  setShouldStore (aBool) {
+    if (aBool) {
+      throw new Error("unable to store button state");
+    }
+    return this;
+  }
+
   initElement () {
     super.initElement();
     this.listenForClick();
   }
 
   onClick (event) {
-    this.submit()
+    this.submit();
   }
 
 }.initThisClass());

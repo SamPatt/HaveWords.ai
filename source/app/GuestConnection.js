@@ -283,7 +283,7 @@
 
     GroupChatView.shared().addChatMessage(
       "systemMessage",
-      `${closedPeerNickname} has left the session.`,
+      `${this.nickname()} has left the session.`,
       LocalUser.shared().nickname(),
       this.id()
     );

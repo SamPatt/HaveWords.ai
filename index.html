@@ -13,10 +13,13 @@
 
 <body>
 
-    <!--- ai column --->
+    <!-- beign app -->
 
     <div id="appView" style="display:none;">
         <div class="main-wrapper">
+
+            <!--- ai column --->
+
             <div id="userPanel" class="userPanel">
                 <div class="header">
                     <h2>HaveWords.ai</h2>
@@ -24,61 +27,41 @@
 
                 <!--- begin host settings --->
 
-                <div class="header" id="aiSelectionBlock" style="min-height: fit-content; overflow: visible;">
-                    <div class="optionsContainer" style="min-height: fit-content; overflow: visible;">
-                        <div id="aiSelection" class="aiSelection" style="min-height: fit-content; overflow: visible;">
+                <div class="header optionsContainer" id="aiSelectionBlock">
+                    <h2>Welcome to your group AI session!</h2>
+                    <p>As the host, you are sharing your AI with your friends and helping craft their
+                        experience. First, you need to set your API key, then select the details for your
+                        session.</p>
 
 
-                            <h2>Welcome to your group AI session!</h2>
-                            <p>As the host, you are sharing your AI with your friends and helping craft their
-                                experience. First, you need to set your API key, then select the details for your
-                                session.</p>
+                    <div>
+                        <div class="inputLabel">AI Model</div>
+                        <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
+                            <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT 3.5</option>
+                            <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
+                        </select>
+                    </div>
 
+                    <div>
+                        <div class="inputLabel">API Key <a href="https://platform.openai.com/account/api-keys"
+                                style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
+                        <input id="apiKeyText" type="password" placeholder="Enter your API key"
+                            class="underlinedInput optionsInput" style="color: #ccc;">
+                    </div>
 
-                            <div>
-                                <div class="inputLabel">AI Model</div>
-                                <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
-                                    <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT 3.5</option>
-                                    <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
-                                </select>
-                            </div>
+                    <div>
+                        <div class="inputLabel">Session Type</div>
+                        <select id="sessionTypeOptions">
+                        </select>
+                    </div>
 
-                            <div>
-                                <div class="inputLabel">API Key <a
-                                        href="https://platform.openai.com/account/api-keys"
-                                        style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
-                                <input id="apiKeyText" type="password" placeholder="Enter your API key"
-                                    class="underlinedInput optionsInput" style="color: #ccc;">
-                            </div>
+                    <div>
+                        <div class="inputLabel">Session Subtype</div>
+                        <select id="sessionSubtypeOptions">
+                        </select>
+                    </div>
 
-                            <div>
-                                <div class="inputLabel">Session Type</div>
-                                <select id="sessionTypeOptions" style="padding-left: 1em; padding-right: 1em;">
-                                    <option value="Fantasy">Fantasy Roleplaying</option>
-                                    <option value="Trivia">Trivia</option>
-                                    <option value="Explore">Explore</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <div class="inputLabel">Session Subtype</div>
-                                <select id="sessionSubtypeOptions" style="padding-left: 1em; padding-right: 1em;">
-                                    <option value="DnD">Traditional D&D</option>
-                                    <option value="Conan">Conan (Robert E. Howard)</option>
-                                    <option value="HarryPotter">Harry Potter (J.K. Rowling)</option>
-                                    <option value="StudioGhibli">Studio Ghibli</option>
-                                    <option value="Naruto">Naruto</option>
-                                    <option value="NorseMythology">Norse Mythology</option>
-                                    <option value="Greek Mythology">Greek Mythology</option>
-                                    <option value="Dune">Dune (Frank Herbert)</option>
-                                    <option value="Star Wars">Star Wars (George Lucas)</option>
-                                    <option value="Cyberpunk">Cyberpunk (William Gibson)</option>
-                                    <option value="Discworld">Discworld (Terry Pratchett)</option>
-                                    <option value="HitchhikersGuide">Hitchhikers Guide to the Galaxy (Scott Adams)</option>
-                                </select>
-                            </div>
-
-                            <!--
+                    <!--
                             <div class="inputLabel">Session Description</div>
 
                             <div id="sessionTypeDescription">
@@ -86,30 +69,26 @@
                             </div>
                             -->
 
-                            <div>
-                                <div class="inputLabel">Customization</div>
-                                <input id="sessionCustomizationText" class="underlinedInput"
-                                    style="min-width:100%; max-width:100%;" placeholder="Additional instructions for the AI.">
-                            </div>
+                    <div>
+                        <div class="inputLabel">Customization</div>
+                        <input id="sessionCustomizationText" class="underlinedInput"
+                            style="min-width:100%; max-width:100%;" placeholder="Additional instructions for the AI.">
+                    </div>
 
-                            <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
-                                <div class="button" id="sessionStartButton"
-                                    style="margin-top: 0.3em; background-color: transparent;">Start&nbsp;Session</div>
-                            </div>
+                    <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
+                        <div class="button" id="sessionStartButton"
+                            style="margin-top: 0.3em; background-color: transparent;">Start&nbsp;Session</div>
+                    </div>
 
-                            <div style="display: none; padding-top:1em; padding-bottom: 0.5em;">
-                                <div class="button" id="sessionResetButton"
-                                    style="margin-top: 0.3em; background-color: transparent; width: fit-content;">
-                                    Reset&nbsp;Session
-                                </div>
-                            </div>
-
+                    <div style="display: none; padding-top:1em; padding-bottom: 0.5em;">
+                        <div class="button" id="sessionResetButton"
+                            style="margin-top: 0.3em; background-color: transparent; width: fit-content;">
+                            Reset&nbsp;Session
                         </div>
                     </div>
                 </div>
 
                 <!--- end host settings --->
-
 
                 <div class="aiScrollingOutput scrollingOutput">
                     <div class="messages"></div>
@@ -119,12 +98,12 @@
                 <!--- begin host & guest inputs --->
 
                 <div id="inputSection" class="inputSection">
-                        <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Prompt the AI..."
-                            style="display: none;"></textarea>
+                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Prompt the AI..."
+                        style="display: none;"></textarea>
                 </div>
                 <div id="inputSectionRemote" class="inputSection">
-                        <textarea id="messageInputRemote" class="input-wrapper" rows="3" placeholder="The host hasn't given you AI access..."
-                            style="display: none;"></textarea>
+                    <textarea id="messageInputRemote" class="input-wrapper" rows="3"
+                        placeholder="The host hasn't given you AI access..."  style="display: none;"></textarea>
                 </div>
 
                 <!--- end host & guest inputs --->
@@ -134,10 +113,9 @@
             <!--- begin chat column --->
 
             <div id="chat" class="chatPanel" style="position:relative;">
-                <div id="micButton"
-                    style="user-select: none; position: absolute; top: 0; right: 0; height: 1.25em; width: 1.25em; border: 0px solid red; margin-top: 0.8em; margin-right: 0.75em; overflow: hidden;">
-                    <object id="micSvgIcon" type="image/svg+xml" data="resources/icons/mic-slash-fill-svgrepo-com.svg"
-                        style="pointer-events: none; pointer-events: none; width:100%; height: 100%;"></object>
+                <div id="micButton">
+                    <object id="micSvgIcon" type="image/svg+xml"
+                        data="resources/icons/mic-slash-fill-svgrepo-com.svg"></object>
                 </div>
                 <div class="header">
                     <h2>Group Chat</h2>
@@ -156,7 +134,8 @@
                 <!--- chat input --->
 
                 <div id="inputSection" class="inputSection">
-                        <textarea id="chatInput" class="input-wrapper" rows="3" placeholder="Type your message..."></textarea>
+                    <textarea id="chatInput" class="input-wrapper" rows="3"
+                        placeholder="Type your message..."></textarea>
                 </div>
             </div>
 
@@ -168,9 +147,7 @@
             <div class="connectedUsers">
                 <div class="header">
                     <h2>Friends</h2>
-                    <div class="subheader" id="displayInviteText"
-                        style="transition: 0.2s; color: #999; font-size: 0.6em; text-transform: uppercase; user-select: none; margin-top: 2em; padding: 0.5em 1em; opacity: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px;">
-                        copy invite link</div>
+                    <div class="subheader" id="displayInviteText">copy invite link</div>
                     <div id="avatarSection"></div>
                 </div>
                 <ul id="userList"></ul>

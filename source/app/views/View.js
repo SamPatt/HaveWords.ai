@@ -226,7 +226,8 @@
   }
 
   save() {
-    console.log("saving " + this.type() + " " + this.id() + ":" + this.string());
+    const s = this.string();
+    console.log("saving " + this.type() + " id:" + this.id() + " string:'" + this.string() + "'");
     localStorage.setItem(this.id(), this.string());
   }
 
