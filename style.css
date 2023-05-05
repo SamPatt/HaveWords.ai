@@ -1,11 +1,7 @@
-
-
 @font-face {
     font-family: 'Day Roman';
     src: URL('./resources/fonts/day-roman/DAYROM__.ttf') format('truetype');
 }
-
-
 
 body {
     font-family: "Day Roman", Arial, sans-serif;
@@ -17,7 +13,7 @@ body {
     background-color: #222;
     font-size: 16px;
     /* Dark gray background */
-    color:rgb(219, 219, 219);
+    color: rgb(219, 219, 219);
     /* Light gray text */
 }
 
@@ -27,23 +23,15 @@ p {
     padding: 5px;
 }
 
+/*-------------------*/
 
-/*
-h {
-    margin: 3px;
-    padding: 3px;
-}
-*/
-
-  /*-------------------*/
-
-  select {
+select {
     appearance: none;
     font-size: 1em;
     outline: none;
-  }
-  
-  /*
+}
+
+/*
   .select-wrapper {
     position: relative;
   }
@@ -106,9 +94,9 @@ select {
     cursor: pointer;
   }
   */
-  
-  /* Style items (options): */
-  /*
+
+/* Style items (options): */
+/*
   .select-items {
     position: absolute;
     background-color: DodgerBlue;
@@ -118,9 +106,9 @@ select {
     z-index: 99;
   }
   */
-  
-  /* Hide the items when the select box is closed: */
-  /*
+
+/* Hide the items when the select box is closed: */
+/*
   .select-hide {
     display: none;
   }
@@ -130,7 +118,7 @@ select {
   }
   */
 
-  /*-------------------*/
+/*-------------------*/
 
 a {
     color: #FFA500;
@@ -165,7 +153,7 @@ textarea {
     margin: 2px;
 }
 
-textarea:focus { 
+textarea:focus {
     outline: 1px solid rgba(255, 255, 255, 0.5);
 }
 
@@ -174,6 +162,9 @@ textarea:focus {
     display: flex;
     justify-content: flex-end;
     width: 100%;
+
+    box-sizing: border-box;
+    padding-right: 60px;
 }
 
 h2 {
@@ -185,7 +176,7 @@ h2 {
     text-transform: uppercase;
 }
 
-h3 {
+.subheader {
     line-height: 1em;
     font-size: 0.75em;
     font-weight: normal;
@@ -207,13 +198,13 @@ h3 {
 }
 
 .underlinedInput {
-    overflow: visible; 
-    outline:none; 
-    padding-left: 0em; 
-    max-width: fit-content; 
-    border-radius: 0px; 
-    border: none; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+    overflow: visible;
+    outline: none;
+    padding-left: 0em;
+    max-width: fit-content;
+    border-radius: 0px;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     background-color: transparent;
 }
 
@@ -223,52 +214,8 @@ h3 {
     max-width: 100%;
 }
 
-.input-wrapper textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding-right: 60px;
-    /* Adjust this value based on the send button's width */
-}
-
-.input-wrapper button {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: calc(100% - 8px);
-    width: 60px;
-    /* Adjust this value based on the desired width of the send button */
-    background: rgb(73, 73, 73);
-    border: none;
-    cursor: pointer;
-    box-sizing: border-box;
-    margin-bottom: 4px;
-    margin-right: 4px;
-}
-
 .optionsContainer {
     display: flex;
-}
-
-/*
-#aiSelectionBlock {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 1px solid #666;
-    z-index: 1;
-}
-*/
-
-/*
-#aiSelection {
-}
-*/
-
-.adventureOptions {
-    width: 25%;
-    /* Change this value according to your preference */
-    /* Add other styles as needed */
 }
 
 .aiMessage {
@@ -276,12 +223,7 @@ h3 {
     background-color: #333;
 }
 
-/*
-#displayUsername {
-}
-*/
-
-.inputLabel  {
+.inputLabel {
     font-size: 0.8em;
     opacity: 0.6;
     text-transform: uppercase;
@@ -441,7 +383,7 @@ button {
     flex-direction: column;
 }
 
-#hostAIContainer {
+#appView {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -685,20 +627,22 @@ button {
     transform: translateY(-50%);
 }
 
-  
-  .generate-image-prompt-button:hover::before {
+
+.generate-image-prompt-button:hover::before {
     content: attr(data-tooltip);
     position: absolute;
-    top: -30px; /* Adjust this value to position the tooltip vertically */
-    right: 30px; /* Adjust this value to position the tooltip horizontally */
+    top: -30px;
+    /* Adjust this value to position the tooltip vertically */
+    right: 30px;
+    /* Adjust this value to position the tooltip horizontally */
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 12px;
     white-space: nowrap;
-  }
-  
+}
+
 .message-image {
     width: 100%;
     height: auto;
@@ -711,8 +655,8 @@ button {
     justify-content: center;
     align-items: center;
     width: 100%;
-  }
-  
+}
+
 
 .message-content.right {
     align-items: flex-end;
@@ -790,13 +734,6 @@ button {
     cursor: pointer;
 }
 
-#sendButton {
-    display: none;
-}
-
-#sendButtonRemote {
-    display: none;
-}
 
 #chatSendButton {
     display: none;
@@ -805,20 +742,20 @@ button {
 .avatar-image {
     display: inline;
     cursor: pointer;
-    margin-right: 1em; /* Add some space between the avatar and the input field */
-  }
+    margin-right: 1em;
+    /* Add some space between the avatar and the input field */
+}
 
-  .message-avatar {
+.message-avatar {
     width: 1.5em;
     height: 1.5em;
     display: inline-block;
     vertical-align: middle;
     margin-right: 1em;
     border-radius: 50%;
-  }
-  
-  .avatar-and-name-wrapper {
+}
+
+.avatar-and-name-wrapper {
     display: flex;
     align-items: center;
-  }
-  
+}

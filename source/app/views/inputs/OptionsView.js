@@ -14,19 +14,20 @@
 
   initElement() {
     super.initElement();
-    this.listenForChange();
-  }
-
-  listenForChange() {
-    this.element().addEventListener("change", (event) => {
-      this.onChange(event);
-    });
   }
 
   selectedElement() {
     const e = this.element();
     const selectedOptionElement = e.options[e.selectedIndex];
     return selectedOptionElement;
+  }
+
+  setSelectedValue (s) {
+    this.element().children.forEach(option => {
+      const match = option.value === s;
+      option.selected = match;
+    })
+    return this;
   }
 
   selectedValue() {
@@ -38,15 +39,16 @@
   }
 
   setString (aString) {
-    throw new Error("unimplemented")
+    this.setSelectedValue(aString)
     return this
   }
 
   string () {
-    return this.selectedText()
+    return this.selectedValue()
   }
 
   onChange(event) {
+    super.onChange(event);
     this.submit();
   }
 

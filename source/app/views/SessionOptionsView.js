@@ -33,7 +33,6 @@
         .setId("sessionTypeOptions")
         .setTarget(this)
         .setOptions(sessionOptionsArray)
-        .hide()
     );
 
     this.setSessionSubtypeOptions(

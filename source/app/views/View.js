@@ -12,13 +12,16 @@
     this.newSlot("submitFunc", null);
     this.newSlot("target", null);
     this.newSlot("action", null);
+    this.newSlot("shouldStore", false);
   }
 
   init() {
     super.init();
   }
 
-  initElement() {}
+  initElement() {
+    this.listenForChange();
+  }
 
   setId(id) {
     this._id = id;
@@ -28,6 +31,9 @@
     }
     this.setElement(e);
     this.initElement();
+    if (this.shouldStore()) {
+      this.load();
+    }
     return this;
   }
 
@@ -78,6 +84,12 @@
 
   // --- listening for events ---
 
+  listenForChange() {
+    this.element().addEventListener("change", (event) => {
+      this.onChange(event);
+    });
+  }
+
   listenForClick() {
     assert(this.onClick);
     this.element().addEventListener("click", (event) => {
@@ -101,6 +113,13 @@
   }
 
   // --- handling for events ---
+
+  onChange(event) {
+    if (this.shouldStore()) {
+      this.save();
+    }
+    return this;
+  }
 
   onKeyUp(event) {
     const enterKeyCode = 13;
@@ -195,6 +214,20 @@
   unhide() {
     this.element().style.display = "block";
     return this;
+  }
+
+  load () {
+    const s = localStorage.getItem(this.id());
+    if (s !== undefined) {
+      console.log("loading " + this.type() + " " + this.id());
+      this.setString(s);
+    }
+    return this;
+  }
+
+  save() {
+    console.log("saving " + this.type() + " " + this.id() + ":" + this.string());
+    localStorage.setItem(this.id(), this.string());
   }
 
 }).initThisClass();
