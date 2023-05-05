@@ -257,7 +257,7 @@
     AiChatView.shared().addMessage(
       "prompt",
       prompt,
-      Session.shared().guestNickname(),
+      LocalUser.shared().nickname(),
       LocalUser.shared().id()
     );
   }

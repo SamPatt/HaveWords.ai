@@ -122,7 +122,7 @@
           type: "chat",
           id: LocalUser.shared().id(),
           message: message,
-          nickname: Session.shared().guestNickname(),
+          nickname: LocalUser.shared().nickname(),
         });
         this.guestAddLocalChatMessage(message);
       }
@@ -148,7 +148,7 @@
     GroupChatView.shared().addChatMessage(
       "chat",
       message,
-      Session.shared().guestNickname(),
+      LocalUser.shared().nickname(),
       LocalUser.shared().id()
     );
   }
