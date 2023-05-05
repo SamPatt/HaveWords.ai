@@ -18,25 +18,37 @@
     this.setIsDebugging(true);
   }
 
+  setNickname (aString) {
+    this._nickname = aString;
+    this.save();
+    return this;
+  }
+
+  setAvatar (aString) {
+    this._avatar = aString;
+    this.save();
+    return this;
+  }
+
   async asyncSetup () {
     //this.clear()
     // load from localStorage or generate if not found
-    const didLoad = await this.asyncLoad()
+    const didLoad = await this.asyncLoad();
     if (!didLoad) {
-      await this.cryptoId().asyncGenerate()
-      this.save()
+      await this.cryptoId().asyncGenerate();
+      this.save();
     }
 
     if (!this.nickname()) {
-      this.setNickname(Nickname.generateNickname())
+      this.setNickname(Nickname.generateNickname());
     }
 
-    console.log(this.description())
+    console.log(this.description());
     return this
   }
 
   id () {
-    return this.cryptoId().serializedPublicKey()
+    return this.cryptoId().serializedPublicKey();
   }
 
   shortId () {
@@ -58,10 +70,10 @@
   }
 
   async asyncFromJson (json) {
-    this.setNickname(json.nickname)
-    this.setAvatar(json.avatar)
-    await this.cryptoId().asyncFromJson(json.cryptoId)
-    return this
+    this._nickname = json.nickname;
+    this._avatar = json.avatar;
+    await this.cryptoId().asyncFromJson(json.cryptoId);
+    return this;
   }
 
   // --- save /load ---
@@ -71,7 +83,7 @@
   }
 
   save () {
-    const data = JSON.stringify(this.asJson())
+    const data = JSON.stringify(this.asJson());
     localStorage.setItem(this.localStorageKey(), data);
     return this
   }
@@ -79,11 +91,11 @@
   async asyncLoad () {
     const data = localStorage.getItem(this.localStorageKey());
     if (data) {
-      const json = JSON.parse(data)
-      await this.asyncFromJson(json)
-      return true
+      const json = JSON.parse(data);
+      await this.asyncFromJson(json);
+      return true;
     }
-    return false
+    return false;
   }
 
   clear () {

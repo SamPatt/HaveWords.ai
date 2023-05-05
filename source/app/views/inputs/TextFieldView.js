@@ -16,19 +16,18 @@
 
   initElement () {
     super.initElement();
+    this.listenForKeyDown()
     this.listenForKeyUp()
+  }
+
+  onEnterKeyDown (event) {
+    this.submit();
+    event.target.blur();
   }
 
   onKeyUp (event) {
     super.onKeyUp(event);
     this.validate()
-  }
-
-  onEnterKeyUp (event) {
-    if (event.key === "Enter") {
-      this.submit();
-      event.target.blur();
-    }
   }
 
   submit () {

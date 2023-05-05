@@ -11,7 +11,7 @@
 
   init() {
     super.init();
-    this.setId("resetSessionButton");
+    this.setId("sessionResetButton");
     this.setSubmitFunct(() => {
       Session.shared().reset();
     })

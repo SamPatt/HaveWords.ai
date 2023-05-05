@@ -16,6 +16,7 @@
     super.init();
     this.setId("userPanel");
     //this.setUsernameField(UsernameView.shared())
+    
     this.setupMessageInput();
     this.setupMessageInputRemote();
   }
@@ -28,6 +29,9 @@
       });
 
     this.setMessageInput(textArea);
+    if (App.shared().isHost()) {
+      textArea.unhide()
+    }
   }
 
   setupMessageInputRemote() {
@@ -38,6 +42,10 @@
       });
 
     this.setMessageInputRemote(textArea);
+
+    if (!App.shared().isHost()) {
+      textArea.unhide()
+    }
   }
 
   addAIReponse(response) {

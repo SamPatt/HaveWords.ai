@@ -24,7 +24,7 @@
   }
 
   clearConversationHistory() {
-    this.conversationHistory().clear();
+    this.setConversationHistory([]);
     return this;
   }
 
@@ -37,8 +37,7 @@
   }
 
   async asyncFetch(prompt) {
-    const aiModelSelect = document.getElementById("aiModel");
-    const selectedModel = aiModelSelect.value;
+    const selectedModel = SessionOptionsView.shared().aiModel();
 
     this.addToConversation({
       role: "user",

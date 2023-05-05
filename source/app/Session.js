@@ -14,7 +14,7 @@
     this.newSlot("groupSessionDetails", undefined);
     this.newSlot("groupSessionFirstAIResponse", undefined);
 
-    this.newSlot("gameMode", undefined);
+    this.newSlot("gameMode", false);
     this.newSlot("fantasyRoleplay", false);
   }
 
@@ -48,7 +48,6 @@
 
   clear() {
     localStorage.removeItem("sessionData");
-    localStorage.removeItem("hostId");
     this.load();
   }
 
@@ -70,33 +69,7 @@
     window.location.reload();
   }
 
-  // guestNickname
-
-  setGuestNickname (s) {
-    localStorage.setItem("guestNickname", s);
-    return this;
-  }
-
-  guestNickname (s) {
-    return localStorage.getItem("guestNickname");
-  }
-
-  clearGuestNickname () {
-    localStorage.removeItem("guestNickname");
-    return this;
-  }
-
   // Avatars
-
-  /*
-  localUserAvatar() {   // use LocalUser.shared().avatar() instead
-    return localStorage.getItem("avatar") || null;
-  }
-
-  setLocalUserAvatar(avatar) {   // use LocalUser.shared().setAvatar() instead
-    localStorage.setItem("avatar", avatar);
-  }
-  */
 
   getUserAvatar(userId) {
     return localStorage.getItem(`avatar_${userId}`) || null;

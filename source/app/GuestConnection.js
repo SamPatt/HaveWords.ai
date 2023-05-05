@@ -178,13 +178,14 @@
       });
       // Update system message and display it TO DO SEND TO ALL
       AiChatView.shared().addMessage("systemMessage", data.message, data.nickname, data.id);
-      SessionOptionsView.shared().guestChangeSystemMessage(data);
+      HostSession.shared().guestChangeSystemMessage(data);
     } else {
       console.log(
         `Rejected system message update from ${conn.peer} - ${channel.nickname}`
       );
     }
   }
+  
 
   onReceived_chat(data) {
     // Add chat to chat history
@@ -262,7 +263,7 @@
       userId: data.id,
       nickname: data.nickname,
       message: `${data.nickname} has updated their avatar.`,
-      guestUserList: HostSession.shared().updateGuestUserlist(),
+      guestUserList: UsersView.shared().updateGuestUserlist(),
     });
   }
 
@@ -282,7 +283,7 @@
 
     GroupChatView.shared().addChatMessage(
       "systemMessage",
-      `${this.nickname()} has left the session.`,
+      `${closedPeerNickname} has left the session.`,
       LocalUser.shared().nickname(),
       this.id()
     );

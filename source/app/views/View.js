@@ -6,20 +6,21 @@
 */
 
 (class View extends Base {
-  initPrototypeSlots () {
-    this.newSlot("element", null)
-    this.newSlot("id", null)
-    this.newSlot("submitFunc", null)
+  initPrototypeSlots() {
+    this.newSlot("element", null);
+    this.newSlot("id", null);
+    this.newSlot("submitFunc", null);
+    this.newSlot("target", null);
+    this.newSlot("action", null);
   }
 
-  init () {
+  init() {
     super.init();
   }
 
-  initElement () {
-  }
+  initElement() {}
 
-  setId (id) {
+  setId(id) {
     this._id = id;
     const e = document.getElementById(id);
     if (!e) {
@@ -27,107 +28,173 @@
     }
     this.setElement(e);
     this.initElement();
-    return this
+    return this;
   }
 
-  appendChild (e) {
+  appendChild(e) {
     this.element().appendChild(e);
-    return this
+    return this;
   }
 
   // --- content ---
 
-  setInnerHTML (s) {
+  setInnerHTML(s) {
     this.element().innerHTML = s;
-    return this
+    return this;
   }
 
   // --- inner text ---
 
-  setInnerText (s) {
+  setInnerText(s) {
     this.element().innerText = s;
-    return this
+    return this;
   }
 
-  innerText () {
-    return this.element().innerText
+  innerText() {
+    return this.element().innerText;
   }
 
   // --- string value ---
 
-  setString (s) {
+  setString(s) {
     // an abstract way to set the string value of the view content
-    // which allows subclasses to override it 
-    const e = this.element()
+    // which allows subclasses to override it
+    const e = this.element();
     if (e.tagName === "INPUT") {
-       e.value = s
+      e.value = s;
     } else {
-      this.setInnerHTML(s)
+      this.setInnerHTML(s);
     }
-    return this
+    return this;
   }
 
-  string () {
-    const e = this.element()
+  string() {
+    const e = this.element();
     if (e.tagName === "INPUT") {
-      return e.value
+      return e.value;
     }
-    return this.innerText()
+    return this.innerText();
   }
 
   // --- listening for events ---
 
-  listenForClick () {
-    assert(this.onClick)
+  listenForClick() {
+    assert(this.onClick);
     this.element().addEventListener("click", (event) => {
       this.onClick(event);
-    })
-    return this
+    });
+    return this;
   }
 
-  listenForKeyUp () {
-    assert(this.onKeyUp)
+  listenForKeyUp() {
     this.element().addEventListener("keyup", (event) => {
       this.onKeyUp(event);
-    })
-    return this
+    });
+    return this;
+  }
+
+  listenForKeyDown() {
+    this.element().addEventListener("keydown", (event) => {
+      this.onKeyDown(event);
+    });
+    return this;
   }
 
   // --- handling for events ---
 
-  onKeyUp (event) {
+  onKeyUp(event) {
     const enterKeyCode = 13;
     if (event.keyCode === enterKeyCode) {
       if (event.shiftKey) {
-        this.onShiftEnterKeyUp(event)
+        this.onShiftEnterKeyUp(event);
       } else {
-        this.onEnterKeyUp(event)
+        this.onEnterKeyUp(event);
       }
     }
   }
 
-  onShiftEnterKeyUp (event) {
+  onShiftEnterKeyUp(event) {}
+
+  onEnterKeyUp(enter) {}
+
+  // --- key down events ---
+
+  onKeyDown(event) {
+    const enterKeyCode = 13;
+    if (event.keyCode === enterKeyCode) {
+      if (event.shiftKey) {
+        this.onShiftEnterKeyDown(event);
+      } else {
+        this.onEnterKeyDown(event);
+      }
+    }
   }
 
-  onEnterKeyUp (enter) {
-  }
+  onShiftEnterKeyDown(event) {}
+
+  onEnterKeyDown(enter) {}
 
   // --- actions ---
 
-  submit () {
-    const f = this.submitFunc()
+  submit() {
+    // use sumbit function if set
+    const f = this.submitFunc();
     if (f) {
-      f()
+      f();
     } else {
-      console.warn("no submit function set for " + this.description())
+      //console.warn("no submit function set for " + this.description());
     }
-    return this
+
+    // use target & action if set
+    const t = this.target();
+    if (t) {
+      if (this.action()) {
+        const m = t[this.action()];
+        if (m) {
+          m.apply(t, [this]);
+        } else {
+          console.warn(
+            "button target " +
+              t.type() +
+              " does not implement method for action '" +
+              this.action() +
+              "'"
+          );
+        }
+      } else {
+        // use action method name generated from element id
+        const idAction = "onSubmit_" + this.id();
+        const m = t[idAction];
+        if (m) {
+          m.apply(t, [this]);
+        } else {
+          console.warn(
+            "button target " +
+              t.type() +
+              " does not implement method for action '" +
+              idAction +
+              "'"
+          );
+        }
+      }
+      return this;
+    }
   }
 
   // --- helpers ---
 
-  description () {
-    return this.type() + " with id " + this.id()
+  description() {
+    return this.type() + " with id " + this.id();
   }
 
-}.initThisClass());
+  hide() {
+    this.element().style.display = "none";
+    return this;
+  }
+
+  unhide() {
+    this.element().style.display = "block";
+    return this;
+  }
+
+}).initThisClass();

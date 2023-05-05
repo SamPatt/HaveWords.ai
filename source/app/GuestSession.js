@@ -23,7 +23,8 @@
 
   joinSession(inviteId) {
     this.setHostId(inviteId);
-    this.debugLog("joinSession");
+    this.debugLog("joinSession " + inviteId);
+    Session.shared().clear()
     SessionOptionsView.shared().displayGuestHTMLChanges();
     this.connect();
   }
@@ -190,9 +191,9 @@
   }
 
   onReceived_grantAiAccess(data) {
-    const messageInputRemote = document.getElementById("messageInputRemote");
-    messageInputRemote.disabled = false;
-    messageInputRemote.placeholder = "Send a prompt to the AI...";
+    const messageInputRemote = AiChatView.shared().messageInputRemote();
+    messageInputRemote.element().disabled = false;
+    messageInputRemote.element().placeholder = "Send a prompt to the AI...";
     GroupChatView.shared().addChatMessage(
       "chat",
       "You've been granted AI access!",
@@ -202,9 +203,9 @@
   }
 
   onReceived_revokeAiAccess(data) {
-    const messageInputRemote = document.getElementById("messageInputRemote");
-    messageInputRemote.disabled = true;
-    messageInputRemote.placeholder = "No prompt permission";
+    const messageInputRemote = AiChatView.shared().messageInputRemote();
+    messageInputRemote.element().disabled = true;
+    essageInputRemote.element().placeholder = "No prompt permission";
     GroupChatView.shared().addChatMessage(
       "chat",
       "You've lost AI access.",

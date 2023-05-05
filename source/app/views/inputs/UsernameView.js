@@ -13,6 +13,7 @@ class UsernameView extends TextFieldView {
     this.setSubmitFunc(() => {
       UsersView.shared().updateUserName();
     });
+
     // Add a label for the avatar file input
     this.avatarInputLabel = document.createElement("label");
     this.avatarInputLabel.innerHTML = "Upload Avatar";
@@ -24,13 +25,19 @@ class UsernameView extends TextFieldView {
     this.avatarInput.type = "file";
     this.avatarInput.id = "avatarInput";
     this.avatarInput.accept = "image/*";
-    this.avatarInput.addEventListener("change", this.handleAvatarChange.bind(this));
+    this.avatarInput.addEventListener("change", ()=> { this.handleAvatarChange(); });
     this.element().parentNode.appendChild(this.avatarInput);
 
     // Avatar display
     this.avatarDisplay = document.createElement("img");
-    this.avatarDisplay.width = 50;
-    this.avatarDisplay.height = 50;
+    this.avatarDisplay.width = "50px";
+    this.avatarDisplay.height = "50px";
+    /*
+    this.avatarDisplay.width = "1.5em";
+    this.avatarDisplay.height = "1.5em";
+    this.avatarDisplay.borderRadius = "0.75em";
+    */
+    
     this.avatarDisplay.style.display = "none";
     this.avatarDisplay.addEventListener("click", () => {
       this.avatarInput.click();
@@ -38,8 +45,9 @@ class UsernameView extends TextFieldView {
     this.element().parentNode.appendChild(this.avatarDisplay);
 
     // Check if there's already an avatar in localStorage
-    if (localStorage.getItem("avatar")) {
-      this.avatarDisplay.src = localStorage.getItem("avatar");
+    const avatar = LocalUser.shared().avatar()
+    if (avatar) {
+      this.avatarDisplay.src = avatar;
       this.avatarDisplay.style.display = "block";
       this.avatarInputLabel.style.display = "none";
       this.avatarInput.style.display = "none";
