@@ -230,7 +230,7 @@
   sendUsername(username) {
     this.send({
       type: "nicknameUpdate",
-      id: LocalUser.shared().nickName(),
+      id: LocalUser.shared().id(),
       newNickname: username,
     });
   }
@@ -239,7 +239,7 @@
     this.send({
       type: "avatarUpdate",
       id: LocalUser.shared().id(),
-      nickname: Session.shared().guestNickname(),
+      nickname: LocalUser.shared().nickname(),
       avatar: avatar,
     });
   }
@@ -255,7 +255,7 @@
         type: "remotePrompt",
         id: LocalUser.shared().id(),
         message: message,
-        nickname: Session.shared().guestNickname(),
+        nickname: LocalUser.shared().nickname(),
       });
       AiChatView.shared().guestAddLocalPrompt(message);
     }

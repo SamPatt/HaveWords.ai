@@ -226,7 +226,7 @@
       LocalUser.shared().nickname(),
       data.id
     );
-    HostSession.shared().updateUserList();
+    HostSession.shared().updateGuestUserlist();
     // Update nickname in guest user list
 
     // Send updated guest user list to all guests
@@ -245,7 +245,7 @@
     // Update avatar in datachannels
     this.setAvatar(data.avatar);
 
-    HostSession.shared().updateUserList();
+    HostSession.shared().updateGuestUserlist();
     // Update avatar in guest user list
 
     Session.shared().setUserAvatar(data.id, data.avatar);
@@ -262,7 +262,7 @@
       userId: data.id,
       nickname: data.nickname,
       message: `${data.nickname} has updated their avatar.`,
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().updateGuestUserlist(),
     });
   }
 
@@ -282,11 +282,11 @@
 
     GroupChatView.shared().addChatMessage(
       "systemMessage",
-      `${closedPeerNickname} has left the session.`,
+      `${this.nickname()} has left the session.`,
       LocalUser.shared().nickname(),
       this.id()
     );
 
-    HostSession.shared().updateUserList();
+    HostSession.shared().updateGuestUserlist();
   }
 }).initThisClass();
