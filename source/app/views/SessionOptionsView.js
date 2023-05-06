@@ -391,6 +391,7 @@ const sessionOptionsArray = [
     ],
   },
   {
+    value: "trivia",
     label: "Trivia Session",
     description: `<p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>`,
     aiName: "AI Trivia Master",
@@ -442,6 +443,7 @@ const sessionOptionsArray = [
     ],
   },
   {
+    value: "explore",
     label: "Exploration Session",
     description: `Investigate historical events. Interview celebrities. Jump into your favorite sitcom. Travel to fictional universes. Explore the limits of your imagination by telling the AI whatever you want to do.</p>`,
     aiName: "Exploration Narrator",
