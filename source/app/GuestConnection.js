@@ -96,6 +96,7 @@
 
       console.log("Guest connected: " + this.description())
       const newGuestUserList = HostSession.shared().calcGuestUserlist();
+      const guestAvatars = HostSession.shared().calcGuestAvatars();
       HostSession.shared().updateGuestUserlist();
 
       this.send({
@@ -103,7 +104,7 @@
         history: Session.shared().history(),
         nickname: LocalUser.shared().nickname(),
         guestUserList: newGuestUserList,
-        avatar: LocalUser.shared().avatar(),
+        avatars: guestAvatars,
         id: LocalUser.shared().id()
       });
 
@@ -263,7 +264,7 @@
       userId: data.id,
       nickname: data.nickname,
       message: `${data.nickname} has updated their avatar.`,
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().updateGuestUserlist(),
     });
   }
 

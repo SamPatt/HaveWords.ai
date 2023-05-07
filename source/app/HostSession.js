@@ -129,6 +129,20 @@
   }
   */
 
+  calcGuestAvatars() {
+    let avatars = {};
+  
+    avatars[LocalUser.shared().id()] = LocalUser.shared().avatar();
+  
+    PeerServer.shared()
+      .peerConnections()
+      .forEachKV((guestId, peerConnection) => {
+        avatars[guestId] = Session.shared().getUserAvatar(guestId);
+      });
+  
+    return avatars;
+  }  
+
   calcGuestUserlist() {
     let userList = [];
 

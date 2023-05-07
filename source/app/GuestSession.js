@@ -96,22 +96,24 @@
 
   onReceived_sessionHistory(data) {
     console.log("Received session history:", data.history);
-
-    // Set host avatar
-    Session.shared().setUserAvatar(data.id, data.avatar);
-
+  
+    // Set user avatars
+    for (const [userId, avatar] of Object.entries(data.avatars)) {
+      Session.shared().setUserAvatar(userId, avatar);
+    }
+  
     // Update guest list
     console.log("Received guestUserList:", data.guestUserList);
-
+  
     UsersView.shared().setGuestUserList(
       data.guestUserList.filter(
         (guest) => guest.id !== LocalUser.shared().id()
       )
     );
-
+  
     UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
     SessionOptionsView.shared().guestDisplayHostSessionHistory(data.history);
-  }
+  }  
 
   onReceived_nicknameUpdate(data) {
     GroupChatView.shared().addChatMessage(
