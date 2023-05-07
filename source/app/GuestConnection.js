@@ -264,7 +264,6 @@
   }
 
   onClose() {
-    debugger;
     super.onClose();
 
     console.log("Guest disconnected:" + this.id());

@@ -123,18 +123,6 @@
       );
   }
 
-  /*
-  these get handled by GuestConnection instances
-
-  onOpenPeerConnection (conn) {
-    this.updateGuestUserlist()
-  }
-  
-  onClosePeerConnection (conn) {
-    this.updateGuestUserlist()
-  }
-  */
-
   calcGuestAvatars() {
     let avatars = {};
   

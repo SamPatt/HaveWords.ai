@@ -64,6 +64,18 @@
       return undefined
     }
 
+    if (json.error) {
+      const errorMessage = this.type() + " asyncFetch() ERROR: " + json.error.message;
+      console.warn(errorMessage);
+      AiChatView.shared().addMessage(
+        "systemMessage",
+        errorMessage,
+        "Host",
+        LocalUser.shared().id()
+      );
+      return undefined
+    }
+
     const aiResponse = json.choices[0].message.content;
 
     // Add the assistant's response to the conversation history
