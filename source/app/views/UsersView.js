@@ -195,7 +195,7 @@
 
       GroupChatView.shared().addChatMessage(
         "chat",
-        `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        `${oldNickname} is now <b>${LocalUser.shared().nickname()}</b>.`,
         LocalUser.shared().nickname(),
         LocalUser.shared().id()
       );
@@ -203,7 +203,7 @@
       const json = {
         type: "nicknameUpdate",
         userId: LocalUser.shared().id(),
-        message: `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        message: `${oldNickname} is now <b>${LocalUser.shared().nickname()}</b>.`,
         nickname: LocalUser.shared().nickname(),
         oldNickname: oldNickname,
         newNickname: LocalUser.shared().nickname(),

@@ -233,7 +233,7 @@
     // Send updated guest user list to all guests
     HostSession.shared().broadcast({
       type: "nicknameUpdate",
-      message: `${oldNickname} is now ${data.newNickname}.`,
+      message: `${oldNickname} is now <b>${data.newNickname}</b>.`,
       nickname: LocalUser.shared().nickname(),
       newNickname: data.newNickname,
       userId: data.id,
