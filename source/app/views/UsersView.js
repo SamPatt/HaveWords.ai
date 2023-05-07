@@ -15,8 +15,8 @@
   }
 
   setGuestUserList(aList) {
-    const hostId = LocalUser.shared().id();
-    this._guestUserList = aList.filter((guest) => guest.id !== hostId);
+    const ownId = LocalUser.shared().id();
+    this._guestUserList = aList.filter((guest) => guest.id !== ownId);
   
     if (App.shared().isHost()) {
       this.displayHostUserList();

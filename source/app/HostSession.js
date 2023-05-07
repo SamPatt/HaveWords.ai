@@ -77,7 +77,7 @@
       nickname: LocalUser.shared().nickname(),
       userId: LocalUser.shared().id(),
       avatar: newAvatar,
-      guestUserList: this.updateGuestUserlist(),
+      guestUserList: this.calcGuestUserlist(),
     };
 
     this.broadcast(json);

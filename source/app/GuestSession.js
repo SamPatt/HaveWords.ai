@@ -129,6 +129,7 @@
   
     // Refresh the guest user list display
     UsersView.shared().displayGuestUserList();
+    console.log("Received nickname-update" + data);
   }  
 
   onReceived_avatarUpdate(data) {
@@ -181,8 +182,9 @@
     if (index !== -1) {
       newGuestUserList.splice(index, 1);
     }
-    HostSession.shared().setGuestUserList(newGuestUserList);
+    UsersView.shared().setGuestUserList(newGuestUserList);
     UsersView.shared().displayGuestUserList();
+    console.log("Received guest-join");
   }
 
   onReceived_guestLeave(data) {
@@ -197,6 +199,7 @@
     }
     HostSession.shared().setGuestUserList(newGuestUserList);
     UsersView.shared().displayGuestUserList();
+    console.log("Received guest-leave");
   }
 
   onReceived_grantAiAccess(data) {

@@ -230,26 +230,21 @@
     );
     HostSession.shared().updateGuestUserlist();
     // Update nickname in guest user list
-
     // Send updated guest user list to all guests
     HostSession.shared().broadcast({
       type: "nicknameUpdate",
       message: `${oldNickname} is now ${data.newNickname}.`,
       nickname: LocalUser.shared().nickname(),
-      oldNickname: oldNickname,
       newNickname: data.newNickname,
       userId: data.id,
-      guestUserList: HostSession.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().calcGuestUserlist(),
     });
   }
 
   onReceived_avatarUpdate(data) {
     // Update avatar in datachannels
     this.setAvatar(data.avatar);
-
-    HostSession.shared().updateGuestUserlist();
     // Update avatar in guest user list
-
     Session.shared().setUserAvatar(data.id, data.avatar);
     GroupChatView.shared().addChatMessage(
       "systemMessage",
@@ -264,7 +259,7 @@
       userId: data.id,
       nickname: data.nickname,
       message: `${data.nickname} has updated their avatar.`,
-      guestUserList: HostSession.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().calcGuestUserlist(),
     });
   }
 
