@@ -79,9 +79,11 @@
 
   // --- setup ---
 
-  setupSessionUI() {
+  appDidInit() {
     if (App.shared().isHost()) {
       this.unhide();
+    } else {
+      this.hide();
     }
   }
 
@@ -125,7 +127,6 @@
     document.getElementById("inputSectionRemote").style.display = "block"; // guest ai chat input
     messageInputRemote.disabled = true;
   }
-
 
   /*
   // You can call this function when the host starts a new session
@@ -216,20 +217,28 @@
     return this.getCurrentUsernames().join(",");
   }
 
+  replacedConfigString (s) {
+    s = s.replaceAll("[sessionType]", this.sessionType());
+    s = s.replaceAll("[sessionSubtype]", this.sessionSubtype());
+    s = s.replaceAll("[playerNames]", this.playerNames());
+    s = s.replaceAll(
+      "[customization]",
+      this.sessionCustomizationText().string()
+    );
+    return s
+  }
+
   prompt() {
+    const promptSuffix = this.sessionTypeOptions().selectedElement()._item.promptSuffix;
     const typePrompt = this.sessionTypeOptions().selectedElement()._item.prompt;
     const subtypePrompt =
       this.sessionSubtypeOptions().selectedElement()._item.prompt;
     let prompt = subtypePrompt ? subtypePrompt : typePrompt;
 
-    prompt = prompt.replaceAll("[sessionType]", this.sessionType());
-    prompt = prompt.replaceAll("[sessionSubtype]", this.sessionSubtype());
-    prompt = prompt.replaceAll("[playerNames]", this.playerNames());
-    prompt = prompt.replaceAll(
-      "[customization]",
-      this.sessionCustomizationText().string()
-    );
-    return prompt;
+    if (promptSuffix) {
+      prompt += promptSuffix;
+    }
+    return this.replacedConfigString(prompt);
   }
 
   message() {
@@ -237,14 +246,8 @@
       this.sessionTypeOptions().selectedElement()._item.message;
     const subtypeMessage =
       this.sessionSubtypeOptions().selectedElement()._item.message;
-    let message = subtypeMessage ? subtypeMessage : typeMessage;
-    message = message.replaceAll("[sessionType]", this.sessionType());
-    message = message.replaceAll("[sessionSubtype]", this.sessionSubtype());
-    message = message.replaceAll(
-      "[playerNames]",
-      this.getCurrentUsernames().join(",")
-    );
-    return message;
+    const message = subtypeMessage ? subtypeMessage : typeMessage;
+    return this.replacedConfigString(message);
   }
 
   // --- start session ---
@@ -326,67 +329,46 @@ const sessionOptionsArray = [
     chatName: "Player's Chat",
     usersName: "Players",
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
+    promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\n
+    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\n
+    Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
+    You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\n
+    Dialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. 
+    Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
+    Remember there are multiple players, and dialogue is usually happening within a group.\n\n
+    Plot: Describe only the next step of the adventure based on the player input. 
+    Don't take any actions on the player's behalf, always let the player make the decisions. 
+    Remember there are multiple players, and descriptions of scenes should include more than just one player. 
+    The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
+    The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\n
+    Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\n
+    The player names are: [playerNames].`,
     options: [
       {
         label: "Traditional roleplaying",
         value: "traditional fantasy",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a traditional campaign of Dungeons and Dragons. 
-        Please generate stats and levels for our characters and handle all dice rolls and other mechanics yourself. 
-        The players are: [playerNames].`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a traditional campaign of Dungeons and Dragons.`
       },
       {
         label: "Harry Potter",
         value: "Harry Potter",
-        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. 
-        You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\n
-        Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\n
-        Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
-        You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\n
-        Dialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. 
-        Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
-        Remember there are multiple players, and dialogue is usually happening within a group.\n\n
-        Plot: Describe only the next step of the adventure based on the player input. 
-        Don't take any actions on the player's behalf, always let the player make the decisions. 
-        Remember there are multiple players, and descriptions of scenes should include more than just one player. 
-        The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
-        The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\n
-        Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\n
-        The player names are: [playerNames].`,
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
       },
       {
         label: "Studio Ghibli",
         value: "Studio Ghibli",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
-        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others. 
-        You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\n
-        Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\n
-        Messages: Each player will respond with their own name at the beginning of the message for you to identify them. You can ask players what actions they will take. 
-        Keep track of them individually but try not to split the party.\n\n
-        Dialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. 
-        Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
-        Remember there are multiple players, and dialogue is usually happening within a group.\n\n
-        Plot: Describe only the next step of the adventure based on the player input. Don't take any actions on the player's behalf, always let the player make the decisions. 
-        Remember there are multiple players, and descriptions of scenes should include more than just one player. 
-        The story should only progress when the player has made a decision about how to move forward. 
-        Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
-        The player should sometimes fail, especially if their request is unrealistic given the setting and world. 
-        The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\n
-        Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\n
-        The player names are: [playerNames].`,
+        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`
       },
       {
         value: "Conan",
         label: "Conan the Barbarian",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe. 
-        Please generate stats and levels for our characters and handle all dice rolls and other mechanics yourself. 
-        The players are: [playerNames].`,
+        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.`
       },
       {
         label: "Norse Mythology",
         value: "Norse",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe. 
-        Please generate stats and levels for our characters and handle all dice rolls and other mechanics yourself. 
-        The players are: [playerNames].`,
+        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`
       },
     ],
   },

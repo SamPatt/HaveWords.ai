@@ -104,6 +104,7 @@
   // --- shutdown ---
 
   shutdown() {
+    console.log(this.type() + " " + this.shortId() + " shutdown");
     this.server().removePeerConnection(this);
     this.setConn(null);
   }

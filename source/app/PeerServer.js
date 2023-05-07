@@ -61,6 +61,12 @@
     peer.on("connection", (conn) => this.onConnection(conn) )
     return this;
   }
+  
+  addPeerConnection(pc) {
+    pc.setServer(this)
+    this.peerConnections().set(pc.id(), pc);
+    return this;
+  }
 
   onConnection (conn) {
     if (!this.allowsIncomingConnections()) {
@@ -68,10 +74,8 @@
       return this
     }
 
-    const pc = this.peerConnectionClass().clone()
-    pc.setServer(this)
-    pc.setConn(conn);
-    this.peerConnections().set(conn.peer, pc);
+    const pc = this.peerConnectionClass().clone().setConn(conn);
+    this.addPeerConnection(pc);
     /*
     // better to use onOpenPeerConnection as we can send messages after open
     if (this.delegate().onPeerConnection) {
@@ -154,8 +158,9 @@
 
   connectToPeerId(peerId) {
     const conn = this.peer().connect(peerId);
-    const peerConnection = PeerConnection.clone().setConn(conn)
-    return peerConnection
+    const pc = PeerConnection.clone().setConn(conn)
+    this.addPeerConnection(pc);
+    return pc
   }
 
   broadcast(json) {
@@ -174,6 +179,13 @@
 
   peerConnectionForId (id) {
     return this.peerConnections().get(id)
+  }
+
+  shutdown () {
+    this.peerConnections().valuesArray().forEach((conn) => {
+      conn.shutdown();
+    });
+    return this;
   }
 
 }.initThisClass());

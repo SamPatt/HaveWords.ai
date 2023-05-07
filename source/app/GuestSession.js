@@ -19,6 +19,7 @@
     this.setIsDebugging(true);
   }
 
+
   // --- connect ---
 
   joinSession(inviteId) {
@@ -142,19 +143,6 @@
   }
 
   onReceived_gameLaunch(data) {
-    Session.shared().setGameMode(true);
-    if (data.sessionType === "fantasyRoleplay") {
-      SessionOptionsView.shared().startRoleplaySession();
-      console.log("Guest sees Fantasy Roleplay Session Started");
-    } else if (data.sessionType === "trivia") {
-      SessionOptionsView.shared().startTriviaSession();
-      console.log("Guest sees Trivia Session Started");
-    } else if (data.sessionType === "explore") {
-      SessionOptionsView.shared().startExploreSession();
-      console.log("Guest sees Explore Session Started");
-    } else {
-      console.log("Error: Invalid session type");
-    }
     AiChatView.shared().addMessage("prompt", data.message, data.nickname, data.id);
   }
 

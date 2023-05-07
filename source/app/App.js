@@ -17,6 +17,7 @@
 
   init() {
     super.init();
+    this.listenForWindowClose()
     this.setIsDebugging(true);
   }
 
@@ -30,12 +31,17 @@
 
     PeerServer.shared().setDelegate(this).setup();
 
-    SessionOptionsView.shared().setupSessionUI();
+    SessionOptionsView.shared().appDidInit();
+    this.unhide();
 
     OpenAiChat.shared().addToConversation({
       role: "system",
       content: "You are a helpful assistant.",
     });
+  }
+
+  unhide () {
+    document.getElementById("appView").style.display = "block"; 
   }
 
   onPeerServerOpen() {
@@ -78,4 +84,15 @@
   isHost() {
     return !this.inviteId();
   }
+
+  // --- handle window close ---
+
+  listenForWindowClose () {
+    window.addEventListener('beforeunload',  (event) => { this.onWindowClose() });
+  }
+
+  onWindowClose () {
+    PeerServer.shared().shutdown()
+  }
+
 }).initThisClass();
