@@ -258,7 +258,7 @@
       avatar: data.avatar,
       userId: data.id,
       nickname: data.nickname,
-      message: `${data.nickname} has updated their avatar.`,
+      message: `${data.nickname} updated their avatar.`,
       guestUserList: HostSession.shared().calcGuestUserlist(),
     });
   }

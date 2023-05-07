@@ -202,6 +202,7 @@
 
       const json = {
         type: "nicknameUpdate",
+        userId: LocalUser.shared().id(),
         message: `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
         nickname: LocalUser.shared().nickname(),
         oldNickname: oldNickname,
@@ -212,12 +213,6 @@
       HostSession.shared().broadcast(json)
     } else {
       GuestSession.shared().sendUsername(newNickname);
-      GroupChatView.shared().addChatMessage(
-        "chat",
-        `You are now ${LocalUser.shared().nickname()}.`,
-        LocalUser.shared().nickname(),
-        LocalUser.shared().id()
-      );
     }
   }
 
