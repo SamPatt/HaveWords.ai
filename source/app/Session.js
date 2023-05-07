@@ -79,6 +79,15 @@
     localStorage.setItem(`avatar_${userId}`, avatar);
   }
 
+  clearAllAvatars() {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key.startsWith('avatar_')) {
+        localStorage.removeItem(key);
+      }
+    }
+  }
+
 }.initThisClass());
 
 
