@@ -50,14 +50,13 @@ async function triggerImageBot(response) {
   const data = await AIresponse.json();
   const imageDescription = data.choices[0].message.content;
   const openAiImageGenInstance = new OpenAiImageGen();
+  console.log(`Image description: ${imageDescription}`);
   const imageURL = await openAiImageGenInstance.asyncFetch(
     imageDescription,
-    Session.shared().groupSessionType(),
-    Session.shared().groupSessionDetails()
   );
   HostSession.shared().broadcastImage(imageURL);
   AiChatView.shared().addImage(imageURL);
-  console.log(`Image description: ${imageDescription}`);
+  
 }
 
 /* -------------------------------------------------------- */

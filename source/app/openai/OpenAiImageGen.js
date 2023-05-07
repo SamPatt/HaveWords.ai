@@ -21,9 +21,11 @@
 
   // Calls the OpenAI Image API and returns the image URL
   // fetchOpenAIImageResponse
-  async asyncFetch(prompt, sessionType, sessionDetails) {
+  async asyncFetch(prompt) {
     // Changes prompt based on session type
     let imagePrompt;
+    const sessionType = SessionOptionsView.shared().sessionType();
+    const sessionDetails = SessionOptionsView.shared().sessionSubtype();
     if (sessionType === "fantasyRoleplay") {
       // Change prompt based on session details
       if (sessionDetails === "Studio Ghibli") {

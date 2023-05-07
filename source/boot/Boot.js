@@ -100,3 +100,7 @@ class Boot extends Object {
 document.addEventListener("DOMContentLoaded", () => {
   new Boot().start()
 })
+
+window.addEventListener('beforeunload', () => {
+  Session.shared().clearAllAvatars();
+});

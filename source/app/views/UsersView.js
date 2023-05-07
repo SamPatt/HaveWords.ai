@@ -14,17 +14,18 @@
     this.newSlot("guestUserList", null)
   }
 
-  setGuestUserList (aList) {
-    this._guestUserList = aList
-
+  setGuestUserList(aList) {
+    const ownId = LocalUser.shared().id();
+    this._guestUserList = aList.filter((guest) => guest.id !== ownId);
+  
     if (App.shared().isHost()) {
-    this.displayHostUserList()
+      this.displayHostUserList();
     } else {
-      this.displayGuestUserList()
+      this.displayGuestUserList();
     }
-
-    return this
-  }
+  
+    return this;
+  }  
 
   displayHostUserList() {
     const userList = document.getElementById("userList");
@@ -194,14 +195,15 @@
 
       GroupChatView.shared().addChatMessage(
         "chat",
-        `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        `${oldNickname} is now <b>${LocalUser.shared().nickname()}</b>.`,
         LocalUser.shared().nickname(),
         LocalUser.shared().id()
       );
 
       const json = {
         type: "nicknameUpdate",
-        message: `${oldNickname} is now ${LocalUser.shared().nickname()}.`,
+        userId: LocalUser.shared().id(),
+        message: `${oldNickname} is now <b>${LocalUser.shared().nickname()}</b>.`,
         nickname: LocalUser.shared().nickname(),
         oldNickname: oldNickname,
         newNickname: LocalUser.shared().nickname(),

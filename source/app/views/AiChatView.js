@@ -66,6 +66,8 @@
     let avatar;
     if (userId === LocalUser.shared().id()) {
       avatar = LocalUser.shared().avatar();
+    } else if (type === "aiResponse") {
+      avatar = 'resources/icons/AI-avatar.png';
     } else {
       avatar = Session.shared().getUserAvatar(userId);
     }

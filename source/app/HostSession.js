@@ -71,13 +71,19 @@
   }
 
   updateHostAvatar(newAvatar) {
+    GroupChatView.shared().addChatMessage(
+      "chat",
+      `You updated your avatar.`,
+      LocalUser.shared().nickname(),
+      LocalUser.shared().id()
+    );
     const json = {
       type: "avatarUpdate",
       message: `Host updated their avatar.`,
       nickname: LocalUser.shared().nickname(),
       userId: LocalUser.shared().id(),
       avatar: newAvatar,
-      guestUserList: this.updateGuestUserlist(),
+      guestUserList: this.calcGuestUserlist(),
     };
 
     this.broadcast(json);
@@ -128,6 +134,27 @@
     this.updateGuestUserlist()
   }
   */
+
+  calcGuestAvatars() {
+    let avatars = {};
+  
+    // Only add the local user's avatar if it exists
+    if (LocalUser.shared().avatar()) {
+      avatars[LocalUser.shared().id()] = LocalUser.shared().avatar();
+    }
+  
+    PeerServer.shared()
+      .peerConnections()
+      .forEachKV((guestId, peerConnection) => {
+        const guestAvatar = Session.shared().getUserAvatar(guestId);
+        // Only add the guest's avatar if it exists
+        if (guestAvatar) {
+          avatars[guestId] = guestAvatar;
+        }
+      });
+  
+    return avatars;
+  }  
 
   calcGuestUserlist() {
     let userList = [];

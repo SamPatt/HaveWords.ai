@@ -96,6 +96,7 @@
 
       console.log("Guest connected: " + this.description())
       const newGuestUserList = HostSession.shared().calcGuestUserlist();
+      const guestAvatars = HostSession.shared().calcGuestAvatars();
       HostSession.shared().updateGuestUserlist();
 
       this.send({
@@ -103,7 +104,7 @@
         history: Session.shared().history(),
         nickname: LocalUser.shared().nickname(),
         guestUserList: newGuestUserList,
-        avatar: LocalUser.shared().avatar(),
+        avatars: guestAvatars,
         id: LocalUser.shared().id()
       });
 
@@ -219,7 +220,7 @@
   onReceived_nicknameUpdate(data) {
     // Update nickname in datachannels
     const oldNickname = this.nickname();
-    this.setNickname(data.newNickname);
+    this.setNickName(data.newNickname);
 
     GroupChatView.shared().addChatMessage(
       "systemMessage",
@@ -229,26 +230,21 @@
     );
     HostSession.shared().updateGuestUserlist();
     // Update nickname in guest user list
-
     // Send updated guest user list to all guests
     HostSession.shared().broadcast({
       type: "nicknameUpdate",
-      message: `${oldNickname} is now ${data.newNickname}.`,
+      message: `${oldNickname} is now <b>${data.newNickname}</b>.`,
       nickname: LocalUser.shared().nickname(),
-      oldNickname: oldNickname,
       newNickname: data.newNickname,
       userId: data.id,
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().calcGuestUserlist(),
     });
   }
 
   onReceived_avatarUpdate(data) {
     // Update avatar in datachannels
     this.setAvatar(data.avatar);
-
-    HostSession.shared().updateGuestUserlist();
     // Update avatar in guest user list
-
     Session.shared().setUserAvatar(data.id, data.avatar);
     GroupChatView.shared().addChatMessage(
       "systemMessage",
@@ -262,8 +258,8 @@
       avatar: data.avatar,
       userId: data.id,
       nickname: data.nickname,
-      message: `${data.nickname} has updated their avatar.`,
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      message: `${data.nickname} updated their avatar.`,
+      guestUserList: HostSession.shared().calcGuestUserlist(),
     });
   }
 

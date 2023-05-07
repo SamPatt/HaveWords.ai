@@ -373,6 +373,7 @@ const sessionOptionsArray = [
     ],
   },
   {
+    value: "trivia",
     label: "Trivia Session",
     description: `<p>Test your knowledge in a group trivia game. The AI will generate trivia questions for you and your friends to answer, keeping score and providing a fun and engaging experience.</p>`,
     aiName: "AI Trivia Master",
@@ -384,59 +385,68 @@ const sessionOptionsArray = [
       {
         label: "Variety",
         value: "Variety",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Sports",
         value: "Sports",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Pop Culture",
         value: "Pop Culture",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "History",
         value: "History",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Science",
         value: "Science",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1970s",
         value: "1970s",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1980s",
         value: "1980s",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1990s",
         value: "1990s",
+        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
     ],
   },
   {
+    value: "explore",
     label: "Exploration Session",
     description: `Investigate historical events. Interview celebrities. Jump into your favorite sitcom. Travel to fictional universes. Explore the limits of your imagination by telling the AI whatever you want to do.</p>`,
     aiName: "Exploration Narrator",
     chatName: "Player's Chat",
     usersName: "Players",
     gameMode: false,
-    prompt: `You are now the AI Guide for an exploration session where users can investigate historical events, interview celebrities, explore fictional worlds, and more. 
-    he player names are: [playerNames].
-    Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: [customization]. 
-    Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. 
-    Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. 
-    Do not write dialogue for the users, only for the characters in the scene. 
-    Let the users speak for themselves. 
-    Emphasize aspects of the settings and characters that are relevant to the exploration. 
-    Respond to the users' actions and questions, and guide them through the exploration.`,
     message:
       "The host started a new exploration session! Please wait while the AI Guide prepares to start the session...",
     options: [
       {
-        label: "Other",
-        value: "Other",
+        label: "Write your own",
+        value: "Write your own",
+        prompt: `You are now the AI Guide for an exploration session where players can investigate historical events, interview celebrities, explore fictional worlds, and more. 
+        The players will start their messages with their names.
+        Start the session by welcoming the players and create a short description where the players can start an adventure based on the following prompt: [customization]. 
+        Use HTML formatting in your responses to add bold, italics, headings, line breaks, or other methods to improve the look and clarity of your responses, when necessary. 
+        Be creative and informative in your responses, and make the exploration engaging and enjoyable for the players. 
+        Do not write dialogue for the users, only for the characters in the scene. 
+        Let the users speak for themselves. 
+        Emphasize aspects of the settings and characters that are relevant to the exploration. 
+        Respond to the players' actions and questions, and guide them through the exploration.`,
       },
     ],
   },

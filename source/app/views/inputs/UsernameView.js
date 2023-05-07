@@ -25,7 +25,7 @@ class UsernameView extends TextFieldView {
     this.avatarInput.type = "file";
     this.avatarInput.id = "avatarInput";
     this.avatarInput.accept = "image/*";
-    this.avatarInput.addEventListener("change", ()=> { this.handleAvatarChange(); });
+    this.avatarInput.addEventListener("change", (event) => { this.handleAvatarChange(event); });
     this.element().parentNode.appendChild(this.avatarInput);
 
     // Avatar display
