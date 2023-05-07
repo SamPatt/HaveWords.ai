@@ -14,17 +14,18 @@
     this.newSlot("guestUserList", null)
   }
 
-  setGuestUserList (aList) {
-    this._guestUserList = aList
-
+  setGuestUserList(aList) {
+    const hostId = LocalUser.shared().id();
+    this._guestUserList = aList.filter((guest) => guest.id !== hostId);
+  
     if (App.shared().isHost()) {
-    this.displayHostUserList()
+      this.displayHostUserList();
     } else {
-      this.displayGuestUserList()
+      this.displayGuestUserList();
     }
-
-    return this
-  }
+  
+    return this;
+  }  
 
   displayHostUserList() {
     const userList = document.getElementById("userList");
@@ -211,6 +212,12 @@
       HostSession.shared().broadcast(json)
     } else {
       GuestSession.shared().sendUsername(newNickname);
+      GroupChatView.shared().addChatMessage(
+        "chat",
+        `You are now ${LocalUser.shared().nickname()}.`,
+        LocalUser.shared().nickname(),
+        LocalUser.shared().id()
+      );
     }
   }
 

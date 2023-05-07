@@ -116,13 +116,20 @@
   }  
 
   onReceived_nicknameUpdate(data) {
+    // Update the chat message
     GroupChatView.shared().addChatMessage(
       "chat",
       data.message,
       data.newNickname,
       data.userId
     );
-  }
+  
+    // Update the guest user list from the received data
+    UsersView.shared().setGuestUserList(data.guestUserList);
+  
+    // Refresh the guest user list display
+    UsersView.shared().displayGuestUserList();
+  }  
 
   onReceived_avatarUpdate(data) {
     Session.shared().setUserAvatar(data.userId, data.avatar);
