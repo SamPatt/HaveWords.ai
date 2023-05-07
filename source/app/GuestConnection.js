@@ -220,7 +220,7 @@
   onReceived_nicknameUpdate(data) {
     // Update nickname in datachannels
     const oldNickname = this.nickname();
-    this.setNickname(data.newNickname);
+    this.setNickName(data.newNickname);
 
     GroupChatView.shared().addChatMessage(
       "systemMessage",
@@ -239,7 +239,7 @@
       oldNickname: oldNickname,
       newNickname: data.newNickname,
       userId: data.id,
-      guestUserList: UsersView.shared().updateGuestUserlist(),
+      guestUserList: HostSession.shared().updateGuestUserlist(),
     });
   }
 

@@ -132,12 +132,19 @@
   calcGuestAvatars() {
     let avatars = {};
   
-    avatars[LocalUser.shared().id()] = LocalUser.shared().avatar();
+    // Only add the local user's avatar if it exists
+    if (LocalUser.shared().avatar()) {
+      avatars[LocalUser.shared().id()] = LocalUser.shared().avatar();
+    }
   
     PeerServer.shared()
       .peerConnections()
       .forEachKV((guestId, peerConnection) => {
-        avatars[guestId] = Session.shared().getUserAvatar(guestId);
+        const guestAvatar = Session.shared().getUserAvatar(guestId);
+        // Only add the guest's avatar if it exists
+        if (guestAvatar) {
+          avatars[guestId] = guestAvatar;
+        }
       });
   
     return avatars;
