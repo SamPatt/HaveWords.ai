@@ -55,10 +55,17 @@
     );
   }
 
+  loadingAnimation () {
+    return document.getElementById("loadingHost");
+  }
+
   setShowLoading (aBool) {
-    const loadingAnimation = document.getElementById("loadingHost");
-    loadingAnimation.style.display = aBool ? "inline" : "none";
+    this.loadingAnimation().style.display = aBool ? "inline" : "none";
     return this;
+  }
+
+  isShowingLoading () {
+    return this.loadingAnimation().style.display !== "none";
   }
 
   // ========================================================
@@ -139,7 +146,9 @@
 
   addMessageElement(element) {
     this.scrollViewContentElement().appendChild(element);
-    this.scrollToBottom()
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 10);
   }
 
   scrollToBottom () {

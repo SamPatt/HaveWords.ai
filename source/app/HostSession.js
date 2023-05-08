@@ -10,6 +10,7 @@
 (class HostSession extends Base {
   initPrototypeSlots() {
     this.newSlot("bannedGuests", null);
+    this.newSlot("hasSetup", false);
     //this.newSlot("conn", null);
   }
 
@@ -67,6 +68,12 @@
   }
 
   setupHostSession() {
+    if (!this.hasSetup()) {
+      // might get called again if we reconnect to PeerServer
+      return
+    }
+    this.setHasSetup(true);
+
     assert(App.shared().isHost())
 
     console.log("Setting up host session");

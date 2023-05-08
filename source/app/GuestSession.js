@@ -3,7 +3,8 @@
 /* 
     GuestSession
 
-    manages guest connection to host
+    Manages a guest's session and connection to it's host.
+    
 
 */
 

@@ -317,8 +317,11 @@ button {
 
 .loading {
     display: none;
-    margin-top: 10px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
     font-size: 1em;
+    text-align: left;
 }
 
 .loading span {
@@ -483,7 +486,7 @@ button {
 }
 
 .messages {
-    overflow-y: auto;
+    overflow-y: visible;
 }
 
 .icon {
