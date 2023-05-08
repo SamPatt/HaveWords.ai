@@ -259,9 +259,6 @@
   // --- start session ---
 
   async onSubmit_sessionStartButton() {
-    debugger;
-    YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
-
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode
     );
@@ -305,6 +302,7 @@
     });
 
     Sounds.shared().playOminousSound();
+    YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
   }
 
 }).initThisClass();
