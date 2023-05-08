@@ -1,7 +1,7 @@
 "use strict";
 
 /* 
-    UsernameView
+    AvatarView
 */
 
 class UsernameView extends TextFieldView {
@@ -27,8 +27,6 @@ class UsernameView extends TextFieldView {
     this.avatarInput.accept = "image/*";
     this.avatarInput.addEventListener("change", (event) => { this.handleAvatarChange(event); });
     this.element().parentNode.appendChild(this.avatarInput);
-
-    this.avatarInput.style.display = "none";
 
     // Avatar display
     this.avatarDisplay = document.createElement("img");

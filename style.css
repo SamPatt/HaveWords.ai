@@ -360,7 +360,7 @@ button {
 
 .inputSection {
     padding: 0.3em;
-    background-color: #222;
+   /* background-color: #222;*/
 }
 
 #messageInputRemote {
@@ -663,6 +663,7 @@ button {
     right: -10px;
     top: 50%;
     transform: translateY(-50%);
+    margin-right: 1em;
 }
 
 
@@ -711,7 +712,7 @@ button {
     display: inline;
 }
 
-
+/*
 .modal {
     display: none;
     position: fixed;
@@ -736,6 +737,7 @@ button {
     padding: 10px 20px;
     text-align: right;
 }
+*/
 
 .user-container {
     display: block;
