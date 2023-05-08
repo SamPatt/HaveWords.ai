@@ -133,7 +133,7 @@
   
     // Update the guest user list from the received data
     UsersView.shared().setGuestUserList(data.guestUserList);
-      console.log("Received nickname-update" + data);
+    console.log("Received nickname-update" + data);
   }  
 
   onReceived_avatarUpdate(data) {
@@ -237,14 +237,11 @@
     });
   }
 
-  sendAvatar(avatar) {
-    this.send({
-      type: "avatarUpdate",
-      id: LocalUser.shared().id(),
-      nickname: LocalUser.shared().nickname(),
-      avatar: avatar,
-    });
+  /*
+  sendAvatar() {
+    LocalUser.shared().shareAvatar();
   }
+  */
 
   sendChat(message) {
     this.send({

@@ -216,23 +216,4 @@
     }
   }
 
-  updateAvatar(avatar) { // update from UI
-    if (avatar !== "") {
-      if (App.shared().isHost()) {
-        // Update host avatar and send to all guests
-        const oldAvatar = Session.shared().hostAvatar();
-        if (oldAvatar === avatar) {
-          return;
-        }
-        LocalUser.shared().setAvatar(avatar);
-        HostSession.shared().updateHostAvatar(oldAvatar, avatar);
-      } else {
-        // Set new guest avatar and send to host
-        Session.shared().setGuestAvatar(avatar);
-        GuestSession.shared().sendAvatar(avatar);
-      }
-    }
-  }
-
-
 }.initThisClass());

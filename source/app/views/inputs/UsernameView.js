@@ -117,14 +117,15 @@ class UsernameView extends TextFieldView {
   }
 
   storeAvatar(base64Image) {
-    LocalUser.shared().setAvatar(base64Image);
-        
-    // If the user is the host, update the host avatar
-    if (App.shared().isHost()) {
-      HostSession.shared().updateHostAvatar(base64Image);
-    } else {
-      // If the user is a guest, send the avatar update to the host
-      GuestSession.shared().sendAvatar(base64Image);
+    if (LocalUser.shared().avatar() !== base64Image) {
+      LocalUser.shared().setAvatar(base64Image).shareAvatar();
+
+      GroupChatView.shared().addChatMessage(
+        "chat",
+        `You updated your avatar.`,
+        LocalUser.shared().nickname(),
+        LocalUser.shared().id()
+      );
     }
   }
   

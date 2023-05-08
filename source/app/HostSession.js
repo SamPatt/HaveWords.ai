@@ -59,27 +59,6 @@
     }
   }
 
-
-
-  updateHostAvatar(newAvatar) {
-    GroupChatView.shared().addChatMessage(
-      "chat",
-      `You updated your avatar.`,
-      LocalUser.shared().nickname(),
-      LocalUser.shared().id()
-    );
-    const json = {
-      type: "avatarUpdate",
-      message: `Host updated their avatar.`,
-      nickname: LocalUser.shared().nickname(),
-      userId: LocalUser.shared().id(),
-      avatar: newAvatar,
-      guestUserList: this.calcGuestUserlist(),
-    };
-
-    this.broadcast(json);
-  }
-
   // --- peer setup ---
 
   setupInviteButton() {

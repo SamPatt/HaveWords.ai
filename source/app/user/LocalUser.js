@@ -14,23 +14,23 @@
 
   init() {
     super.init();
-    this.setCryptoId(CryptoIdentity.clone())
+    this.setCryptoId(CryptoIdentity.clone());
     this.setIsDebugging(true);
   }
 
-  setNickname (aString) {
+  setNickname(aString) {
     this._nickname = aString;
     this.save();
     return this;
   }
 
-  setAvatar (aString) {
+  setAvatar(aString) {
     this._avatar = aString;
     this.save();
     return this;
   }
 
-  async asyncSetup () {
+  async asyncSetup() {
     //this.clear()
     // load from localStorage or generate if not found
     const didLoad = await this.asyncLoad();
@@ -44,32 +44,32 @@
     }
 
     console.log(this.description());
-    return this
+    return this;
   }
 
-  id () {
+  id() {
     return this.cryptoId().serializedPublicKey();
   }
 
-  shortId () {
+  shortId() {
     return this.id().slice(6) + "...";
   }
 
-  description () {
+  description() {
     return this.type() + " id:" + this.id() + " nickname:" + this.nickname();
   }
 
   // --- json ---
 
-  asJson () {
+  asJson() {
     return {
       cryptoId: this.cryptoId().asJson(),
       nickname: this.nickname(),
-      avatar: this.avatar()
+      avatar: this.avatar(),
     };
   }
 
-  async asyncFromJson (json) {
+  async asyncFromJson(json) {
     this._nickname = json.nickname;
     this._avatar = json.avatar;
     await this.cryptoId().asyncFromJson(json.cryptoId);
@@ -78,17 +78,17 @@
 
   // --- save /load ---
 
-  localStorageKey () {
-    return "localUser"
+  localStorageKey() {
+    return "localUser";
   }
 
-  save () {
+  save() {
     const data = JSON.stringify(this.asJson());
     localStorage.setItem(this.localStorageKey(), data);
-    return this
+    return this;
   }
 
-  async asyncLoad () {
+  async asyncLoad() {
     const data = localStorage.getItem(this.localStorageKey());
     if (data) {
       const json = JSON.parse(data);
@@ -98,20 +98,36 @@
     return false;
   }
 
-  clear () {
+  clear() {
     localStorage.removeItem(this.localStorageKey());
   }
 
   // --- sends ---
 
-  sendChatMessage (message) {
-    const m = GroupChatDataMessage.clone()
-    m.setId(this.id())
-    m.setNickname(this.nickname())
-    m.setMessage(message)
-    m.send()
+  sendChatMessage(message) {
+    const m = GroupChatDataMessage.clone();
+    m.setId(this.id());
+    m.setNickname(this.nickname());
+    m.setMessage(message);
+    m.send();
     return this;
   }
 
-}.initThisClass());
+  avatarUpdateMessageJson() {
+    return {
+      type: "avatarUpdate",
+      id: this.id(),
+      nickname: this.nickname(),
+      avatar: this.avatar(),
+    };
+  }
 
+  shareAvatar () {
+    const json = this.avatarUpdateMessageJson();
+    if (App.shared().isHost()) {
+      HostSession.shared().broadcast(json);
+    } else {
+      GuestSession.shared().send(json);
+    }
+  }
+}).initThisClass();
