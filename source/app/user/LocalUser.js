@@ -102,5 +102,16 @@
     localStorage.removeItem(this.localStorageKey());
   }
 
+  // --- sends ---
+
+  sendChatMessage (message) {
+    const m = GroupChatDataMessage.clone()
+    m.setId(this.id())
+    m.setNickname(this.nickname())
+    m.setMessage(message)
+    m.send()
+    return this;
+  }
+
 }.initThisClass());
 

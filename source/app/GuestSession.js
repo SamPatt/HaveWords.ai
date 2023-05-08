@@ -19,7 +19,6 @@
     this.setIsDebugging(true);
   }
 
-
   // --- connect ---
 
   joinSession(inviteId) {
@@ -73,6 +72,7 @@
   }
 
   onReceived_chat(data) {
+    // moved to ChatDataMessage onReceived
     Sounds.shared().playReceiveBeep();
     GroupChatView.shared().addChatMessage(
       data.type,
@@ -229,7 +229,7 @@
     });
   }
 
-  sendUsername(username) {
+  sendNicknameUpdate(username) {
     this.send({
       type: "nicknameUpdate",
       id: LocalUser.shared().id(),
@@ -246,6 +246,15 @@
     });
   }
 
+  sendChat(message) {
+    this.send({
+      type: "chat",
+      id: LocalUser.shared().id(),
+      nickname: LocalUser.shared().nickname(),
+      message: message,
+    });
+  }
+
   sendGuestPrompt() {
     const input = document.getElementById("messageInputRemote");
     let message = input.value;
@@ -256,8 +265,8 @@
       this.send({
         type: "remotePrompt",
         id: LocalUser.shared().id(),
-        message: message,
         nickname: LocalUser.shared().nickname(),
+        message: message,
       });
       AiChatView.shared().guestAddLocalPrompt(message);
     }

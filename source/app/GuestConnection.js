@@ -187,7 +187,6 @@
     }
   }
   
-
   onReceived_chat(data) {
     // Add chat to chat history
     Session.shared().addToHistory({

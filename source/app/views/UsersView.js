@@ -212,7 +212,7 @@
 
       HostSession.shared().broadcast(json)
     } else {
-      GuestSession.shared().sendUsername(newNickname);
+      GuestSession.shared().sendNicknameUpdate(newNickname);
     }
   }
 

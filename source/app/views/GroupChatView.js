@@ -31,30 +31,26 @@
     if (message === "") {
       return;
     }
+    const messagesDiv = document.querySelector(".chatMessages");
 
-    let icon;
-    if (type === "chat") {
-      icon = "🗯️";
-    } else if (type === "aiResponse") {
-      icon = "🤖";
-    } else {
-      icon = "🔧";
-    }
     let avatar;
     if (userId === LocalUser.shared().id()) {
       avatar = LocalUser.shared().avatar();
     } else {
       avatar = Session.shared().getUserAvatar(userId);
     }
+
+    const m = MessageView.clone()
+    m.setAvatar(avatar)
+    m.setNickname(nickname)
+    m.setText(message)
+    messagesDiv.appendChild(m.element());
+
+    /*
     const formattedResponse = message.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-    const messagesDiv = document.querySelector(".chatMessages");
     const messageWrapper = document.createElement("div");
     messageWrapper.className = "message-wrapper";
-
-    const iconDiv = document.createElement("div");
-    iconDiv.className = "icon";
-    iconDiv.innerHTML = icon;
 
     const messageContent = document.createElement("div");
     messageContent.className = "message-content";
@@ -81,9 +77,9 @@
     messageText.innerHTML = sanitizedHtml;
     messageContent.appendChild(messageText);
 
-    messageWrapper.appendChild(iconDiv);
     messageWrapper.appendChild(messageContent);
     messagesDiv.appendChild(messageWrapper);
+    */
     const scrollView = messagesDiv.parentNode;
     scrollView.scrollTop = scrollView.scrollHeight;
   }
