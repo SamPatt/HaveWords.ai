@@ -114,14 +114,14 @@
 
     if (this.retryCount() < this.maxRetries()) {
       setTimeout(() => {
-        console.log("Attempting to reconnect to PeerJS server...");
+        console.log("Attempting to reconnect to PeerJS server... (attempt #" + this.retryCount() + ")");
         this.peer().reconnect(); // TODO: will this call onConnection again?
         this.setRetryCount(this.retryCount() + 1);
       }, 5000);
     } else {
       console.warn(
         this.type() +
-          "Reached maximum number of retries. Displaying system message."
+          "Reached maximum number of " + this.maxRetries() + " retries. Displaying system message."
       );
       // Display a system message here, e.g. by updating the UI
       GroupChatView.shared().addChatMessage(

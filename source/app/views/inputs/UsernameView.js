@@ -4,7 +4,7 @@
     UsernameView
 */
 
-class UsernameView extends TextFieldView {
+(class UsernameView extends TextFieldView {
   initPrototypeSlots() {}
 
   init() {
@@ -14,6 +14,7 @@ class UsernameView extends TextFieldView {
       UsersView.shared().updateUserName();
     });
 
+    /*
     // Add a label for the avatar file input
     this.avatarInputLabel = document.createElement("label");
     this.avatarInputLabel.innerHTML = "Upload Avatar";
@@ -49,6 +50,7 @@ class UsernameView extends TextFieldView {
       this.avatarInputLabel.style.display = "none";
       this.avatarInput.style.display = "none";
     }
+    */
   }
 
   setString(s) {
@@ -74,6 +76,7 @@ class UsernameView extends TextFieldView {
     return this;
   }
 
+  /*
   async handleAvatarChange(event) {
     const file = event.target.files[0];
     const maxSizeInBytes = 10 * 1024; // 10 KB
@@ -132,6 +135,5 @@ class UsernameView extends TextFieldView {
     this.avatarInputLabel.style.display = "none";
     this.avatarInput.style.display = "none";
   }
-}
-
-UsernameView.initThisClass();
+  */
+}).initThisClass();

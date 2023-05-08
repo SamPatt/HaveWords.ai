@@ -56,6 +56,7 @@ class Boot extends Object {
       "source/app/views/SessionOptionsView.js",
       "source/app/views/MessageView.js",
       "source/app/views/ImageMessageView.js",
+      "source/app/views/inputs/AvatarPickerView.js",
 
       "source/app/views/YouTubeAudioPlayer.js"
     ]

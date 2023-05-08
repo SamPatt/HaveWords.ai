@@ -34,7 +34,8 @@
                     <h2>Welcome to your group AI session!</h2>
                     <p>As the host, you are sharing your AI with your friends and helping craft their
                         experience. First, you need to set your API key, then select the details for your
-                        session.</p><p>Click the Copy Invite Link button on the top right of the page to invite your friends.</p>
+                        session.</p>
+                    <p>Click the Copy Invite Link button on the top right of the page to invite your friends.</p>
 
 
                     <div>
@@ -109,7 +110,7 @@
                 </div>
                 <div id="inputSectionRemote" class="inputSection">
                     <textarea id="messageInputRemote" class="input-wrapper" rows="3"
-                        placeholder="The host hasn't given you AI access..."  style="display: none;"></textarea>
+                        placeholder="The host hasn't given you AI access..." style="display: none;"></textarea>
                 </div>
 
                 <!--- end host & guest inputs --->
@@ -126,10 +127,20 @@
                 <div class="header">
                     <h2>Group Chat</h2>
                     <div class="subheader" style="width: 100%;">
-                        <div class="username-container" style="width: 100%;">
-                            <input id="username" type="text" placeholder="Your nickname" spellcheck=false
-                                class="underlinedInput">
-                        </div>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <div id="avatarPicker"></div>
+                                </td>
+                                <td style="width: 100%;">
+                                    <div class="username-container" style="width: 100%;">
+                                        <input id="username" type="text" placeholder="Your nickname" spellcheck=false
+                                            class="underlinedInput">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
                     </div>
                 </div>
 

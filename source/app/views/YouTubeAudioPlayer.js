@@ -52,7 +52,7 @@
         },
       },
       playerVars: {
-        autoplay: 1, // Auto-play the video
+        autoplay: 0, // Auto-play the video
         controls: 0, // Hide player controls
         showinfo: 0, // Hide video information
         rel: 0, // Do not show related videos

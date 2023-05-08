@@ -1,52 +1,71 @@
 "use strict";
 
 /* 
-    AvatarView
+    AvatarPickerView
 */
 
-class UsernameView extends TextFieldView {
-  initPrototypeSlots() {}
+(class AvatarPickerView extends View {
+  initPrototypeSlots() {
+    this.newSlot("label", null);
+    this.newSlot("input", null);
+    this.newSlot("image", null);
+  }
 
   init() {
     super.init();
-    this.setId("username");
+    this.setId("avatarPicker");
+    //debugger;
+
+    const e = this.element()
+    e.style.width = "fit-content";
+    e.style.height = "fit-content";
+    //e.style.border = "1px dashed red";
+
     this.setSubmitFunc(() => {
       UsersView.shared().updateUserName();
     });
 
     // Add a label for the avatar file input
-    this.avatarInputLabel = document.createElement("label");
-    this.avatarInputLabel.innerHTML = "Upload Avatar";
-    this.avatarInputLabel.htmlFor = "avatarInput";
-    this.element().parentNode.appendChild(this.avatarInputLabel);
+    const label = document.createElement("label");
+    this.setLabel(label);
+    label.innerHTML = "Upload Avatar";
+    label.htmlFor = "avatarInput";
+    this.element().appendChild(label);
 
     // Avatar input
-    this.avatarInput = document.createElement("input");
-    this.avatarInput.type = "file";
-    this.avatarInput.id = "avatarInput";
-    this.avatarInput.accept = "image/*";
-    this.avatarInput.addEventListener("change", (event) => { this.handleAvatarChange(event); });
-    this.element().parentNode.appendChild(this.avatarInput);
+    const input = document.createElement("input");
+    this.setInput(input);
+    input.type = "file";
+    input.id = "avatarInput";
+    input.accept = "image/*";
+    input.addEventListener("change", (event) => {
+      this.handleAvatarChange(event);
+    });
+    this.element().appendChild(input);
 
     // Avatar display
-    this.avatarDisplay = document.createElement("img");
-    this.avatarDisplay.width = "50px";
-    this.avatarDisplay.height = "50px";
-    
-    this.avatarDisplay.style.display = "none";
-    this.avatarDisplay.addEventListener("click", () => {
-      this.avatarInput.click();
+    const image = document.createElement("img");
+    this.setImage(image);
+    image.className = "message-avatar";
+    //image.style.width = "50px";
+    //image.style.height = "50px";
+    //image.style.borderRadius = "25px";
+
+    e.addEventListener("click", () => {
+      this.input().click();
     });
-    this.element().parentNode.appendChild(this.avatarDisplay);
+    this.element().appendChild(image);
 
     // Check if there's already an avatar in localStorage
-    const avatar = LocalUser.shared().avatar()
-    if (avatar) {
-      this.avatarDisplay.src = avatar;
-      this.avatarDisplay.style.display = "block";
-      this.avatarInputLabel.style.display = "none";
-      this.avatarInput.style.display = "none";
+    let avatar = LocalUser.shared().avatar();
+    if (!avatar) {
+      avatar = "resources/icons/default-avatar.png";
     }
+    this.image().src = avatar;
+
+    this.image().style.display = "block";
+    this.input().style.display = "none";
+    this.label().style.display = "none";
   }
 
   setString(s) {
@@ -58,20 +77,6 @@ class UsernameView extends TextFieldView {
     return this.element().value;
   }
 
-  onKeyUp(event) {
-    super.onKeyUp(event);
-    this.resizeWidthToFitContent();
-  }
-
-  resizeWidthToFitContent() {
-    const e = this.element();
-
-    let size = e.value.length ? e.value.length : e.placeholder.length;
-    size *= 1.1;
-    e.setAttribute("size", size + "em");
-    return this;
-  }
-
   async handleAvatarChange(event) {
     const file = event.target.files[0];
     const maxSizeInBytes = 10 * 1024; // 10 KB
@@ -79,7 +84,11 @@ class UsernameView extends TextFieldView {
     const targetHeight = 50;
 
     if (file) {
-      const base64Image = await this.resizeImage(file, targetWidth, targetHeight);
+      const base64Image = await this.resizeImage(
+        file,
+        targetWidth,
+        targetHeight
+      );
       const imageSizeInBytes = atob(base64Image.split(",")[1]).length;
 
       if (imageSizeInBytes <= maxSizeInBytes) {
@@ -123,13 +132,15 @@ class UsernameView extends TextFieldView {
       );
     }
   }
-  
+
   displayAvatar(base64Image) {
-    this.avatarDisplay.src = base64Image;
+    this.image().src = base64Image;
+    /*
     this.avatarDisplay.style.display = "block";
     this.avatarInputLabel.style.display = "none";
     this.avatarInput.style.display = "none";
+    */
   }
-}
+}).initThisClass();
 
-UsernameView.initThisClass();
+AvatarPickerView.shared()

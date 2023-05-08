@@ -31,7 +31,7 @@
   }
 
   async asyncSetup() {
-    //this.clear()
+    this.clear()
     // load from localStorage or generate if not found
     const didLoad = await this.asyncLoad();
     if (!didLoad) {
