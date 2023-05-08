@@ -53,18 +53,23 @@
     }
   }
 
+  clearUserList () {
+    UsersView.shared().setGuestUserList([]);
+  }
+
   // --- receive messages ---
 
   onReceived_kick(data) {
-    conn.close();
+    //this.hostConnection().shutdown();
     console.log("You have been kicked from the session.");
-    UsersView.shared().displayKickedMessage();
-
-    const chatOutput = document.getElementById("chatOutput");
-    const kickedMessage = document.createElement("li");
-    kickedMessage.classList.add("kicked-message");
-    kickedMessage.textContent = "You've been kicked.";
-    chatOutput.appendChild(kickedMessage);
+    GroupChatView.shared().addChatMessage(
+      "chat",
+      "You have been kicked from the session.",
+      "System",
+      data.id
+    );
+    this.clearUserList();
+    document.getElementById("chatInput").disabled = true;
   }
 
   onReceived_chat(data) {
@@ -86,13 +91,15 @@
   }
 
   onReceived_ban(data) {
-    document.getElementById("chatInput").disabled = true;
+    //this.hostConnection().shutdown();
     GroupChatView.shared().addChatMessage(
       "chat",
       "You have been banned from the session.",
       "System",
       data.id
     );
+    this.clearUserList();
+    document.getElementById("chatInput").disabled = true;
   }
 
   onReceived_sessionHistory(data) {
@@ -112,7 +119,6 @@
       )
     );
   
-    UsersView.shared().displayGuestUserList(); // Call a function to update the UI with the new guestUserList
     SessionOptionsView.shared().guestDisplayHostSessionHistory(data.history);
   }  
 
@@ -127,10 +133,7 @@
   
     // Update the guest user list from the received data
     UsersView.shared().setGuestUserList(data.guestUserList);
-  
-    // Refresh the guest user list display
-    UsersView.shared().displayGuestUserList();
-    console.log("Received nickname-update" + data);
+      console.log("Received nickname-update" + data);
   }  
 
   onReceived_avatarUpdate(data) {
@@ -171,7 +174,6 @@
       newGuestUserList.splice(index, 1);
     }
     UsersView.shared().setGuestUserList(newGuestUserList);
-    UsersView.shared().displayGuestUserList();
     console.log("Received guest-join");
   }
 
@@ -185,8 +187,7 @@
     if (index !== -1) {
       newGuestUserList.splice(index, 1);
     }
-    HostSession.shared().setGuestUserList(newGuestUserList);
-    UsersView.shared().displayGuestUserList();
+    UsersView.shared().setGuestUserList(newGuestUserList);
     console.log("Received guest-leave");
   }
 

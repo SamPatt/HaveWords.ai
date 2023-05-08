@@ -266,23 +266,23 @@
   onClose() {
     super.onClose();
 
-    console.log("Guest disconnected:" + this.id());
+    if (!this.isBanned()) {
+      HostSession.shared().broadcast({
+        type: "guestLeave",
+        message: `${this.nickname()} has left the session.`,
+        nickname: LocalUser.shared().nickname(),
+        leavingGuestNickname: this.nickname(),
+        leavingGuestId: this.id(),
+        guestUserList: HostSession.shared().calcGuestUserlist(),
+      });
 
-    HostSession.shared().broadcast({
-      type: "guestLeave",
-      message: `${this.nickname()} has left the session.`,
-      nickname: LocalUser.shared().nickname(),
-      leavingGuestNickname: this.nickname(),
-      leavingGuestId: this.id(),
-      guestUserList: HostSession.shared().calcGuestUserlist(),
-    });
-
-    GroupChatView.shared().addChatMessage(
-      "systemMessage",
-      `${this.nickname()} has left the session.`,
-      LocalUser.shared().nickname(),
-      this.id()
-    );
+      GroupChatView.shared().addChatMessage(
+        "systemMessage",
+        `${this.nickname()} has left the session.`,
+        LocalUser.shared().nickname(),
+        this.id()
+      );
+    }
 
     HostSession.shared().updateGuestUserlist();
   }

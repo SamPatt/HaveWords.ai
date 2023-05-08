@@ -228,13 +228,19 @@
     return s
   }
 
+  promptSuffix () {
+    const ps1 = this.sessionTypeOptions().selectedElement()._item.promptSuffix;
+    const ps2 = this.sessionSubtypeOptions().selectedElement()._item.promptSuffix;
+    return ps2 ? ps2 : ps1;
+  }
+
   prompt() {
-    const promptSuffix = this.sessionTypeOptions().selectedElement()._item.promptSuffix;
     const typePrompt = this.sessionTypeOptions().selectedElement()._item.prompt;
     const subtypePrompt =
       this.sessionSubtypeOptions().selectedElement()._item.prompt;
     let prompt = subtypePrompt ? subtypePrompt : typePrompt;
 
+    const promptSuffix = this.promptSuffix();
     if (promptSuffix) {
       prompt += promptSuffix;
     }
@@ -280,6 +286,7 @@
 
     this.hide()
 
+    console.log("using prompt [[" + this.prompt() + "]]")
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response);
@@ -329,25 +336,27 @@ const sessionOptionsArray = [
     chatName: "Player's Chat",
     usersName: "Players",
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
-    promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n\n
-    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n\n
+    promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n
+    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n
     Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
-    You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n\n
+    You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n
     Dialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. 
     Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
-    Remember there are multiple players, and dialogue is usually happening within a group.\n\n
+    Remember there are multiple players, and dialogue is usually happening within a group.\n
     Plot: Describe only the next step of the adventure based on the player input. 
     Don't take any actions on the player's behalf, always let the player make the decisions. 
     Remember there are multiple players, and descriptions of scenes should include more than just one player. 
     The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
-    The player should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n\n
-    Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n\n
+    Players should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
+    Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
     The player names are: [playerNames].`,
     options: [
       {
         label: "Traditional roleplaying",
         value: "traditional fantasy",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a traditional campaign of Dungeons and Dragons.`
+        prompt: `Please play the roll of an dungeon master and lead us on a traditional campaign of Dungeons and Dragons. 
+        The campaign should be epic and full of serious challenges. 
+        This is a game played by adults and should not be a children's story or involve children as characters.`,
       },
       {
         label: "Harry Potter",
@@ -363,7 +372,8 @@ const sessionOptionsArray = [
       {
         value: "Conan",
         label: "Conan the Barbarian",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.`
+        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.
+        As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane.`
       },
       {
         label: "Norse Mythology",

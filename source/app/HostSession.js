@@ -29,46 +29,37 @@
     PeerServer.shared().broadcastExceptTo(json, excludeId);
   }
 
-  // --- get channel / connection for a userId ---
-
-  channelForUserId(userId) {
-    return this.dataChannels().get(userId);
-  }
-
-  connectionForUserId(userId) {
-    const channel = this.channelForUserId(userId);
-    if (channel) {
-      return channel.conn;
-    }
-    return undefined;
-  }
-
   // --- user actions ---
 
   kickUser(userId) {
     console.log("Kicked guest: " + userId);
-    const conn = this.connectionForUserId(userId);
-    if (conn) {
-      conn.sendThenClose({ type: "kick" });
+    const pc = PeerServer.shared().peerConnectionForId(userId);
+    if (pc) {
+      pc.sendThenClose({ type: "kick" });
     }
+    this.sendSystemMessage(userId + " was kicked")
   }
 
   banUser(userId) {
     console.log("Banned guest: " + userId);
     this.bannedGuests().add(userId);
 
-    const peerConn = this.peerConnectionForId(userId);
-    if (peerConn) {
-      conn.sendThenClose({ type: "ban" });
+    const pc = PeerServer.shared().peerConnectionForId(userId);
+    
+    if (pc) {
+      pc.sendThenClose({ type: "ban" });
     }
+    this.sendSystemMessage(pc.nickname() + " was banned")
   }
   
   closeConnectionForUser(userId) {
-    const peerConn = this.peerConnectionForId(userId);
-    if (peerConn) {
-      peerConn.shutdown()
+    const pc = PeerServer.shared().peerConnectionForId(userId);
+    if (pc) {
+      pc.shutdown()
     }
   }
+
+
 
   updateHostAvatar(newAvatar) {
     GroupChatView.shared().addChatMessage(
@@ -177,9 +168,6 @@
       role: "user",
       content: prompt,
     });
-
-    // Update system message input
-    //this.systemMessageInput().value = content;
 
     // Relay to connected guests
     this.broadcast({
