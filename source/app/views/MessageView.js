@@ -16,25 +16,6 @@
     this.newSlot("textElement", null);
   }
 
-  setAvatar (imgSrc) {
-    if (imgSrc) {
-      this.avatarElement().src = imgSrc;
-    }
-    return this;
-  }
-
-  setNickname (aString) {
-    this.nicknameElement().textContent = aString;
-    return this;
-  }
-
-  setText (aString) {
-    const formatted = aString.convertToParagraphs();
-    const sanitizedHtml = DOMPurify.sanitize(formatted);
-    this.textElement().innerHTML = sanitizedHtml;
-    return this;
-  }
-
   init() {
     super.init();
     this.setupElement()
@@ -77,6 +58,27 @@
     this.setTextElement(messageText);
 
     messageWrapper.appendChild(messageContent);
+    return this;
+  }
+
+  // after creating the instance, these methods can be used to set bits of it's content
+
+  setAvatar (imgSrc) {
+    if (imgSrc) {
+      this.avatarElement().src = imgSrc;
+    }
+    return this;
+  }
+
+  setNickname (aString) {
+    this.nicknameElement().textContent = aString;
+    return this;
+  }
+
+  setText (aString) {
+    const formatted = aString.convertToParagraphs();
+    const sanitizedHtml = DOMPurify.sanitize(formatted);
+    this.textElement().innerHTML = sanitizedHtml;
     return this;
   }
 

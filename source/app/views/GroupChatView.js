@@ -27,10 +27,7 @@
   }
 
   addChatMessage(type, message, nickname, userId) {
-    // If the string is empty, don't add it
-    if (message === "") {
-      return;
-    }
+    assert(message);
 
     const avatar = Session.shared().getUserAvatar(userId);
 

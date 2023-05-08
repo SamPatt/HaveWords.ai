@@ -9,14 +9,11 @@
   initPrototypeSlots() {
     this.newSlot("messageInput", null);
     this.newSlot("messageInputRemote", null);
-    //this.newSlot("usernameField", null)
   }
 
   init() {
     super.init();
     this.setId("userPanel");
-    //this.setUsernameField(UsernameView.shared())
-    
     this.setupMessageInput();
     this.setupMessageInputRemote();
   }
@@ -93,10 +90,7 @@
   }
 
   addMessage(type, message, nickname, userId) {
-    // If the string is empty, don't add it
-    if (!message) {
-      return;
-    }
+    assert(message);
 
     const formattedResponse = message.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
@@ -108,10 +102,10 @@
       avatar = Session.shared().getUserAvatar(userId);
     }
 
-    const m = MessageView.clone()
-    m.setAvatar(avatar)
-    m.setNickname(nickname)
-    m.setText(message)
+    const m = MessageView.clone();
+    m.setAvatar(avatar);
+    m.setNickname(nickname);
+    m.setText(message);
     this.addMessageElement(m.element());
 
   // ---------
@@ -121,83 +115,23 @@
       this.setShowLoading(true)
       isUser = true;
     } else if (type === "aiResponse") {
-      this.setShowLoading(false)
-      // Check if in session, then if host, and if so, add a button to generate an image prompt
-
+      this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
-
-        // Append the icon/button to the message content
         m.element().appendChild(this.genImageButtonFor());
       }
     } else if (type === "image-gen") {
-      this.setShowLoading(true)
+      this.setShowLoading(true);
     } else if (type === "systemMessage") {
     } 
-
-    /*
-
-    const messagesDiv = document.querySelector(".messages");
-    const messageWrapper = document.createElement("div");
-    messageWrapper.className = "message-wrapper";
-
-    const img = document.createElement("img");
-    img.className = "message-avatar";
-    img.width = 50;
-    img.height = 50;
-    img.src = avatar || "resources/icons/default-avatar.png"; // Use a default avatar image if the user doesn't have one
-    messageContent.appendChild(img);
-
-    messageContent.className = "message-content";
-    */
 
     if (!isUser) {
       m.element().className += " aiMessage";
     }
 
     this.addMessageElement(m.element());
-
-    /*
-    const messageNickname = document.createElement("div");
-    messageNickname.className = "message-nickname";
-    messageNickname.textContent = nickname;
-
-    const avatarAndNameWrapper = document.createElement("div");
-    avatarAndNameWrapper.className = "avatar-and-name-wrapper";
-    avatarAndNameWrapper.appendChild(img);
-    avatarAndNameWrapper.appendChild(messageNickname);
-
-    messageContent.appendChild(avatarAndNameWrapper);
-
-    const messageText = document.createElement("div");
-    messageText.className = "message-text";
-    messageText.innerHTML = sanitizedHtml;
-    messageContent.appendChild(messageText);
-    messageWrapper.appendChild(messageContent);
-
-
-    messagesDiv.appendChild(messageWrapper);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    //const scrollView = messagesDiv.parentNode
-    //scrollView.scrollTop = scrollView.scrollHeight;
-    */
   }
 
   // --------------------------------------------------------
-
-  addChatMessage(type, message, nickname, userId) {
-    // If the string is empty, don't add it
-    if (message === "") {
-      return;
-    }
-
-    const avatar = Session.shared().getUserAvatar(userId);
-
-    const m = MessageView.clone()
-    m.setAvatar(avatar)
-    m.setNickname(nickname)
-    m.setText(message)
-    this.addMessageElement(m.element());
-  }
 
   scrollViewContentElement () {
     return document.querySelector(".messages");
@@ -217,41 +151,8 @@
   // ----------------------------------------------------------------
 
   addImage(imageURL) {
-    let icon;
-    let isUser = false;
-    this.setShowLoading(false);
-    const messagesDiv = document.querySelector(".messages");
-    const messageWrapper = document.createElement("div");
-    messageWrapper.className = "message-wrapper";
-
-    const iconDiv = document.createElement("div");
-    iconDiv.className = "icon";
-    iconDiv.innerHTML = icon;
-
-    const messageContent = document.createElement("div");
-    messageContent.className = "message-content";
-
-    if (!isUser) {
-      messageWrapper.className += " aiMessage";
-    }
-
-    const imageElement = document.createElement("img");
-    imageElement.src = imageURL;
-    imageElement.className = "message-image";
-
-    const imageContainer = document.createElement("div"); // Create a new div for the image container
-    imageContainer.className = "image-container"; // Set the new class for the image container
-
-    imageContainer.appendChild(imageElement); // Append the image to the image container
-    messageContent.appendChild(imageContainer); // Append the image container to the message content
-
-    messageWrapper.appendChild(iconDiv);
-    messageWrapper.appendChild(messageContent);
-
-    messagesDiv.appendChild(messageWrapper);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-    this.scrollToBottom();
+    const iv = ImageMessageView.clone().setImageUrl(imageURL).setIsUser(false);
+    this.addMessageElement(iv.element());
   }
 
   addPrompt() {
