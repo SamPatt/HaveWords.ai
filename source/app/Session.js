@@ -72,6 +72,9 @@
   // Avatars
 
   getUserAvatar(userId) {
+    if (userId === LocalUser.shared().id()) {
+      return LocalUser.shared().avatar();
+    }
     return localStorage.getItem(`avatar_${userId}`) || null;
   }
 

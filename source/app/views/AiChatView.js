@@ -58,75 +58,87 @@
     );
   }
 
+  setShowLoading (aBool) {
+    const loadingAnimation = document.getElementById("loadingHost");
+    loadingAnimation.style.display = aBool ? "inline" : "none";
+    return this;
+  }
+
+  // ========================================================
+
+  genImageButtonFor (sanitizedHtml) {
+    // Create a new icon/button element for the AI responses
+    const button = document.createElement("button");
+    button.textContent = "🎨";
+    button.className = "generate-image-prompt-button";
+    button.setAttribute(
+      "data-tooltip",
+      "Show this scene"
+    );
+
+    // Add an event listener to the icon/button
+    button.addEventListener("click", () => {
+      AiChatView.shared().addMessage(
+        "image-gen",
+        "Generating image...",
+        "Host",
+        LocalUser.shared().id()
+      );
+      triggerImageBot(sanitizedHtml);
+      // Optional: Hide the button after it has been clicked
+      button.style.display = "none";
+    });
+
+    return button
+  }
+
   addMessage(type, message, nickname, userId) {
     // If the string is empty, don't add it
-    if (message === "" || message === undefined) {
+    if (!message) {
       return;
-    }
-    let avatar;
-    if (userId === LocalUser.shared().id()) {
-      avatar = LocalUser.shared().avatar();
-    } else if (type === "aiResponse") {
-      avatar = 'resources/icons/AI-avatar.png';
-    } else {
-      avatar = Session.shared().getUserAvatar(userId);
-    }
-    const messageContent = document.createElement("div");
-    let icon;
-    let isUser = false;
-    if (type === "prompt") {
-      loadingAnimation.style.display = "inline";
-      icon = "👤";
-      isUser = true;
-    } else if (type === "aiResponse") {
-      loadingAnimation.style.display = "none";
-      icon = "🤖";
-      // Check if in session, then if host, and if so, add a button to generate an image prompt
-
-      if (App.shared().isHost() && Session.shared().inSession()) {
-        // Create a new icon/button element for the AI responses
-        const generateImagePromptButton = document.createElement("button");
-        generateImagePromptButton.textContent = "🎨";
-        generateImagePromptButton.className = "generate-image-prompt-button";
-        generateImagePromptButton.setAttribute(
-          "data-tooltip",
-          "Show this scene"
-        );
-
-        // Add an event listener to the icon/button
-        generateImagePromptButton.addEventListener("click", () => {
-          AiChatView.shared().addMessage(
-            "image-gen",
-            "Generating image...",
-            "Host",
-            LocalUser.shared().id()
-          );
-          triggerImageBot(sanitizedHtml);
-          // Optional: Hide the button after it has been clicked
-          generateImagePromptButton.style.display = "none";
-        });
-
-        // Append the icon/button to the message content
-        messageContent.appendChild(generateImagePromptButton);
-      }
-    } else if (type === "image-gen") {
-      loadingAnimation.style.display = "inline";
-      icon = "🎨";
-    } else if (type === "systemMessage") {
-      icon = "🔧";
-    } else {
-      icon = "🦔";
     }
 
     const formattedResponse = message.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
+
+    let avatar;
+    if (type === "aiResponse") {
+      avatar = 'resources/icons/AI-avatar.png';
+    } else {
+      avatar = Session.shared().getUserAvatar(userId);
+    }
+
+    const m = MessageView.clone()
+    m.setAvatar(avatar)
+    m.setNickname(nickname)
+    m.setText(message)
+    this.addMessageElement(m.element());
+
+  // ---------
+
+    let isUser = false;
+    if (type === "prompt") {
+      this.setShowLoading(true)
+      isUser = true;
+    } else if (type === "aiResponse") {
+      this.setShowLoading(false)
+      // Check if in session, then if host, and if so, add a button to generate an image prompt
+
+      if (App.shared().isHost() && Session.shared().inSession()) {
+
+        // Append the icon/button to the message content
+        m.element().appendChild(this.genImageButtonFor());
+      }
+    } else if (type === "image-gen") {
+      this.setShowLoading(true)
+    } else if (type === "systemMessage") {
+    } 
+
+    /*
+
     const messagesDiv = document.querySelector(".messages");
     const messageWrapper = document.createElement("div");
     messageWrapper.className = "message-wrapper";
-
-    const iconDiv = document.createElement("div");
-    iconDiv.className = "icon";
-    iconDiv.innerHTML = icon;
 
     const img = document.createElement("img");
     img.className = "message-avatar";
@@ -136,11 +148,15 @@
     messageContent.appendChild(img);
 
     messageContent.className = "message-content";
+    */
 
     if (!isUser) {
-      messageWrapper.className += " aiMessage";
+      m.element().className += " aiMessage";
     }
 
+    this.addMessageElement(m.element());
+
+    /*
     const messageNickname = document.createElement("div");
     messageNickname.className = "message-nickname";
     messageNickname.textContent = nickname;
@@ -156,39 +172,54 @@
     messageText.className = "message-text";
     messageText.innerHTML = sanitizedHtml;
     messageContent.appendChild(messageText);
-    messageWrapper.appendChild(iconDiv);
     messageWrapper.appendChild(messageContent);
 
-    // Add "Begin Session" button for welcome messages
-    if (type === "welcome-message") {
-      const beginSessionButton = document.createElement("button");
-      beginSessionButton.textContent = "Begin Session";
-      beginSessionButton.className = "begin-session-button";
-      beginSessionButton.addEventListener("click", () => {
-        // Add your desired action when the "Begin Session" button is clicked
-        SessionOptionsView.shared().startSession(
-          Session.shared().groupSessionType(),
-          Session.shared().groupSessionDetails()
-        );
-        console.log(
-          "Begin Session button clicked " +
-            Session.shared().groupSessionType() +
-            " " +
-            Session.shared().groupSessionDetails()
-        );
-      });
-      messageContent.appendChild(beginSessionButton);
-    }
+
     messagesDiv.appendChild(messageWrapper);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
     //const scrollView = messagesDiv.parentNode
     //scrollView.scrollTop = scrollView.scrollHeight;
+    */
   }
+
+  // --------------------------------------------------------
+
+  addChatMessage(type, message, nickname, userId) {
+    // If the string is empty, don't add it
+    if (message === "") {
+      return;
+    }
+
+    const avatar = Session.shared().getUserAvatar(userId);
+
+    const m = MessageView.clone()
+    m.setAvatar(avatar)
+    m.setNickname(nickname)
+    m.setText(message)
+    this.addMessageElement(m.element());
+  }
+
+  scrollViewContentElement () {
+    return document.querySelector(".messages");
+  }
+
+  addMessageElement(element) {
+    this.scrollViewContentElement().appendChild(element);
+    this.scrollToBottom()
+  }
+
+  scrollToBottom () {
+    const sc = this.scrollViewContentElement();
+    const scrollView = sc.parentNode;
+    scrollView.scrollTop = scrollView.scrollHeight;
+  }
+
+  // ----------------------------------------------------------------
 
   addImage(imageURL) {
     let icon;
     let isUser = false;
-    loadingAnimation.style.display = "none";
+    this.setShowLoading(false);
     const messagesDiv = document.querySelector(".messages");
     const messageWrapper = document.createElement("div");
     messageWrapper.className = "message-wrapper";
@@ -219,6 +250,8 @@
 
     messagesDiv.appendChild(messageWrapper);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    this.scrollToBottom();
   }
 
   addPrompt() {
@@ -285,4 +318,3 @@
 
 AiChatView.shared(); // so a shared instance gets created
 
-const loadingAnimation = document.getElementById("loadingHost");

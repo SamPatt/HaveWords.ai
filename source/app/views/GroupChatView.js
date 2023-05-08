@@ -31,56 +31,24 @@
     if (message === "") {
       return;
     }
-    const messagesDiv = document.querySelector(".chatMessages");
 
-    let avatar;
-    if (userId === LocalUser.shared().id()) {
-      avatar = LocalUser.shared().avatar();
-    } else {
-      avatar = Session.shared().getUserAvatar(userId);
-    }
+    const avatar = Session.shared().getUserAvatar(userId);
 
     const m = MessageView.clone()
     m.setAvatar(avatar)
     m.setNickname(nickname)
     m.setText(message)
-    messagesDiv.appendChild(m.element());
+    this.addMessageElement(m.element());
+  }
 
-    /*
-    const formattedResponse = message.convertToParagraphs();
-    const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
-    const messageWrapper = document.createElement("div");
-    messageWrapper.className = "message-wrapper";
+  scrollViewContentElement () {
+    return document.querySelector(".chatMessages");
+  }
 
-    const messageContent = document.createElement("div");
-    messageContent.className = "message-content";
-
-    const messageNickname = document.createElement("div");
-    messageNickname.className = "message-nickname";
-    messageNickname.textContent = nickname;
-
-    const img = document.createElement("img");
-    img.className = "message-avatar";
-    img.width = 50;
-    img.height = 50;
-    img.src = avatar || "resources/icons/default-avatar.png"; // Use a default avatar image if the user doesn't have one
-
-    const avatarAndNameWrapper = document.createElement("div");
-    avatarAndNameWrapper.className = "avatar-and-name-wrapper";
-    avatarAndNameWrapper.appendChild(img);
-    avatarAndNameWrapper.appendChild(messageNickname);
-
-    messageContent.appendChild(avatarAndNameWrapper);
-
-    const messageText = document.createElement("div");
-    messageText.className = "message-text";
-    messageText.innerHTML = sanitizedHtml;
-    messageContent.appendChild(messageText);
-
-    messageWrapper.appendChild(messageContent);
-    messagesDiv.appendChild(messageWrapper);
-    */
-    const scrollView = messagesDiv.parentNode;
+  addMessageElement(element) {
+    const sc = this.scrollViewContentElement();
+    sc.appendChild(element);
+    const scrollView = sc.parentNode;
     scrollView.scrollTop = scrollView.scrollHeight;
   }
 

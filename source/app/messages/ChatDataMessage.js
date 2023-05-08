@@ -33,8 +33,16 @@
     Sounds.shared().playReceiveBeep();
   }
 
-  newElement() {
+  getAvatar () {
+    return Session.shared().getUserAvatar(this.id());
+  }
 
+  newView() {
+    const m = MessageView.clone()
+    m.setAvatar(this.getAvatar())
+    m.setNickname(this.nickname())
+    m.setText(this.message())
+    return m
   }
 
 }).initThisClass();
