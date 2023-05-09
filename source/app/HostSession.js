@@ -204,11 +204,14 @@
     });
   }
 
-  async sendAIResponse(message, nickname) {
+  async sendAIResponse(message) {
     // Get AI Response and post locally
     const response = await OpenAiChat.shared().asyncFetch(message);
   
     AiChatView.shared().addAIReponse(response);
+    if (!Session.shared().groupSessionFirstAIResponse()) {
+      Session.shared().setGroupSessionFirstAIResponse(response)
+    }
   
     this.broadcast({
       type: "aiResponse",

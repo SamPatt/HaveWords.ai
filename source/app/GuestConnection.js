@@ -159,9 +159,9 @@
         let newMessage;
         newMessage = data.nickname + ": " + data.message;
         console.log("Game mode on, adding guest username to prompt");
-        HostSession.shared().sendAIResponse(newMessage, data.nickname);
+        HostSession.shared().sendAIResponse(newMessage);
       } else {
-        HostSession.shared().sendAIResponse(data.message, data.nickname);
+        HostSession.shared().sendAIResponse(data.message);
       }
     } else {
       console.log(`Rejected prompt from ${conn.peer} - ${this.nickname()}`);

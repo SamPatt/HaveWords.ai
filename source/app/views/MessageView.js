@@ -82,5 +82,9 @@
     return this;
   }
 
+  text () {
+    return this.textElement().innerHTML;
+  }
+
 }.initThisClass());
 

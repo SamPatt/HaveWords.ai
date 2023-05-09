@@ -88,7 +88,7 @@
         "Host",
         LocalUser.shared().id()
       );
-      triggerImageBot(sanitizedHtml);
+      OpenAiTriggerBot.shared().setSceneDescription(sanitizedHtml).trigger();
       // Optional: Hide the button after it has been clicked
       button.style.display = "none";
     });
@@ -98,9 +98,6 @@
 
   addMessage(type, message, nickname, userId) {
     assert(message);
-
-    const formattedResponse = message.convertToParagraphs();
-    const sanitizedHtml = DOMPurify.sanitize(formattedResponse);
 
     let avatar;
     if (type === "aiResponse") {
@@ -124,7 +121,7 @@
     } else if (type === "aiResponse") {
       this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
-        m.element().appendChild(this.genImageButtonFor());
+        m.element().appendChild(this.genImageButtonFor(m.text()));
       }
     } else if (type === "image-gen") {
       this.setShowLoading(true);
@@ -158,6 +155,8 @@
   }
 
   // ----------------------------------------------------------------
+
+  //addMusicTrack(
 
   addImage(imageURL) {
     const iv = ImageMessageView.clone().setImageUrl(imageURL).setIsUser(false);

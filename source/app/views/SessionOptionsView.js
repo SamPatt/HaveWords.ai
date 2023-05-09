@@ -228,17 +228,21 @@
     return s
   }
 
+  // --- config lookups ---
+
+  configLookup (key) {
+    const a = this.sessionTypeOptions().selectedElement()._item[key];
+    const b = this.sessionSubtypeOptions().selectedElement()._item[key];
+    const v = b ? b : a;
+    return v ? v : "";
+  }
+
   promptSuffix () {
-    const ps1 = this.sessionTypeOptions().selectedElement()._item.promptSuffix;
-    const ps2 = this.sessionSubtypeOptions().selectedElement()._item.promptSuffix;
-    return ps2 ? ps2 : ps1;
+    return this.configLookup("promptSuffix");
   }
 
   prompt() {
-    const typePrompt = this.sessionTypeOptions().selectedElement()._item.prompt;
-    const subtypePrompt =
-      this.sessionSubtypeOptions().selectedElement()._item.prompt;
-    let prompt = subtypePrompt ? subtypePrompt : typePrompt;
+    let prompt = this.configLookup("prompt");
 
     const promptSuffix = this.promptSuffix();
     if (promptSuffix) {
@@ -248,12 +252,18 @@
   }
 
   message() {
-    const typeMessage =
-      this.sessionTypeOptions().selectedElement()._item.message;
-    const subtypeMessage =
-      this.sessionSubtypeOptions().selectedElement()._item.message;
-    const message = subtypeMessage ? subtypeMessage : typeMessage;
-    return this.replacedConfigString(message);
+    const v = this.configLookup("message");
+    return this.replacedConfigString(v);
+  }
+
+  artPromptSuffix () {
+    const v = this.configLookup("artPromptSuffix");
+    return this.replacedConfigString(v);
+  }
+
+  artPromptPrefix () {
+    const v = this.configLookup("artPromptPrefix");
+    return this.replacedConfigString(v);
   }
 
   // --- start session ---
@@ -326,9 +336,11 @@
 <option value="Discworld">Discworld (Terry Pratchett)</option>
 <option value="HitchhikersGuide">Hitchhikers Guide to the Galaxy (Scott Adams)</option>
 
-Indian Jones adventure?
+More ideas:
 
+Indian Jones adventure?
 Stranger Things
+The Nightmare Before Christmas
 */
 
 const sessionOptionsArray = [
@@ -410,29 +422,35 @@ const sessionOptionsArray = [
         Once I decide on the adventure, you may provide a brief setting description and begin the game. 
         I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
         Do not make any decisions for the players. Always ask the players what they would like to do.`,
-        promptSuffix: " "
+        promptSuffix: " ",
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
       },
       {
         label: "Harry Potter",
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
+        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:"
       },
       {
         label: "Studio Ghibli",
         value: "Studio Ghibli",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
-        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`
+        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
+        artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k."
       },
       {
         value: "Conan",
         label: "Conan the Barbarian",
         prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.
-        As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane.`
+        As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane.`,
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
+
       },
       {
         label: "Norse Mythology",
         value: "Norse",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`
+        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
       },
     ],
   },
@@ -445,6 +463,7 @@ const sessionOptionsArray = [
     chatName: "Player's Chat",
     usersName: "Players",
     message: "The host has started a [sessionSubtype] trivia game.",
+    artPromptPrefix: "Illustration of a trivia game with a question about: ",
     options: [
       {
         label: "Variety",
@@ -498,6 +517,7 @@ const sessionOptionsArray = [
     gameMode: false,
     message:
       "The host started a new exploration session! Please wait while the AI Guide prepares to start the session...",
+    artPromptSuffix: " | oil painting high resolution 4k",
     options: [
       {
         label: "Write your own",

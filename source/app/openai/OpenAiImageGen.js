@@ -6,7 +6,9 @@
 */
 
 (class OpenAiImageGen extends OpenAiService {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("prompt", null);
+  }
 
   init() {
     super.init();
@@ -19,38 +21,12 @@
     return request;
   }
 
-  // Calls the OpenAI Image API and returns the image URL
-  // fetchOpenAIImageResponse
-  async asyncFetch(prompt) {
-    // Changes prompt based on session type
-    let imagePrompt;
-    const sessionType = SessionOptionsView.shared().sessionType();
-    const sessionDetails = SessionOptionsView.shared().sessionSubtype();
-    if (sessionType === "fantasyRoleplay") {
-      // Change prompt based on session details
-      if (sessionDetails === "Studio Ghibli") {
-        imagePrompt =
-          prompt + " | anime oil painting high resolution ghibli inspired 4k";
-      } else if (sessionDetails === "Harry Potter") {
-        imagePrompt =
-          "Pen and ink sketch of " + prompt + " in a Harry Potter world.";
-      } else {
-        imagePrompt =
-          "Pen and ink sketch of " +
-          prompt +
-          " in a " +
-          sessionDetails +
-          " world.";
-      }
-    } else if (sessionType === "trivia") {
-      imagePrompt = "Illustration of a trivia game with a question about " + prompt;
-    } else if (sessionType === "explore") {
-      imagePrompt = prompt + " | oil painting high resolution 4k"
-    } else {
-      // other session types later
-    }
+  // Calls the OpenAI Image API and returns the image URL fetchOpenAIImageResponse
+  async asyncFetch() {
+    assert(this.prompt());
+
     const request = this.newRequest().setBodyJson({
-      prompt: imagePrompt,
+      prompt: this.prompt(),
       n: 1,
       size: "512x512",
     });
@@ -74,17 +50,4 @@
     return imageURL;
   }
 }.initThisClass());
-
-
-/*
-(class OpenAiImageRequest extends OpenAiRequest {
-  initPrototypeSlots() {}
-
-  init() {
-    super.init();
-    this.setApiUrl("https://api.openai.com/v1/images/generations");
-  }
-
-}.initThisClass());
-*/
 
