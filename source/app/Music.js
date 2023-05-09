@@ -9,10 +9,10 @@
   static tracksMap () {
     // dictionary with description as keys and youtube video id as values
     const dict = {
-      "peaceful night": "kS4jfQM0Nok", // Sleeping in Narnia | Calming Chronicles of Narnia Music & Ambience
+      "Sleeping in Narnia": "kS4jfQM0Nok", // Sleeping in Narnia | Calming Chronicles of Narnia Music & Ambience
       "Halloween at Hogwarts": "qhRLcxW9_hQ", // Harry Potter Music & Ambience | Halloween at Hogwarts - Common Rooms
-      "sunrise": "7odiKMVXw-M", // The Elder Scrolls Music & Ambience | Autumn in Skryim
-      "lord of the rings": "8vnHJNjwuqg", // Lord of the Rings | Gondor Music & Ambience
+      "The Elder Scrolls": "7odiKMVXw-M", // The Elder Scrolls Music & Ambience | Autumn in Skryim
+      "Lord of the Rings | Gondor Music": "8vnHJNjwuqg", // Lord of the Rings | Gondor Music & Ambience
     }
     return new Map(Object.entries(dict));
   }
@@ -34,9 +34,9 @@
 
   playTrackWithName (name) {
     this.debugLog("playTrackWithName('" + name + "'");
-    const trackId = this.tracksMap().get(name);
-    if (trackId) {
-      YouTubeAudioPlayer.shared().setVideoId(trackId);
+    const vid = this.tracksMap().get(name);
+    if (vid && vid !== YouTubeAudioPlayer.shared().videoId()) {
+      YouTubeAudioPlayer.shared().setVideoId(vid).play();
     } else {
       console.warn("missing track with name '" + name + "'")
     }

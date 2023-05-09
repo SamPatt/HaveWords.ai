@@ -123,6 +123,7 @@
       if (App.shared().isHost() && Session.shared().inSession()) {
         m.element().appendChild(this.genImageButtonFor(m.text()));
       }
+      OpenAiMusicBot.shared().setSceneDescription(m.text()).trigger();
     } else if (type === "image-gen") {
       this.setShowLoading(true);
     } else if (type === "systemMessage") {
@@ -134,7 +135,6 @@
 
     this.addMessageElement(m.element());
 
-    OpenAiMusicBot.shared().setSceneDescription(m.text()).trigger();
   }
 
   // --------------------------------------------------------

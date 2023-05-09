@@ -312,7 +312,7 @@
     });
 
     Sounds.shared().playOminousSound();
-    YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
+    //YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
   }
 
 }).initThisClass();

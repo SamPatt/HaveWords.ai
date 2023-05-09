@@ -19,6 +19,13 @@
     this.loadFrameAPI(); // set this up, then we'll set up the player
   }
 
+  setVideoId (vid) {
+    if (this._videoId !== vid) {
+      this._videoId = vid;
+    }
+    return this;
+  }
+
   loadFrameAPI() {
     // Load the YouTube IFrame Player API asynchronously
     const tag = document.createElement("script");
@@ -79,7 +86,7 @@
     return this;
   }
 
-  isPlayerPlaying() {
+  isPlaying() {
     const player = this.player();
     if (player) {
       return player.getPlayerState() === YT.PlayerState;
