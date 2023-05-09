@@ -39,22 +39,38 @@
 
 
                     <div>
-                        <div class="inputLabel">AI Model</div>
+                        <div class="inputLabel">OpenAI Model</div>
                         <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
                             <option value="gpt-3.5-turbo" data-nickname="ChatGPT">ChatGPT 3.5</option>
                             <option value="GPT-4" data-nickname="GPT-4">GPT-4</option>
-                            <!--
-                                <option value="gpt-4" data-nickname="GPT-4">GPT-4</option>
-                            -->
                         </select>
                     </div>
 
                     <div>
-                        <div class="inputLabel">API Key <a href="https://platform.openai.com/account/api-keys"
+                        <div class="inputLabel">OpenAI API Key <a href="https://platform.openai.com/account/api-keys"
                                 style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
-                        <input id="apiKeyText" type="password" placeholder="Enter your API key"
+                        <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                             class="underlinedInput optionsInput" style="color: #ccc;">
                     </div>
+
+
+                    <div>
+                        <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
+                                style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
+                        <input id="azureApiKeyText" type="password" placeholder="Only required if you want speech narration."
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            class="underlinedInput optionsInput" style="color: #ccc;">
+                    </div>
+
+                    <div>
+                        <div class="inputLabel">Azure API Region <a href="https://portal.azure.com/"
+                                style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
+                        <input id="azureApiRegionText" placeholder="Only required if you want speech narration."
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            class="underlinedInput optionsInput" style="color: #ccc;">
+                    </div>
+
 
                     <div>
                         <div class="inputLabel">Session Type</div>
@@ -69,12 +85,12 @@
                     </div>
 
                     <!--
-                            <div class="inputLabel">Session Description</div>
+                    <div class="inputLabel">Session Description</div>
 
-                            <div id="sessionTypeDescription">
-                                sessionTypeDescription
-                            </div>
-                            -->
+                    <div id="sessionTypeDescription">
+                        sessionTypeDescription
+                    </div>
+                    -->
 
                     <div>
                         <div class="inputLabel">Customization</div>

@@ -34,12 +34,15 @@ class Boot extends Object {
       
       "source/app/voice/VoiceChat.js",
 
-      "source/app/openai/OpenAiRequest.js",
-      "source/app/openai/OpenAiService.js",
-      "source/app/openai/OpenAiChat.js",
-      "source/app/openai/OpenAiImageGen.js",
-      "source/app/openai/OpenAiImageBot.js",
-      "source/app/openai/OpenAiMusicBot.js",
+      "source/app/services/openai/OpenAiRequest.js",
+      "source/app/services/openai/OpenAiService.js",
+      "source/app/services/openai/OpenAiChat.js",
+      "source/app/services/openai/OpenAiImageGen.js",
+      "source/app/services/openai/OpenAiImageBot.js",
+      "source/app/services/openai/OpenAiMusicBot.js",
+
+      "source/app/services/azure/AzureService.js",
+      "source/app/services/azure/AzureTextToSpeech.js",
 
       "source/app/views/View.js",
 
@@ -55,6 +58,7 @@ class Boot extends Object {
       "source/app/views/AiChatView.js",
       "source/app/views/GroupChatView.js",
       "source/app/views/UsersView.js",
+      "source/app/views/SessionOptionsConfig.js",
       "source/app/views/SessionOptionsView.js",
       "source/app/views/MessageView.js",
       "source/app/views/ImageMessageView.js",

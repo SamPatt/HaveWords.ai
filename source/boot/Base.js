@@ -44,7 +44,7 @@ if (!String.prototype.capitalized) {
     }
 
     static shared () {
-        if (!this._shared) {
+        if (!Object.hasOwn(this, "_shared")) {
             this._shared = this.clone()
         }
         return this._shared

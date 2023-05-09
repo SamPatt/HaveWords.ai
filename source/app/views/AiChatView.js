@@ -116,16 +116,22 @@
 
     let isUser = false;
     if (type === "prompt") {
+
       this.setShowLoading(true)
       isUser = true;
+
     } else if (type === "aiResponse") {
+
       this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
         m.element().appendChild(this.genImageButtonFor(m.text()));
       }
-      OpenAiMusicBot.shared().setSceneDescription(m.text()).trigger();
+      this.onAiResponseText(m.text());
+
     } else if (type === "image-gen") {
+
       this.setShowLoading(true);
+
     } else if (type === "systemMessage") {
     } 
 
@@ -134,7 +140,14 @@
     }
 
     this.addMessageElement(m.element());
+  }
 
+  onAiResponseText (text) {
+      // Trigger music 
+      OpenAiMusicBot.shared().setSceneDescription(text).trigger();
+
+      // Trigger Text to Speech
+      AzureTextToSpeech.shared().asyncSpeakTextIfAble(text);
   }
 
   // --------------------------------------------------------

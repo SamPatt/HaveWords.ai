@@ -33,13 +33,21 @@
   }
 
   playTrackWithName (name) {
-    this.debugLog("playTrackWithName('" + name + "'");
+    const yt = YouTubeAudioPlayer.shared();
+
+    this.debugLog("playTrackWithName('" + name + "')");
     const vid = this.tracksMap().get(name);
-    if (vid && vid !== YouTubeAudioPlayer.shared().videoId()) {
-      YouTubeAudioPlayer.shared().setVideoId(vid).play();
-    } else {
-      console.warn("missing track with name '" + name + "'")
+
+    if (!vid) {
+      this.debugLog("missing track with name '" + name + "'");
+      return;
     }
+
+    if (vid && vid !== yt.videoId()) {
+      if (!yt.isPlaying()) {
+        yt.setVideoId(vid).play();
+      }
+    } 
   }
 
 }.initThisClass());

@@ -71,9 +71,13 @@
       json.videoId = this.videoId();
     }
 
-    const player = new YT.Player("player", json);
-
-    this.setPlayer(player);
+    try {
+      const player = new YT.Player("player", json);
+      this.setPlayer(player);
+    } catch (error) {
+      console.warn(error);
+      throw error;
+    }
     return this;
   }
 
@@ -117,6 +121,10 @@
 
   // The API will call this function when the video player is ready
   onPlayerReady(event) {
+    //const iframes = document.getElementsByTagName('iframe');
+    //const playerFrame = iframes[0];
+    // TODO: add code to catch exceptions within the iframe?
+    //debugger;
     this.player().playVideo();
   }
 

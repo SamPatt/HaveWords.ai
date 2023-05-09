@@ -55,6 +55,14 @@ Object.defineSlot(String.prototype, "copyToClipboard", function() {
   return Promise.reject("The Clipboard API is not available.");
 });
 
+Object.defineSlot(String.prototype, "isHexadecimal", function() {
+  const regexp = /^[0-9a-fA-F]+$/;
+  return regexp.test(this);
+});
+
+Object.defineSlot(String.prototype, "removedHtmlTags", function() {
+  return this.replace(/<[^>]*>/g, '');
+});
 
 // Base32Hex character set
 
