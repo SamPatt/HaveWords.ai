@@ -7,8 +7,8 @@
 
 (class OpenAiChat extends OpenAiService {
   initPrototypeSlots() {
-    this.newSlot("aiModel", null);
-    this.newSlot("aiRole", null);
+    //this.newSlot("model", "gpt-3.5-turbo");
+    //this.newSlot("role", "user");
     this.newSlot("conversationHistory", null);
   }
 

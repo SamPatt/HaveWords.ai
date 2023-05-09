@@ -29,7 +29,7 @@
   }
 
   trackNames () {
-    return this.tracksMap().valuesArray();
+    return this.tracksMap().keysArray();
   }
 
   playTrackWithName (name) {
@@ -40,25 +40,6 @@
     } else {
       console.warn("missing track with name '" + name + "'")
     }
-  }
-
-  prompt () {
-    let s = "Which one of the following music track names to you feel would be most appropriate for what is currently happening in the game?:";
-    s += this.trackNames().map(s => '"' + s + '"').join(",");
-    s += ". Please only respond with the words \"play track:\" followed by the track namein double quotes.";
-    return s;
-  }
-
-  handlePromptResponse(response) {
-    this.debugLog("handlePromptResponse('" + response + "'");
-    if (response.beginsWith("play track:")) {
-      const parts = response.split("play track:");
-      const quoted = parts[1].trim();
-      const quotedParts = quoted.split('"');
-      const trackName = quotedParts[1];
-      this.playTrackWithName(trackName);
-    }
-    return this;
   }
 
 }.initThisClass());

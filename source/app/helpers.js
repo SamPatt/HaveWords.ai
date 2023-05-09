@@ -94,6 +94,10 @@ Object.defineSlot(Map.prototype, "valuesArray", function() {
   return Array.from(this.values())
 });
 
+Object.defineSlot(Map.prototype, "keysArray", function() {
+  return Array.from(this.keys())
+});
+
 
 Object.defineSlot(Map.prototype, "forEachKV", function(f) {
   this.forEach((v, k) => { 

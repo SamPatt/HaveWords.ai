@@ -5,7 +5,7 @@
 
 */
 
-(class OpenAiTriggerBot extends OpenAiService {
+(class OpenAiImageBot extends OpenAiService {
   initPrototypeSlots() {
     this.newSlot("sceneDescription", null);
   }
@@ -14,32 +14,31 @@
     super.init();
   }
 
+  newRequest() {
+    const request = OpenAiRequest.clone();
+    request.setApiUrl("https://api.openai.com/v1/chat/completions");
+    request.setApiKey(this.apiKey());
+    return request;
+  }
+
   // ImageBot function it triggered when the host requests an image description of the current scene
   async trigger() {
     assert(this.sceneDescription());
     assert(this.apiKey());
 
-    const apiUrl = "https://api.openai.com/v1/chat/completions";
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey()}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ 
-          role: "user", 
-          content: this.prompt() 
-        }],
-      }),
-    };
-    const AIresponse = await fetch(apiUrl, requestOptions);
-    const data = await AIresponse.json();
+    const request = this.newRequest().setBodyJson({
+      model: SessionOptionsView.shared().aiModel(), //"gpt-3.5-turbo",
+      messages: [{ 
+        role: "user", 
+        content: this.prompt() 
+      }]
+    });
+
+    const data = await request.asyncSend();
     const imageDescription = data.choices[0].message.content;
 
     const fullImageDescription = SessionOptionsView.shared().artPromptPrefix() + imageDescription + SessionOptionsView.shared().artPromptSuffix();
-    console.log(`Image description: ${fullImageDescription}`);
+    console.log("Image description: " + fullImageDescription);
     const gen =  OpenAiImageGen.clone().setPrompt(fullImageDescription);
     const imageURL = await gen.asyncFetch();
     HostSession.shared().broadcastImage(imageURL);

@@ -88,7 +88,7 @@
         "Host",
         LocalUser.shared().id()
       );
-      OpenAiTriggerBot.shared().setSceneDescription(sanitizedHtml).trigger();
+      OpenAiImageBot.shared().setSceneDescription(sanitizedHtml).trigger();
       // Optional: Hide the button after it has been clicked
       button.style.display = "none";
     });
@@ -133,6 +133,8 @@
     }
 
     this.addMessageElement(m.element());
+
+    OpenAiMusicBot.shared().setSceneDescription(m.text()).trigger();
   }
 
   // --------------------------------------------------------

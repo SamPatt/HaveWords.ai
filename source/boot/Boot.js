@@ -38,7 +38,8 @@ class Boot extends Object {
       "source/app/openai/OpenAiService.js",
       "source/app/openai/OpenAiChat.js",
       "source/app/openai/OpenAiImageGen.js",
-      "source/app/openai/OpenAiTriggerBot.js",
+      "source/app/openai/OpenAiImageBot.js",
+      "source/app/openai/OpenAiMusicBot.js",
 
       "source/app/views/View.js",
 
