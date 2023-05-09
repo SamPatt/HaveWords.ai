@@ -68,7 +68,7 @@
   }
 
   setupHostSession() {
-    if (!this.hasSetup()) {
+    if (this.hasSetup()) {
       // might get called again if we reconnect to PeerServer
       return
     }

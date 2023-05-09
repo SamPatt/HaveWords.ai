@@ -18,6 +18,7 @@
   }
 
   setLink (aString) {
+    console.log('Setting invite link:', aString);
     this._link = aString;
     this.element().style.opacity = 1;
     return this
