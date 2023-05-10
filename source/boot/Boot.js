@@ -35,6 +35,12 @@ class Boot extends Object {
       
       "source/app/voice/VoiceChat.js",
 
+      /*
+      "source/app/services/midjourney/MJRequest.js",
+      "source/app/services/midjourney/MJService.js",
+      "source/app/services/midjourney/MJImageGen.js",
+      */
+
       "source/app/services/openai/OpenAiRequest.js",
       "source/app/services/openai/OpenAiService.js",
       "source/app/services/openai/OpenAiChat.js",
