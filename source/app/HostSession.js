@@ -76,7 +76,7 @@
 
     assert(App.shared().isHost())
 
-    console.log("Setting up host session");
+    //console.log("Setting up host session");
     this.setupInviteButton();
 
     Session.shared().clear()
