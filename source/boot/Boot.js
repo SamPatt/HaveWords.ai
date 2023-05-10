@@ -16,8 +16,6 @@ class Boot extends Object {
 
       "source/app/App.js",
       "source/app/Sounds.js",
-      "source/app/MusicConfig.js",
-      "source/app/Music.js",
 
       "source/app/voice/Microphone.js",
 
@@ -35,6 +33,11 @@ class Boot extends Object {
       
       "source/app/voice/VoiceChat.js",
 
+      // services
+
+      "source/app/services/azure/AzureService.js",
+      "source/app/services/azure/AzureTextToSpeech.js",
+
       /*
       "source/app/services/midjourney/MJRequest.js",
       "source/app/services/midjourney/MJService.js",
@@ -48,8 +51,9 @@ class Boot extends Object {
       "source/app/services/openai/OpenAiImageBot.js",
       "source/app/services/openai/OpenAiMusicBot.js",
 
-      "source/app/services/azure/AzureService.js",
-      "source/app/services/azure/AzureTextToSpeech.js",
+      "source/app/services/youtube/YouTubeAudioPlayer.js",
+      "source/app/services/youtube/MusicConfig.js",
+      "source/app/services/youtube/Music.js",
 
       "source/app/views/View.js",
 
@@ -71,7 +75,6 @@ class Boot extends Object {
       "source/app/views/ImageMessageView.js",
       "source/app/views/inputs/AvatarPickerView.js",
 
-      "source/app/views/YouTubeAudioPlayer.js"
     ]
   }
 

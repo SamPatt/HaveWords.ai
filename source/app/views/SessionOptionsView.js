@@ -134,6 +134,8 @@
   // --- setup ---
 
   appDidInit() {
+    this.hidePromptInputs();
+
     if (App.shared().isHost()) {
       this.unhide();
     } else {
@@ -159,15 +161,18 @@
 
   // --- sessionSubtypeOptions ---
 
-  onSubmit_onSubmit_sessionSubtypeOptions() {}
+  onSubmit_sessionSubtypeOptions() {}
 
+  hidePromptInputs () {
+    document.getElementById("messageInputSection").style.display = "none"; // host ai chat input
+    document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
+  }
 
   displayHostHTMLChanges() {
     document.getElementById("appView").style.display = "block";
     this.unhide()
-    document.getElementById("inputSection").style.display = "block"; // host ai chat input
-    document.getElementById("inputSectionRemote").style.display = "none"; // guest ai chat input
-
+    document.getElementById("messageInputSection").style.display = "block"; // host ai chat input
+    document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
     /*
     document.getElementById("sessionResetButton").style.display = "block";
     this.sessionStartButton().style.display = "block";
@@ -177,8 +182,8 @@
   displayGuestHTMLChanges() {
     document.getElementById("appView").style.display = "block"; 
     this.hide()
-    document.getElementById("inputSection").style.display = "none"; // guest ai chat input
-    document.getElementById("inputSectionRemote").style.display = "block"; // guest ai chat input
+    document.getElementById("messageInputSection").style.display = "none"; // guest ai chat input
+    document.getElementById("messageInputRemoteSection").style.display = "block"; // guest ai chat input
     messageInputRemote.disabled = true;
   }
 

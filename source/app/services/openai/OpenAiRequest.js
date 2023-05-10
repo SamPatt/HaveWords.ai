@@ -50,7 +50,8 @@
 
    // debugger;
     //try {
-      console.log(">>>>>>>>>> send request:", this.apiUrl(), requestOptions)
+      //this.debugLog(" send request apiUrl:" +  this.apiUrl() + "options: \n" + JSON.stringify(requestOptions, 2, 2))
+      this.debugLog(" send request apiUrl:" +  this.apiUrl() + "options: \n", requestOptions)
       const response = await fetch(this.apiUrl(), requestOptions);
       data = await response.json();
       /*

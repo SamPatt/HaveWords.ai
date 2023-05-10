@@ -51,7 +51,7 @@
 
   setup() {
     const id = LocalUser.shared().id();
-    console.log("connecting to peerjs server with host id:\n", LocalUser.shared().shortId(), "\n")
+    this.debugLog("connecting to peerjs as:" + LocalUser.shared().shortId())
     const peer = new Peer(id, this.peerOptions());
     this.setPeer(peer);
 
@@ -69,8 +69,9 @@
   }
 
   onConnection (conn) {
+    this.debugLog("connected to peerjs server as: " + LocalUser.shared().shortId())
     if (!this.allowsIncomingConnections()) {
-      console.log(this.type() + " attempted connection while allowsIncomingConnections is false");
+      console.warn(this.type() + " attempted connection while allowsIncomingConnections is false");
       return this
     }
 
@@ -114,7 +115,7 @@
 
     if (this.retryCount() < this.maxRetries()) {
       setTimeout(() => {
-        console.log("Attempting to reconnect to PeerJS server... (attempt #" + this.retryCount() + ")");
+        console.warn("Attempting to reconnect to PeerJS server... (attempt #" + this.retryCount() + ")");
         this.peer().reconnect(); // TODO: will this call onConnection again?
         this.setRetryCount(this.retryCount() + 1);
       }, 5000);

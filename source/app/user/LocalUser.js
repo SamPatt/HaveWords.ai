@@ -15,7 +15,7 @@
   init() {
     super.init();
     this.setCryptoId(CryptoIdentity.clone());
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
   }
 
   setNickname(aString) {
@@ -43,7 +43,7 @@
       this.setNickname(Nickname.generateNickname());
     }
 
-    console.log(this.description());
+    this.debugLog(this.description());
     return this;
   }
 
@@ -52,11 +52,11 @@
   }
 
   shortId() {
-    return this.id().slice(6) + "...";
+    return this.id().slice(1, 6) + "...";
   }
 
   description() {
-    return this.type() + " id:" + this.id() + " nickname:" + this.nickname();
+    return this.type() + " id:" + this.shortId() + " nickname:" + this.nickname();
   }
 
   // --- json ---

@@ -222,7 +222,7 @@ h2 {
 }
 
 .header {
-    min-height: 5em;
+    min-height: 6em;
     padding-left: 1em;
     padding-right: 1.75em;
     padding-bottom: 1em;
@@ -250,6 +250,7 @@ h2 {
 
 .optionsContainer {
     display: flex;
+    overflow-y: hidden;
 }
 
 .aiMessage {

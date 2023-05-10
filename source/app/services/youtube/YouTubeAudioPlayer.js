@@ -20,7 +20,7 @@
   init() {
     super.init();
     this.loadFrameAPI(); // set this up, then we'll set up the player
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
   }
 
   // action queue
@@ -33,13 +33,14 @@
 
   // ----------------------------------
 
-
+/*
   setVideoId (vid) {
     if (this._videoId !== vid) {
       this._videoId = vid;
     }
     return this;
   }
+  */
 
   loadFrameAPI() {
     // Load the YouTube IFrame Player API asynchronously
@@ -115,7 +116,7 @@
       //this.player().playVideo();
       this.updateVolume();
     } else {
-      console.log("-------------- player not set up yet, but video should start when it is -------------");
+      this.debugLog("-------------- player not set up yet, but video should start when it is -------------");
     }
     return this
   }
@@ -157,7 +158,7 @@
   // The API will call this function when the video player is ready
   onPlayerReady(event) {
     //this.setupFrameExceptionCatcher()
-    console.log("---------------------- onPlayerReady ------------------------------");
+    this.debugLog("---------------------- onPlayerReady ------------------------------");
     this.setIsReady(true);
     const player = event.target;
     assert(player === this.player());
@@ -181,32 +182,32 @@
     const state = Number(event.data);
     switch (state) {
       case -1:
-        console.log("Video unstarted");
+        this.debugLog("Video unstarted");
         break;
 
       case YT.PlayerState.ENDED:
-        console.log("Video ENDED");
+        this.debugLog("Video ENDED");
         this.onPlayerEnd(event);
         break;
 
       case YT.PlayerState.PLAYING:
-        console.log("Video PLAYING");
+        this.debugLog("Video PLAYING");
         break;
 
       case YT.PlayerState.PAUSED:
-        console.log("Video PAUSED");
+        this.debugLog("Video PAUSED");
         break;
 
       case YT.PlayerState.BUFFERING:
-        console.log("Video BUFFERING");
+        this.debugLog("Video BUFFERING");
         break;
 
       case YT.PlayerState.CUED:
-        console.log("Video CUED");
+        this.debugLog("Video CUED");
         break;
 
       default:
-        console.log("Video unknown state chage");
+        this.debugLog("Video unknown state chage");
     }
   }
 
