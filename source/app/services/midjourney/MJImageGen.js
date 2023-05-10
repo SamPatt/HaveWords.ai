@@ -16,7 +16,7 @@
 
   newRequest () {
     const request = MJRequest.clone();
-    request.setApiUrl("???);
+    request.setApiUrl("???");
     request.setApiKey(this.apiKey());
     return request;
   }

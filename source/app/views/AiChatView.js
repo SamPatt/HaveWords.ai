@@ -143,8 +143,10 @@
   }
 
   onAiResponseText (text) {
-      // Trigger music 
+      // Trigger music only if host and in session
+      if (App.shared().isHost() && Session.shared().inSession()) {
       OpenAiMusicBot.shared().setSceneDescription(text).trigger();
+      }
 
       // Trigger Text to Speech
       AzureTextToSpeech.shared().asyncSpeakTextIfAble(text);
