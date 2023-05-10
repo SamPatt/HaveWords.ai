@@ -143,8 +143,8 @@
   }
 
   onAiResponseText (text) {
-      // Trigger music only if host
-      if (App.shared().isHost()) {
+      // Trigger music only if host and in session
+      if (App.shared().isHost() && Session.shared().inSession()) {
       OpenAiMusicBot.shared().setSceneDescription(text).trigger();
       }
 
