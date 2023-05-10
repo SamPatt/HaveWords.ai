@@ -40,7 +40,7 @@
     const response = data.choices[0].message.content;
     this.debugLog("music bot response: '" + response + "'");
     this.handlePromptResponse(response);
-    //HostSession.shared().broadcastMusic(Music.shared().trackId());
+    //HostSession.shared().broadcastMusic(MusicPlayer.shared().trackId());
   }
 
   prompt () {
@@ -48,7 +48,7 @@
     let s = "Given this scene description:\n"
     s += "[[" + this.sceneDescription() + "]]\n";
     s += "Which one of the following music tracks do you feel would be most appropriate for that scene:";
-    s += Music.shared().trackNames().map(s => '"' + s + '"').join(",");
+    s += MusicPlayer.shared().trackNames().map(s => '"' + s + '"').join(",");
     s += "\nPlease only respond with the track name you chose in double quotes and only suggest a track name from the list provided."
     return s;
   }
@@ -57,7 +57,7 @@
     this.debugLog("handlePromptResponse('" + s + "'");
     if (s.startsWith("\"") && s.endsWith("\"")) {
       const trackName = s.slice(1, -1); // remove the quotes
-      Music.shared().playTrackWithName(trackName);
+      MusicPlayer.shared().playTrackWithName(trackName);
     } else {
       this.debugLog("ERROR: response not in valid quoted format");
     }

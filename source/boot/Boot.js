@@ -52,8 +52,8 @@ class Boot extends Object {
       "source/app/services/openai/OpenAiMusicBot.js",
 
       "source/app/services/youtube/YouTubeAudioPlayer.js",
-      "source/app/services/youtube/MusicConfig.js",
-      "source/app/services/youtube/Music.js",
+      "source/app/services/youtube/MusicLibrary.js",
+      "source/app/services/youtube/MusicPlayer.js",
 
       "source/app/views/View.js",
 

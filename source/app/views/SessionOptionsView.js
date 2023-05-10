@@ -315,6 +315,8 @@
     return this.replacedConfigString(v);
   }
 
+  // --- art prompt ---
+
   artPromptSuffix () {
     const v = this.configLookup("artPromptSuffix");
     return this.replacedConfigString(v);
@@ -325,9 +327,19 @@
     return this.replacedConfigString(v);
   }
 
+  // -- music playlist ---
+
+  musicPlaylists () {
+    return this.configLookup("musicPlaylists");
+  }
+
   // --- start session ---
 
   async onSubmit_sessionStartButton() {
+    
+    MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists())
+
+
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode
     );

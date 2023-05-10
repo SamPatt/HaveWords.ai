@@ -46,6 +46,7 @@ const sessionOptionsArray = [
     Players should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
     Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
     The player names are: [playerNames].`,
+    musicPlaylists: ["DnD"],
     options: [
       {
         label: "Traditional roleplaying",
@@ -102,28 +103,29 @@ const sessionOptionsArray = [
         I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
         Do not make any decisions for the players. Always ask the players what they would like to do.`,
         promptSuffix: " ",
-        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:",
       },
       {
         label: "Harry Potter",
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
-        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:"
+        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
+        musicPlaylists: ["HarryPotter"],
       },
       {
         label: "Studio Ghibli",
         value: "Studio Ghibli",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
         Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
-        artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k."
+        artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
+        musicPlaylists: ["StudioGhibli"],
       },
       {
         value: "Conan",
         label: "Conan the Barbarian",
         prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.
         As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane.`,
-        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
-
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:",
       },
       {
         label: "Norse Mythology",
@@ -143,6 +145,7 @@ const sessionOptionsArray = [
     usersName: "Players",
     message: "The host has started a [sessionSubtype] trivia game.",
     artPromptPrefix: "Illustration of a trivia game with a question about: ",
+    musicPlaylists: ["Trivia"],
     options: [
       {
         label: "Variety",
@@ -197,6 +200,7 @@ const sessionOptionsArray = [
     message:
       "The host started a new exploration session! Please wait while the AI Guide prepares to start the session...",
     artPromptSuffix: " | oil painting high resolution 4k",
+    musicPlaylists: ["DnD"],
     options: [
       {
         label: "Write your own",
