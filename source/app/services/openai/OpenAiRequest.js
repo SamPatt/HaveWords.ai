@@ -9,9 +9,9 @@
 
 (class OpenAiRequest extends Base {
   initPrototypeSlots () {
-    this.newSlot("body", null)
-    this.newSlot("apiKey", null)
-    this.newSlot("apiUrl", null)
+    this.newSlot("apiUrl", null);
+    this.newSlot("apiKey", null);
+    this.newSlot("body", null); // this will contain the model choice and messages
   }
 
   init () {
@@ -30,7 +30,7 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: this.body(),
     };
@@ -50,7 +50,7 @@
 
    // debugger;
     //try {
-     //this.debugLog("send request:", this.apiUrl(), requestOptions)
+      console.log(">>>>>>>>>> send request:", this.apiUrl(), requestOptions)
       const response = await fetch(this.apiUrl(), requestOptions);
       data = await response.json();
       /*

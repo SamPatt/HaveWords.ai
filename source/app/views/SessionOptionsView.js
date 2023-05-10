@@ -24,9 +24,10 @@
     super.init();
     this.setId("aiSelectionBlock");
 
+    const modelOptions = OpenAiChat.shared().modelOptions().map(name => { return { label: name, value:name }; });
     this.setAiModelOptions(
-      OptionsView.clone().setId("aiModelOptions").setTarget(this)
-    );
+      OptionsView.clone().setId("aiModelOptions").setTarget(this).setOptions(modelOptions).setShouldStore(true).load()
+    )
 
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
@@ -349,7 +350,7 @@
 
     this.hide()
 
-    console.log("using prompt [[" + this.prompt() + "]]")
+    //this.debugLog("using prompt [[" + this.prompt() + "]]")
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response);

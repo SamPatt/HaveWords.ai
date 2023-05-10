@@ -13,6 +13,7 @@
   init() {
     super.init();
     this.setInfo({});
+    this.setIsDebugging(false);
   }
 
   // --- nickname ----

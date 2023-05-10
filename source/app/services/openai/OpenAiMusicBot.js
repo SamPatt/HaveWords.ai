@@ -12,6 +12,7 @@
 
   init() {
     super.init();
+    this.setIsDebugging(false);
   }
 
   newRequest() {
@@ -33,34 +34,32 @@
         content: this.prompt() 
       }]
     });
-    console.log("music bot prompt: '" + this.prompt()  + "'");
+    this.debugLog("music bot prompt: '" + this.prompt()  + "'");
 
     const data = await request.asyncSend();
     const response = data.choices[0].message.content;
-    console.log("music bot response: '" + response + "'");
+    this.debugLog("music bot response: '" + response + "'");
     this.handlePromptResponse(response);
     //HostSession.shared().broadcastMusic(Music.shared().trackId());
   }
 
   prompt () {
     assert(this.sceneDescription());
-
-    let s = "Which one of the following music track names:";
+    let s = "Given this scene description:\n"
+    s += "[[" + this.sceneDescription() + "]]\n";
+    s += "Which one of the following music tracks do you feel would be most appropriate for that scene:";
     s += Music.shared().trackNames().map(s => '"' + s + '"').join(",");
-    s += " do you feel would be most appropriate for the following content:\n\n"
-    s += "[[" + this.sceneDescription() + "]]";
-    s += "\n\nPlease only respond with the words \"play track:\" followed by the track name you chose in double quotes.";
+    s += "\nPlease only respond with the track name you chose in double quotes and only suggest a track name from the list provided."
     return s;
   }
 
-  handlePromptResponse(response) {
-    this.debugLog("handlePromptResponse('" + response + "'");
-    if (response.startsWith("play track:")) {
-      const parts = response.split("play track:");
-      const quoted = parts[1].trim();
-      const quotedParts = quoted.split('"');
-      const trackName = quotedParts[1];
+  handlePromptResponse(s) {
+    this.debugLog("handlePromptResponse('" + s + "'");
+    if (s.startsWith("\"") && s.endsWith("\"")) {
+      const trackName = s.slice(1, -1); // remove the quotes
       Music.shared().playTrackWithName(trackName);
+    } else {
+      this.debugLog("ERROR: response not in valid quoted format");
     }
     return this;
   }

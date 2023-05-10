@@ -9,15 +9,29 @@
   initPrototypeSlots() {
     this.newSlot("element", null);
     this.newSlot("player", null); // to store the YouTube player
+    this.newSlot("isReady", false); 
     this.newSlot("videoId", null);
     this.newSlot("shouldRepeat", true);
     this.newSlot("frameIsReady", null);
+    this.newSlot("volume", 0.1);
+    //this.newSlot("playerActionQueue", []);
   }
 
   init() {
     super.init();
     this.loadFrameAPI(); // set this up, then we'll set up the player
+    this.setIsDebugging(true);
   }
+
+  // action queue
+
+  queueAction (methodName, args) {
+    this.playerActionQueue().push({methodName: methodName, args: args});
+
+  }
+
+  // ----------------------------------
+
 
   setVideoId (vid) {
     if (this._videoId !== vid) {
@@ -41,12 +55,18 @@
     return this;
   }
 
+  player () {
+    if (!this._player) {
+      this.setupPlayer();
+    }
+    return this._player
+  }
+
   setupPlayer() {
-    this.debugLog("playing youtube audio id: " + this.videoId());
+    this.debugLog("------------------ setupPlayer ---------------- ");
     const json = {
-      height: "0",
-      width: "0",
-      //videoId: this.videoId(), // Replace 'YOUR_VIDEO_ID' with the ID of the YouTube video you want to play
+      height: '0',
+      width: '0',
       events: {
         onReady: (event) => {
           this.onPlayerReady(event);
@@ -59,7 +79,7 @@
         },
       },
       playerVars: {
-        autoplay: 0, // Auto-play the video
+        autoplay: 1, // Auto-play the video
         controls: 0, // Hide player controls
         showinfo: 0, // Hide video information
         rel: 0, // Do not show related videos
@@ -67,52 +87,66 @@
       },
     };
 
+    /*
     if (this.videoId()) {
       json.videoId = this.videoId();
     }
+    */
 
     try {
       const player = new YT.Player("player", json);
+      //debugger;
       this.setPlayer(player);
     } catch (error) {
       console.warn(error);
       throw error;
     }
+    this.setIsReady(false)
     return this;
   }
 
   play() {
-    if (this.player()) {
-      this.player().loadVideoById(this.videoId());
+    //debugger;
+    if (this.isReady() && this.videoId()) {
+      const startSeconds = 0.0;
+      this.debugLog("play()");
+      this.player().loadVideoById(this.videoId(), startSeconds);
+      //this.player().playVideo();
+      this.updateVolume();
     } else {
-      console.log("player not set up yet, but video should start when it is");
+      console.log("-------------- player not set up yet, but video should start when it is -------------");
     }
-    return this;
+    return this
   }
 
   isPlaying() {
-    const player = this.player();
-    if (player) {
-      return player.getPlayerState() === YT.PlayerState;
+    if (this.isReady()) {
+      return this.player().getPlayerState() === YT.PlayerState;
     }
     return false;
   }
 
   onPlayerError(event) {
     // Handle the error based on the error code
-    switch (event.data) {
+    //debugger;
+    const error = Number(event.data);
+    this.debugLog("------------------ onPlayerError " + error + " videoId: '" + this.videoId() + "'")
+
+    switch (error) {
       case 2: // Invalid parameter
-        console.error('Invalid video ID.');
+        console.error('The request contains an invalid parameter value. For example, this error occurs if you specify a video ID that does not have 11 characters, or if the video ID contains invalid characters, such as exclamation points or asterisks.');
+        break;
+      case 5:
+        console.error("The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred.");
         break;
       case 100: // Video not found
         console.error('Video not found.');
         break;
       case 101: // Playback not allowed
-      case 150: // Playback not allowed
-        console.error('Playback is not allowed.');
+        console.error("The owner of the requested video does not allow it to be played in embedded players.");
         break;
-      case 5: // Video not playable in the embedded player
-        console.error('Video not playable in the embedded player.');
+      case 150: // Playback not allowed
+        console.error("The owner of the requested video does not allow it to be played in embedded players.");
         break;
       default: // Unexpected error
         console.error('An unexpected error occurred while loading the video.');
@@ -121,17 +155,57 @@
 
   // The API will call this function when the video player is ready
   onPlayerReady(event) {
-    //const iframes = document.getElementsByTagName('iframe');
-    //const playerFrame = iframes[0];
-    // TODO: add code to catch exceptions within the iframe?
-    //debugger;
-    this.player().playVideo();
+    //this.setupFrameExceptionCatcher()
+    console.log("---------------------- onPlayerReady ------------------------------");
+    this.setIsReady(true);
+    const player = event.target;
+    assert(player === this.player());
+    this.play();
+    //this.player().style.display = "none";
+
   }
+
+  /*
+  setupFrameExceptionCatcher () {
+    const iframes = document.getElementsByTagName('iframe');
+    const playerFrame = iframes[0];
+    // TODO: add code to catch exceptions within the iframe?
+  }
+  */
 
   // The API calls this function when the player's state changes
   onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      this.onPlayerEnd(event);
+    this.debugLog("onPlayerStateChange " + event.data)
+
+    const state = Number(event.data);
+    switch (state) {
+      case -1:
+        console.log("Video unstarted");
+        break;
+
+      case YT.PlayerState.ENDED:
+        console.log("Video ENDED");
+        this.onPlayerEnd(event);
+        break;
+
+      case YT.PlayerState.PLAYING:
+        console.log("Video PLAYING");
+        break;
+
+      case YT.PlayerState.PAUSED:
+        console.log("Video PAUSED");
+        break;
+
+      case YT.PlayerState.BUFFERING:
+        console.log("Video BUFFERING");
+        break;
+
+      case YT.PlayerState.CUED:
+        console.log("Video CUED");
+        break;
+
+      default:
+        console.log("Video unknown state chage");
     }
   }
 
@@ -141,10 +215,31 @@
     }
   }
 
+  setVolume(v) { // 0.0 to 1.0
+    assert(v >= 0 && v <= 1.0);
+    this._volume = v;
+    this.updateVolume();
+    return this;
+  }
+
+  updateVolume() {
+    if (this.player()) {
+      const v = this.volume()*100;
+      //debugger;
+      if (this.isReady()) {
+        this.debugLog("setting volume to ", v)
+        this.debugLog("1 getVolume: ", this.player().getVolume())
+        this.player().setVolume(v);
+        this.debugLog("2 getVolume: ", this.player().getVolume())
+      }
+    }
+    return this;
+  }
+
   stop() {
     const player = this.player();
-    if (player) {
-      player.stopVideo();
+    if (this.isReady()) {
+      this.player().stopVideo();
     }
     return this;
   }
@@ -165,4 +260,4 @@ function onYouTubeIframeAPIReady() {
   YouTubeAudioPlayer.shared().onFrameReady();
 }
 
-YouTubeAudioPlayer.shared()
+YouTubeAudioPlayer.shared() // get the iframe and player setup

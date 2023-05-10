@@ -28,6 +28,10 @@
     return this;
   }
 
+  modelOptions () {
+    return ["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"];
+  }
+
   newRequest() {
     const request = OpenAiRequest.clone();
     request.setApiUrl("https://api.openai.com/v1/chat/completions");
@@ -38,16 +42,21 @@
 
   async asyncFetch(prompt) {
     const selectedModel = SessionOptionsView.shared().aiModel();
+    assert(this.modelOptions().includes(selectedModel));
 
     this.addToConversation({
       role: "user",
       content: prompt,
     });
 
+    //["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"]
+
     const request = this.newRequest().setBodyJson({
       model: selectedModel,
       messages: this.conversationHistory(),
+      temperature: 0.7
     });
+
 
     let json = undefined;
     try {

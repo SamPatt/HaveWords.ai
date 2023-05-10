@@ -3,6 +3,26 @@
 /* 
     AzureTextToSpeech
 
+  Rate: Controls the speed of the speech. Allowed values are x-slow, slow, medium, fast, x-fast, or a percentage. 
+  A value of 0% (default) means normal speed, values above 0% increase the speed, and values below 0% decrease it.
+
+  Pitch: Controls the pitch (frequency) of the speech. Allowed values are x-low, low, medium, high, x-high, or a relative change in semitones or Hertz. 
+  The default value is "medium". A positive relative change raises the pitch, while a negative one lowers it.
+
+  Volume: Controls the volume of the speech. Allowed values are silent, x-soft, soft, medium, loud, x-loud, or a decibel value. 
+  The default value is "medium". Decibel values are relative to the volume of the normal speech. 
+  Positive values make the speech louder, while negative values make it quieter.
+
+
+    "en-US-AriaNeural", 
+    "en-US-DavisNeural", 
+    "en-US-GuyNeural", 
+    "en-US-JaneNeural",
+    "en-US-JasonNeural",
+    "en-US-JennyNeural",
+    "en-US-NancyNeural",
+    "en-US-SaraNeural",
+    "en-US-TonyNeural"
 
 */
 
@@ -24,6 +44,8 @@
   async asyncSpeakText(text) {
 
     text = text.removedHtmlTags(); // clean up text first
+    text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
+    text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
 
     const ssmlRequest = `
       <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'>
@@ -35,7 +57,7 @@
     </speak>`;
 
 
-    console.log("made request")
+    //this.debugLog("made request")
     const response = await fetch(`https://${this.region()}.tts.speech.microsoft.com/cognitiveservices/v1`, {
       method: 'POST',
       headers: {

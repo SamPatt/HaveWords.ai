@@ -19,7 +19,7 @@
   init() {
     super.init();
     this.setPeerConnections(new Map());
-    this.setIsDebugging(true)
+    this.setIsDebugging(false)
     return this
   }
 

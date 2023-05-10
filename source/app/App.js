@@ -47,12 +47,11 @@
   onPeerServerOpen() {
     // sent by PeerServer after connected
     if (this.isHost()) {
-      console.log("setup for HOST ==========================");
+      //console.log("setup for HOST ==========================");
       PeerServer.shared().setPeerConnectionClass(GuestConnection);
       HostSession.shared().setupHostSession();
     } else {
-      console.log("setup for GUEST ==========================");
-
+      //console.log("setup for GUEST ==========================");
       //PeerServer.shared().setAllowsIncomingConnections(false)
       GuestSession.shared().joinSession(this.inviteId());
     }

@@ -219,7 +219,7 @@
   load () {
     const s = localStorage.getItem(this.id());
     if (s !== undefined) {
-      console.log("loading " + this.type() + " " + this.id());
+      this.debugLog("loading from localStorage " + this.type() + " " + this.id());
       this.setString(s);
     }
     return this;
@@ -227,7 +227,7 @@
 
   save() {
     const s = this.string();
-    console.log("saving " + this.type() + " id:" + this.id() + " string:'" + this.string() + "'");
+    this.debugLog("saving " + this.type() + " id:" + this.id() + " string:'" + this.string() + "'");
     localStorage.setItem(this.id(), this.string());
   }
 
