@@ -13,7 +13,7 @@
     this.newSlot("videoId", null);
     this.newSlot("shouldRepeat", true);
     this.newSlot("frameIsReady", null);
-    this.newSlot("volume", 0.1);
+    this.newSlot("volume", 0.05);
     //this.newSlot("playerActionQueue", []);
   }
 
@@ -25,10 +25,11 @@
 
   // action queue
 
+  /*
   queueAction (methodName, args) {
     this.playerActionQueue().push({methodName: methodName, args: args});
-
   }
+  */
 
   // ----------------------------------
 
