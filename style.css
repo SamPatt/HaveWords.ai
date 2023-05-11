@@ -59,13 +59,13 @@ select {
   */
 
 option {
-    font-family: "Day Roman", Arial, sans-serif;
+    font-family: inherit;
     font-size: 1em;
 }
 
 input,
 select {
-    font-family: "Day Roman", Arial, sans-serif;
+    font-family: inherit;
     border: 1px solid #777;
     background-color: transparent;
     color: #ccc;
@@ -155,15 +155,18 @@ select {
     width: 1.25em;
     border: 0px solid red;
     margin-top: 0.8em;
-    margin-right: 0.75em;
+    margin-right: 1.75em;
     overflow: hidden;
 }
 
 #micSvgIcon {
     pointer-events: none;
-    pointer-events: none;
     width: 100%;
     height: 100%;
+}
+
+.svgIcon {
+    pointer-events: none;
 }
 
 a {
@@ -187,7 +190,7 @@ ul {
 
 
 textarea {
-    font-family: "Day Roman", Arial, sans-serif;
+    font-family: inherit;
     width: 50%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: rgba(255, 255, 255, 0.03);
@@ -295,11 +298,11 @@ h2 {
 }
 
 input {
-    font-family: "Day Roman", Arial, sans-serif;
+    font-family: inherit;
 }
 
 button {
-    font-family: "Day Roman", Arial, sans-serif;
+    font-family: inherit;
     border: 1px solid #777;
     background-color: #444;
     color: #ccc;
@@ -451,7 +454,7 @@ button {
     border-radius: 5px;
 }
 
-.userPanel {
+.aiChatColumn {
     display: flex;
     flex: 5;
     flex-direction: column;
@@ -461,7 +464,7 @@ button {
     /* Less bright border color */
 }
 
-.connectedUsers {
+#connectedUsersColumn {
     min-width: 300px;
     /* Adjust this value to set the maximum width */
     overflow-x: auto;
@@ -475,7 +478,7 @@ button {
 
 
 
-.chatPanel {
+#groupChatColumn {
     min-width: 300px;
     display: flex;
     flex: 2;
@@ -810,4 +813,13 @@ button {
 .avatar-and-name-wrapper {
     display: flex;
     align-items: center;
+}
+
+.compator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: fit-content;
+    width: fit-content;
+    opacity: 0.15;
 }

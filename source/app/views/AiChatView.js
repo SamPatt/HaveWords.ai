@@ -13,7 +13,7 @@
 
   init() {
     super.init();
-    this.setId("userPanel");
+    this.setId("aiChatColumn");
     this.setupMessageInput();
     this.setupMessageInputRemote();
   }

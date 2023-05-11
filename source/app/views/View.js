@@ -215,6 +215,17 @@
     return this.type() + " with id " + this.id();
   }
 
+  // --- hiding ---
+
+  setIsHidden(aBool) {
+    if (aBool) {
+      this.hide();
+    } else {
+      this.unhide();
+    }
+    return this;
+  }
+
   hide() {
     this.element().style.display = "none";
     return this;
@@ -224,6 +235,12 @@
     this.element().style.display = "block";
     return this;
   }
+
+  isHidden() {
+    return this.element().style.display === "none";
+  }
+
+  // ----
 
   load () {
     const s = localStorage.getItem(this.id());

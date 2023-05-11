@@ -44,9 +44,15 @@
   async asyncSpeakText(text) {
 
     text = text.removedHtmlTags(); // clean up text first
-    text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
-    text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
+    text = text.replaceAll("<p>", ""); 
+    text = text.replaceAll("</p>", "\n\n"); 
+    //text = text.replaceAll(".", "\n\n"); 
 
+    text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
+    //text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
+
+    console.log("asyncSpeakText(" + text + ")");
+    
     const ssmlRequest = `
       <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'>
       <voice name='en-US-TonyNeural'>

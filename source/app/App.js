@@ -13,6 +13,8 @@
 
   initPrototypeSlots() {
     this.newSlot("user", null);
+    this.newSlot("compactButton1", null);
+    this.newSlot("compactButton2", null);
   }
 
   init() {
@@ -38,6 +40,7 @@
       role: "system",
       content: "You are a helpful assistant.",
     });
+    this.setupCompactorButtons();
   }
 
   unhide () {
@@ -92,6 +95,30 @@
 
   onWindowClose () {
     PeerServer.shared().shutdown()
+  }
+
+  // setup
+
+  setupCompactorButtons () {
+    this.setCompactButton1(
+      Button.clone().setId("compactButton1").setTarget(this).setAction("onCompact1")
+    );
+    this.setCompactButton2(
+      Button.clone().setId("compactButton2").setTarget(this).setAction("onCompact2")
+    );
+  }
+
+  onCompact1 (aButton) {
+    const group = View.clone().setId("groupChatColumn");
+    const users = View.clone().setId("connectedUsersColumn");
+    const toggled = !group.isHidden();
+    group.setIsHidden(toggled);
+    users.setIsHidden(toggled);
+  }
+
+  onCompact2 (aButton) {
+    const users = View.clone().setId("connectedUsersColumn");
+    users.setIsHidden(!users.isHidden());
   }
 
 }).initThisClass();

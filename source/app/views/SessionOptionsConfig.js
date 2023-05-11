@@ -79,9 +79,10 @@ const sessionOptionsArray = [
         For example, if my character is fighting bandits in the middle of the woods, there wouldn’t be town guards to help me unless there is a town very close by. 
         Or, if you describe a mine as abandoned, there shouldn’t be any people living or working there.
         
-        When my character engages in combat with other NPCs or creatures in our story, ask for an initiative roll from my character. 
+        When my character engages in combat with other NPCs or creatures in our story roll for initiative.
         You can also generate a roll for the other creatures involved in combat. 
-        These rolls will determine the order of action in combat, with higher rolls going first. Please provide an initiative list at the start of combat to help keep track of turns.
+        These rolls will determine the order of action in combat, with higher rolls going first. 
+        Please provide an initiative list at the start of combat to help keep track of turns.
         
         For each creature in combat, keep track of their health points (HP). 
         Damage dealt to them should reduce their HP by the amount of the damage dealt.

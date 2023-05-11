@@ -141,7 +141,6 @@
       "Tropical Coast": "LboMqM5mEFA",
       "Haunted Battlefield": "QGQltGAWAU0",
       "Haunted House / Creepy Cabin": "QVQD9_eB8Qg",
-      "Swamp Travel": "GpH6wKwOpy0",
       "Ghostly Procession": "wflzworJizA",
       "Monster Parade": "fXnIDBEa0Qs",
       "Firework Festival": "rkHA54puEhk",
@@ -487,4 +486,35 @@
     };
   }
 
+  tracksFor_soundFX () {
+    return {
+      "knocking on door": "HIJunF3DIjw",
+      "creaking door opening": "ij5bdBI_JVA",
+      "door closing": "PAPcSY20DYA",
+      "heavy metal door opening and closing": "c90uCjVbW_g",
+      "dramatic jungle drums": "3e1Acwh8GmQ",
+      "sword fight": "4g-iCX2oST4",
+      "sword slice": "VjrY6foiTxw",
+      "critical axe hit": "Q6ab0gpaKIw",
+      "axe hit": "l1XG1rBstSk",
+      "dementor wailing": "8XbN5nIBuew",
+      "dementor soul kiss": "ZUqDcr4lznU",
+      "card shuffling": "dbfwV0-XCRY",
+      "demonic laugh": "9Il8gAr7Ar4",
+      "dark war horn": "kUw-fc2BYLo",
+      "bright war horn": "o54owbOXrro",
+      "cinematic war horn": "tsl854orF1I",
+      "war horn with echo": "enQyoFCrSXY",
+      "long war horn": "uHHMV8hukBI",
+      "ork battle horn": "hPKTrrgMrmBc",
+      "distant ominous war horn": "GCilFSXdLuM",
+      "scary war horn": "C7YbRGABJ3U",
+    }
+  }
+
+  tracksFor_openings () {
+    return {
+      "harry potter opening": "84j5uMdspmQ",
+    }
+  }
 }).initThisClass();

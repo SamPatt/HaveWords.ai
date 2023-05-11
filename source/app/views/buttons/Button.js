@@ -13,6 +13,7 @@
 
   init() {
     super.init();
+    this.setIsDebugging(true);
   }
 
   setIsDisabled (aBool) {

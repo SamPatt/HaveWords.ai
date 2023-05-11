@@ -20,7 +20,7 @@
   init() {
     super.init();
     this.loadFrameAPI(); // set this up, then we'll set up the player
-    this.setIsDebugging(false);
+    this.setIsDebugging(true);
   }
 
   // action queue
@@ -230,9 +230,8 @@
       //debugger;
       if (this.isReady()) {
         this.debugLog("setting volume to ", v)
-        this.debugLog("1 getVolume: ", this.player().getVolume())
         this.player().setVolume(v);
-        this.debugLog("2 getVolume: ", this.player().getVolume())
+        this.debugLog("getVolume: ", this.player().getVolume())
       }
     }
     return this;

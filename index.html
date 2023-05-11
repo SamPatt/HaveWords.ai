@@ -23,9 +23,12 @@
 
             <!--- ai column --->
 
-            <div id="userPanel" class="userPanel">
-                <div class="header">
+            <div id="aiChatColumn" class="aiChatColumn" style="position: relative;">
+                <div class="header" stlye="position: relative;">
                     <h2>HaveWords.ai</h2>
+                    <div id="compactButton1" class="compator">
+                        <object class="svgIcon" type="image/svg+xml" data="resources/icons/square-arrow-right.svg"></object>
+                    </div>
                 </div>
 
                 <!--- begin host settings --->
@@ -138,11 +141,7 @@
 
             <!--- begin chat column --->
 
-            <div id="chat" class="chatPanel" style="position:relative;">
-                <div id="micButton">
-                    <object id="micSvgIcon" type="image/svg+xml"
-                        data="resources/icons/mic-slash-fill-svgrepo-com.svg"></object>
-                </div>
+            <div id="groupChatColumn" style="position:relative;">
                 <div class="header">
                     <h2>Group Chat</h2>
                     <div class="subheader" style="width: 100%;">
@@ -159,7 +158,13 @@
                                 </td>
                             </tr>
                         </table>
-
+                    </div>
+                    <div id="micButton">
+                        <object id="micSvgIcon" type="image/svg+xml"
+                            data="resources/icons/mic-slash-fill-svgrepo-com.svg"></object>
+                    </div>
+                    <div id="compactButton2" class="compator">
+                        <object class="svgIcon" type="image/svg+xml" data="resources/icons/square-arrow-right.svg"></object>
                     </div>
                 </div>
 
@@ -180,7 +185,7 @@
 
             <!--- begin users column --->
 
-            <div class="connectedUsers">
+            <div id="connectedUsersColumn">
                 <div class="header">
                     <h2>Friends</h2>
                     <div class="subheader" id="displayInviteText">copy invite link</div>
