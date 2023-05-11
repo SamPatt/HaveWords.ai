@@ -8,10 +8,24 @@
 
 (class Button extends View {
   initPrototypeSlots() {
+    this.newSlot("isDisabled", false);
   }
 
   init() {
     super.init();
+  }
+
+  setIsDisabled (aBool) {
+    this._isDisabled = aBool;
+    const e = this.element()
+    if (e) {
+      if (aBool) {
+        e.style.opacity = 0.25;
+      } else {
+        e.style.opacity = 1;
+      }
+    }
+    return this;
   }
 
   setShouldStore (aBool) {
@@ -27,7 +41,11 @@
   }
 
   onClick (event) {
-    this.submit();
+    if (this.isDisabled()) {
+      // play an error beep?
+    } else {
+      this.submit();
+    }
   }
 
 }.initThisClass());

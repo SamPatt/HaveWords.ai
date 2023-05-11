@@ -47,6 +47,7 @@ const sessionOptionsArray = [
     Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
     The player names are: [playerNames].`,
     musicPlaylists: ["DnD"],
+    fontFamily: "Day Roman",
     options: [
       {
         label: "Traditional roleplaying",
@@ -119,6 +120,7 @@ const sessionOptionsArray = [
         Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
+        fontFamily: "Ghibli",
       },
       {
         value: "Conan",
@@ -146,6 +148,7 @@ const sessionOptionsArray = [
     message: "The host has started a [sessionSubtype] trivia game.",
     artPromptPrefix: "Illustration of a trivia game with a question about: ",
     musicPlaylists: ["Trivia"],
+    fontFamily: "Kindersley",
     options: [
       {
         label: "Variety",

@@ -1,7 +1,18 @@
 @font-face {
     font-family: 'Day Roman';
-    src: URL('./resources/fonts/day-roman/DAYROM__.ttf') format('truetype');
+    src: URL('./resources/fonts/Day Roman/Day Roman.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: 'Ghibli';
+    src: URL('./resources/fonts/Ghibli/Ghibli.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kindersley';
+    src: URL('./resources/fonts/Kindersley/Kindersley.ttf') format('truetype');
+}
+
 
 body {
     font-family: "Day Roman", Arial, sans-serif;

@@ -52,7 +52,7 @@
     );
 
     this.setSessionStartButton(
-      Button.clone().setId("sessionStartButton").setTarget(this)
+      Button.clone().setId("sessionStartButton").setTarget(this).setIsDisabled(true)
     );
 
     this.setSessionResetButton(
@@ -61,10 +61,11 @@
 
     this.setupApiKeyText();
     this.sessionTypeOptions().submit(); // to setup subtypes
+    this.onUpdateInputs(); // to enable start button if ready
   }
 
   setupApiKeyText() {
-    const field = TextFieldView.clone().setId("apiKeyText");
+    const field = TextFieldView.clone().setId("apiKeyText").setTarget(this);
     this.setApiKeyText(field);
 
     field.setValidationFunc((s) => {
@@ -102,6 +103,18 @@
     if (k) {
       field.setString(k);
     }
+  }
+
+  onKeyUp_apiKeyText() {
+    this.onUpdateInputs();
+  }
+
+  canStart () {
+    return this.apiKeyText().isValid();
+  }
+
+  onUpdateInputs () {
+    this.sessionStartButton().setIsDisabled(!this.canStart());
   }
 
   showAzureRegionIfNeeded () {
@@ -333,12 +346,16 @@
     return this.configLookup("musicPlaylists");
   }
 
+  fontFamily() {
+      return this.configLookup("fontFamily");
+  }
+
   // --- start session ---
 
   async onSubmit_sessionStartButton() {
     
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists())
-
+    document.body.style.fontFamily = this.fontFamily();
 
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode

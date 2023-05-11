@@ -130,6 +130,15 @@
         this.onEnterKeyUp(event);
       }
     }
+
+    const t = this.target();
+    if (t) {
+      const methodName = "onKeyUp_" + this.id();
+      const m = t[methodName];
+      if (m) {
+        m.apply(t, this);
+      }
+    }
   }
 
   onShiftEnterKeyUp(event) {}

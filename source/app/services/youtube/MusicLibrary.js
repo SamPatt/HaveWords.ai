@@ -96,7 +96,7 @@
 
   setupPlaylists () {
     const m = this.playlists();
-    const playlistNames = ["DnD", "Triva", "HarryPotter", "StudioGhibli"];
+    const playlistNames = ["DnD", "Trivia", "HarryPotter", "StudioGhibli"];
     playlistNames.forEach(name => {
       const methodName = "tracksFor_" + name;
       const method = this[methodName];
@@ -347,11 +347,11 @@
       // from various
       "Pirate Battle": "6Ewt26G7ZE0",
       "Flight of the Dragons": "c7BCiWO7JVI",
-      "Wagner Ride of the Valkyries": "jPlsEunHX-Q",
-      "Wagner Entrance of the Gods": "qEKnfbozTKw",
-      "Riding to Adventure": "h6YUm_sKjSA", // Holst Jupiter
-      "Battling the Titan": "zx0L0Zjjkms", // Holst Mars
-      "Great Hall": "9gfvqQ9_21M", // Vivace, by Gustav Holst
+      "Ride of the Valkyries": "jPlsEunHX-Q", // Wagner
+      "Entrance of the Gods": "qEKnfbozTKw", // Wagner
+      "Riding to Adventure": "h6YUm_sKjSA", // Holst, Jupiter
+      "Battling the Titan": "zx0L0Zjjkms", // Holst, Mars
+      "Great Hall": "9gfvqQ9_21M", // Holst, Vivace
       "Call of the Forest": "rf2GmdwFw80",
       "Tavern/Inn": "roABNwbjZf4",
       "adventure begins": "q8R4MxLoOZM", // eh
@@ -473,7 +473,7 @@
     };
   }
 
-  tracksFor_Triva() {
+  tracksFor_Trivia() {
     return {
       // from https://www.youtube.com/watch?v=3dSCuAu4ge4
       "Waiting Loop": "yVZ7g-EQzY8",

@@ -73,12 +73,20 @@
   genImageButtonFor (sanitizedHtml) {
     // Create a new icon/button element for the AI responses
     const button = document.createElement("button");
-    button.textContent = "🎨";
+    //button.textContent = "🎨";
     button.className = "generate-image-prompt-button";
     button.setAttribute(
       "data-tooltip",
       "Show this scene"
     );
+
+    const svgObject = document.getElementById("micSvgIcon");
+    svgObject.setAttribute("data", "resources/icons/" + "image.svg");
+    button.appendChild(svgObject);
+
+    button.style.width = "1.5em";
+    button.style.height = "1.5em";
+
 
     // Add an event listener to the icon/button
     button.addEventListener("click", () => {
