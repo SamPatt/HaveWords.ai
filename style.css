@@ -454,39 +454,6 @@ button {
     border-radius: 5px;
 }
 
-.aiChatColumn {
-    display: flex;
-    flex: 5;
-    flex-direction: column;
-    gap: 0rem;
-    padding: 0rem;
-    border: 0px solid #777;
-    /* Less bright border color */
-}
-
-#connectedUsersColumn {
-    min-width: 300px;
-    /* Adjust this value to set the maximum width */
-    overflow-x: auto;
-    width: auto;
-    max-width: fit-content;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    /* Less bright border color */
-    gap: 0rem;
-    padding: 0rem;
-}
-
-
-
-#groupChatColumn {
-    min-width: 300px;
-    display: flex;
-    flex: 2;
-    flex-direction: column;
-    gap: 0rem;
-    padding: 0rem;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
 
 /* #us {
     background-color: #4a4a4a;
@@ -649,6 +616,7 @@ button {
     border-radius: 10px;
     /*background-color: rgba(255, 255, 255, 0.05);*/
     overflow-wrap: anywhere;
+    max-width:50em;
 }
 
 .message-text p {
@@ -822,4 +790,34 @@ button {
     height: fit-content;
     width: fit-content;
     opacity: 0.15;
+}
+
+/* --- columns --- */
+
+#aiChatColumn {
+    flex: 5;
+}
+
+#groupChatColumn {
+    flex: 2;
+    min-width: 300px;
+    flex-direction: column;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#connectedUsersColumn {
+    flex: 0;
+    overflow-x: auto;
+    min-width: 300px;
+    width: auto;
+    max-width: fit-content;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ColumnView {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 0rem;
+    padding: 0rem;
 }

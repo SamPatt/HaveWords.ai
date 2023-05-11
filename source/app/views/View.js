@@ -13,6 +13,7 @@
     this.newSlot("target", null);
     this.newSlot("action", null);
     this.newSlot("shouldStore", false);
+    this.newSlot("hiddenDisplayType", null);
   }
 
   init() {
@@ -227,12 +228,20 @@
   }
 
   hide() {
-    this.element().style.display = "none";
+    if (!this.isHidden()) {
+      const v = this.element().style.display;
+      this.setHiddenDisplayType(v);
+      this.element().style.display = "none";
+    }
     return this;
   }
 
   unhide() {
-    this.element().style.display = "block";
+    if (this.isHidden()) {
+      const hd = this.hiddenDisplayType();
+      const d = hd ? hd : "block";
+      this.element().style.display = d;
+    }
     return this;
   }
 

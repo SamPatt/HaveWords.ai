@@ -353,7 +353,8 @@
   // --- start session ---
 
   async onSubmit_sessionStartButton() {
-    
+    this.hide()
+
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists())
     document.body.style.fontFamily = this.fontFamily();
 
@@ -382,7 +383,6 @@
       sessionType: this.sessionType(),
     });
 
-    this.hide()
 
     //this.debugLog("using prompt [[" + this.prompt() + "]]")
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());

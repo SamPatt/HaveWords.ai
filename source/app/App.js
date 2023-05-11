@@ -15,6 +15,8 @@
     this.newSlot("user", null);
     this.newSlot("compactButton1", null);
     this.newSlot("compactButton2", null);
+    this.newSlot("groupChatColumn", null);
+    this.newSlot("connectedUsersColumn", null);
   }
 
   init() {
@@ -106,11 +108,19 @@
     this.setCompactButton2(
       Button.clone().setId("compactButton2").setTarget(this).setAction("onCompact2")
     );
+
+    this.setGroupChatColumn(View.clone().setId("groupChatColumn"));
+    this.setConnectedUsersColumn(View.clone().setId("connectedUsersColumn"));
   }
 
   onCompact1 (aButton) {
-    const group = View.clone().setId("groupChatColumn");
-    const users = View.clone().setId("connectedUsersColumn");
+    //assert(document.getElementById("groupChatColumn").style.display === "flex"); 
+
+    const group = this.groupChatColumn();
+    const users = this.connectedUsersColumn();
+    //assert(document.getElementById("groupChatColumn").style.display === "flex"); 
+    //assert(group.element().style.display === "flex"); 
+    //debugger;
     const toggled = !group.isHidden();
     group.setIsHidden(toggled);
     users.setIsHidden(toggled);
@@ -122,3 +132,11 @@
   }
 
 }).initThisClass();
+
+
+window.onerror = function(message, source, lineno, colno, error) {
+  console.log('An error occurred: ', message);
+  debugger;
+  return true; // This prevents the firing of the default event handler
+};
+
