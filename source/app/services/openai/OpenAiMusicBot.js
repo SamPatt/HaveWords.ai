@@ -8,6 +8,7 @@
 (class OpenAiMusicBot extends OpenAiService {
   initPrototypeSlots() {
     this.newSlot("sceneDescription", null);
+    this.newSlot("lastMusicChoice", null);
   }
 
   init() {
@@ -39,7 +40,14 @@
     const data = await request.asyncSend();
     const response = data.choices[0].message.content;
     this.debugLog("music bot response: '" + response + "'");
-    this.handlePromptResponse(response);
+    // Only update the music if the response is different from the last choice
+    if (response !== this.lastMusicChoice()) {
+      this.setLastMusicChoice(response);
+      this.handlePromptResponse(response);
+    } else { 
+      this.debugLog("music bot response is the same as last choice, ignoring");
+    }
+      
     //HostSession.shared().broadcastMusic(MusicPlayer.shared().trackId());
   }
 
@@ -47,8 +55,18 @@
     assert(this.sceneDescription());
     let s = "Given this scene description:\n"
     s += "[[" + this.sceneDescription() + "]]\n";
+
+    // Add the last chosen track to the prompt
+    if (this.lastMusicChoice()) {
+      s += "The current music playing is \"" + this.lastMusicChoice() + "\".\n";
+    }
     s += "Which one of the following music tracks do you feel would be most appropriate for that scene:";
     s += MusicPlayer.shared().trackNames().map(s => '"' + s + '"').join(",");
+
+    // Instruct the AI to maintain the current music if it still fits the scene
+    if (this.lastMusicChoice()) {
+      s += "\nIf you think the current music \"" + this.lastMusicChoice() + "\" still fits the scene, please respond with the same track name. If you're unsure about whether or not the music still fits, please respond with the same track name anyway. ";
+    }
     s += "\nPlease only respond with the track name you chose in double quotes and only suggest a track name from the list provided."
     return s;
   }
