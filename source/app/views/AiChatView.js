@@ -82,10 +82,14 @@
 
     const svgObject = document.getElementById("micSvgIcon");
     svgObject.setAttribute("data", "resources/icons/" + "image.svg");
+    svgObject.style.opacity = 0.5;
     button.appendChild(svgObject);
 
     button.style.width = "1.5em";
     button.style.height = "1.5em";
+    button.style.position = "absolute";
+    button.style.top = "1em";
+    
 
 
     // Add an event listener to the icon/button

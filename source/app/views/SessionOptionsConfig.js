@@ -112,6 +112,7 @@ const sessionOptionsArray = [
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
+        fontFamily: "Kindersley",
       },
       {
         label: "Studio Ghibli",

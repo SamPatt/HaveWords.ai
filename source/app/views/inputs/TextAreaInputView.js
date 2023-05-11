@@ -15,13 +15,21 @@
 
   initElement () {
     super.initElement();
-    this.listenForKeyUp()
+    this.listenForKeyDown()
   }
 
+  onEnterKeyDown (event) {
+    this.submit();
+    event.target.blur();
+    event.preventDefault(); // prevent new line
+  }
+
+  /*
   onEnterKeyUp (event) {
     this.submit();
     event.preventDefault(); // prevent new line
   }
+  */
 
   submit () {
     const f = this.submitFunc()
