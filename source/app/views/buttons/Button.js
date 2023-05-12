@@ -9,6 +9,7 @@
 (class Button extends View {
   initPrototypeSlots() {
     this.newSlot("isDisabled", false);
+    this.newSlot("iconElement", );
   }
 
   init() {
@@ -47,6 +48,22 @@
     } else {
       this.submit();
     }
+  }
+
+  setIconPath (aPath) {
+    this.element().innerHTML = "";
+    if (aPath) {
+      const svg = document.createElement("object");
+      this.setIconElement(svg);
+      svg.setAttribute("type", "image/svg+xml");
+      svg.setAttribute("data", aPath);
+      svg.style.pointerEvents = "none"; // to avoid clicks going to svg object
+      svg.style.width = "100%";
+      svg.style.height = "100%"; // Careful, aspect ratio of button might not match that of svg!
+      this.element().appendChild(svg);
+      this.element().style.overflow = "hidden";
+    }
+    return this
   }
 
 }.initThisClass());

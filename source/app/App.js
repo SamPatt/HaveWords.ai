@@ -103,10 +103,11 @@
 
   setupCompactorButtons () {
     this.setCompactButton1(
-      Button.clone().setId("compactButton1").setTarget(this).setAction("onCompact1")
+      RadioButton.clone().setId("compactButton1").setTarget(this).setAction("onCompact1").setOnIconPath("resources/icons/carret-left.svg").setOffIconPath("resources/icons/carret-right.svg")
     );
+
     this.setCompactButton2(
-      Button.clone().setId("compactButton2").setTarget(this).setAction("onCompact2")
+      RadioButton.clone().setId("compactButton2").setTarget(this).setAction("onCompact2").setOnIconPath("resources/icons/carret-left.svg").setOffIconPath("resources/icons/carret-right.svg")
     );
 
     this.setGroupChatColumn(View.clone().setId("groupChatColumn"));
@@ -114,29 +115,23 @@
   }
 
   onCompact1 (aButton) {
-    //assert(document.getElementById("groupChatColumn").style.display === "flex"); 
-
-    const group = this.groupChatColumn();
-    const users = this.connectedUsersColumn();
-    //assert(document.getElementById("groupChatColumn").style.display === "flex"); 
-    //assert(group.element().style.display === "flex"); 
-    //debugger;
-    const toggled = !group.isHidden();
-    group.setIsHidden(toggled);
-    users.setIsHidden(toggled);
+    const s = aButton.state();
+    this.groupChatColumn().setIsHidden(s);
+    this.connectedUsersColumn().setIsHidden(s);
+    this.compactButton2().setState(s)
   }
 
   onCompact2 (aButton) {
-    const users = View.clone().setId("connectedUsersColumn");
-    users.setIsHidden(!users.isHidden());
+    this.connectedUsersColumn().setIsHidden(aButton.state());
   }
 
 }).initThisClass();
 
-
+/*
 window.onerror = function(message, source, lineno, colno, error) {
   console.log('An error occurred: ', message);
   debugger;
   return true; // This prevents the firing of the default event handler
 };
+*/
 

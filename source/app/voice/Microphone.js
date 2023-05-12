@@ -8,13 +8,27 @@
 
 (class Microphone extends Base {
   initPrototypeSlots () {
-    this.newSlot("isOn", false)
-    this.newSlot("isRequestingMicAccess", false)
-    this.newSlot("userAudioStream", null)
+    this.newSlot("isOn", false);
+    this.newSlot("isRequestingMicAccess", false);
+    this.newSlot("userAudioStream", null);
+    this.newSlot("micButton", null);
   }
 
   init () {
     super.init();
+    this.setupMicButton();
+  }
+
+  setupMicButton () {
+    const b = RadioButton.clone().setId("micButton");
+    b.setOnIconPath("resources/icons/mic-on.svg");
+    b.setOffIconPath("resources/icons/mic-off.svg");
+    b.setState(false);
+    b.setTarget(this).setAction("toggleState");
+    b.toggle = function() {
+      console.log("toggle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+    this.setMicButton(b);  
   }
 
   toggleState () {
@@ -35,7 +49,8 @@
 
   turnOn () {
     if (!this.hasMicAccess()) {
-      this.requestMicAccess()
+      this.requestMicAccess();
+      this.setIsOn(this.isOn());
     }
   }
 
@@ -47,8 +62,6 @@
     if (this.hasMicAccess() || this.isRequestingMicAccess()) {
       return;
     }
-
-    this.micButton().style.opacity = 0.5;
   
     this.setIsRequestingMicAccess(true);
   
@@ -57,11 +70,11 @@
       .then((stream) => {
         this.setIsRequestingMicAccess(false);
         this.setUserAudioStream(stream);
-        this.setIsOn(true)
+        this.setIsOn(true);
       })
       .catch((error) => {
         this.setIsRequestingMicAccess(false);
-        this.setIsOn(false)
+        this.setIsOn(false);
         console.error("Error getting audio stream:", error);
       });
   }
@@ -69,31 +82,11 @@
   setIsOn (aBool) {
     this._isOn = aBool
     if (this.micButton()) {
-      this.micButton().style.opacity = 1;
-      this.micButton().setOnState(this.isOn()) // TODO: move to notification so we don't know about UI
+      this.micButton().setState(this.isOn()); // TODO: move to notification so we don't know about UI
     }
     return this
-  }
-
-  micButton () {
-    return document.getElementById("micButton")
   }
   
 }.initThisClass());
 
-// TODO: move the below code to MicrophoneButton class
-
-const micButton = document.getElementById("micButton");
-micButton._onIcon = "mic-fill-svgrepo-com.svg";
-micButton._offIcon = "mic-slash-fill-svgrepo-com.svg";
-
-micButton.setOnState = function (isOn) {
-  const icon = isOn ? this._onIcon : this._offIcon;
-  const svgObject = document.getElementById("micSvgIcon");
-  svgObject.setAttribute("data", "resources/icons/" + icon);
-};
-
-micButton.addEventListener("click", (event) => {
-  //const self = event.target;
-  Microphone.shared().toggleState()
-});
+Microphone.shared();

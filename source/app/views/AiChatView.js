@@ -80,16 +80,21 @@
       "Show this scene"
     );
 
-    const svgObject = document.getElementById("micSvgIcon");
-    svgObject.setAttribute("data", "resources/icons/" + "image.svg");
-    svgObject.style.opacity = 0.5;
-    button.appendChild(svgObject);
+    const buttonView = Button.clone().setElement(button);
+    buttonView.setIconPath("resources/icons/image.svg");
+    buttonView.iconElement().style.opacity = 0.5;
+    /*
+    const svg = document.createElement("object");
+    svg.setAttribute("data", "resources/icons/image.svg");
+    svg.style.pointerEvents = "none";
+    svg.style.opacity = 0.5;
+    button.appendChild(svg);
+    */
 
     button.style.width = "1.5em";
     button.style.height = "1.5em";
     button.style.position = "absolute";
     button.style.top = "1em";
-    
 
 
     // Add an event listener to the icon/button

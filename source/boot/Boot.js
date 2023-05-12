@@ -17,7 +17,6 @@ class Boot extends Object {
       "source/app/App.js",
       "source/app/Sounds.js",
 
-      "source/app/voice/Microphone.js",
 
       "source/app/user/CryptoIdentity.js",
       "source/app/user/LocalUser.js",
@@ -58,6 +57,7 @@ class Boot extends Object {
       "source/app/views/View.js",
 
       "source/app/views/buttons/Button.js",
+      "source/app/views/buttons/RadioButton.js",
       "source/app/views/buttons/InviteButton.js",
       "source/app/views/buttons/SessionResetButton.js",
 
@@ -75,6 +75,7 @@ class Boot extends Object {
       "source/app/views/ImageMessageView.js",
       "source/app/views/inputs/AvatarPickerView.js",
 
+      "source/app/voice/Microphone.js",
     ]
   }
 
