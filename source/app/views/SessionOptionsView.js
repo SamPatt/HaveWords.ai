@@ -318,7 +318,7 @@
 
     const promptSuffix = this.promptSuffix();
     if (promptSuffix) {
-      prompt += promptSuffix;
+      prompt += promptSuffix; // for the prompts, we add them together, for others we typically override
     }
     return this.replacedConfigString(prompt);
   }
@@ -350,24 +350,58 @@
       return this.configLookup("fontFamily");
   }
 
+  headerFontFamily() {
+    const v = this.configLookup("headerFontFamily");
+    return v ? v : "inherit";
+  }
+
+
   // --- start session ---
+
+  applySessionUiPrefs () {
+    document.body.style.fontFamily = this.fontFamily();
+
+    for (const e of document.getElementsByTagName("h2")) {
+      e.style.fontFamily = this.headerFontFamily();
+      console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
+    }
+
+    for (const e of document.getElementsByClassName("chapterNumber")) {
+      e.style.fontFamily = this.headerFontFamily()
+      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
+    }
+
+    for (const e of document.getElementsByClassName("chapterTitle")) {
+      e.style.fontFamily = this.headerFontFamily()
+      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
+    }
+
+    for (const e of document.getElementsByClassName("drop-cap")) {
+      e.style.fontFamily = this.headerFontFamily()
+      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
+    }
+  }
 
   async onSubmit_sessionStartButton() {
     this.hide()
 
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists())
-    document.body.style.fontFamily = this.fontFamily();
+    this.applySessionUiPrefs();
 
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode
     );
 
+    AiChatView.shared().setShowLoading(true)
+    
+    /*
     AiChatView.shared().addMessage(
       "prompt",
       "You've started the session!",
       LocalUser.shared().nickname(),
       LocalUser.shared().id()
     );
+    */
     Session.shared().setInSession(true);
 
     HostSession.shared().showHostIntroMessage();
@@ -384,11 +418,9 @@
     });
 
 
-    //this.debugLog("using prompt [[" + this.prompt() + "]]")
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());
     // Stores initial AI response, which contains character descriptions, for later use
     Session.shared().setGroupSessionFirstAIResponse(response);
-    //triggerBot(response, "fantasyRoleplay", this.sessionSubtype());
     AiChatView.shared().addAIReponse(response);
 
     // Send the response to all connected guests

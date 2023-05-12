@@ -48,6 +48,7 @@ const sessionOptionsArray = [
     The player names are: [playerNames].`,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
+    headerFontFamily: "inherit",
     options: [
       {
         label: "Traditional roleplaying",
@@ -110,10 +111,18 @@ const sessionOptionsArray = [
       {
         label: "Harry Potter",
         value: "Harry Potter",
-        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.
+        When we begin, please create and title for the first chapter of the adventure and 
+        place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
+        Please write the chapter number in words, not number characters.
+        When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
+        the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
+        When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
-        fontFamily: "Kindersley",
+        fontFamily: "Cardo",
+        headerFontFamily: "Lumos",
+        //titlesFontFamily: "LumosLatino",
       },
       {
         label: "Studio Ghibli",
@@ -150,7 +159,7 @@ const sessionOptionsArray = [
     message: "The host has started a [sessionSubtype] trivia game.",
     artPromptPrefix: "Illustration of a trivia game with a question about: ",
     musicPlaylists: ["Trivia"],
-    fontFamily: "Kindersley",
+    fontFamily: "BarlowCondensed-SemiBold",
     options: [
       {
         label: "Variety",

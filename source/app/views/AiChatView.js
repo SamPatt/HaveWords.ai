@@ -157,6 +157,10 @@
     }
 
     this.addMessageElement(m.element());
+
+    if(App.shared().isHost()) {
+      SessionOptionsView.shared().applySessionUiPrefs();
+    }
   }
 
   onAiResponseText (text) {

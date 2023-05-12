@@ -42,11 +42,13 @@
   }
 
   async asyncSpeakText(text) {
-
-    text = text.removedHtmlTags(); // clean up text first
+    // make sure we don't lose the whitespace formatting as we need it for pacing
     text = text.replaceAll("<p>", ""); 
     text = text.replaceAll("</p>", "\n\n"); 
+    text = text.replaceAll("<br>", "\n\n"); 
     //text = text.replaceAll(".", "\n\n"); 
+    
+    text = text.removedHtmlTags(); 
 
     text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
     //text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items

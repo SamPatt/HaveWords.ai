@@ -13,10 +13,50 @@
     src: URL('./resources/fonts/Kindersley/Kindersley.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'HarryP';
+    src: URL('./resources/fonts/HarryP/HarryP.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lumos';
+    src: URL('./resources/fonts/LumosLatino/Lumos.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'BarlowCondensed-SemiBold';
+    src: URL('./resources/fonts/Barlow/BarlowCondensed-SemiBold.ttf') format('truetype');
+}
+
+/* --- Cardo, simialr to Garamond --- */
+
+@font-face {
+    font-family: 'Cardo';
+    src: URL('./resources/fonts/Cardo/Cardo-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cardo';
+    src: URL('./resources/fonts/Cardo/Cardo-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cardo';
+    src: URL('./resources/fonts/Cardo/Cardo-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* --- --- */
 
 body {
     font-family: "Day Roman", Arial, sans-serif;
-    line-height: 1.45em;
+    /*line-height: 1.45em;*/
+    line-height: 1.6em;
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -609,14 +649,17 @@ button {
 
 .message-text {
     display: inline-block;
+    text-align: justify; /* book style */
+    hyphens: auto; /* book style */
+
     padding-top: 0.3em;
     padding-bottom: 1em;
     padding-left: 0.8em;
     padding-right: 0.8em;
     border-radius: 10px;
     /*background-color: rgba(255, 255, 255, 0.05);*/
-    overflow-wrap: anywhere;
-    max-width:50em;
+    /*overflow-wrap: anywhere;*/
+    max-width:35em;
 }
 
 .message-text p {
@@ -783,7 +826,7 @@ button {
     align-items: center;
 }
 
-.compator {
+.compactor {
     position: absolute;
     top: 0;
     right: 0;
@@ -820,4 +863,38 @@ button {
     flex-direction: column;
     gap: 0rem;
     padding: 0rem;
+}
+
+.drop-cap {
+    float: left;
+    font-size: 4.7em;
+    font-weight: bold;
+    line-height: 1.5em;
+    margin-right: 0.15em;
+    margin-top: -0.2em;
+    margin-bottom: -0.5em;
+}
+
+.chapterNumber {
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    padding-top: 2em;
+    padding-bottom: 0em;
+}
+
+.chapterTitle {
+    font-size: 2em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    line-height: 1.3em;
+    font-weight: normal;
+    font-style: normal;
+    width: 100%;
+    text-align: center;
+    padding-top: 0em;
+    padding-bottom: 2em;
 }
