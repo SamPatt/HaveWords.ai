@@ -57,9 +57,13 @@
   setOptions(array) {
     // array is expected to contain items like { label: "a", value: "b" }
     const e = this.element();
+    e.style.fontFamily = "inherit";
     e.innerHTML = "";
     array.forEach((item) => {
       const option = new Option(item.label, item.value, false);
+      option.style.fontFamily = "inherit";
+      option.style.fontSize = "inherit";
+      option.style.fontWeight = "inherit";
       option._item = item;
       e.appendChild(option);
     });

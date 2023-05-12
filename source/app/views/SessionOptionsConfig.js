@@ -49,6 +49,8 @@ const sessionOptionsArray = [
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
+    backgroundColor: "#222",
+    color: "rgb(219, 219, 219)",
     options: [
       {
         label: "Traditional roleplaying",
@@ -99,6 +101,7 @@ const sessionOptionsArray = [
         That damage roll will be subtracted from my own hp. 
         If the hp of a creature reaches 0, that creature dies. 
         Participants in combat are unable to take actions outside of their own turn.
+        Please make all rolls for the players and never ask them to make rolls for themselves.
         
         Before we begin playing, I would like you to provide my three adventure options. 
         Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
@@ -122,7 +125,6 @@ const sessionOptionsArray = [
         musicPlaylists: ["HarryPotter"],
         fontFamily: "Cardo",
         headerFontFamily: "Lumos",
-        //titlesFontFamily: "LumosLatino",
       },
       {
         label: "Studio Ghibli",
@@ -160,46 +162,52 @@ const sessionOptionsArray = [
     artPromptPrefix: "Illustration of a trivia game with a question about: ",
     musicPlaylists: ["Trivia"],
     fontFamily: "BarlowCondensed-SemiBold",
+    prompt: `Please play the roll of an expert trivia master 
+    and lead us on a trivia game of your own creation, with questions from the [sessionSubtype] category. 
+    Please only as one question at a time and wait for a response. After getting a response, please tell us if it was correct and reveal the correct answer if it was wrong.
+    The players are: [playerNames].`,
+    backgroundColor: "rgba(6,12,233, 1)",
+    color: "rgba(255, 255, 255, 0.7)",
     options: [
       {
         label: "Variety",
         value: "Variety",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Sports",
         value: "Sports",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Pop Culture",
         value: "Pop Culture",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "History",
         value: "History",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "Science",
         value: "Science",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1970s",
         value: "1970s",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1980s",
         value: "1980s",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
       },
       {
         label: "1990s",
         value: "1990s",
-        prompt: `Please play the roll of an expert, witty and fun loving trivia master and lead us on a trivia game of your own creation, which questions from the [sessionSubtype] category. The players are: [playerNames].`,
+      },
+      {
+        label: "Science Fiction",
+        value: "Science Fiction",
+      },
+      {
+        label: "Sports Cars, 1960-2000",
+        value: "Sports Cars, 1960-2000",
       },
     ],
   },

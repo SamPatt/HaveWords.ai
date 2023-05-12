@@ -8,6 +8,13 @@
     <meta name="author" content="Github: SamPatt">
     <title>HaveWords - P2P AI Sharing</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="resources/fonts/Barlow Condensed/Barlow Condensed.css">
+    <link rel="stylesheet" href="resources/fonts/Cardo/Cardo.css">
+    <link rel="stylesheet" href="resources/fonts/Day Roman/Day Roman.css">
+    <link rel="stylesheet" href="resources/fonts/Ghibli/Ghibli.css">
+    <link rel="stylesheet" href="resources/fonts/HarryP/HarryP.css">
+    <link rel="stylesheet" href="resources/fonts/Lumos/Lumos.css">
+
     <script src="source/boot/Boot.js"></script>
     <!--
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -25,7 +32,7 @@
 
             <div id="aiChatColumn" class="ColumnView">
                 <div class="header" stlye="position: relative;">
-                    <h2>HaveWords.ai</h2>
+                    <h2>HaveWords.ai</h2><div class="SessionTitle"></div>
                     <div id="compactButton1" class="compactor">
                     </div>
                 </div>
@@ -35,9 +42,8 @@
                 <div class="header optionsContainer scrollingOutput" id="aiSelectionBlock">
                     <div>
                         <h2>Welcome to your AI session!</h2>
-                        <p>First, you need to set your API key, and select the options for your session.</p>
-                        <p>You can do a solo session or share your session with friends. 
-                            To invite friends, use the Copy Invite Link button on the top right of the page.</p>
+                        <p>First, you need to set your API key, and select the session options.<br>
+                        If you'd like to invite friends, use the Copy Invite Link button on the top right of the page.</p>
 
 
                         <div>
@@ -52,7 +58,7 @@
                                     style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
                             <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
                                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput" style="color: #ccc;">
+                                class="underlinedInput optionsInput" >
                         </div>
 
 
@@ -62,7 +68,7 @@
                             <input id="azureApiKeyText" type="password"
                                 placeholder="Only required if you want speech narration." autocomplete="off"
                                 autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput" style="color: #ccc;">
+                                class="underlinedInput optionsInput">
                         </div>
 
                         <div>
@@ -70,7 +76,7 @@
                                     style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
                             <input id="azureApiRegionText" placeholder="Only required if you want speech narration."
                                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput" style="color: #ccc;">
+                                class="underlinedInput optionsInput">
                         </div>
 
 

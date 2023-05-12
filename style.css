@@ -1,71 +1,16 @@
-@font-face {
-    font-family: 'Day Roman';
-    src: URL('./resources/fonts/Day Roman/Day Roman.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Ghibli';
-    src: URL('./resources/fonts/Ghibli/Ghibli.otf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Kindersley';
-    src: URL('./resources/fonts/Kindersley/Kindersley.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'HarryP';
-    src: URL('./resources/fonts/HarryP/HarryP.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Lumos';
-    src: URL('./resources/fonts/LumosLatino/Lumos.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'BarlowCondensed-SemiBold';
-    src: URL('./resources/fonts/Barlow/BarlowCondensed-SemiBold.ttf') format('truetype');
-}
-
-/* --- Cardo, simialr to Garamond --- */
-
-@font-face {
-    font-family: 'Cardo';
-    src: URL('./resources/fonts/Cardo/Cardo-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Cardo';
-    src: URL('./resources/fonts/Cardo/Cardo-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Cardo';
-    src: URL('./resources/fonts/Cardo/Cardo-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
-}
-
-/* --- --- */
 
 body {
-    font-family: "Day Roman", Arial, sans-serif;
-    /*line-height: 1.45em;*/
+    display: flex;
+    font-size: 16px;
+    font-family: "Barlow Condensed", Arial, sans-serif;
+    font-weight: 300;
     line-height: 1.6em;
     margin: 0;
     padding: 0;
     height: 100vh;
-    display: flex;
-    background-color: #222;
-    font-size: 16px;
-    /* Dark gray background */
-    color: rgb(219, 219, 219);
-    /* Light gray text */
+    /*height: 100%;*/
+    background-color: #222;  /* Dark gray background */
+    color: rgba(255, 255, 255, 0.85); /* rgb(219, 219, 219); Light gray text */
 }
 
 
@@ -100,76 +45,25 @@ select {
 
 option {
     font-family: inherit;
-    font-size: 1em;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 input,
 select {
     font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    
     border: 1px solid #777;
     background-color: transparent;
     color: #ccc;
     border-radius: 5px;
     padding: 5px;
     margin: 0px;
-    font-size: 1em;
     margin-top: 0.3em;
     margin-bottom: 0.3em;
 }
-
-/*
-
-.select-selected:after {
-    position: absolute;
-    content: "";
-    top: 14px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-color: #fff transparent transparent transparent;
-}
-
-.select-selected.select-arrow-active:after {
-    border-color: transparent transparent #fff transparent;
-    top: 7px;
-}
-*/
-
-
-/* style the items (options), including the selected item: */
-/*
-.select-items div,.select-selected {
-    color: #ffffff;
-    padding: 8px 16px;
-    border: 1px solid transparent;
-    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-    cursor: pointer;
-  }
-  */
-
-/* Style items (options): */
-/*
-  .select-items {
-    position: absolute;
-    background-color: DodgerBlue;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 99;
-  }
-  */
-
-/* Hide the items when the select box is closed: */
-/*
-  .select-hide {
-    display: none;
-  }
-  
-  .select-items div:hover, .same-as-selected {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  */
 
 /*-------------------*/
 
@@ -233,7 +127,8 @@ textarea {
     font-family: inherit;
     width: 50%;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: rgba(255, 255, 255, 0.03);
+    /*background-color: rgba(255, 255, 255, 0.03);*/
+    background-color: inherit;
     color: #f0f0f0;
     border-radius: 5px;
     padding: 5px;
@@ -281,7 +176,7 @@ h2 {
     padding-right: 1.75em;
     padding-bottom: 1em;
     padding-top: 0.1em;
-    background-color: #252525;
+    background-color: rgba(255, 255, 255, 0.05);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -308,8 +203,7 @@ h2 {
 }
 
 .aiMessage {
-    color: #bbb;
-    background-color: #333;
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .inputLabel {
@@ -343,8 +237,8 @@ input {
 
 button {
     font-family: inherit;
-    border: 1px solid #777;
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
     color: #ccc;
     border-radius: 5px;
     font-size: 14px;
@@ -360,8 +254,8 @@ button {
 
 .button {
     font-size: 1em;
-    border: 1px solid #777;
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 5px;
     padding: 0.3em 1em;
     cursor: pointer;
@@ -415,7 +309,6 @@ button {
 
 .inputSection {
     padding: 0.3em;
-   /* background-color: #222;*/
 }
 
 #messageInputRemote {
@@ -494,15 +387,6 @@ button {
     border-radius: 5px;
 }
 
-
-/* #us {
-    background-color: #4a4a4a;
-}
-
-#chat {
-    background-color: #4a4a4a;
-} */
-
 .message {
     margin-bottom: 10px;
 }
@@ -551,11 +435,11 @@ button {
 }
 
 .aiScrollingOutput {
-    background-color: #222;
+    background-color: inherit;
 }
 
 .chatScrollingOutput {
-    background-color: #222;
+    background-color: inherit;
 }
 
 .chatMessage {
@@ -568,15 +452,16 @@ button {
 }
 
 .localChatMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-end;
 }
 
 .remoteChatMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-start;
 }
 
+/*
 .local-message {
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;
@@ -596,26 +481,29 @@ button {
     background-color: #f5e5d5;
     display: inline-block;
 }
+*/
 
 .localPromptMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-end;
 }
 
 .hostPromptMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-start;
 }
 
+/*
 .guestPromptMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-start;
 }
 
 .guestSystemMessage {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-start;
 }
+*/
 
 .ai-response {
     padding: 0.25rem 0.5rem;
@@ -623,14 +511,14 @@ button {
     border-radius: 5px;
     max-width: 70%;
     word-wrap: break-word;
-    background-color: #3f3f3f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: inline-block;
     /*float: right;*/
     clear: right;
 }
 
 .remote-ai-response {
-    background-color: #444;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-end;
 }
 
@@ -657,7 +545,6 @@ button {
     padding-left: 0.8em;
     padding-right: 0.8em;
     border-radius: 10px;
-    /*background-color: rgba(255, 255, 255, 0.05);*/
     /*overflow-wrap: anywhere;*/
     max-width:35em;
 }
@@ -668,7 +555,7 @@ button {
 }
 
 .message-content.right .message-text {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: inherit;
 }
 
 .message-content {
@@ -737,33 +624,6 @@ button {
 .message-text {
     display: inline;
 }
-
-/*
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: #222;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-}
-
-.modal-footer {
-    padding: 10px 20px;
-    text-align: right;
-}
-*/
 
 .user-container {
     display: block;

@@ -355,10 +355,21 @@
     return v ? v : "inherit";
   }
 
+  sessionBackgroundColor () {
+    const v = this.configLookup("backgroundColor");
+    return v ? v : "#222";
+  }
+
+  sessionTextColor () {
+    const v = this.configLookup("color");
+    return v ? v : "rgb(219, 219, 219)";
+  }
 
   // --- start session ---
 
   applySessionUiPrefs () {
+    document.body.style.backgroundColor = this.sessionBackgroundColor();
+    document.body.style.color = this.sessionTextColor();
     document.body.style.fontFamily = this.fontFamily();
 
     for (const e of document.getElementsByTagName("h2")) {

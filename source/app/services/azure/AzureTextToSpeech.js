@@ -28,7 +28,8 @@
 
 (class AzureTextToSpeech extends AzureService {
   initPrototypeSlots () {
-    //this.newSlot("", null)
+    this.newSlot("voiceName", "en-US-TonyNeural")
+    this.newSlot("voiceStyle", "whispering")
   }
 
   init () {
@@ -47,7 +48,7 @@
     text = text.replaceAll("</p>", "\n\n"); 
     text = text.replaceAll("<br>", "\n\n"); 
     //text = text.replaceAll(".", "\n\n"); 
-    
+
     text = text.removedHtmlTags(); 
 
     text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
@@ -57,8 +58,8 @@
     
     const ssmlRequest = `
       <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'>
-      <voice name='en-US-TonyNeural'>
-        <mstts:express-as style='whispering'>
+      <voice name='${this.voiceName()}'>
+        <mstts:express-as style='${this.voiceStyle()}'>
           <prosody volume='soft' rate='15%' pitch='-10%'>${text}</prosody>
         </mstts:express-as>
       </voice>
