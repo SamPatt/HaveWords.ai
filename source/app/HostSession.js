@@ -89,7 +89,7 @@
 
   showHostIntroMessage () {
       const message = `<p>Welcome, <b>${LocalUser.shared().nickname()}</b>!</p>` + 
-        "<p>If you like to have others join your session, copy the invite link (using the top right button in this window) to your friends.</p>" +
+        "<p>If you'd like to have others join your session, you can share the invite link (top right button in this window) with your friends.</p>" +
         "<p>Click on their usernames in the Guest section to grant them access to your AI, or to kick or mute them if they are behaving badly.</p>";
         
       AiChatView.shared().addMessage(

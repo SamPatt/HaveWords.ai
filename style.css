@@ -55,9 +55,9 @@ select {
     font-size: inherit;
     font-weight: inherit;
     
-    border: 1px solid #777;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: transparent;
-    color: #ccc;
+    color: inherit;
     border-radius: 5px;
     padding: 5px;
     margin: 0px;
@@ -65,11 +65,20 @@ select {
     margin-bottom: 0.3em;
 }
 
+input::placeholder {
+    color: inherit;
+}
+
+textarea::placeholder {
+    color: inherit;
+}
+
+
 /*-------------------*/
 
 #displayInviteText {
     transition: 0.2s;
-    color: #999;
+    color: inherit;
     font-size: 0.6em;
     text-transform: uppercase;
     user-select: none;
@@ -112,6 +121,7 @@ a {
 
 a:hover {
     color: #FFFF00;
+    font-weight: 700;
     /* Set the color when the user hovers over the hyperlink, e.g., orange-red */
     text-decoration: underline;
     /* Add underline when hovering */
@@ -129,7 +139,7 @@ textarea {
     border: 1px solid rgba(255, 255, 255, 0.1);
     /*background-color: rgba(255, 255, 255, 0.03);*/
     background-color: inherit;
-    color: #f0f0f0;
+    color: inherit;
     border-radius: 5px;
     padding: 5px;
     font-size: 1em;
@@ -239,7 +249,7 @@ button {
     font-family: inherit;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: rgba(255, 255, 255, 0.05);
-    color: #ccc;
+    color: inherit;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
@@ -339,7 +349,7 @@ button {
 }
 
 #startSession {
-    border: #ccc 1px solid;
+    border: rgba(255, 255, 255, 0.1) 1px solid;
     border-radius: 5px;
     padding: 15px;
     display: flex;
@@ -351,7 +361,7 @@ button {
 }
 
 #joinSession {
-    border: #ccc 1px solid;
+    border: rgba(255, 255, 255, 0.1) 1px solid;
     border-radius: 5px;
     padding: 15px;
     display: flex;
@@ -383,7 +393,7 @@ button {
 
 .inviteLink {
     padding: 5px;
-    border: 1px solid #777;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 5px;
 }
 
@@ -757,4 +767,8 @@ button {
     text-align: center;
     padding-top: 0em;
     padding-bottom: 2em;
+}
+
+.SessionTitle {
+    font-weight: 500;
 }

@@ -346,8 +346,13 @@
     return this.configLookup("musicPlaylists");
   }
 
-  fontFamily() {
+  sessionFontFamily() {
       return this.configLookup("fontFamily");
+  }
+
+  sessionFontWeight () {
+    const v = this.configLookup("fontWeight");
+    return v ? v : "500";
   }
 
   headerFontFamily() {
@@ -370,7 +375,8 @@
   applySessionUiPrefs () {
     document.body.style.backgroundColor = this.sessionBackgroundColor();
     document.body.style.color = this.sessionTextColor();
-    document.body.style.fontFamily = this.fontFamily();
+    document.body.style.fontFamily = this.sessionFontFamily();
+    document.body.style.fontWeight = this.sessionFontWeight();
 
     for (const e of document.getElementsByTagName("h2")) {
       e.style.fontFamily = this.headerFontFamily();
@@ -393,11 +399,22 @@
     }
   }
 
+  sessionTitle () {
+    return this.sessionTypeOptions().selectedText() + " / " + this.sessionSubtypeOptions().selectedText();
+  }
+
+  updateSessionTitle () {
+    //debugger;
+    const e = document.getElementById("SessionTitle");
+    e.innerHTML = this.sessionTitle();
+  }
+
   async onSubmit_sessionStartButton() {
     this.hide()
 
-    MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists())
+    MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists());
     this.applySessionUiPrefs();
+    this.updateSessionTitle();
 
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode

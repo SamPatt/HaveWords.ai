@@ -115,6 +115,7 @@ const sessionOptionsArray = [
         label: "Harry Potter",
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.
+
         When we begin, please create and title for the first chapter of the adventure and 
         place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
         Please write the chapter number in words, not number characters.
@@ -130,10 +131,21 @@ const sessionOptionsArray = [
         label: "Studio Ghibli",
         value: "Studio Ghibli",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
-        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
+        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.
+        
+        When we begin, please create and title for the first chapter of the adventure and 
+        place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
+        Please write the chapter number in words, not number characters.
+        When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
+        the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
+        When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.`,
+        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
         fontFamily: "Ghibli",
+        headerFontFamily: "Ghibli",
+        backgroundColor: "#109CEB",
+        color: "rgba(255, 255, 255, 1)",
       },
       {
         value: "Conan",
@@ -161,13 +173,15 @@ const sessionOptionsArray = [
     message: "The host has started a [sessionSubtype] trivia game.",
     artPromptPrefix: "Illustration of a trivia game with a question about: ",
     musicPlaylists: ["Trivia"],
-    fontFamily: "BarlowCondensed-SemiBold",
     prompt: `Please play the roll of an expert trivia master 
     and lead us on a trivia game of your own creation, with questions from the [sessionSubtype] category. 
     Please only as one question at a time and wait for a response. After getting a response, please tell us if it was correct and reveal the correct answer if it was wrong.
     The players are: [playerNames].`,
     backgroundColor: "rgba(6,12,233, 1)",
     color: "rgba(255, 255, 255, 0.7)",
+    fontFamily: "Barlow Condensed",
+    fontWeight: "300",
+    allowsImages: false,
     options: [
       {
         label: "Variety",
