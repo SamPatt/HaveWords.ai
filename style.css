@@ -769,6 +769,18 @@ button {
     padding-bottom: 2em;
 }
 
-.SessionTitle {
+#SessionTitle {
     font-weight: 500;
+}
+
+#SessionDescription {
+    font-weight: 500;
+    padding-top: 0.1em;
+    opacity: 0.8;
+}
+
+#CopyTranscriptButton {
+    position: absolute;
+    top: 2em;
+    right: 1em;
 }

@@ -25,6 +25,8 @@
   async asyncFetch() {
     assert(this.prompt());
 
+    this.prompt().copyToClipboard(); // so the user can easily paste it into MidJourney
+
     const request = this.newRequest().setBodyJson({
       prompt: this.prompt(),
       n: 1,

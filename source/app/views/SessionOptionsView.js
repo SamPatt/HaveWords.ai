@@ -370,6 +370,11 @@
     return v ? v : "rgb(219, 219, 219)";
   }
 
+  allowsImageGen () {
+    const v = this.configLookup("allowsImageGen");
+    return v ? v : true;
+  }
+
   // --- start session ---
 
   applySessionUiPrefs () {

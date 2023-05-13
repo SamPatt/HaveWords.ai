@@ -9,6 +9,7 @@
   initPrototypeSlots() {
     this.newSlot("messageInput", null);
     this.newSlot("messageInputRemote", null);
+    this.newSlot("sessionTitle", null);
   }
 
   init() {
@@ -16,6 +17,7 @@
     this.setId("aiChatColumn");
     this.setupMessageInput();
     this.setupMessageInputRemote();
+    this.setSessionTitle(View.clone().setId("SessionDescription"));
   }
 
   setupMessageInput() {
@@ -83,13 +85,6 @@
     const buttonView = Button.clone().setElement(button);
     buttonView.setIconPath("resources/icons/image.svg");
     buttonView.iconElement().style.opacity = 0.5;
-    /*
-    const svg = document.createElement("object");
-    svg.setAttribute("data", "resources/icons/image.svg");
-    svg.style.pointerEvents = "none";
-    svg.style.opacity = 0.5;
-    button.appendChild(svg);
-    */
 
     button.style.width = "1.5em";
     button.style.height = "1.5em";
@@ -129,7 +124,7 @@
     m.setText(message);
     this.addMessageElement(m.element());
 
-  // ---------
+    // ---------
 
     let isUser = false;
     if (type === "prompt") {
@@ -139,9 +134,17 @@
 
     } else if (type === "aiResponse") {
 
+      if (m.chapterNumber() && m.chapterTitle()) {
+        this.sessionTitle().setString(m.chapterNumber() + ": " + m.chapterTitle());
+      } else if(m.bookTitle()) {
+        this.sessionTitle().setString(m.bookTitle());
+      }
+
       this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
-        m.element().appendChild(this.genImageButtonFor(m.text()));
+        if (SessionOptionsView.shared().allowsImageGen()) {
+          m.element().appendChild(this.genImageButtonFor(m.text()));
+        }
       }
       this.onAiResponseText(m.text());
 

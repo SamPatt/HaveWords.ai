@@ -45,7 +45,15 @@ const sessionOptionsArray = [
     The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
     Players should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
     Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
-    The player names are: [playerNames].`,
+    The player names are: [playerNames].
+
+    When the session begins, please create and title for the first chapter of the adventure and 
+    place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
+    Please write the chapter number in words, not number characters.
+    When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
+    the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
+    When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.
+    `,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
@@ -53,7 +61,7 @@ const sessionOptionsArray = [
     color: "rgb(219, 219, 219)",
     options: [
       {
-        label: "Traditional roleplaying",
+        label: "Traditional",
         value: "traditional fantasy",
         /*
         prompt: `Please play the roll of an dungeon master and lead us on a traditional campaign of Dungeons and Dragons. 
@@ -77,6 +85,7 @@ const sessionOptionsArray = [
         
         Additionally, you may not allow my character to make decisions that conflict with the context or setting you’ve provided. 
         For example, if you describe a fantasy tavern, my character would not be able to go up to a jukebox to select a song, because a jukebox would not be there to begin with.
+        During the story, do not let players make up items, places, or other characters that you haven't created. Only you should be able to add these things to the story.
         
         Try to make the setting consistent with previous descriptions of it. 
         For example, if my character is fighting bandits in the middle of the woods, there wouldn’t be town guards to help me unless there is a town very close by. 
@@ -107,21 +116,15 @@ const sessionOptionsArray = [
         Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
         Once I decide on the adventure, you may provide a brief setting description and begin the game. 
         I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
-        Do not make any decisions for the players. Always ask the players what they would like to do.`,
+        Do not make any decisions for the players. Always ask the players what they would like to do.
+        `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
       },
       {
         label: "Harry Potter",
         value: "Harry Potter",
-        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.
-
-        When we begin, please create and title for the first chapter of the adventure and 
-        place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
-        Please write the chapter number in words, not number characters.
-        When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
-        the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
-        When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.`,
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
         fontFamily: "Cardo",
@@ -131,14 +134,7 @@ const sessionOptionsArray = [
         label: "Studio Ghibli",
         value: "Studio Ghibli",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
-        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.
-        
-        When we begin, please create and title for the first chapter of the adventure and 
-        place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
-        Please write the chapter number in words, not number characters.
-        When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
-        the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
-        When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.`,
+        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
@@ -150,14 +146,17 @@ const sessionOptionsArray = [
       {
         value: "Conan",
         label: "Conan the Barbarian",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.
-        As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Robert E. Howard's Conan the Barbarian universe.
+        Feel free to borrow elements from the stories of H.P. Lovecraft, Clark Ashton Smith, or Lord Dunsany when you feel they fit well into the stories.
+        As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane. 
+        The time period roughly corresponds to that of the earliest human civilations in the fertile cresent and while steel and magic exists in this universe, 
+        no modern technologies (such as guns, planes, or automobiles, etc) do.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
       },
       {
         label: "Norse Mythology",
         value: "Norse",
-        prompt: `Please play the roll of an expert, witty and fun loving dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:"
       },
     ],
@@ -181,7 +180,7 @@ const sessionOptionsArray = [
     color: "rgba(255, 255, 255, 0.7)",
     fontFamily: "Barlow Condensed",
     fontWeight: "300",
-    allowsImages: false,
+    allowsImageGen: false,
     options: [
       {
         label: "Variety",

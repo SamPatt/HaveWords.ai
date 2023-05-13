@@ -86,5 +86,27 @@
     return this.textElement().innerHTML;
   }
 
+  contentOfFirstElementOfClass(className) {
+    const matches = this.element().querySelectorAll('.' + className); 
+    if (matches.length) {
+      return matches[0].innerHTML;
+    }
+    return undefined;
+  }
+
+  // --- helpers to get bits of tagged content ---
+
+  chapterNumber () {
+    return this.contentOfFirstElementOfClass('chapterNumber'); 
+  }
+
+  chapterTitle () {
+    return this.contentOfFirstElementOfClass('chapterTitle'); 
+  }
+
+  bookTitle () {
+    return this.contentOfFirstElementOfClass('bookTitle'); 
+  }
+
 }.initThisClass());
 
