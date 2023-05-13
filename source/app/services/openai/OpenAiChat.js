@@ -10,15 +10,36 @@
     //this.newSlot("model", "gpt-3.5-turbo");
     //this.newSlot("role", "user");
     this.newSlot("conversationHistory", null);
+    this.newSlot("tokenBuffer", 400); // Buffer to ensure approximation doesn't exceed limit
+    this.newSlot("initialMessagesCount", 3); // Number of initial messages to always keep
   }
 
   init() {
     super.init();
     this.setConversationHistory([]);
-    //this.setActiveRequests([])
+  }
+
+  // Function to approximate token count
+  approximateTokens(message) {
+    return Math.ceil(message.length / 4);
   }
 
   addToConversation(json) {
+    // Check if conversation length exceeds limit
+    let currentTokenCount = this.conversationHistory().reduce((count, message) => {
+      return count + this.approximateTokens(message.content);
+    }, 0);
+
+    const newMessageTokenCount = this.approximateTokens(json.content);
+
+    // If new message would cause token count to exceed limit, remove old messages
+    while (this.conversationHistory().length > this.initialMessagesCount() &&
+      currentTokenCount + newMessageTokenCount + this.tokenBuffer() > 4096) {
+      // Remove the oldest non-initial message
+      const removedMessage = this.conversationHistory().splice(this.initialMessagesCount(), 1)[0];
+      currentTokenCount -= this.approximateTokens(removedMessage.content);
+    }
+
     this.conversationHistory().push(json);
     return this;
   }
