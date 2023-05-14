@@ -15,6 +15,7 @@
     this.newSlot("sessionTypeOptions", null);
     this.newSlot("sessionSubtypeOptions", null);
     this.newSlot("sessionCustomizationText", null);
+    this.newSlot("sessionLanguageOptions", null);
 
     this.newSlot("sessionStartButton", null);
     this.newSlot("sessionResetButton", null);
@@ -24,10 +25,19 @@
     super.init();
     this.setId("aiSelectionBlock");
 
-    const modelOptions = OpenAiChat.shared().modelOptions().map(name => { return { label: name, value:name }; });
+    const modelOptions = OpenAiChat.shared()
+      .modelOptions()
+      .map((name) => {
+        return { label: name, value: name };
+      });
     this.setAiModelOptions(
-      OptionsView.clone().setId("aiModelOptions").setTarget(this).setOptions(modelOptions).setShouldStore(true).load()
-    )
+      OptionsView.clone()
+        .setId("aiModelOptions")
+        .setTarget(this)
+        .setOptions(modelOptions)
+        .setShouldStore(true)
+        .load()
+    );
 
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
@@ -35,14 +45,28 @@
 
     this.setSessionTypeOptions(
       OptionsView.clone()
-      .setId("sessionTypeOptions")
-      .setTarget(this)
-      .setOptions(sessionOptionsArray)
-      .setShouldStore(true).load()
+        .setId("sessionTypeOptions")
+        .setTarget(this)
+        .setOptions(sessionOptionsArray)
+        .setShouldStore(true)
+        .load()
     );
 
     this.setSessionSubtypeOptions(
       OptionsView.clone().setId("sessionSubtypeOptions").setTarget(this)
+    );
+
+    this.sessionTypeOptions().submit(); // to setup subtypes
+
+    this.sessionSubtypeOptions().setShouldStore(true).load()
+
+    this.setSessionLanguageOptions(
+      OptionsView.clone()
+        .setId("sessionLanguageOptions")
+        .setTarget(this)
+        .setOptions(AzureTextToSpeech.shared().languageOptions())
+        .setShouldStore(true)
+        .load()
     );
 
     this.setSessionCustomizationText(
@@ -52,7 +76,10 @@
     );
 
     this.setSessionStartButton(
-      Button.clone().setId("sessionStartButton").setTarget(this).setIsDisabled(true)
+      Button.clone()
+        .setId("sessionStartButton")
+        .setTarget(this)
+        .setIsDisabled(true)
     );
 
     this.setSessionResetButton(
@@ -60,8 +87,24 @@
     );
 
     this.setupApiKeyText();
-    this.sessionTypeOptions().submit(); // to setup subtypes
     this.onUpdateInputs(); // to enable start button if ready
+  }
+
+
+  languagePrompt () {
+    const label = this.sessionLanguageOptions().selectedLabel();
+    const value = this.sessionLanguageOptions().selectedValue();
+    AzureTextToSpeech.shared().setVoiceName(value);
+    
+    const parts = label.split("(");
+    const locale = parts[0];
+    let prompt = `Please make all your responses in the ${locale} language`;
+    if (parts.length > 1) {
+      const subLocale = parts[1].split(")")[0];
+      prompt += `, as spoken in ${subLocale}.`;
+    }
+    console.log("============== language prompt:", prompt);
+    return prompt;
   }
 
   setupApiKeyText() {
@@ -89,7 +132,7 @@
     this.setAzureApiKeyText(field);
 
     field.setValidationFunc((s) => {
-    //  debugger;
+      //  debugger;
       const isValid = AzureService.shared().validateKey(s);
       if (isValid) {
         AzureService.shared().setApiKey(s);
@@ -109,17 +152,19 @@
     this.onUpdateInputs();
   }
 
-  canStart () {
+  canStart() {
     return this.apiKeyText().isValid();
   }
 
-  onUpdateInputs () {
+  onUpdateInputs() {
     this.sessionStartButton().setIsDisabled(!this.canStart());
   }
 
-  showAzureRegionIfNeeded () {
+  showAzureRegionIfNeeded() {
     const isNeeded = AzureService.shared().apiKey();
-    this.azureApiRegionText().element().parentNode.style.display = isNeeded ? "block" : "none";
+    this.azureApiRegionText().element().parentNode.style.display = isNeeded
+      ? "block"
+      : "none";
     return this;
   }
 
@@ -176,14 +221,14 @@
 
   onSubmit_sessionSubtypeOptions() {}
 
-  hidePromptInputs () {
+  hidePromptInputs() {
     document.getElementById("messageInputSection").style.display = "none"; // host ai chat input
     document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
   }
 
   displayHostHTMLChanges() {
     document.getElementById("appView").style.display = "block";
-    this.unhide()
+    this.unhide();
     document.getElementById("messageInputSection").style.display = "block"; // host ai chat input
     document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
     /*
@@ -193,10 +238,11 @@
   }
 
   displayGuestHTMLChanges() {
-    document.getElementById("appView").style.display = "block"; 
-    this.hide()
+    document.getElementById("appView").style.display = "block";
+    this.hide();
     document.getElementById("messageInputSection").style.display = "none"; // guest ai chat input
-    document.getElementById("messageInputRemoteSection").style.display = "block"; // guest ai chat input
+    document.getElementById("messageInputRemoteSection").style.display =
+      "block"; // guest ai chat input
     messageInputRemote.disabled = true;
   }
 
@@ -263,7 +309,7 @@
 
   // --- helpers ---
 
-  aiModel () {
+  aiModel() {
     return this.aiModelOptions().selectedValue();
   }
 
@@ -289,7 +335,7 @@
     return this.getCurrentUsernames().join(",");
   }
 
-  replacedConfigString (s) {
+  replacedConfigString(s) {
     s = s.replaceAll("[sessionType]", this.sessionType());
     s = s.replaceAll("[sessionSubtype]", this.sessionSubtype());
     s = s.replaceAll("[playerNames]", this.playerNames());
@@ -297,21 +343,22 @@
       "[customization]",
       this.sessionCustomizationText().string()
     );
-    return s
+    return s;
   }
 
   // --- config lookups ---
 
-  configLookup (key) {
+  configLookup(key) {
     const a = this.sessionTypeOptions().selectedElement()._item[key];
     const b = this.sessionSubtypeOptions().selectedElement()._item[key];
     const v = b ? b : a;
     return v ? v : "";
   }
 
-  promptSuffix () {
+  promptSuffix() {
     return this.configLookup("promptSuffix");
   }
+
 
   prompt() {
     let prompt = this.configLookup("prompt");
@@ -320,6 +367,8 @@
     if (promptSuffix) {
       prompt += promptSuffix; // for the prompts, we add them together, for others we typically override
     }
+    prompt += this.languagePrompt();
+    
     return this.replacedConfigString(prompt);
   }
 
@@ -330,27 +379,27 @@
 
   // --- art prompt ---
 
-  artPromptSuffix () {
+  artPromptSuffix() {
     const v = this.configLookup("artPromptSuffix");
     return this.replacedConfigString(v);
   }
 
-  artPromptPrefix () {
+  artPromptPrefix() {
     const v = this.configLookup("artPromptPrefix");
     return this.replacedConfigString(v);
   }
 
   // -- music playlist ---
 
-  musicPlaylists () {
+  musicPlaylists() {
     return this.configLookup("musicPlaylists");
   }
 
   sessionFontFamily() {
-      return this.configLookup("fontFamily");
+    return this.configLookup("fontFamily");
   }
 
-  sessionFontWeight () {
+  sessionFontWeight() {
     const v = this.configLookup("fontWeight");
     return v ? v : "500";
   }
@@ -360,24 +409,24 @@
     return v ? v : "inherit";
   }
 
-  sessionBackgroundColor () {
+  sessionBackgroundColor() {
     const v = this.configLookup("backgroundColor");
     return v ? v : "#222";
   }
 
-  sessionTextColor () {
+  sessionTextColor() {
     const v = this.configLookup("color");
     return v ? v : "rgb(219, 219, 219)";
   }
 
-  allowsImageGen () {
+  allowsImageGen() {
     const v = this.configLookup("allowsImageGen");
     return v ? v : true;
   }
 
   // --- start session ---
 
-  applySessionUiPrefs () {
+  applySessionUiPrefs() {
     document.body.style.backgroundColor = this.sessionBackgroundColor();
     document.body.style.color = this.sessionTextColor();
     document.body.style.fontFamily = this.sessionFontFamily();
@@ -385,37 +434,47 @@
 
     for (const e of document.getElementsByTagName("h2")) {
       e.style.fontFamily = this.headerFontFamily();
-      console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
+      console.log(
+        "setting font family '" +
+          this.headerFontFamily() +
+          "' on '" +
+          e.innerHTML +
+          "'"
+      );
     }
 
     for (const e of document.getElementsByClassName("chapterNumber")) {
-      e.style.fontFamily = this.headerFontFamily()
+      e.style.fontFamily = this.headerFontFamily();
       //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
     }
 
     for (const e of document.getElementsByClassName("chapterTitle")) {
-      e.style.fontFamily = this.headerFontFamily()
+      e.style.fontFamily = this.headerFontFamily();
       //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
     }
 
     for (const e of document.getElementsByClassName("drop-cap")) {
-      e.style.fontFamily = this.headerFontFamily()
+      e.style.fontFamily = this.headerFontFamily();
       //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
     }
   }
 
-  sessionTitle () {
-    return this.sessionTypeOptions().selectedText() + " / " + this.sessionSubtypeOptions().selectedText();
+  sessionTitle() {
+    return (
+      this.sessionTypeOptions().selectedLabel() +
+      " / " +
+      this.sessionSubtypeOptions().selectedLabel()
+    );
   }
 
-  updateSessionTitle () {
+  updateSessionTitle() {
     //debugger;
     const e = document.getElementById("SessionTitle");
     e.innerHTML = this.sessionTitle();
   }
 
   async onSubmit_sessionStartButton() {
-    this.hide()
+    this.hide();
 
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists());
     this.applySessionUiPrefs();
@@ -425,8 +484,8 @@
       this.sessionTypeOptions().selectedElement()._item.gameMode
     );
 
-    AiChatView.shared().setShowLoading(true)
-    
+    AiChatView.shared().setShowLoading(true);
+
     /*
     AiChatView.shared().addMessage(
       "prompt",
@@ -439,7 +498,6 @@
 
     HostSession.shared().showHostIntroMessage();
 
-
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
     HostSession.shared().broadcast({
@@ -449,7 +507,6 @@
       nickname: LocalUser.shared().nickname(),
       sessionType: this.sessionType(),
     });
-
 
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());
     // Stores initial AI response, which contains character descriptions, for later use
@@ -467,5 +524,4 @@
     Sounds.shared().playOminousSound();
     //YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
   }
-
 }).initThisClass();

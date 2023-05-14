@@ -40,20 +40,24 @@ const sessionOptionsArray = [
     Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
     Remember there are multiple players, and dialogue is usually happening within a group.\n
     Plot: Describe only the next step of the adventure based on the player input. 
-    Don't take any actions on the player's behalf, always let the player make the decisions. 
+    Don't take actions on the player's behalf, always let the player make the decisions.
     Remember there are multiple players, and descriptions of scenes should include more than just one player. 
-    The story should only progress when the player has made a decision about how to move forward. Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
-    Players should sometimes fail, especially if their request is unrealistic given the setting and world. The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
+    The story should only progress when the player has made a decision about how to move forward. 
+    Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
+    Players should sometimes fail, especially if their request is unrealistic given the setting and world. 
+    The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
     Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
     The player names are: [playerNames].
 
     When the session begins, please create and title for the first chapter of the adventure and 
     place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
     Please write the chapter number in words, not number characters.
-    When it feels like a new chapter is beginning, please create a title for it in a similar manner. Also, please place 
-    the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
+    When it feels like a new chapter is beginning, please create a title for it in a similar manner. 
+    A typical chapter should involve at least a few interactions with the user.
+    Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
     When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.
-    `,
+
+    Again, please don't take actions on the player's behalf, always let the player make the decisions.`,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
@@ -162,14 +166,17 @@ const sessionOptionsArray = [
       {
         label: "Discworld",
         value: "Discworld",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe.
+        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: "
       },
       {
         label: "Hitchhiker's Guide to the Galaxy",
         value: "Hitchhiker's Guide to the Galaxy",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe.`,
-        artPromptPrefix: "Humorous 1980s comic book style frame of: "
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe. 
+        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.`,
+        artPromptPrefix: "Humorous 1980s comic book style frame of: ",
+        headerFontFamily: "Harlow",
       },
 
       {
@@ -199,9 +206,33 @@ const sessionOptionsArray = [
       {
         label: "Thomas Ligotti",
         value: "Thomas Ligotti",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
+        These stories should be dark and should inevitably lead to the doom of the charter the player is playing. There are no happy endings and no escape.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
+      },
+
+
+      {
+        label: "Jane Austin",
+        value: "Jane Austin",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s books and stories.`,
+        artPromptPrefix: "Pen and ink illustration of:",
+      },
+
+      {
+        label: "Anne Rice",
+        value: "Anne Rice",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s vampire books.`,
+        artPromptPrefix: "Pen and ink illustration of:",
+        fontFamily: "XTypewriter",
+      },
+
+      {
+        label: "Twilight Saga",
+        value: "Twilight Saga",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of Stephenie Meyer's [sessionSubtype]'s books and films.`,
+        artPromptPrefix: "Pen and ink illustration of:",
       },
     ],
   },

@@ -22,23 +22,46 @@
     return selectedOptionElement;
   }
 
-  setSelectedValue (s) {
+  hasValue (s) {
     const children = this.element().children;
+    let result = false;
     for (var i = 0; i < children.length; i++) {
       const option = children[i];
-      const match = option.value === s;
-      option.selected = match;
+      if (option.value === s) {
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  setSelectedValue (s) {
+    if (this.hasValue(s)) {
+      const children = this.element().children;
+      for (var i = 0; i < children.length; i++) {
+        const option = children[i];
+        const match = option.value === s;
+        option.selected = match;
+      }
+    } else {
+      console.warn(this.type() + ".setSelectedValue(" + s + ") - no such value in options");
     }
     return this;
   }
 
   selectedValue() {
-    return this.selectedElement().value;
+    const option = this.selectedElement();
+    return option ? option.value : null;
   }
 
-  selectedText() {
+  selectedLabel() {
     return this.selectedElement().innerText;
   }
+
+  /*
+  selectedText() {
+    return this.selectedLabel();
+  }
+  */
 
   setString (aString) {
     this.setSelectedValue(aString)
@@ -55,18 +78,27 @@
   }
 
   setOptions(array) {
-    // array is expected to contain items like { label: "a", value: "b" }
+    const previouslySelectedValue = this.selectedValue()
+    //debugger;
+    // array is expected to contain items like { label: "a", value: "b" } or ["foo", "bar"]
     const e = this.element();
     e.style.fontFamily = "inherit";
     e.innerHTML = "";
     array.forEach((item) => {
-      const option = new Option(item.label, item.value, false);
+      let option;
+      if (typeof(item) === "string") {
+        option = new Option(item, item, false);
+      } else {
+        option = new Option(item.label, item.value, false);
+      }
       option.style.fontFamily = "inherit";
       option.style.fontSize = "inherit";
       option.style.fontWeight = "inherit";
       option._item = item;
       e.appendChild(option);
     });
+
+    this.setSelectedValue(previouslySelectedValue);
     return this;
   }
 }).initThisClass();

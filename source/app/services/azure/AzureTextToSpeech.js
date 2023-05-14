@@ -24,22 +24,78 @@
     "en-US-SaraNeural",
     "en-US-TonyNeural"
 
+    fetch voice options:
+
+    curl --location --request GET 'https://YOUR_RESOURCE_REGION.tts.speech.microsoft.com/cognitiveservices/voices/list' \
+--header 'Ocp-Apim-Subscription-Key: YOUR_RESOURCE_KEY'
+
 */
 
 (class AzureTextToSpeech extends AzureService {
   initPrototypeSlots () {
-    this.newSlot("voiceName", "en-US-TonyNeural")
-    this.newSlot("voiceStyle", "whispering")
+    this.newSlot("language", "en-US");
+    this.newSlot("voiceName", "en-US-TonyNeural");
+    this.newSlot("voiceStyle", "whispering");
+    this.newSlot("voicesJson", null);
+    this.newSlot("volumne", "shoft");
+    this.newSlot("rate", "15%");
+    this.newSlot("pitch", "-10%");
+
   }
 
   init () {
     super.init();
   }
 
+  jsonForVoiceShortName (shortName) {
+    return this.voicesJson().find(entry => entry.ShortName === shortName);
+  }
+
+  voiceSupportsStyle (styleName) {
+    const json = this.jsonForVoiceShortName(this.voiceName())
+    return json.StyleList && json.StyleList.includes(styleName);
+  }
+
+  languageOptions () {
+    const options = [];
+    const localNames = new Set();
+    this.voicesJson().forEach(entry => {
+      const k = entry.LocaleName;
+      const v = entry.ShortName;
+      if (!localNames.has(k)) {
+        options.push({ label: k, value: v});
+        localNames.add(k);
+      }
+    });
+    return options;
+  }
+
   async asyncSpeakTextIfAble (text) {
     if (this.hasApiAccess()) {
       await this.asyncSpeakText(text);
     }
+  }
+
+  supportedVoiceStyle () {
+    return this.voiceSupportsStyle(this.voiceStyle()) ? this.voiceStyle() : null;
+  }
+
+  ssmlRequestForText(text) {
+    let s = `<prosody volume='soft' rate='${this.rate()}' pitch='${this.pitch()}'>${text}</prosody>`;
+
+    const style = this.supportedVoiceStyle();
+    if (style) {
+      // wrap it in a style, if one is specified and supported
+      s += `<mstts:express-as style='${style}'>${s}</mstts:express-as>`
+    }
+    
+    const ssmlRequest = `
+      <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='${this.language()}'>
+      <voice name='${this.voiceName()}'>
+        ${s}
+      </voice>
+    </speak>`;
+    return ssmlRequest;
   }
 
   async asyncSpeakText(text) {
@@ -55,15 +111,6 @@
     //text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
 
     console.log("asyncSpeakText(" + text + ")");
-    
-    const ssmlRequest = `
-      <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'>
-      <voice name='${this.voiceName()}'>
-        <mstts:express-as style='${this.voiceStyle()}'>
-          <prosody volume='soft' rate='15%' pitch='-10%'>${text}</prosody>
-        </mstts:express-as>
-      </voice>
-    </speak>`;
 
 
     //this.debugLog("made request")
@@ -74,7 +121,7 @@
         'Content-Type': 'application/ssml+xml',
         'X-Microsoft-OutputFormat': 'riff-24khz-16bit-mono-pcm',
       },
-      body: ssmlRequest,
+      body: this.ssmlRequestForText(text),
     });
 
     if (!response.ok) {

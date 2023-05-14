@@ -36,17 +36,21 @@
     };
   }
 
+  assertValid () {
+    if (!this.apiUrl()) {
+      throw new Error(this.type() + " apiUrl missing");
+    }
+
+    if (!this.apiKey()) {
+      throw new Error(this.type() + " apiKey missing");
+    }
+  }
+
   async asyncSend () {
     const requestOptions = this.requestOptions()
     let data = undefined;
 
-    if (!this.apiUrl()) {
-      throw new Error(this.type() + " apiUrl missing")
-    }
-
-    if (!this.apiKey()) {
-      throw new Error(this.type() + " apiKey missing")
-    }
+    this.assertValid()
 
    // debugger;
     //try {

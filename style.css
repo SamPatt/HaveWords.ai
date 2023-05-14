@@ -166,7 +166,7 @@ h2 {
     font-weight: normal;
     margin-bottom: 0.5em;
     letter-spacing: 0.1em;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 .subheader {
@@ -767,6 +767,10 @@ button {
     text-align: center;
     padding-top: 0em;
     padding-bottom: 2em;
+}
+
+.bookTitle {
+    font-size: 2em;
 }
 
 #SessionTitle {

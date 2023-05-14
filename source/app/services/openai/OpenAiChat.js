@@ -75,7 +75,8 @@
     const request = this.newRequest().setBodyJson({
       model: selectedModel,
       messages: this.conversationHistory(),
-      temperature: 0.7
+      temperature: 0.7, // more creative
+      top_p: 0.9 // more diverse
     });
 
 
