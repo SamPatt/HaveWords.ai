@@ -125,7 +125,7 @@ const sessionOptionsArray = [
         label: "Harry Potter",
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
-        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
+        artPromptPrefix: "Charcoal style on transparent background Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
         fontFamily: "Cardo",
         headerFontFamily: "Lumos",
@@ -155,9 +155,53 @@ const sessionOptionsArray = [
       },
       {
         label: "Norse Mythology",
-        value: "Norse",
+        value: "Norse Mythology",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:"
+      },
+      {
+        label: "Discworld",
+        value: "Discworld",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe.`,
+        artPromptPrefix: "Humorous 1980s comic book style frame of: "
+      },
+      {
+        label: "Hitchhiker's Guide to the Galaxy",
+        value: "Hitchhiker's Guide to the Galaxy",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe.`,
+        artPromptPrefix: "Humorous 1980s comic book style frame of: "
+      },
+
+      {
+        label: "Lord Dunsany",
+        value: "Lord Dunsany",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        artPromptPrefix: "Painting in the style of Frank Frazetta of: "
+      },
+
+      {
+        label: "H.P. Lovecraft",
+        value: "H.P. Lovecraft",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories,
+        including his unpublished Dream Quest to Unknown Kadath.`,
+        artPromptPrefix: "Pen and ink illustration of:",
+        fontFamily: "XTypewriter",
+      },
+
+      {
+        label: "Clark Ashton Smith",
+        value: "Clark Ashton Smith",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        artPromptPrefix: "Pen and ink illustration of:",
+        fontFamily: "XTypewriter",
+      },
+
+      {
+        label: "Thomas Ligotti",
+        value: "Thomas Ligotti",
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        artPromptPrefix: "Pen and ink illustration of:",
+        fontFamily: "XTypewriter",
       },
     ],
   },
