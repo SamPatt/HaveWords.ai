@@ -14,7 +14,7 @@
 
   init() {
     super.init();
-    this.setId("displayInviteText");
+    this.setId("CopyInviteButton");
   }
 
   setLink (aString) {

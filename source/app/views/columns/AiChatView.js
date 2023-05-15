@@ -10,6 +10,7 @@
     this.newSlot("messageInput", null);
     this.newSlot("messageInputRemote", null);
     this.newSlot("sessionTitle", null);
+    this.newSlot("copyTranscriptButton", null);
   }
 
   init() {
@@ -18,6 +19,30 @@
     this.setupMessageInput();
     this.setupMessageInputRemote();
     this.setSessionTitle(View.clone().setId("SessionDescription"));
+    this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
+  }
+
+  onSubmit_CopyTranscriptButton () {
+    const s = this.transcript();
+    s.copyToClipboard();
+  }
+
+  transcript () {
+    const texts = []
+    const className = "message-content"; //"message-text";
+    const messageContentElements = this.scrollViewContentElement().querySelectorAll('.' + className);
+    for (const m of messageContentElements) {
+      const nickname = m.querySelectorAll('.message-nickname')[0].innerText;
+      let text = m.querySelectorAll('.message-text')[0].innerText;
+      text = text.replaceAll("\n\n\n", "\n\n");
+      text = text.replaceAll("\n\n\n", "\n\n");
+      const s = nickname.toUpperCase() + ":\n" + text;
+      texts.push(s);
+    }
+    if (App.shared().isHost()) {
+      texts.shift(); // remove the first element which is a welcome message
+    }
+    return texts.join("\n\n");
   }
 
   setupMessageInput() {

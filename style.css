@@ -76,7 +76,13 @@ textarea::placeholder {
 
 /*-------------------*/
 
-#displayInviteText {
+#CopyTranscriptButton {
+    position: absolute;
+    top: 6em;
+    right: 1em;
+}
+
+.smallButton {
     transition: 0.2s;
     color: inherit;
     font-size: 0.6em;
@@ -84,18 +90,18 @@ textarea::placeholder {
     user-select: none;
     margin-top: 2em;
     padding: 0.5em 1em;
-    opacity: 0;
+    /*opacity: 0;*/
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 5px;
 }
 
-#micButton {
+#MicButton {
     user-select: none;
     position: absolute;
     top: 0;
     right: 0;
-    height: 1.25em;
-    width: 1.25em;
+    height: 1em;
+    width: 1em;
     border: 0px solid red;
     margin-top: 0.8em;
     margin-right: 1.75em;
@@ -785,8 +791,3 @@ button {
     opacity: 0.8;
 }
 
-#CopyTranscriptButton {
-    position: absolute;
-    top: 2em;
-    right: 1em;
-}

@@ -148,25 +148,26 @@ const sessionOptionsArray = [
     Remember there are multiple players, and descriptions of scenes should include more than just one player. 
     The story should only progress when the player has made a decision about how to move forward. 
     Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
+
     Players should sometimes fail, especially if their request is unrealistic given the setting and world. 
-    The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.
+    The plot should be challenging but fun, including puzzles, riddles, or combat.
 
     Beginning the session: Welcome the players, give us very brief character descriptions fitting the world theme (with our names in bold), 
-    and briefly describe the setting and a simple story hook in one or two sentences and then start the session.\n
+    and briefly describe the setting and a story hook in one or two sentences and then start the session.\n
     The player names are: [playerNames].
 
     When the session begins, please create and title for the first chapter of the adventure and 
-    place the chapter number within <div class=chapterNumber></div> and the chaper name within <div class=chapterTitle></div> tags. 
-    Please write the chapter number in words, not number characters.
+    place the chapter number (written in words, not number characters) within <div class=chapterNumber></div> 
+    and the chaper name within <div class=chapterTitle></div> tags. 
+
     When it feels like a new chapter is beginning, please create a title for it in a similar manner. 
-    A typical chapter should involve at least a few interactions with the user.
     Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap".
 
-    When the story is completed, please end by saying we have to the conclusion/end, followed by a fitting title for the story 
+    When the story is completed, please end by saying we have come to it's conclusion, followed by a fitting title for the story 
     as if it were a book title and place it with <div class=bookTitle></div> tags. 
-    Please follow this with a one or two paragraph summary of the story that tries to cover the story's most dramatic moments and most important player actions.
+    Please follow this with a brief summary of the story that tries to cover the story's most dramatic moments and most important player actions.
 
-    Again, please don't take actions on any of the player's behalf, always let the players make the decisions. This is important to keep the players engaged.`,
+    Again, do not decisions for the players.`,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
@@ -231,7 +232,7 @@ const sessionOptionsArray = [
         Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
         Once I decide on the adventure, you may provide a brief setting description and begin the game. 
         I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
-        Do not make any decisions for the players. Always ask the players what they would like to do.
+        Again, do not decisions for the players.
         `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",

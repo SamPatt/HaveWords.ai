@@ -40,9 +40,8 @@
                     <h2>HaveWords.ai</h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
-                    <div id="compactButton1" class="compactor">
-                        <button id="CopyTranscriptButton">Copy Transcript</button>
-                        </div>
+                    <div id="compactButton1" class="compactor"></div>
+                    <div  id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
                 </div>
 
                 <!--- begin host settings --->
@@ -51,8 +50,11 @@
                     <div>
                         <h2>Welcome to your AI session!</h2>
                         <p>First, you need to set your API key, and select the session options.<br>
-                        If you'd like to invite friends, use the Copy Invite Link button on the top right of the page.</p>
+                            If you'd like to invite friends, use the Copy Invite Link button on the top right of the
+                            page.</p>
 
+
+                        <!-- begin Open AI settings -->
 
                         <div>
                             <div class="inputLabel">OpenAI Model</div>
@@ -66,9 +68,12 @@
                                     style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
                             <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
                                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput" >
+                                class="underlinedInput optionsInput">
                         </div>
 
+                        <!-- end Open AI settings -->
+
+                        <!-- begin Azure AI settings -->
 
                         <div>
                             <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
@@ -87,6 +92,16 @@
                                 class="underlinedInput optionsInput">
                         </div>
 
+                        <!-- end Azure AI settings -->
+
+                        <!-- begin Session settings -->
+
+                        <!--
+                        <div>
+                            <div class="inputLabel">Session Description</div>
+                            <div id="sessionTypeDescription"></div>
+                        </div>
+                        -->
 
                         <div>
                             <div class="inputLabel">Session Type</div>
@@ -101,25 +116,20 @@
                         </div>
 
                         <div>
-                            <div class="inputLabel">Language</div>
-                            <select id="sessionLanguageOptions">
-                            </select>
-                        </div>
-
-                        <!--
-                    <div class="inputLabel">Session Description</div>
-
-                    <div id="sessionTypeDescription">
-                        sessionTypeDescription
-                    </div>
-                    -->
-
-                        <div>
                             <div class="inputLabel">Customization</div>
                             <input id="sessionCustomizationText" class="underlinedInput"
                                 style="min-width:100%; max-width:100%;"
                                 placeholder="Additional instructions for the AI.">
                         </div>
+
+                        <!-- end Session settings -->
+
+                        <div>
+                            <div class="inputLabel">Language</div>
+                            <select id="sessionLanguageOptions">
+                            </select>
+                        </div>
+
 
                         <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
                             <div class="button" id="sessionStartButton"
@@ -139,7 +149,8 @@
 
                 <div class="aiScrollingOutput scrollingOutput">
                     <div class="messages"></div>
-                    <div class="loading loadingHost" id="loadingHost">Waiting for the AI to respond<span>.</span><span>.</span><span>.</span></div>
+                    <div class="loading loadingHost" id="loadingHost">Waiting for the AI to
+                        respond<span>.</span><span>.</span><span>.</span></div>
                 </div>
 
                 <!--- begin host & guest inputs --->
@@ -177,12 +188,13 @@
                             </tr>
                         </table>
                     </div>
-                    <div id="micButton">
+                    <div id="MicButton">
                         <object id="micSvgIcon" type="image/svg+xml"
                             data="resources/icons/mic-slash-fill-svgrepo-com.svg"></object>
                     </div>
                     <div id="compactButton2" class="compactor">
-                        <object class="svgIcon" type="image/svg+xml" data="resources/icons/square-arrow-right.svg"></object>
+                        <object class="svgIcon" type="image/svg+xml"
+                            data="resources/icons/square-arrow-right.svg"></object>
                     </div>
                 </div>
 
@@ -206,7 +218,7 @@
             <div id="connectedUsersColumn" class="ColumnView" style="display:flex;">
                 <div class="header">
                     <h2>Friends</h2>
-                    <div class="subheader" id="displayInviteText">copy invite link</div>
+                    <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
                     <div id="avatarSection"></div>
                 </div>
                 <ul id="userList"></ul>
@@ -230,4 +242,5 @@
     <iframe width="560" height="315" src="https://www.youtube.com/embed/LoAXA_Rm25A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
     -->
 </body>
+
 </html>
