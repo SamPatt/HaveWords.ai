@@ -437,7 +437,7 @@
     document.body.style.color = this.sessionTextColor();
 
     //const section = document.body;
-    const section = document.getElementById("AiChatMessages");
+    const section = document.getElementById("AiChatMessages").parentNode;
     section.style.fontFamily = this.sessionFontFamily();
     section.style.fontWeight = this.sessionFontWeight();
 
