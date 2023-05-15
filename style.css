@@ -208,7 +208,7 @@ h2 {
 }
 
 .optionsInput {
-    min-width: 30em;
+    /*min-width: 30em;*/
     width: auto;
     max-width: 100%;
 }
@@ -321,14 +321,17 @@ button {
 
 #messageInput {
     flex: flex-end;
+    font-weight: light;
 }
 
 .inputSection {
     padding: 0.3em;
+    font-weight: light;
 }
 
 #messageInputRemote {
     flex: flex-end;
+    font-weight: light;
 }
 
 .system-container input {
@@ -355,11 +358,7 @@ button {
 }
 
 #startSession {
-    border: rgba(255, 255, 255, 0.1) 1px solid;
-    border-radius: 5px;
-    padding: 15px;
     display: flex;
-    width: 100%;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -778,15 +777,14 @@ button {
 .bookTitle {
     font-size: 2em;
     line-height: 1.3em;
-
 }
 
 #SessionTitle {
-    font-weight: 500;
+    font-weight: light;
 }
 
 #SessionDescription {
-    font-weight: 500;
+    font-weight: light;
     padding-top: 0.1em;
     opacity: 0.8;
 }

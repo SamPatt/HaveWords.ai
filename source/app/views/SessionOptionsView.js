@@ -435,9 +435,13 @@
   applySessionUiPrefs() {
     document.body.style.backgroundColor = this.sessionBackgroundColor();
     document.body.style.color = this.sessionTextColor();
-    document.body.style.fontFamily = this.sessionFontFamily();
-    document.body.style.fontWeight = this.sessionFontWeight();
 
+    //const section = document.body;
+    const section = document.getElementById("AiChatMessages");
+    section.style.fontFamily = this.sessionFontFamily();
+    section.style.fontWeight = this.sessionFontWeight();
+
+    /*
     for (const e of document.getElementsByTagName("h2")) {
       e.style.fontFamily = this.headerFontFamily();
       console.log(
@@ -448,6 +452,7 @@
           "'"
       );
     }
+    */
 
     for (const e of document.getElementsByClassName("chapterNumber")) {
       e.style.fontFamily = this.headerFontFamily();

@@ -41,7 +41,7 @@
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
                     <div id="compactButton1" class="compactor"></div>
-                    <div  id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
+                    <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
                 </div>
 
                 <!--- begin host settings --->
@@ -56,64 +56,91 @@
 
                         <!-- begin Open AI settings -->
 
-                        <div>
-                            <div class="inputLabel">OpenAI Model</div>
-                            <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
-                            </select>
-                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="inputLabel">OpenAI API Key <a
+                                                href="https://platform.openai.com/account/api-keys"
+                                                style="opacity: 1; text-transform: lowercase;"
+                                                target="_blank">&#9432;</a></div>
+                                        <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
+                                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                            class="underlinedInput optionsInput">
+                                    </div>
+                                </td>
+                                <td style="padding-left: 1em;">
+                                    <div>
+                                        <div class="inputLabel">OpenAI Model</div>
+                                        <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
 
-                        <div>
-                            <div class="inputLabel">OpenAI API Key <a
-                                    href="https://platform.openai.com/account/api-keys"
-                                    style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
-                            <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
-                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput">
-                        </div>
+
+
 
                         <!-- end Open AI settings -->
 
                         <!-- begin Azure AI settings -->
 
-                        <div>
-                            <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
-                                    style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
-                            <input id="azureApiKeyText" type="password"
-                                placeholder="Only required if you want speech narration." autocomplete="off"
-                                autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput">
-                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
+                                                style="opacity: 1; text-transform: lowercase;"
+                                                target="_blank">&#9432;</a></div>
+                                        <input id="azureApiKeyText" type="password"
+                                            placeholder="Only required if you want speech narration." autocomplete="off"
+                                            autocorrect="off" autocapitalize="off" spellcheck="false"
+                                            class="underlinedInput optionsInput">
+                                    </div>
+                                </td>
+                                <td style="padding-left: 1em;">
+                                    <div>
+                                        <div class="inputLabel">Azure API Region <a href="https://portal.azure.com/"
+                                                style="opacity: 1; text-transform: lowercase;"
+                                                target="_blank">&#9432;</a></div>
+                                        <input id="azureApiRegionText"
+                                            placeholder="Only required if you want speech narration."
+                                            autocomplete="off" autocorrect="off" autocapitalize="off"
+                                            spellcheck="false" class="underlinedInput optionsInput">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
 
-                        <div>
-                            <div class="inputLabel">Azure API Region <a href="https://portal.azure.com/"
-                                    style="opacity: 1; text-transform: lowercase;" target="_blank">&#9432;</a></div>
-                            <input id="azureApiRegionText" placeholder="Only required if you want speech narration."
-                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                class="underlinedInput optionsInput">
-                        </div>
+
 
                         <!-- end Azure AI settings -->
 
                         <!-- begin Session settings -->
 
-                        <!--
-                        <div>
-                            <div class="inputLabel">Session Description</div>
-                            <div id="sessionTypeDescription"></div>
-                        </div>
-                        -->
 
-                        <div>
-                            <div class="inputLabel">Session Type</div>
-                            <select id="sessionTypeOptions">
-                            </select>
-                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="inputLabel">Session Type</div>
+                                        <select id="sessionTypeOptions">
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="padding-left: 1em;">
+                                        <div class="inputLabel">Session Subtype</div>
+                                        <select id="sessionSubtypeOptions">
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
 
-                        <div>
-                            <div class="inputLabel">Session Subtype</div>
-                            <select id="sessionSubtypeOptions">
-                            </select>
-                        </div>
+                        </table>
+
+
 
                         <div>
                             <div class="inputLabel">Customization</div>
@@ -132,7 +159,7 @@
 
 
                         <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
-                            <div class="button" id="sessionStartButton"
+                            <div id="sessionStartButton" class="button"
                                 style="margin-top: 0.3em; background-color: transparent;">Start&nbsp;Session</div>
                         </div>
 
@@ -148,7 +175,7 @@
                 <!--- end host settings --->
 
                 <div class="aiScrollingOutput scrollingOutput">
-                    <div class="messages"></div>
+                    <div id="AiChatMessages" class="messages"></div>
                     <div class="loading loadingHost" id="loadingHost">Waiting for the AI to
                         respond<span>.</span><span>.</span><span>.</span></div>
                 </div>
@@ -232,15 +259,6 @@
     <!--- begin youtube audio player --->
 
     <div id="player"></div>
-    <!--
-    <script src="backgroundAudio.js"></script>
-    -->
-
-    <!--- end youtube audio player --->
-
-    <!--
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/LoAXA_Rm25A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-    -->
 </body>
 
 </html>

@@ -2,7 +2,6 @@
 
 /* 
     YouTubeAudioPlayer
-
 */
 
 (class YouTubeAudioPlayer extends Base {
@@ -20,7 +19,7 @@
   init() {
     super.init();
     this.loadFrameAPI(); // set this up, then we'll set up the player
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
   }
 
   // action queue
