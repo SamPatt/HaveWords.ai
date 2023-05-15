@@ -214,8 +214,8 @@ const sessionOptionsArray = [
 
 
       {
-        label: "Jane Austin",
-        value: "Jane Austin",
+        label: "Jane Austen",
+        value: "Jane Austen",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s books and stories.`,
         artPromptPrefix: "Pen and ink illustration of:",
       },
