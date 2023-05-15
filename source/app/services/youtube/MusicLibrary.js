@@ -517,4 +517,32 @@
       "harry potter opening": "84j5uMdspmQ",
     }
   }
+
+
+  tracksFor_scifi () {
+    return {
+      //"Deep Thought": "IngU5tGtJQY", // only good for first 90 seconds
+      "Space hitchhiker harpsicord": "nGd7Zphv1J0", // good for hitchhikers
+      "Upbeat exploration": "sB6jXSr7_wQ",  // good for hitchhikers
+      "Jaunty Scifi": "vvkofC411Mo",
+      "dramatic meditative exploration": "1E31BLIY4bQ",
+      "dark suspenseful": "FSryKsTMp2M",
+      "dark caverns and hallways": "pE7AwMfNYhM",
+      "ethereal spooky": "gPcEQC5kzf4",
+      "Orbital Surveillance": "iLUZgqrRU_U", // eh
+      "deep into the core": "1GTfMOx01tI",
+    }
+  }
+
+  tracksFor_horror () {
+    return {
+      "rough droning": "_z-Ew1L-iWc",
+    }
+  }
+
+  tracksFor_humor () {
+    return {
+      "goofy detective": "ORNvyUiUTO8",
+    }
+  }
 }).initThisClass();

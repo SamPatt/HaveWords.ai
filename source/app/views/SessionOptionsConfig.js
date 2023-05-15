@@ -13,12 +13,113 @@
 <option value="Discworld">Discworld (Terry Pratchett)</option>
 <option value="HitchhikersGuide">Hitchhikers Guide to the Galaxy (Scott Adams)</option>
 
-More ideas:
 
-Indian Jones adventure?
-Stranger Things
-The Nightmare Before Christmas
-TRON
+
+Humor:
+  Father Ted
+  PG Wodehouse
+  Evelyn Waugh
+  Saki (H.H. Munro)
+  Mark Twain
+  Douglas Adams
+  Terry Pratchett
+  Oscar Wilde
+  The Princess Bride
+  Austin Powers
+  Rick and Morty
+  The Office
+  Seinfeld
+  Friends
+  Monty python the Holy Grail
+  Blackadder
+  Arrested development
+
+Fiction:
+  Haruki Murakami
+
+Fantasy (kids):
+  Disney: Moana, The Little Mermaid, Frozen
+  The Never ending Story
+  Adventure Time
+  Pokeman, Mario, Zelda  
+  The Nightmare Before Christmas
+  Diana Wynne Jones: Her Chrestomanci series and other fantasy novels often feature young protagonists who discover magical worlds.
+  C.S. Lewis: The Chronicles of Narnia series, like Harry Potter, involves children entering a magical world and playing crucial roles in its conflicts.
+  Cornelia Funke: Her Inkheart trilogy is a magical adventure where characters can bring book worlds to life by reading aloud.
+  Lemony Snicket (Daniel Handler): A Series of Unfortunate Events shares the Harry Potter series' mixture of darkness, humor, and the resilience of children.
+  Brandon Mull: His Fablehaven series is a magical adventure filled with mythical creatures and heroic deeds.
+
+Fantasy (young adult):
+  Suzanne Collins: The Hunger Games trilogy doesn't involve magic, but it's a gripping young adult series with strong themes of survival, rebellion against tyranny, and moral choices.
+
+Fantasy (adult):
+  Tolkien, the Hobbit
+  Rick Riordan
+
+  Like Rowling:
+    Rick Riordan
+    Neil Gaiman: While his works vary in tone and subject matter, books like Coraline and The Graveyard Book may appeal to Harry Potter fans.
+
+Action / Adventure:
+  The Road Warrior
+  Stranger things
+  Indiana Jones
+  Game of thrones, Fire and Ice
+  Ian Flemming, James Bond
+
+Mystery:
+  Sherlock Holmes 
+  Twin Peaks
+  Lost
+
+Cyberpunk: 
+  Max Headroom
+  The Matrix
+  Blade Runner
+  William Gibson
+  Philip K Dick
+  TRON
+  Wargames
+  Snow Crash by Neal Stephenson 
+  Freedom series by Daniel Suarez
+  The Windup Girl by Paolo Bacigalupi
+  The Demolished Man by Alfred Bester
+  Her Smoke Rose Up Forever anthology by James Tiptree Jr. AKA Alice Bradley Sheldon
+  When Gravity Fails by George Alec Effinger
+
+SciFi:
+  Doctor Who
+  Star Trek
+  Star Wars, George Lucas
+  Dune
+  SCP Foundation
+  Back to the Future, Steven Speilberg
+  Foundation series
+  Three body problem 
+
+Anime:
+  Aeon Flux
+  Naruto 
+  Star Blazers 
+  Attack on Titan
+  Akira
+  Thunder the Barbarian
+  Dungeons and Dragons cartoon
+  He Man
+
+Fantasy (Comic Books):
+  Marvel DC
+  X-men 
+
+Dark Fantasy (adult):
+  Black mirror
+
+  Battlestar Galactica
+
+Fantasy Period:
+  Downtown Abby
+  The Crown
+  The Great Gadbsy
 
 */
 
@@ -32,21 +133,26 @@ const sessionOptionsArray = [
     chatName: "Player's Chat",
     usersName: "Players",
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
-    promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.\n
-    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.\n
+    promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.
+    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.
     Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
-    You can ask players what actions they will take. Keep track of them individually but try not to split the party.\n
+
+    You can ask players what actions they will take. Keep track of them individually but try not to split the party.
+
     Dialogue: Never speak for the players. Use dialogue for the characters you are describing frequently, always in quotation marks. 
     Make the dialogue realistic based on what you know of the character. Give the characters emotions fitting to the situation. 
-    Remember there are multiple players, and dialogue is usually happening within a group.\n
+    Remember there are multiple players, and dialogue is usually happening within a group.
+
     Plot: Describe only the next step of the adventure based on the player input. 
     Don't take actions on the player's behalf, always let the player make the decisions.
     Remember there are multiple players, and descriptions of scenes should include more than just one player. 
     The story should only progress when the player has made a decision about how to move forward. 
     Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
     Players should sometimes fail, especially if their request is unrealistic given the setting and world. 
-    The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.\n
-    Beginning the session: Welcome the players, give us brief character descriptions fitting the world theme (with our names in bold), briefly describe the setting, describe a simple, cute story hook, then start the session.\n
+    The plot should be challenging but fun, including puzzles, riddles, or combat. Combat should not be life-threatening.
+
+    Beginning the session: Welcome the players, give us very brief character descriptions fitting the world theme (with our names in bold), 
+    and briefly describe the setting and a simple story hook in one or two sentences and then start the session.\n
     The player names are: [playerNames].
 
     When the session begins, please create and title for the first chapter of the adventure and 
@@ -54,10 +160,13 @@ const sessionOptionsArray = [
     Please write the chapter number in words, not number characters.
     When it feels like a new chapter is beginning, please create a title for it in a similar manner. 
     A typical chapter should involve at least a few interactions with the user.
-    Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap". 
-    When the story is completed, please end by creating a title for the story as if it were a book title and place it with <div class=bookTitle></div> tags.
+    Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap".
 
-    Again, please don't take actions on the player's behalf, always let the player make the decisions.`,
+    When the story is completed, please end by saying we have to the conclusion/end, followed by a fitting title for the story 
+    as if it were a book title and place it with <div class=bookTitle></div> tags. 
+    Please follow this with a one or two paragraph summary of the story that tries to cover the story's most dramatic moments and most important player actions.
+
+    Again, please don't take actions on any of the player's behalf, always let the players make the decisions. This is important to keep the players engaged.`,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
@@ -73,10 +182,12 @@ const sessionOptionsArray = [
         This is a game played by adults and should not be a children's story or involve children as characters.`,
         */
         prompt: `Act as though we are playing a Game of Dungeons and Dragons 5th edition. 
-        Act as though you are the dungeon master and I am the player. 
-        We will be creating a narrative together, where I make decisions for my character, and you make decisions for all other characters (NPCs) and creatures in the world.
+        Act as though you are the dungeon master and we (myself and the others responding to you) are the players. 
+        We will be creating a narrative together, where I make decisions for my character, and you make decisions for 
+        all other characters (NPCs) and creatures in the world.
 
-        Your responsibilities as dungeon master are to describe the setting, environment, Non-player characters (NPCs) and their actions, as well as explain the consequences of my actions on all of the above. 
+        Your responsibilities as dungeon master are to describe the setting, environment, non-player characters (NPCs) and their actions, 
+        as well as explain the consequences of my actions on all of the above. 
         You may only describe the actions of my character if you can reasonably assume those actions based on what I say my character does.
         
         It is also your responsibility to determine whether my character’s actions succeed. Simple, easily accomplished actions may succeed automatically. 
@@ -190,7 +301,7 @@ const sessionOptionsArray = [
         label: "H.P. Lovecraft",
         value: "H.P. Lovecraft",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories,
-        including his unpublished Dream Quest to Unknown Kadath.`,
+        including his unpublished Dream Quest to Unknown Kadath. These stories should be dark fiction, and typically lead to the player's demise.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
@@ -198,7 +309,8 @@ const sessionOptionsArray = [
       {
         label: "Clark Ashton Smith",
         value: "Clark Ashton Smith",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
+        These stories should be dark fiction, and almost always lead to the player's demise.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },

@@ -38,7 +38,8 @@
     this.newSlot("voiceStyle", "whispering");
     this.newSlot("voicesJson", null);
     this.newSlot("volumne", "shoft");
-    this.newSlot("rate", "15%");
+    //this.newSlot("rate", "15%");
+    this.newSlot("rate", "0%");
     this.newSlot("pitch", "-10%");
 
   }

@@ -771,6 +771,8 @@ button {
 
 .bookTitle {
     font-size: 2em;
+    line-height: 1.3em;
+
 }
 
 #SessionTitle {
