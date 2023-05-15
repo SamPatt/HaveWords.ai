@@ -22,6 +22,18 @@
     return selectedOptionElement;
   }
 
+  hasSelection () {
+    const children = this.element().children;
+    let result = false;
+    for (var i = 0; i < children.length; i++) {
+      const option = children[i];
+      if (option.selected) {
+        result = true;
+      }
+    }
+    return result;
+  }
+
   hasValue (s) {
     const children = this.element().children;
     let result = false;
@@ -32,6 +44,20 @@
       }
     }
     return result;
+  }
+
+  setSelectedLabel (s) {
+    if (this.hasValue(s)) {
+      const children = this.element().children;
+      for (var i = 0; i < children.length; i++) {
+        const option = children[i];
+        const match = option.innerText === s;
+        option.selected = match;
+      }
+    } else {
+      console.warn(this.type() + ".setSelectedLabel(" + s + ") - no such label in options");
+    }
+    return this;
   }
 
   setSelectedValue (s) {

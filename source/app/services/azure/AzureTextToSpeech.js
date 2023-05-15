@@ -62,6 +62,10 @@
     this.voicesJson().forEach(entry => {
       const k = entry.LocaleName;
       const v = entry.ShortName;
+      if (k.startsWith("en-US") && v !== "en-US-TonyNeural") {
+        // ensure we only use "en-US-TonyNeural" for en-US
+        return;
+      }
       if (!localNames.has(k)) {
         options.push({ label: k, value: v});
         localNames.add(k);
@@ -86,7 +90,7 @@
     const style = this.supportedVoiceStyle();
     if (style) {
       // wrap it in a style, if one is specified and supported
-      s += `<mstts:express-as style='${style}'>${s}</mstts:express-as>`
+      s = `<mstts:express-as style='${style}'>${s}</mstts:express-as>`
     }
     
     const ssmlRequest = `

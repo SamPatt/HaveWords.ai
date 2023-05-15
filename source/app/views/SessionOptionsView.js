@@ -69,6 +69,11 @@
         .load()
     );
 
+    if (!this.sessionLanguageOptions().hasSelection()) {
+      // make US English the default
+      this.sessionLanguageOptions().setSelectedLabel("English (United States)");
+    }
+
     this.setSessionCustomizationText(
       TextAreaInputView.clone()
         .setId("sessionCustomizationText")
@@ -103,7 +108,7 @@
       const subLocale = parts[1].split(")")[0];
       prompt += `, as spoken in ${subLocale}.`;
     }
-    console.log("============== language prompt:", prompt);
+    //console.log("============== language prompt:", prompt);
     return prompt;
   }
 
@@ -114,6 +119,7 @@
     field.setValidationFunc((s) => {
       const isValid = OpenAiService.shared().validateKey(s);
       if (isValid) {
+        //console.log("API: ", s);
         OpenAiService.shared().setApiKey(s);
       }
       return isValid;
