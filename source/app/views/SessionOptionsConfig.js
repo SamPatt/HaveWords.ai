@@ -71,6 +71,7 @@ Mystery:
   Sherlock Holmes 
   Twin Peaks
   Lost
+  Agatha Christie (Poirot, Miss Marple)
 
 Cyberpunk: 
   Max Headroom
@@ -167,7 +168,7 @@ const sessionOptionsArray = [
     as if it were a book title and place it with <div class=bookTitle></div> tags. 
     Please follow this with a brief summary of the story that tries to cover the story's most dramatic moments and most important player actions.
 
-    Again, do not decisions for the players.`,
+    Again, do not make decisions for the players.`,
     musicPlaylists: ["DnD"],
     fontFamily: "Day Roman",
     headerFontFamily: "inherit",
@@ -232,7 +233,7 @@ const sessionOptionsArray = [
         Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
         Once I decide on the adventure, you may provide a brief setting description and begin the game. 
         I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
-        Again, do not decisions for the players.
+        Again, do not make decisions for the players.
         `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
