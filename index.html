@@ -49,10 +49,13 @@
                                 <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
                             </td>
                             <td>
-                                <div id="MusicMuteButton" class="subheader smallButton">Music On</div>
+                                <div id="MusicOnButton" class="subheader smallButton"></div>
                             </td>
                             <td>
-                                <div id="NarrationMuteButton" class="subheader smallButton">Narration On</div>
+                                <div id="NarrationOnButton" class="subheader smallButton"></div>
+                            </td>
+                            <td>
+                                <div id="MicButton" class="subheader smallButton"></div>
                             </td>
                         </tr>
                     </table>
@@ -65,7 +68,8 @@
                         <h2>Welcome to your AI session!</h2>
                         <p>First, you need to set your OpenAI API key, and select the session options.<br>
                             If you'd like to invite friends, use the Copy Invite Link button on the top right of the
-                            page.</p>
+                            page.<br>
+                        Before you begin, you'll also want to set your player name in the Group Chat column.</p>
 
 
                         <!-- begin Open AI settings -->
@@ -220,16 +224,12 @@
                                 </td>
                                 <td style="width: 100%;">
                                     <div class="username-container" style="width: 100%;">
-                                        <input id="username" type="text" placeholder="Your nickname" spellcheck=false
+                                        <input id="username" type="text" placeholder="Player name" spellcheck=false
                                             class="underlinedInput">
                                     </div>
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                    <div id="MicButton">
-                        <object id="micSvgIcon" type="image/svg+xml"
-                            data="resources/icons/mic-slash-fill-svgrepo-com.svg"></object>
                     </div>
                     <div id="compactButton2" class="compactor">
                         <object class="svgIcon" type="image/svg+xml"

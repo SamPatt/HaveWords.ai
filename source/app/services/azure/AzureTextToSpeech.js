@@ -41,6 +41,7 @@
     //this.newSlot("rate", "15%");
     this.newSlot("rate", "10%");
     this.newSlot("pitch", "-10%");
+    this.newSlot("isMuted", false);
   }
 
   init () {
@@ -55,6 +56,14 @@
     const json = this.jsonForVoiceShortName(this.voiceName())
     return json.StyleList && json.StyleList.includes(styleName);
   }
+
+  /*
+  setIsMuted (aBool) {
+    this._isMuted = aBool;
+    debugger;
+    return this;
+  }
+  */
 
   languageOptions () {
     const options = [];
@@ -103,6 +112,11 @@
   }
 
   async asyncSpeakText(text) {
+    debugger;
+    if (this.isMuted()) {
+      return;
+    }
+
     // make sure we don't lose the whitespace formatting as we need it for pacing
     text = text.replaceAll("<p>", ""); 
     text = text.replaceAll("</p>", "\n\n"); 

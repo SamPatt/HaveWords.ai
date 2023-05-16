@@ -25,6 +25,11 @@
 
   // ImageBot function it triggered when the host requests an image description of the current scene
   async trigger() {
+    if (MusicPlayer.shared().isMuted()) {
+      this.debugLog("played is muted so not triggering");
+      return this;
+    }
+
     assert(this.sceneDescription());
     assert(this.apiKey());
 

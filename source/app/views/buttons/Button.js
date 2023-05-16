@@ -14,6 +14,7 @@
 
   init() {
     super.init();
+    this.setCanStore(false);
     this.setIsDebugging(true);
   }
 
@@ -30,12 +31,6 @@
     return this;
   }
 
-  setShouldStore (aBool) {
-    if (aBool) {
-      throw new Error("unable to store button state");
-    }
-    return this;
-  }
 
   initElement () {
     super.initElement();

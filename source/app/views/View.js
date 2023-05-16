@@ -12,12 +12,21 @@
     this.newSlot("submitFunc", null);
     this.newSlot("target", null);
     this.newSlot("action", null);
+    this.newSlot("canStore", true);
     this.newSlot("shouldStore", false);
     this.newSlot("hiddenDisplayType", null);
   }
 
   init() {
     super.init();
+  }
+
+  setShouldStore (aBool) {
+    if (!this.canStore()) {
+      throw new Error("unable to store button state");
+    }
+    this._shouldStore = aBool;
+    return this;
   }
 
   initElement() {
@@ -249,21 +258,32 @@
     return this.element().style.display === "none";
   }
 
+  // value
+
+  setValue (v) {
+    this.element().innerHTML = v;
+    return this;
+  }
+
+  value () {
+    return this.element().innerHTML;
+  }
+
   // ----
 
   load () {
     const s = localStorage.getItem(this.id());
     if (s !== undefined) {
-      this.debugLog("loading from localStorage " + this.type() + " " + this.id());
-      this.setString(s);
+      this.debugLog("loading from localStorage " + this.type() + " " + this.id() + "value: '" + s + "'");
+      this.setValue(s);
     }
     return this;
   }
 
   save() {
-    const s = this.string();
-    this.debugLog("saving " + this.type() + " id:" + this.id() + " string:'" + this.string() + "'");
-    localStorage.setItem(this.id(), this.string());
+    const v = this.value();
+    this.debugLog("saving " + this.type() + " id:" + this.id() + " value:'" + v + "'");
+    localStorage.setItem(this.id(), v);
   }
 
 }).initThisClass();

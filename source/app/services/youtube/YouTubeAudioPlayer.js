@@ -56,12 +56,14 @@
     return this;
   }
 
+  /*
   player () {
     if (!this._player) {
       this.setupPlayer();
     }
     return this._player
   }
+  */
 
   setupPlayer() {
     this.debugLog("------------------ setupPlayer ---------------- ");

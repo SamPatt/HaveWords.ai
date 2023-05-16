@@ -80,8 +80,8 @@ textarea::placeholder {
 
 #AiChatControls {
     position: absolute;
-    top: 4.5em;
-    right: 1em;
+    top: 5em;
+    right: 0.5em;
 }
 
 /*
@@ -104,6 +104,7 @@ textarea::placeholder {
     width: fit-content;
 }
 
+/*
 #MicButton {
     user-select: none;
     position: absolute;
@@ -116,6 +117,7 @@ textarea::placeholder {
     margin-right: 1.75em;
     overflow: hidden;
 }
+*/
 
 #micSvgIcon {
     pointer-events: none;

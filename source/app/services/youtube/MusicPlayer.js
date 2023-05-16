@@ -10,6 +10,7 @@
   initPrototypeSlots() {
     this.newSlot("tracksMap", null);
     this.newSlot("currentTrack", null);
+    this.newSlot("isMuted", false);
   }
 
   init() {
@@ -40,6 +41,11 @@
   }
 
   playTrackWithName(name) {
+    if (this.isMuted()) {
+      this.debugLog("played is muted so not playing");
+      return;
+    }
+
     const yt = YouTubeAudioPlayer.shared();
 
     this.debugLog("playTrackWithName('" + name + "')");
@@ -56,4 +62,11 @@
       }
     }
   }
+
+  setIsMuted (aBool) {
+    this._isMuted = aBool;
+    YouTubeAudioPlayer.shared().stop();
+    return this;
+  }
+
 }).initThisClass();

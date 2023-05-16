@@ -13,16 +13,53 @@
 
   initPrototypeSlots() {
     this.newSlot("user", null);
+
+    // compact controls
     this.newSlot("compactButton1", null);
     this.newSlot("compactButton2", null);
+
+    // columns
     this.newSlot("groupChatColumn", null);
     this.newSlot("connectedUsersColumn", null);
+
+    // other controls
+    this.newSlot("musicOnButton", null);
+    this.newSlot("narrationOnButton", null);
   }
 
   init() {
     super.init();
     this.listenForWindowClose()
     this.setIsDebugging(true);
+    this.setupControls();
+  }
+
+  setupControls () {
+    this.setMusicOnButton(
+      RadioButton.clone().setId("MusicOnButton")
+      .setTarget(this)
+      .setOnLabel("Music On") 
+      .setOffLabel("Music Off")
+      .setShouldStore(true).load()
+    );
+    this.setNarrationOnButton(
+      RadioButton.clone().setId("NarrationOnButton")
+      .setTarget(this)
+      .setOnLabel("Narration On") 
+      .setOffLabel("Narration Off")
+      .setShouldStore(true).load()
+    );
+    this.onSubmit_MusicOnButton();
+    this.onSubmit_NarrationOnButton();
+    //TODO: sync with state after app init?
+  }
+
+  onSubmit_MusicOnButton () {
+    MusicPlayer.shared().setIsMuted(!this.musicOnButton().state());
+  }
+
+  onSubmit_NarrationOnButton () {
+    AzureTextToSpeech.shared().setIsMuted(!this.narrationOnButton().state());
   }
 
   async asyncRun() {

@@ -21,8 +21,9 @@
 
   setupMicButton () {
     const b = RadioButton.clone().setId("MicButton");
-    b.setOnIconPath("resources/icons/mic-on.svg");
-    b.setOffIconPath("resources/icons/mic-off.svg");
+    b.setAutoLabel("Mic");
+    //b.setOnIconPath("resources/icons/mic-on.svg");
+    //b.setOffIconPath("resources/icons/mic-off.svg");
     b.setState(false);
     b.setTarget(this).setAction("toggleState");
     b.toggle = function() {

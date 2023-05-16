@@ -89,6 +89,8 @@
   }
   */
 
+  // --- string ---
+
   setString (aString) {
     this.setSelectedValue(aString)
     return this
@@ -97,6 +99,19 @@
   string () {
     return this.selectedValue()
   }
+
+  // --- value ---
+
+  setValue (v) {
+    this.setSelectedValue(v)
+    return this
+  }
+
+  string () {
+    return this.selectedValue()
+  }
+
+  // ---
 
   onChange(event) {
     super.onChange(event);

@@ -9,18 +9,54 @@
 
 (class RadioButton extends Button {
   initPrototypeSlots() {
-    this.newSlot("state", false)
-    this.newSlot("onIconPath", null)
-    this.newSlot("offIconPath", null)
+    this.newSlot("state", false);
+
+    // icon
+    this.newSlot("onIconPath", null);
+    this.newSlot("offIconPath", null);
+
+    // label
+    this.newSlot("onLabel", null);
+    this.newSlot("offLabel", null);
+
+    // opacity
+    this.newSlot("onOpacity", 1);
+    this.newSlot("offOpacity", 0.5);
   }
 
   init() {
     super.init();
+    this.setCanStore(true);
+    this.setIsDebugging(true);
   }
+
+  // --- label ---
+
+  setAutoLabel (s) {
+    this.setOnLabel(s + " On");
+    this.setOffLabel(s + " Off");
+    return this;
+  }
+
+  // --- value ---
+
+  setValue (v) {
+    const aBool = v === "true" ? true : false;
+    this.setState(aBool)
+    return this
+  }
+
+  value () {
+    return this.state() ? "true" : "false";
+  }
+
+  // --- state ---
 
   setState (aBool) {
     this._state = aBool;
     this.updateIcon();
+    this.updateLabel();
+    this.updateOpacity();
     return this;
   }
 
@@ -45,8 +81,37 @@
     return this;
   }
 
+  setLabel (s) {
+    this.element().innerHTML = s;
+    return this;
+  }
+
+  updateLabel () {
+    if (this.onLabel() && this.offLabel()) {
+      if (this.state()) {
+        this.setLabel(this.onLabel());
+      } else {
+        this.setLabel(this.offLabel());
+      }
+    }
+  }
+
+  setOpacity (v) {
+    this.element().style.opacity = v;
+    return this;
+  }
+
+  updateOpacity () {
+    if (this.state()) {
+      this.setOpacity(this.onOpacity());
+    } else {
+      this.setOpacity(this.offOpacity());
+    }
+  }
+
   toggle () {
     this.setState(!this.state());
+    this.onChange(null);
     return this;
   }
 
