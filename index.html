@@ -13,12 +13,14 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="resources/fonts/Barlow Condensed/Barlow Condensed.css">
     <link rel="stylesheet" href="resources/fonts/Cardo/Cardo.css">
+    <link rel="stylesheet" href="resources/fonts/Crimson/Crimson.css">
     <link rel="stylesheet" href="resources/fonts/Day Roman/Day Roman.css">
     <link rel="stylesheet" href="resources/fonts/Ghibli/Ghibli.css">
+    <link rel="stylesheet" href="resources/fonts/Harlow/Harlow.css">
     <link rel="stylesheet" href="resources/fonts/HarryP/HarryP.css">
     <link rel="stylesheet" href="resources/fonts/Lumos/Lumos.css">
+    <link rel="stylesheet" href="resources/fonts/Type Writer/Type Writer.css">
     <link rel="stylesheet" href="resources/fonts/XTypewriter/XTypewriter.css">
-    <link rel="stylesheet" href="resources/fonts/Harlow/Harlow.css">
 
     <script src="source/boot/Boot.js"></script>
     <!--
@@ -37,11 +39,23 @@
 
             <div id="aiChatColumn" class="ColumnView">
                 <div class="header" stlye="position: relative;">
-                    <h2>HaveWords.ai</h2>
+                    <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive Generative Fiction</span></h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
                     <div id="compactButton1" class="compactor"></div>
-                    <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
+                    <table id="AiChatControls"> 
+                        <tr>
+                            <td>
+                                <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
+                            </td>
+                            <td>
+                                <div id="MusicMuteButton" class="subheader smallButton">Music On</div>
+                            </td>
+                            <td>
+                                <div id="NarrationMuteButton" class="subheader smallButton">Narration On</div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
                 <!--- begin host settings --->
@@ -124,14 +138,14 @@
                             <tr>
                                 <td>
                                     <div>
-                                        <div class="inputLabel">Session Type</div>
+                                        <div class="inputLabel">Genre</div>
                                         <select id="sessionTypeOptions">
                                         </select>
                                     </div>
                                 </td>
                                 <td>
                                     <div style="padding-left: 1em;">
-                                        <div class="inputLabel">Subtype</div>
+                                        <div id="sessionSubtypeOptionsLabel" class="inputLabel">Genre Subtype</div>
                                         <select id="sessionSubtypeOptions">
                                         </select>
                                     </div>

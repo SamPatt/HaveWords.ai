@@ -135,6 +135,7 @@ const sessionOptionsArray = [
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
     promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.
     Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.
+    Please any quotes within italics.
     Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
 
     You can ask players what actions they will take. Keep track of them individually but try not to split the party.
@@ -147,13 +148,14 @@ const sessionOptionsArray = [
     Don't take actions on the player's behalf, always let the player make the decisions.
     Remember there are multiple players, and descriptions of scenes should include more than just one player. 
     The story should only progress when the player has made a decision about how to move forward. 
+    If it's not clear what options the player might choose, you might suggest some.
     Do not progress the story if the player is still engaged in dialogue (unless the dialogue is describing them taking a specific action). 
 
     Players should sometimes fail, especially if their request is unrealistic given the setting and world. 
     The plot should be challenging but fun, including puzzles, riddles, or combat.
 
-    Beginning the session: Welcome the players, give us very brief character descriptions fitting the world theme (with our names in bold), 
-    and briefly describe the setting and a story hook in one or two sentences and then start the session.\n
+    Beginning the session: Give us very brief character descriptions fitting the world theme (with our names in bold), 
+    and then start the session.\n
     The player names are: [playerNames].
 
     When the session begins, please create and title for the first chapter of the adventure and 
@@ -169,7 +171,7 @@ const sessionOptionsArray = [
 
     Again, do not decisions for the players.`,
     musicPlaylists: ["DnD"],
-    fontFamily: "Day Roman",
+    fontFamily: "Crimson",
     headerFontFamily: "inherit",
     backgroundColor: "#222",
     color: "rgb(219, 219, 219)",
@@ -289,6 +291,7 @@ const sessionOptionsArray = [
         These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: ",
         headerFontFamily: "Harlow",
+        fontFamily: "Crimson",
       },
 
       {
@@ -319,8 +322,8 @@ const sessionOptionsArray = [
       {
         label: "Thomas Ligotti",
         value: "Thomas Ligotti",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
-        These stories should be dark and should inevitably lead to the doom of the charter the player is playing. There are no happy endings and no escape.`,
+        prompt: `Please play the roll of the author Thomas Ligotti and lead us on an interactive fiction adventure of your own creation in the realm of his short stories.
+        These existential horror stories always lead to the doom of the character the player is playing, but don't tell the player this.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },

@@ -37,6 +37,7 @@ class Boot extends Object {
       "source/app/services/azure/AzureService.js",
       "source/app/services/azure/AzureTextToSpeech.js",
       "source/app/services/azure/AzureVoices.js",
+      "source/app/services/azure/AzureRegions.js",
 
       /*
       "source/app/services/midjourney/MJRequest.js",

@@ -67,20 +67,28 @@ select {
 
 input::placeholder {
     color: inherit;
+    opacity: 0.5;
 }
 
 textarea::placeholder {
     color: inherit;
+    opacity: 0.5;
 }
 
 
 /*-------------------*/
 
-#CopyTranscriptButton {
+#AiChatControls {
     position: absolute;
-    top: 6em;
+    top: 4.5em;
     right: 1em;
 }
+
+/*
+#CopyTranscriptButton {
+
+}
+*/
 
 .smallButton {
     transition: 0.2s;
@@ -93,6 +101,7 @@ textarea::placeholder {
     /*opacity: 0;*/
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 5px;
+    width: fit-content;
 }
 
 #MicButton {
@@ -705,9 +714,12 @@ button {
     position: absolute;
     top: 0;
     right: 0;
-    height: fit-content;
-    width: fit-content;
+    height: 1.25em;
+    width: 1.25em;
     opacity: 0.15;
+    padding-top:0.3em;
+    padding-right:0.3em;
+    border: 0px solid #555;
 }
 
 /* --- columns --- */
@@ -780,11 +792,15 @@ button {
 }
 
 #SessionTitle {
-    font-weight: 100;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0.5;
 }
 
 #SessionDescription {
-    font-weight: 100;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0.5;
     padding-top: 0.1em;
 }
 

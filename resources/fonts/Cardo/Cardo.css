@@ -9,7 +9,7 @@
 @font-face {
     font-family: 'Cardo';
     src: URL('Cardo-Bold.ttf') format('truetype');
-    font-weight: bold;
+    font-weight: 700;
     font-style: normal;
 }
 
