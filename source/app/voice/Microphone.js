@@ -27,8 +27,9 @@
     b.setState(false);
     b.setTarget(this).setAction("toggleState");
     b.toggle = function() {
-      console.log("toggle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // to avoid changing state until the browser has asked the user for mic access
     }
+    b.setOnColor("red");
     this.setMicButton(b);  
   }
 
@@ -45,7 +46,17 @@
   }
 
   turnOff () {
-    console.warn("WARNING: Microphone.turnOff(): need to implement this.")
+    const stream = this.userAudioStream();
+    if (stream) {
+      const audioTracks = stream.getAudioTracks();
+      for (let track of audioTracks) {
+        track.enabled = false;
+        track.stop();
+      }
+      this.setUserAudioStream(null);
+      this.setIsOn(false);
+    }
+    return this;
   }
 
   turnOn () {

@@ -104,21 +104,6 @@ textarea::placeholder {
     width: fit-content;
 }
 
-/*
-#MicButton {
-    user-select: none;
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 1em;
-    width: 1em;
-    border: 0px solid red;
-    margin-top: 0.8em;
-    margin-right: 1.75em;
-    overflow: hidden;
-}
-*/
-
 #micSvgIcon {
     pointer-events: none;
     width: 100%;

@@ -38,15 +38,13 @@
     this.setMusicOnButton(
       RadioButton.clone().setId("MusicOnButton")
       .setTarget(this)
-      .setOnLabel("Music On") 
-      .setOffLabel("Music Off")
+      .setAutoLabel("Music") 
       .setShouldStore(true).load()
     );
     this.setNarrationOnButton(
       RadioButton.clone().setId("NarrationOnButton")
       .setTarget(this)
-      .setOnLabel("Narration On") 
-      .setOffLabel("Narration Off")
+      .setAutoLabel("Narration") 
       .setShouldStore(true).load()
     );
     this.onSubmit_MusicOnButton();

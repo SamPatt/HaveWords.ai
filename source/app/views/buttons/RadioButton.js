@@ -22,6 +22,10 @@
     // opacity
     this.newSlot("onOpacity", 1);
     this.newSlot("offOpacity", 0.5);
+
+    // color
+    this.newSlot("onColor", "inherit");
+    this.newSlot("offColor", "inherit");
   }
 
   init() {
@@ -57,6 +61,7 @@
     this.updateIcon();
     this.updateLabel();
     this.updateOpacity();
+    this.updateColor();
     return this;
   }
 
@@ -93,6 +98,19 @@
       } else {
         this.setLabel(this.offLabel());
       }
+    }
+  }
+
+  setColor (c) {
+    this.element().style.color = c;
+    return this;
+  } 
+
+  updateColor () {
+    if (this.state()) {
+      this.setColor(this.onColor());
+    } else {
+      this.setColor(this.offColor());
     }
   }
 
