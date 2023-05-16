@@ -243,7 +243,8 @@ const sessionOptionsArray = [
       {
         label: "Harry Potter",
         value: "Harry Potter",
-        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films.`,
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. 
+        We'd like you to write this adventure as J.K. Rowling would.`,
         artPromptPrefix: "Charcoal style on transparent background Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
         fontFamily: "Cardo",

@@ -112,7 +112,6 @@
   }
 
   async asyncSpeakText(text) {
-    debugger;
     if (this.isMuted()) {
       return;
     }
