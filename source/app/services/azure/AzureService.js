@@ -7,12 +7,13 @@
 
 (class AzureService extends Base {
   initPrototypeSlots () {
+    this.newSlot("regionOptions", [])
   }
 
   init () {
     super.init();
     if (!this.region()) {
-      this.setRegion("eastus");
+      this.setRegion("eastus"); // default to this
     }
   }
 

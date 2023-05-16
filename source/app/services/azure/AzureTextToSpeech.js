@@ -41,7 +41,6 @@
     //this.newSlot("rate", "15%");
     this.newSlot("rate", "10%");
     this.newSlot("pitch", "-10%");
-
   }
 
   init () {

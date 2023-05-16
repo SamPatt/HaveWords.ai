@@ -1,4 +1,4 @@
-AzureTextToSpeech.shared().setRegionOptions([
+AzureService.shared().setRegionOptions([
     ["Asia", "Southeast Asia", "southeastasia"],
     ["Australia", "Australia East", "australiaeast"],
     ["Europe", "North Europe", "northeurope"],

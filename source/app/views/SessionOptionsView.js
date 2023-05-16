@@ -10,7 +10,7 @@
     this.newSlot("aiModelOptions", null);
     this.newSlot("apiKeyText", null);
     this.newSlot("azureApiKeyText", null);
-    this.newSlot("azureApiRegionText", null);
+    this.newSlot("azureApiRegionOptions", null);
 
     this.newSlot("sessionTypeOptions", null);
     this.newSlot("sessionSubtypeOptions", null);
@@ -41,7 +41,7 @@
 
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
-    this.setupAzureApiRegionText();
+    this.setupAzureApiRegionOptions();
 
     this.setSessionTypeOptions(
       OptionsView.clone()
@@ -142,7 +142,6 @@
       const isValid = AzureService.shared().validateKey(s);
       if (isValid) {
         AzureService.shared().setApiKey(s);
-        this.showAzureRegionIfNeeded();
       }
       return isValid;
     });
@@ -166,33 +165,19 @@
     this.sessionStartButton().setIsDisabled(!this.canStart());
   }
 
-  showAzureRegionIfNeeded() {
-    const isNeeded = AzureService.shared().apiKey();
-    this.azureApiRegionText().element().parentNode.style.display = isNeeded
-      ? "block"
-      : "none";
-    return this;
-  }
-
-  setupAzureApiRegionText() {
-    const field = TextFieldView.clone().setId("azureApiRegionText");
-    this.setAzureApiRegionText(field);
-
-    field.setValidationFunc((s) => {
-      const isValid = AzureService.shared().validateRegion(s);
-      if (isValid) {
-        AzureService.shared().setRegion(s);
-      }
-      return isValid;
-    });
+  setupAzureApiRegionOptions() {
+    const options = OptionsView.clone().setId("azureApiRegionOptions").setOptions(AzureService.shared().regionOptions()).setTarget();
+    this.setAzureApiRegionOptions(options);
 
     // Load the stored API key
     const s = AzureService.shared().region();
     if (s) {
-      field.setString(s);
+      options.setSelectedValue(s);
     }
+  }
 
-    this.showAzureRegionIfNeeded();
+  onSubmit_azureApiRegionOptions() {
+    AzureService.shared().setRegion(this.azureApiRegionOptions().selectedValue());
   }
 
   // --- setup ---
