@@ -140,9 +140,20 @@
   // setup
 
   setupCompactorButtons () {
+    /*
     this.setCompactButton1(
-      RadioButton.clone().setId("compactButton1").setTarget(this).setAction("onCompact1").setOnIconPath("resources/icons/carret-left.svg").setOffIconPath("resources/icons/carret-right.svg")
+      RadioButton.clone().setId("compactButton1").setTarget(this).setAction("onCompact1")
+      .setOnLabel("&lt;")
+      .setOffLabel("&gt;")
     );
+    */
+    
+    this.setCompactButton1(
+      RadioButton.clone().setId("compactButton1").setTarget(this).setAction("onCompact1")
+      .setOnIconPath("resources/icons/carret-left.svg")
+      .setOffIconPath("resources/icons/carret-right.svg")
+    );
+    
 
     this.setCompactButton2(
       RadioButton.clone().setId("compactButton2").setTarget(this).setAction("onCompact2").setOnIconPath("resources/icons/carret-left.svg").setOffIconPath("resources/icons/carret-right.svg")

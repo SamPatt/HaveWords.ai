@@ -145,6 +145,7 @@
     let avatar;
     if (type === "aiResponse") {
       avatar = 'resources/icons/AI-avatar.png';
+      nickname = "Narrator";
     } else {
       avatar = Session.shared().getUserAvatar(userId);
     }
@@ -157,14 +158,15 @@
 
     // ---------
 
-    let isUser = false;
+    let isUser = true;
     if (type === "prompt") {
 
       this.setShowLoading(true)
-      isUser = true;
 
     } else if (type === "aiResponse") {
+      isUser = false;
 
+      // update book/chapter/etc if found
       if (m.chapterNumber() && m.chapterTitle()) {
         this.sessionTitle().setString(m.chapterNumber() + ": " + m.chapterTitle());
       } else if(m.bookTitle()) {
@@ -186,9 +188,7 @@
     } else if (type === "systemMessage") {
     } 
 
-    if (!isUser) {
-      m.element().className += " aiMessage";
-    }
+    m.setIsUser(isUser);
 
     this.addMessageElement(m.element());
 
@@ -200,7 +200,7 @@
   onAiResponseText (text) {
       // Trigger music only if host and in session
       if (App.shared().isHost() && Session.shared().inSession()) {
-      OpenAiMusicBot.shared().setSceneDescription(text).trigger();
+        OpenAiMusicBot.shared().setSceneDescription(text).trigger();
       }
 
       // Trigger Text to Speech

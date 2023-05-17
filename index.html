@@ -42,7 +42,8 @@
                     <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive Generative Fiction</span></h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
-                    <div id="compactButton1" class="compactor"></div>
+                    <div id="compactButton1" class="compactor">
+                    </div>
                     <table class="controls"> 
                         <tr>
                             <td>
@@ -126,12 +127,9 @@
                             </tr>
                         </table>
 
-
-
                         <!-- end Azure AI settings -->
 
                         <!-- begin Session settings -->
-
 
                         <table>
                             <tr>
@@ -150,10 +148,7 @@
                                     </div>
                                 </td>
                             </tr>
-
                         </table>
-
-
 
                         <div>
                             <div class="inputLabel">Customization</div>
@@ -169,7 +164,6 @@
                             <select id="sessionLanguageOptions">
                             </select>
                         </div>
-
 
                         <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
                             <div id="sessionStartButton" class="button"
@@ -188,7 +182,9 @@
                 <!--- end host settings --->
 
                 <div class="aiScrollingOutput scrollingOutput">
-                    <div id="AiChatMessages" class="messages"></div>
+                    <div id="centerThing" style="text-align: center;">
+                        <div id="AiChatMessages" class="messages" style="margin: auto; max-width: 38.5em;"></div>
+                    </div>
                     <div class="loading loadingHost" id="loadingHost">Waiting for the AI to
                         respond<span>.</span><span>.</span><span>.</span></div>
                 </div>
@@ -229,8 +225,6 @@
                         </table>
                     </div>
                     <div id="compactButton2" class="compactor">
-                        <object class="svgIcon" type="image/svg+xml"
-                            data="resources/icons/square-arrow-right.svg"></object>
                     </div>
                 </div>
 

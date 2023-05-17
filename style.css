@@ -105,10 +105,33 @@ textarea::placeholder {
     user-select: none;
     margin-top: 2em;
     padding: 0.5em 1em;
-    /*opacity: 0;*/
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     width: fit-content;
+}
+
+
+.compactor {
+    /*
+    width: 2em;
+    height: 1.5em;
+    */
+    position: absolute;
+    top: 0.7em;
+    right: 0.5em;
+    /*
+    height: 1em;
+    width: 1em;
+    */
+    opacity: 0.15;
+    /*
+    padding:0;
+    */
+    /*
+    padding-top:0.3em;
+    padding-right:0.3em;
+    border: 0px solid #555;
+    */
 }
 
 #micSvgIcon {
@@ -184,7 +207,6 @@ h2 {
     font-weight: normal;
     margin-top: 0em;
     margin-bottom: 0.5em;
-    opacity: 0.5;
     letter-spacing: 0.1em;
     overflow: hidden;
 }
@@ -219,10 +241,6 @@ h2 {
 .optionsContainer {
     display: flex;
     overflow-y: hidden;
-}
-
-.aiMessage {
-    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .inputLabel {
@@ -289,7 +307,7 @@ button {
     margin-bottom: 1em;
     margin-left: 1em;
     font-size: 1em;
-    text-align: left;
+    text-align: center;
 }
 
 .loading span {
@@ -437,6 +455,8 @@ button {
     padding-bottom: 0.5em;
     padding-left: 1em;
     padding-right: 1em;
+    margin-bottom: 2em;
+    margin-top: 2em;
     position: relative;
 }
 
@@ -704,18 +724,6 @@ button {
     align-items: center;
 }
 
-.compactor {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 1.25em;
-    width: 1.25em;
-    opacity: 0.15;
-    padding-top:0.3em;
-    padding-right:0.3em;
-    border: 0px solid #555;
-}
-
 /* --- columns --- */
 
 #aiChatColumn {
@@ -796,5 +804,15 @@ button {
     letter-spacing: 0.04em;
     opacity: 0.5;
     padding-top: 0.1em;
+}
+
+.aiMessage {
+    background-color: inherit;
+}
+
+.nonAiMessage {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5em;
 }
 

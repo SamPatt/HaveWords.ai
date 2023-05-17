@@ -47,6 +47,8 @@
   setIsUser (aBool) {
     if (!aBool) {
       this.element().className += " aiMessage";
+    } else {
+      this.element().className += " nonAiMessage";
     }
     return this;
   }
