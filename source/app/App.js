@@ -50,6 +50,7 @@
     this.onSubmit_MusicOnButton();
     this.onSubmit_NarrationOnButton();
     //TODO: sync with state after app init?
+
   }
 
   onSubmit_MusicOnButton () {
@@ -78,6 +79,8 @@
       content: "You are a helpful assistant.",
     });
     this.setupCompactorButtons();
+    AvatarPickerView.shared().displayAvatar(LocalUser.shared().avatar());
+
   }
 
   unhide () {
