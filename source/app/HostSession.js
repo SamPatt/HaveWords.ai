@@ -30,6 +30,15 @@
     PeerServer.shared().broadcastExceptTo(json, excludeId);
   }
 
+  broadcastPlayTrackId (trackId) {
+    this.broadcast({
+      type: "playTrackId",
+      id: LocalUser.shared().id(),
+      nickname: LocalUser.shared().nickname(),
+      trackId: trackId,
+    });
+  }
+
   // --- user actions ---
 
   kickUser(userId) {

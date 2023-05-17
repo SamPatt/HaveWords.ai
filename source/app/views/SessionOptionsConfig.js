@@ -172,7 +172,7 @@ const sessionOptionsArray = [
 
     Again, do not make decisions for the players.`,
     musicPlaylists: ["DnD"],
-    fontFamily: "Crimson",
+    fontFamily: "inherit",
     headerFontFamily: "inherit",
     backgroundColor: "#222",
     color: "rgb(219, 219, 219)",
@@ -218,8 +218,8 @@ const sessionOptionsArray = [
         For each creature in combat, keep track of their health points (HP). 
         Damage dealt to them should reduce their HP by the amount of the damage dealt.
         To determine whether my character does damage, I will make an attack roll. 
-        This attack roll must meet or exceed the armor class (AC) of the creature. I
-        f it does not, then it does not hit.
+        This attack roll must meet or exceed the armor class (AC) of the creature. 
+        If it does not, then it does not hit.
         
         On the turn of any other creature besides my character, you will decide their action. 
         For example, you may decide that they attack my character, run away, or make some other decision, keeping in mind that a round of combat is 6 seconds.

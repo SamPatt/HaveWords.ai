@@ -78,10 +78,17 @@ textarea::placeholder {
 
 /*-------------------*/
 
-#AiChatControls {
+.controls {
     position: absolute;
     top: 5em;
     right: 0.5em;
+}
+
+.infoIcon {
+    opacity: 1;
+    text-transform: lowercase; 
+    font-size: 0.8em;
+    padding-bottom: 1em;
 }
 
 /*

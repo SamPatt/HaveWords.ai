@@ -43,6 +43,10 @@
     this.debugLog("music bot prompt: '" + this.prompt()  + "'");
 
     const data = await request.asyncSend();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
     const response = data.choices[0].message.content;
     this.debugLog("music bot response: '" + response + "'");
     // Only update the music if the response is different from the last choice
@@ -81,6 +85,8 @@
     if (s.startsWith("\"") && s.endsWith("\"")) {
       const trackName = s.slice(1, -1); // remove the quotes
       MusicPlayer.shared().playTrackWithName(trackName);
+      const trackId = MusicPlayer.shared().trackIdForName(trackName);
+      HostSession.shared().broadcastPlayTrackId(trackId);
     } else {
       this.debugLog("ERROR: response not in valid quoted format");
     }

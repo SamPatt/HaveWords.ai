@@ -59,6 +59,11 @@
 
   // --- receive messages ---
 
+  onReceived_playTrackId (data) {
+    console.log("onReceived_playTrackId ", data)
+    MusicPlayer.shared().playTrackId(data.trackId);
+  }
+
   onReceived_kick(data) {
     //this.hostConnection().shutdown();
     console.log("You have been kicked from the session.");
