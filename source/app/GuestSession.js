@@ -60,8 +60,14 @@
   // --- receive messages ---
 
   onReceived_playTrackId (data) {
-    console.log("onReceived_playTrackId ", data)
+    console.log("onReceived_playTrackId('" + data.trackId + "')");
     MusicPlayer.shared().playTrackId(data.trackId);
+  }
+
+  async onReceived_playAudioBlob(data) {
+    console.log("onReceived_playAudioBlob()");
+    const audioBlob = await Blob.asyncFromDataUrl(data.audioBlobDataUrl);
+    AzureTextToSpeech.shared().playAudioBlob(audioBlob);
   }
 
   onReceived_kick(data) {

@@ -146,9 +146,18 @@
     }
 
     const audioBlob = await response.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    audio.play();
+    this.playAudioBlob(audioBlob);
+    
+    HostSession.shared().broadcastPlayAudioBlob(audioBlob);
+  }
+
+  playAudioBlob (audioBlob) {
+    if (!this.isMuted()) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    }
+    return this;
   }
   
 }.initThisClass());
