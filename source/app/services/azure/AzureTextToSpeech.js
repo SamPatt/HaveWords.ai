@@ -163,8 +163,8 @@
       const audio = new Audio(audioUrl);
       audio.play();
       this.setCurrentAudio(audio);
-      audio.onended = function() {
-        console.log("Audio has finished playing");
+      audio.onended = () => {
+        this.debugLog("finished playing");
         this.setCurrentAudio(null);
       };
       
@@ -173,17 +173,24 @@
   }
   
   pause() {
+    this.debugLog("pause()");
+
     const audio = this.currentAudio();
     if (audio) {
       audio.pause();
+      this.debugLog("paused");
     }
   }
 
   resume () {
+    this.debugLog("resume()");
+
     const audio = this.currentAudio();
     if (audio) {
       //if (audio.paused) {
         audio.play();
+        this.debugLog("resumed");
+
       //}
     }
   }

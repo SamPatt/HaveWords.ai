@@ -4,7 +4,7 @@ body {
     font-size: 18px;
     font-family: "Barlow Condensed", Arial, sans-serif;
     font-weight: 300;
-    line-height: 1.6em;
+    line-height: 1.5em; /* 1.6 for garamond */
     margin: 0;
     padding: 0;
     height: 100vh;

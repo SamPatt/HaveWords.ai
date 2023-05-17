@@ -163,6 +163,8 @@ const sessionOptionsArray = [
     place the chapter number (written in words, not number characters) within <div class=chapterNumber></div> 
     and the chaper name within <div class=chapterTitle></div> tags. 
 
+    If the story is inspired by a certain author's writings, do not mention the author's name when introducing the story.
+
     When it feels like a new chapter is beginning, please create a title for it in a similar manner. 
     Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap".
 
@@ -325,7 +327,7 @@ const sessionOptionsArray = [
         label: "Thomas Ligotti",
         value: "Thomas Ligotti",
         prompt: `Please play the roll of the author Thomas Ligotti and lead us on an interactive fiction adventure of your own creation in the realm of his short stories.
-        These existential horror stories always lead to the doom of the character the player is playing, but don't tell the player this.`,
+        These stories always lead to the doom of the character the player is playing, but don't tell the player this.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
@@ -341,7 +343,8 @@ const sessionOptionsArray = [
       {
         label: "Anne Rice",
         value: "Anne Rice",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s vampire books.`,
+        prompt: `Please play the roll of the author [sessionSubtype] and lead us on an interactive fiction adventure of your own creation in the realm of [sessionSubtype]'s books.
+        Do not mention the author's name while telling or describing the story. Do not take actions on the player's behalf.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
