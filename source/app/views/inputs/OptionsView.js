@@ -69,7 +69,9 @@
         option.selected = match;
       }
     } else {
-      console.warn(this.type() + ".setSelectedValue(" + s + ") - no such value in options");
+      if (s !== null) {
+        console.warn(this.type() + "-" + this.id() + ".setSelectedValue(" + s + ") - no such value in options");
+      }
     }
     return this;
   }
@@ -107,7 +109,7 @@
     return this
   }
 
-  string () {
+  value () {
     return this.selectedValue()
   }
 

@@ -39,12 +39,13 @@
 
             <div id="aiChatColumn" class="ColumnView">
                 <div class="header" stlye="position: relative;">
-                    <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive Generative Fiction</span></h2>
+                    <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive
+                            Generative Fiction</span></h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
                     <div id="compactButton1" class="compactor">
                     </div>
-                    <table class="controls"> 
+                    <table class="controls">
                         <tr>
                             <td>
                                 <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
@@ -70,7 +71,7 @@
                         <p>First, you need to set your OpenAI API key, and select the session options.<br>
                             If you'd like to invite friends, use the Copy Invite Link button on the top right of the
                             page.<br>
-                        Before you begin, you'll also want to set your player name in the Group Chat column.</p>
+                            Before you begin, you'll also want to set your player name in the Group Chat column.</p>
 
 
                         <!-- begin Open AI settings -->
@@ -82,8 +83,8 @@
                                         <div class="inputLabel">OpenAI API Key <a class="infoIcon"
                                                 href="https://platform.openai.com/account/api-keys"
                                                 target="_blank">&#9432;</a></div>
-                                        <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
-                                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        <input id="apiKeyText" type="password" placeholder="Required" autocomplete="off"
+                                            autocorrect="off" autocapitalize="off" spellcheck="false"
                                             class="underlinedInput optionsInput">
                                     </div>
                                 </td>
@@ -109,18 +110,19 @@
                                 <td>
                                     <div>
                                         <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
-                                            class="infoIcon" target="_blank">&#9432;</a></div>
+                                                class="infoIcon" target="_blank">&#9432;</a></div>
                                         <input id="azureApiKeyText" type="password"
-                                            placeholder="Only required if you want speech narration." autocomplete="off"
-                                            autocorrect="off" autocapitalize="off" spellcheck="false"
+                                            placeholder="Optional (for narration)" autocomplete="off" autocorrect="off"
+                                            autocapitalize="off" spellcheck="false"
                                             class="underlinedInput optionsInput">
                                     </div>
                                 </td>
                                 <td style="padding-left: 1em;">
                                     <div>
                                         <div class="inputLabel">Azure Region <a href="https://portal.azure.com/"
-                                            class="infoIcon" target="_blank">&#9432;</a></div>
-                                        <select id="azureApiRegionOptions" style="padding-left: 1em; padding-right: 1em;">
+                                                class="infoIcon" target="_blank">&#9432;</a></div>
+                                        <select id="azureApiRegionOptions"
+                                            style="padding-left: 1em; padding-right: 1em;">
                                         </select>
                                     </div>
                                 </td>
@@ -192,7 +194,7 @@
                 <!--- begin host & guest inputs --->
 
                 <div id="messageInputSection" class="inputSection">
-                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Prompt the AI..."
+                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Talk to the Narrator..."
                         style="display: none;"></textarea>
                 </div>
                 <div id="messageInputRemoteSection" class="inputSection">
@@ -236,7 +238,7 @@
 
                 <div id="inputSection" class="inputSection">
                     <textarea id="chatInput" class="input-wrapper" rows="3"
-                        placeholder="Type your message..."></textarea>
+                        placeholder="Message the group..."></textarea>
                 </div>
             </div>
 
@@ -248,9 +250,13 @@
             <div id="connectedUsersColumn" class="ColumnView" style="display:flex;">
                 <div class="header">
                     <h2>Friends</h2>
-                    <table class="controls"><tr><td>
-                        <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
-                    </td></tr></table>
+                    <table class="controls">
+                        <tr>
+                            <td>
+                                <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
                 <ul id="userList"></ul>
             </div>
