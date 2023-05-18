@@ -73,7 +73,6 @@ input {
 
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: transparent;
-    border-radius: 0.5em;
     margin: 0px;
     margin-top: 0.3em;
     margin-bottom: 0.3em;
@@ -120,7 +119,7 @@ textarea::placeholder {
     margin-top: 2em;
     padding: 0.5em 1em;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    border-radius: 0.3em;
     width: fit-content;
 }
 
@@ -133,7 +132,7 @@ textarea::placeholder {
     position: absolute;
     top: 0.7em;
     right: 0.5em;
-    
+
     max-width: 1em;
     min-width: 1em;
 
@@ -192,11 +191,11 @@ textarea {
     /*background-color: rgba(255, 255, 255, 0.03);*/
     background-color: inherit;
     color: inherit;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 0.3em;
+    padding: 0.5em;
     font-size: 1em;
     resize: none;
-    margin: 2px;
+    /*margin: 2px;*/
 }
 
 textarea:focus {
@@ -246,7 +245,7 @@ h2 {
     outline: none;
     padding-left: 0em;
     max-width: fit-content;
-    border-radius: 0px;
+    border-radius: 0em;
     border: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     background-color: transparent;
@@ -297,7 +296,7 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: rgba(255, 255, 255, 0.05);
     color: inherit;
-    border-radius: 5px;
+    border-radius: 0.3em;
     font-size: 14px;
     cursor: pointer;
     transition: 0.3s;
@@ -313,7 +312,7 @@ button {
     font-size: 1em;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
+    border-radius: 0.3em;
     padding: 0.3em 1em;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -408,7 +407,7 @@ button {
 
 #joinSession {
     border: rgba(255, 255, 255, 0.1) 1px solid;
-    border-radius: 5px;
+    border-radius: 0.3em;
     padding: 15px;
     display: flex;
     width: 100%;
@@ -440,7 +439,7 @@ button {
 .inviteLink {
     padding: 5px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    border-radius: 0.3em;
 }
 
 .message {
@@ -483,8 +482,6 @@ button {
 .scrollingOutput {
     flex-grow: 1;
     border: 0px solid #777;
-    /* Less bright border color */
-    border-radius: 0px;
     display: flex;
     flex-direction: column;
     /*justify-content: flex-end;*/
@@ -495,7 +492,7 @@ button {
 .chatMessage {
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;
-    border-radius: 5px;
+    border-radius: 0em;
     max-width: 70%;
     word-wrap: break-word;
     list-style-type: none
@@ -510,28 +507,6 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-start;
 }
-
-/*
-.local-message {
-    padding: 0.25rem 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 5px;
-    max-width: 70%;
-    word-wrap: break-word;
-    background-color: #d5f5e3;
-    display: inline-block;
-}
-
-.remote-message {
-    padding: 0.25rem 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 5px;
-    max-width: 70%;
-    word-wrap: break-word;
-    background-color: #f5e5d5;
-    display: inline-block;
-}
-*/
 
 .localPromptMessage {
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -555,15 +530,15 @@ button {
 }
 */
 
+/*
 .ai-response {
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;
-    border-radius: 5px;
+    border-radius: 0.5em;
     max-width: 70%;
     word-wrap: break-word;
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: inline-block;
-    /*float: right;*/
     clear: right;
 }
 
@@ -571,6 +546,7 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.1);
     align-self: flex-end;
 }
+*/
 
 .message-container {
     display: flex;
@@ -594,7 +570,7 @@ button {
     padding-bottom: 1em;
     padding-left: 0.8em;
     padding-right: 0.8em;
-    border-radius: 10px;
+    border-radius: 0.5em;
     /*overflow-wrap: anywhere;*/
     max-width:35em;
 }
@@ -640,7 +616,7 @@ button {
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 5px 10px;
-    border-radius: 5px;
+    border-radius: 0.3em;
     font-size: 1em;
     white-space: nowrap;
 }
