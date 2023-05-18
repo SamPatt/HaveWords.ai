@@ -231,9 +231,9 @@
   displayGuestHTMLChanges() {
     document.getElementById("appView").style.display = "block";
     this.hide();
-    document.getElementById("messageInputSection").style.display = "none"; // guest ai chat input
+    document.getElementById("messageInputSection").style.display = "none"; // hide host ai chat input
     document.getElementById("messageInputRemoteSection").style.display =
-      "block"; // guest ai chat input
+      "block"; // display guest ai chat input
     messageInputRemote.disabled = true;
   }
 

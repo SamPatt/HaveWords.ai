@@ -37,7 +37,7 @@
     this.newSlot("voiceName", "en-US-TonyNeural");
     this.newSlot("voiceStyle", "whispering");
     this.newSlot("voicesJson", null);
-    this.newSlot("volumne", "shoft");
+    this.newSlot("volume", "soft");
     //this.newSlot("rate", "15%");
     this.newSlot("rate", "10%");
     this.newSlot("pitch", "-10%");
@@ -85,8 +85,12 @@
         localNames.add(k);
       }
     });
+    
+    // Add placeholder option at start
+    options.unshift({ label: 'Select language...', value: '' });
+  
     return options;
-  }
+  }  
 
   async asyncSpeakTextIfAble (text) {
     if (this.hasApiAccess()) {
