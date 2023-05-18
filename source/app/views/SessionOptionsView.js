@@ -392,7 +392,7 @@
 
   sessionFontWeight() {
     const v = this.configLookup("fontWeight");
-    return v ? v : "500";
+    return v ? v : "300";
   }
 
   headerFontFamily() {

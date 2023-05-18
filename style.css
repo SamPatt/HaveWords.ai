@@ -472,14 +472,6 @@ button {
     overflow-x: hidden;
 }
 
-.aiScrollingOutput {
-    background-color: inherit;
-}
-
-.chatScrollingOutput {
-    background-color: inherit;
-}
-
 .chatMessage {
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;

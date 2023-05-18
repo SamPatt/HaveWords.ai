@@ -362,7 +362,7 @@
       "Fight Begins: Battling the Winter Goddess": "OJVKN5WPsjI",
       "Surviving Test of Frost": "oN4yv472eK0",
       "Frostmaiden's Abode": "hLxpatMoQ0o",
-      "Grimm Fate of Nass Lantomir": "p3wpPG5e0Uk",
+      "Bedtime Lullaby": "p3wpPG5e0Uk",
       "Fortress Of A God": "m67ZVI1PhtY",
       "Hopeless Night": "-v6T81lUtdQ",
       "Destruction's Light, Dragon's Devastation": "A2regj5sJMo",

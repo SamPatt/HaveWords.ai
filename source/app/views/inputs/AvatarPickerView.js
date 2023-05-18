@@ -79,9 +79,9 @@
 
   async handleAvatarChange(event) {
     const file = event.target.files[0];
-    const maxSizeInBytes = 10 * 1024; // 10 KB
-    const targetWidth = 50;
-    const targetHeight = 50;
+    const maxSizeInBytes = 100 * 1024; // 100 KB
+    const targetWidth = 256;
+    const targetHeight = 256;
 
     if (file) {
       const base64Image = await this.resizeImage(
@@ -91,12 +91,13 @@
       );
       const imageSizeInBytes = atob(base64Image.split(",")[1]).length;
 
-      if (imageSizeInBytes <= maxSizeInBytes) {
-        this.storeAvatar(base64Image);
-        this.displayAvatar(base64Image);
-      } else {
+      if (imageSizeInBytes > maxSizeInBytes) {
         alert("Image size is too large. Please choose a smaller image.");
-      }
+        return 
+      } 
+
+      this.storeAvatar(base64Image);
+      this.displayAvatar(base64Image);
     }
   }
 

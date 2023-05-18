@@ -79,14 +79,14 @@ Cyberpunk:
   Blade Runner
   William Gibson
   Philip K Dick
-  TRON
-  Wargames
   Snow Crash by Neal Stephenson 
   Freedom series by Daniel Suarez
   The Windup Girl by Paolo Bacigalupi
   The Demolished Man by Alfred Bester
   Her Smoke Rose Up Forever anthology by James Tiptree Jr. AKA Alice Bradley Sheldon
   When Gravity Fails by George Alec Effinger
+  TRON
+  Wargames
 
 SciFi:
   Doctor Who
@@ -255,8 +255,10 @@ const sessionOptionsArray = [
       {
         label: "Studio Ghibli",
         value: "Studio Ghibli",
-        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films, including 
-        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.`,
+        /*        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.*/
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films.
+        Please create an adventure of your own creation in this world for us that feels like it could be a part of a Studio Ghibli film.
+        Please remember that Totoro doesn't speak. Also, in your opening description, don't mention Studio Ghibli.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
@@ -355,7 +357,21 @@ const sessionOptionsArray = [
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of Stephenie Meyer's [sessionSubtype]'s books and films.`,
         artPromptPrefix: "Pen and ink illustration of:",
       },
+
+      {
+        label: "Cyberpunk",
+        value: "Cyberpunk",
+        prompt: `Please play the roll of an interactive story teller and lead us on a campaign of your own creation in the genre of Cyberpunk as inspired by the books of
+        William Gibson. Please create your own stories by try to replicate his writing style.`,
+        artPromptPrefix: "Blade Runner like dark art illustration of:",
+        fontFamily: "Barlow Condensed",
+      },
     ],
+    /*
+    and Philip K Dick, as well as books such as Snow Crash by Neal Stephenson, the Freedom series by Daniel Suarez, 
+        The Windup Girl by Paolo Bacigalupi, and The Demolished Man by Alfred Bester. 
+        Please make the writing style itself similar to  William Gibson's writing style.
+        */
   },
   {
     value: "trivia",

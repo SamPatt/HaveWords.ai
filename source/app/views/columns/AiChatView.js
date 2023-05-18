@@ -210,7 +210,8 @@
   // --------------------------------------------------------
 
   scrollViewContentElement () {
-    return document.querySelector(".messages");
+    //return document.querySelector(".messages");
+    return document.querySelector("#AiChatMessages");
   }
 
   addMessageElement(element) {
@@ -221,8 +222,7 @@
   }
 
   scrollToBottom () {
-    const sc = this.scrollViewContentElement();
-    const scrollView = sc.parentNode;
+    const scrollView = document.querySelector("#aiScrollingOutput");
     scrollView.scrollTop = scrollView.scrollHeight;
   }
 

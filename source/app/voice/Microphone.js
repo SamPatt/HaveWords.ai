@@ -29,7 +29,7 @@
     b.toggle = function() {
       // to avoid changing state until the browser has asked the user for mic access
     }
-    b.setOnColor("red");
+    b.setOnColor("yellow");
     this.setMicButton(b);  
   }
 
