@@ -25,19 +25,13 @@
     super.init();
     this.setId("aiSelectionBlock");
 
-    const modelOptions = OpenAiChat.shared()
-      .modelOptions()
-      .map((name) => {
-        return { label: name, value: name };
-      });
     this.setAiModelOptions(
       OptionsView.clone()
         .setId("aiModelOptions")
         .setTarget(this)
-        .setOptions(modelOptions)
-        .setShouldStore(true)
-        .load()
     );
+    this.asyncSetupAiModelOptions();
+
 
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
@@ -95,6 +89,15 @@
     this.onUpdateInputs(); // to enable start button if ready
   }
 
+  async asyncSetupAiModelOptions () {
+    await OpenAiChat.shared().asyncCheckModelsAvailability();
+    const names = OpenAiChat.shared().availableModelNames();
+    console.log("available model names:", names);
+    this.aiModelOptions().setOptions(names)
+    .setShouldStore(true)
+    .load();
+    this.onUpdateInputs();
+  }
 
   languagePrompt () {
     const label = this.sessionLanguageOptions().selectedLabel();
@@ -119,8 +122,12 @@
     field.setValidationFunc((s) => {
       const isValid = OpenAiService.shared().validateKey(s);
       if (isValid) {
-        //console.log("API: ", s);
-        OpenAiService.shared().setApiKey(s);
+        if (s !== OpenAiService.shared().apiKey()) {
+          OpenAiService.shared().setApiKey(s);
+          this.asyncSetupAiModelOptions();
+        }
+      } else {
+        this.aiModelOptions().setOptions([])
       }
       return isValid;
     });
@@ -158,7 +165,7 @@
   }
 
   canStart() {
-    return this.apiKeyText().isValid();
+    return this.apiKeyText().isValid() && this.aiModelOptions().selectedValue();
   }
 
   onUpdateInputs() {

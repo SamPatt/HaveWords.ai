@@ -12,11 +12,31 @@
     this.newSlot("conversationHistory", null);
     this.newSlot("tokenBuffer", 400); // Buffer to ensure approximation doesn't exceed limit
     this.newSlot("initialMessagesCount", 3); // Number of initial messages to always keep
+    this.newSlot("models", null);
+    this.newSlot("didModelCheck", false);
   }
 
   init() {
     super.init();
     this.setConversationHistory([]);
+    const models = this.allModelNames().map(name => OpenAiChatModel.clone().setName(name));
+    this.setModels(models);
+  }
+
+  async asyncCheckModelsAvailability () {
+    if (this.apiKey()) {
+      for (const model of this.models()) { 
+        await model.asyncCheckAvailability();
+      }
+    }
+  }
+
+  availableModelNames () {
+    return this.models().filter(model => model.isAvailable()).map(model => model.name());
+  }
+
+  allModelNames () {
+    return ["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"];
   }
 
   // Function to approximate token count
@@ -47,10 +67,6 @@
   clearConversationHistory() {
     this.setConversationHistory([]);
     return this;
-  }
-
-  modelOptions () {
-    return ["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"];
   }
 
   newRequest() {

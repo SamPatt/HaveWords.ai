@@ -16,7 +16,7 @@
 
   init () {
     super.init();
-    this.setIsDebugging(true)
+    this.setIsDebugging(false)
   }
 
   setBodyJson (json) {
@@ -55,9 +55,21 @@
    // debugger;
     //try {
       //this.debugLog(" send request apiUrl:" +  this.apiUrl() + "options: \n" + JSON.stringify(requestOptions, 2, 2))
-      this.debugLog(" send request apiUrl:" +  this.apiUrl() + "options: \n", requestOptions)
+      //this.debugLog(" send request apiUrl:" +  this.apiUrl() + "options: \n", requestOptions)
+
+
+      if (this.isDebugging()) {
+          const body = JSON.parse(requestOptions.body);
+          const model = body.model;
+          const message = body.messages[0].prompt;
+          this.debugLog(" fetch apiUrl: " + this.apiUrl() + " model: '" + model + "' prompt: '" + prompt + "'");
+      }
+
       const response = await fetch(this.apiUrl(), requestOptions);
       data = await response.json();
+
+      this.debugLog(" response data: ", response)
+      //debugger;
       /*
     } catch (error) {
       this.reportError(error)

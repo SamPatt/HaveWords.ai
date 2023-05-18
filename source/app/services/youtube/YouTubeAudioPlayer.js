@@ -97,7 +97,7 @@
     */
 
     try {
-      const player = new YT.Player("player", json);
+      const player = new YT.Player("youTubePlayer", json);
       //debugger;
       this.setPlayer(player);
     } catch (error) {
