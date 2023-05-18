@@ -41,22 +41,31 @@
   }
 
   playTrackWithName(name) {
-    if (this.isMuted()) {
-      this.debugLog("played is muted so not playing");
-      return;
-    }
-
-    const yt = YouTubeAudioPlayer.shared();
-
     this.debugLog("playTrackWithName('" + name + "')");
-    const vid = this.tracksMap().get(name);
+    this.playTrackId(this.trackIdForName(name));
+  }
+
+  trackIdForName (name) {
+    return this.tracksMap().get(name);
+  }
+
+  playTrackId (vid) {
+    this.setCurrentTrack(vid);
 
     if (!vid) {
       this.debugLog("missing track with name '" + name + "'");
       return;
     }
 
+    if (this.isMuted()) {
+      this.debugLog("playTrackWithName('" + name + "') - muted so will not play");
+      return;
+    }
+    
+    this.debugLog("playTrackId('" + vid + "')");
+
     if (vid) {
+      const yt = YouTubeAudioPlayer.shared();
       if (vid !== yt.videoId() || !yt.isPlaying()) {
         yt.setVideoId(vid).play();
       }
@@ -65,7 +74,11 @@
 
   setIsMuted (aBool) {
     this._isMuted = aBool;
-    YouTubeAudioPlayer.shared().stop();
+    if (aBool) {
+      YouTubeAudioPlayer.shared().stop();
+    } else {
+      YouTubeAudioPlayer.shared().play();
+    }
     return this;
   }
 

@@ -2,6 +2,7 @@
 
 /* 
     AvatarPickerView
+
 */
 
 (class AvatarPickerView extends View {
@@ -13,8 +14,7 @@
 
   init() {
     super.init();
-    this.setId("avatarPicker");
-    //debugger;
+    this.setId("AvatarPicker");
 
     const e = this.element()
     e.style.width = "fit-content";
@@ -134,7 +134,9 @@
   }
 
   displayAvatar(base64Image) {
-    this.image().src = base64Image;
+    if(base64Image) {
+      this.image().src = base64Image;
+    }
     /*
     this.avatarDisplay.style.display = "block";
     this.avatarInputLabel.style.display = "none";

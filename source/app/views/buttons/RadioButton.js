@@ -58,22 +58,26 @@
 
   setState (aBool) {
     this._state = aBool;
+    this.update();
+    return this;
+  }
+
+  update () {
     this.updateIcon();
     this.updateLabel();
     this.updateOpacity();
     this.updateColor();
-    return this;
   }
 
   setOnIconPath (aPath) {
     this._onIconPath = aPath;
-    this.updateIcon();
+    this.update();
     return this;
   }
 
   setOffIconPath (aPath) {
     this._offIconPath = aPath;
-    this.updateIcon();
+    this.update();
     return this;
   }
 
@@ -136,6 +140,7 @@
   submit () {
     this.toggle(); // toggle first?
     super.submit();
+    Sounds.shared().playSendBeep();
     return this;
   }
 

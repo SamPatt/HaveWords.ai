@@ -42,10 +42,13 @@
     this.newSlot("rate", "10%");
     this.newSlot("pitch", "-10%");
     this.newSlot("isMuted", false);
+    this.newSlot("currentAudio", null);
+    //this.newSlot("audioQueue", null);
   }
 
   init () {
     super.init();
+    //this.setAudioQueue([]);
   }
 
   jsonForVoiceShortName (shortName) {
@@ -57,13 +60,15 @@
     return json.StyleList && json.StyleList.includes(styleName);
   }
 
-  /*
   setIsMuted (aBool) {
     this._isMuted = aBool;
-    debugger;
+    if (aBool) {
+      this.pause();
+    } else {
+      this.resume();
+    }
     return this;
   }
-  */
 
   languageOptions () {
     const options = [];
@@ -104,10 +109,10 @@
     
     const ssmlRequest = `
       <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='${this.language()}'>
-      <voice name='${this.voiceName()}'>
-        ${s}
-      </voice>
-    </speak>`;
+        <voice name='${this.voiceName()}'>
+          ${s}
+        </voice>
+      </speak>`;
     return ssmlRequest;
   }
 
@@ -146,10 +151,49 @@
     }
 
     const audioBlob = await response.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    audio.play();
+    this.playAudioBlob(audioBlob);
+    
+    HostSession.shared().broadcastPlayAudioBlob(audioBlob);
+  }
+
+  playAudioBlob (audioBlob) {
+    this.pause();
+    if (!this.isMuted()) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+      this.setCurrentAudio(audio);
+      audio.onended = () => {
+        this.debugLog("finished playing");
+        this.setCurrentAudio(null);
+      };
+      
+    }
+    return this;
   }
   
+  pause() {
+    this.debugLog("pause()");
+
+    const audio = this.currentAudio();
+    if (audio) {
+      audio.pause();
+      this.debugLog("paused");
+    }
+  }
+
+  resume () {
+    this.debugLog("resume()");
+
+    const audio = this.currentAudio();
+    if (audio) {
+      //if (audio.paused) {
+        audio.play();
+        this.debugLog("resumed");
+
+      //}
+    }
+  }
+
 }.initThisClass());
 

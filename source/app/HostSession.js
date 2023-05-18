@@ -30,6 +30,25 @@
     PeerServer.shared().broadcastExceptTo(json, excludeId);
   }
 
+  broadcastPlayTrackId (trackId) {
+    this.broadcast({
+      type: "playTrackId",
+      //id: LocalUser.shared().id(),
+      //nickname: LocalUser.shared().nickname(),
+      trackId: trackId,
+    });
+  }
+
+  async broadcastPlayAudioBlob (audioBlob) {
+    const dataUrl = await audioBlob.asyncToDataUrl();
+    this.broadcast({
+      type: "playAudioBlob",
+      //id: LocalUser.shared().id(),
+      //nickname: LocalUser.shared().nickname(),
+      audioBlobDataUrl: dataUrl,
+    });
+  }
+
   // --- user actions ---
 
   kickUser(userId) {

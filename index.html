@@ -42,8 +42,9 @@
                     <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive Generative Fiction</span></h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
-                    <div id="compactButton1" class="compactor"></div>
-                    <table id="AiChatControls"> 
+                    <div id="compactButton1" class="compactor">
+                    </div>
+                    <table class="controls"> 
                         <tr>
                             <td>
                                 <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
@@ -78,9 +79,8 @@
                             <tr>
                                 <td>
                                     <div>
-                                        <div class="inputLabel">OpenAI API Key <a
+                                        <div class="inputLabel">OpenAI API Key <a class="infoIcon"
                                                 href="https://platform.openai.com/account/api-keys"
-                                                style="opacity: 1; text-transform: lowercase;"
                                                 target="_blank">&#9432;</a></div>
                                         <input id="apiKeyText" type="password" placeholder="Enter your OpenAI API key"
                                             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
@@ -109,8 +109,7 @@
                                 <td>
                                     <div>
                                         <div class="inputLabel">Azure API Key <a href="https://portal.azure.com/"
-                                                style="opacity: 1; text-transform: lowercase;"
-                                                target="_blank">&#9432;</a></div>
+                                            class="infoIcon" target="_blank">&#9432;</a></div>
                                         <input id="azureApiKeyText" type="password"
                                             placeholder="Only required if you want speech narration." autocomplete="off"
                                             autocorrect="off" autocapitalize="off" spellcheck="false"
@@ -120,8 +119,7 @@
                                 <td style="padding-left: 1em;">
                                     <div>
                                         <div class="inputLabel">Azure Region <a href="https://portal.azure.com/"
-                                                style="opacity: 1; text-transform: lowercase;"
-                                                target="_blank">&#9432;</a></div>
+                                            class="infoIcon" target="_blank">&#9432;</a></div>
                                         <select id="azureApiRegionOptions" style="padding-left: 1em; padding-right: 1em;">
                                         </select>
                                     </div>
@@ -129,12 +127,9 @@
                             </tr>
                         </table>
 
-
-
                         <!-- end Azure AI settings -->
 
                         <!-- begin Session settings -->
-
 
                         <table>
                             <tr>
@@ -153,10 +148,7 @@
                                     </div>
                                 </td>
                             </tr>
-
                         </table>
-
-
 
                         <div>
                             <div class="inputLabel">Customization</div>
@@ -172,7 +164,6 @@
                             <select id="sessionLanguageOptions">
                             </select>
                         </div>
-
 
                         <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
                             <div id="sessionStartButton" class="button"
@@ -191,7 +182,9 @@
                 <!--- end host settings --->
 
                 <div class="aiScrollingOutput scrollingOutput">
-                    <div id="AiChatMessages" class="messages"></div>
+                    <div id="centerThing" style="text-align: center;">
+                        <div id="AiChatMessages" class="messages" style="margin: auto; max-width: 38.5em;"></div>
+                    </div>
                     <div class="loading loadingHost" id="loadingHost">Waiting for the AI to
                         respond<span>.</span><span>.</span><span>.</span></div>
                 </div>
@@ -220,7 +213,7 @@
                         <table style="width: 100%;">
                             <tr>
                                 <td>
-                                    <div id="avatarPicker"></div>
+                                    <div id="AvatarPicker"></div>
                                 </td>
                                 <td style="width: 100%;">
                                     <div class="username-container" style="width: 100%;">
@@ -232,8 +225,6 @@
                         </table>
                     </div>
                     <div id="compactButton2" class="compactor">
-                        <object class="svgIcon" type="image/svg+xml"
-                            data="resources/icons/square-arrow-right.svg"></object>
                     </div>
                 </div>
 
@@ -257,8 +248,9 @@
             <div id="connectedUsersColumn" class="ColumnView" style="display:flex;">
                 <div class="header">
                     <h2>Friends</h2>
-                    <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
-                    <div id="avatarSection"></div>
+                    <table class="controls"><tr><td>
+                        <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
+                    </td></tr></table>
                 </div>
                 <ul id="userList"></ul>
             </div>

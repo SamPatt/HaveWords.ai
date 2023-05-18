@@ -108,5 +108,17 @@
     return this.contentOfFirstElementOfClass('bookTitle'); 
   }
 
+  // isUser - this is duplicated in ImageMessageView
+
+  setIsUser (aBool) {
+    if (!aBool) {
+      this.element().className += " aiMessage";
+    } else {
+      this.element().className += " nonAiMessage";
+    }
+    return this;
+  }
+
+
 }.initThisClass());
 
