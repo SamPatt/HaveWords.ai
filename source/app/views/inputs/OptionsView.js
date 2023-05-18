@@ -27,12 +27,12 @@
     let result = false;
     for (var i = 0; i < children.length; i++) {
       const option = children[i];
-      if (option.selected) {
+      if (option.selected && option.value !== '') {
         result = true;
       }
     }
     return result;
-  }
+  }  
 
   hasValue (s) {
     const children = this.element().children;
