@@ -79,7 +79,7 @@
 
   async asyncFetch(prompt) {
     const selectedModel = SessionOptionsView.shared().aiModel();
-    assert(this.modelOptions().includes(selectedModel));
+    assert(this.allModelNames().includes(selectedModel));
 
     this.addToConversation({
       role: "user",
