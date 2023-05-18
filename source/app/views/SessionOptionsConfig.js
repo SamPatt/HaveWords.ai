@@ -180,7 +180,7 @@ const sessionOptionsArray = [
     color: "rgb(219, 219, 219)",
     options: [
       {
-        label: "Traditional",
+        label: "Dungeons & Dragons",
         value: "traditional fantasy",
         /*
         prompt: `Please play the roll of an dungeon master and lead us on a traditional campaign of Dungeons and Dragons. 

@@ -22,11 +22,24 @@ p {
 /*-------------------*/
 
 select {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    border-radius: 0.3em;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
     appearance: none;
     font-size: 1em;
     outline: none;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin: 0px;
+    margin-top: 0.2em;
+    margin-bottom: 0.3em;
 }
 
 /*
@@ -49,17 +62,16 @@ option {
     font-weight: inherit;
 }
 
-input,
-select {
+input { 
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
-    
+    color: inherit;
+    border-radius: 0.5em;
+
     border: 1px solid rgba(255, 255, 255, 0.1);
     background-color: transparent;
-    color: inherit;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 0.5em;
     margin: 0px;
     margin-top: 0.3em;
     margin-bottom: 0.3em;

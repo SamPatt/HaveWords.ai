@@ -91,7 +91,7 @@
                                 <td style="padding-left: 1em;">
                                     <div>
                                         <div class="inputLabel">OpenAI Model</div>
-                                        <select id="aiModelOptions" style="padding-left: 1em; padding-right: 1em;">
+                                        <select id="aiModelOptions">
                                         </select>
                                     </div>
                                 </td>
@@ -119,10 +119,8 @@
                                 </td>
                                 <td style="padding-left: 1em;">
                                     <div>
-                                        <div class="inputLabel">Azure Region <a href="https://portal.azure.com/"
-                                                class="infoIcon" target="_blank">&#9432;</a></div>
-                                        <select id="azureApiRegionOptions"
-                                            style="padding-left: 1em; padding-right: 1em;">
+                                        <div class="inputLabel">Azure Region</div>
+                                        <select id="azureApiRegionOptions">
                                         </select>
                                     </div>
                                 </td>
@@ -144,7 +142,7 @@
                                 </td>
                                 <td>
                                     <div style="padding-left: 1em;">
-                                        <div id="sessionSubtypeOptionsLabel" class="inputLabel">Genre Subtype</div>
+                                        <div id="sessionSubtypeOptionsLabel" class="inputLabel">Fanfiction Inspired By</div>
                                         <select id="sessionSubtypeOptions">
                                         </select>
                                     </div>
@@ -194,7 +192,7 @@
                 <!--- begin host & guest inputs --->
 
                 <div id="messageInputSection" class="inputSection">
-                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Talk to the Narrator..."
+                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Message the narrator..."
                         style="display: none;"></textarea>
                 </div>
                 <div id="messageInputRemoteSection" class="inputSection">
