@@ -41,15 +41,6 @@
     this.setupAzureApiKeyText();
     this.setupAzureApiRegionOptions();
 
-    this.setAiModelOptions(
-      OptionsView.clone()
-        .setId("aiModelOptions")
-        .setTarget(this)
-        .setOptions(modelOptions)
-        .setShouldStore(true)
-        .load()
-    );
-
     this.setImageGenModelOptions(
       OptionsView.clone()
         .setId("imageGenModelOptions")
