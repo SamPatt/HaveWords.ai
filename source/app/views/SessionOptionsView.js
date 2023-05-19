@@ -90,22 +90,23 @@
   }
 
   async asyncSetupAiModelOptions () {
-    const section = document.getElementById("AiModelOptionsSection");
-    //section.style.opacity = 0.5;
-
     const note = document.getElementById("AiModelOptionsNote");
-    note.innerHTML = "Loading...";
-    note.style.color = "yellow";
+    let names = OpenAiChat.shared().availableModelNames();
+    if (!names || names.length === 0) {
+      debugger;
+      note.style.display = "inline";
+      note.style.opacity = 1;
+      note.style.color = "yellow";
+    }
 
     await OpenAiChat.shared().asyncCheckModelsAvailability();
-    const names = OpenAiChat.shared().availableModelNames();
+    names = OpenAiChat.shared().availableModelNames();
     console.log("available model names:", names);
     this.aiModelOptions().setOptions(names)
     .setShouldStore(true)
     .load();
     this.onUpdateInputs();
-    section.style.opacity = 1;
-    note.innerHTML = "";
+    note.style.opacity = 0;
   }
 
   languagePrompt () {

@@ -47,7 +47,7 @@
 
 
   async asyncCheckModelsAvailability () {
-    if (this.apiKey() && this.availableModelNames() === null) {
+    if (this.apiKey() && this.availableModelNames() === null || this.availableModelNames().length === 0) {
       for (const model of this.models()) { 
         await model.asyncCheckAvailability();
         this.setAvailableModelNames(this.calcAvailableModelNames());
