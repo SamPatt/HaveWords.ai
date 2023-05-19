@@ -93,7 +93,6 @@
     const note = document.getElementById("AiModelOptionsNote");
     let names = OpenAiChat.shared().availableModelNames();
     if (!names || names.length === 0) {
-      debugger;
       note.style.display = "inline";
       note.style.opacity = 1;
       note.style.color = "yellow";
