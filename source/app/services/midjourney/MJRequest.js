@@ -8,11 +8,10 @@
 */
 
 (class MJRequest extends Base {
-  /*
   initPrototypeSlots () {
-    this.newSlot("apiUrl", null);
-    this.newSlot("apiKey", null);
-    this.newSlot("body", null); // this will contain the model choice and messages
+    this.newSlot("endpointPath", null);
+    this.newSlot("service", null)
+    this.newSlot("body", null); //JSON object
   }
 
   init () {
@@ -20,46 +19,60 @@
     this.setIsDebugging(true)
   }
 
-  setBodyJson (json) {
-    this.setBody(JSON.stringify(json));
-    return this
-  }
-
   requestOptions () {
-    const apiKey = this.apiKey()
+    const apiKey = this.service().apiKey();
     return {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+        "Authorization": apiKey,
       },
-      body: this.body(),
+      body: JSON.stringify(this.body()),
     };
+  }
+
+  endpointUrl() {
+    return this.service().apiBaseUrl() + this.endpointPath();
+  }
+
+  assertValid () {
+    if (!this.service()) {
+      throw new Error(this.type() + " service missing");
+    }
+
+    if (!this.service().apiKey()) {
+      throw new Error(this.type() + " apiKey missing");
+    }
+
+    if (!this.service().apiBaseUrl()) {
+      throw new Error(this.type() + " apiBaseUrl missing");
+    }
   }
 
   async asyncSend () {
     const requestOptions = this.requestOptions()
     let data = undefined;
 
-    if (!this.apiUrl()) {
-      throw new Error(this.type() + " apiUrl missing")
-    }
+    this.assertValid()
 
-    if (!this.apiKey()) {
-      throw new Error(this.type() + " apiKey missing")
-    }
-
-      console.log(">>>>>>>>>> send request:", this.apiUrl(), requestOptions)
-      const response = await fetch(this.apiUrl(), requestOptions);
+   // debugger;
+    //try {
+      this.debugLog(" send request endpointUrl:" +  this.endpointUrl() + "options: \n", requestOptions)
+      const response = await fetch(this.endpointUrl(), requestOptions);
       data = await response.json();
-
+      /*
+    } catch (error) {
+      this.reportError(error)
+    }
+    */
     return data;
   }
 
   description () {
-    return this.type() + " url:" + this.apiUrl() + " request:" + JSON.stringify(this.requestOptions());
+    return this.type() + " url:" + this.endpointUrl() + " request:" + JSON.stringify(this.requestOptions());
   }
 
+  /*
   reportError (error) {
     console.error(this.type() + " error fetching response:", error, " for url: " + this.apiUrl() + " request:", this.requestOptions());
 

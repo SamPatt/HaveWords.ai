@@ -12,6 +12,10 @@
     this.newSlot("azureApiKeyText", null);
     this.newSlot("azureApiRegionOptions", null);
 
+    this.newSlot("imageGenModelOptions", null);
+    this.newSlot("midjourneyApiKeyText", null);
+    this.newSlot("midjourneyApiBaseUrlText", null);
+
     this.newSlot("sessionTypeOptions", null);
     this.newSlot("sessionSubtypeOptions", null);
     this.newSlot("sessionCustomizationText", null);
@@ -36,6 +40,31 @@
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
     this.setupAzureApiRegionOptions();
+
+    this.setAiModelOptions(
+      OptionsView.clone()
+        .setId("aiModelOptions")
+        .setTarget(this)
+        .setOptions(modelOptions)
+        .setShouldStore(true)
+        .load()
+    );
+
+    this.setImageGenModelOptions(
+      OptionsView.clone()
+        .setId("imageGenModelOptions")
+        .setTarget(this)
+        .setOptions(ImageGen.shared()
+          .modelOptions()
+          .map((name) => {
+            return { label: name, value: name };
+          })
+        )
+    );
+
+    this.setupImageGenModelOptions();
+    this.setupMidjourneyApiKeyText();
+    this.setupMidjourneyApiBaseUrlText();
 
     this.setSessionTypeOptions(
       OptionsView.clone()
@@ -199,6 +228,69 @@
     AzureService.shared().setRegion(this.azureApiRegionOptions().selectedValue());
   }
 
+  setupImageGenModelOptions() {
+    this.imageGenModelOptions().setSelectedLabel(ImageGen.shared().option());
+  }
+  
+  setupMidjourneyApiKeyText(){
+    const field = TextFieldView.clone().setId("midjourneyApiKeyText");
+    this.setMidjourneyApiKeyText(field);
+
+    field.setValidationFunc((s) => {
+      const isValid = MJService.shared().validateKey(s);
+      if (isValid) {
+        MJService.shared().setApiKey(s);
+      }
+      return isValid;
+    });
+
+    // Load the stored API key
+    const s = MJService.shared().apiKey();
+    if (s) {
+      field.setString(s);
+    }
+
+    this.showMidjourneyFieldsIfNeeded();
+  }
+  
+  setupMidjourneyApiBaseUrlText(){
+    const field = TextFieldView.clone().setId("midjourneyApiBaseUrlText");
+    this.setMidjourneyApiBaseUrlText(field);
+
+    field.setValidationFunc((s) => {
+      const isValid = MJService.shared().validateBaseUrl(s);
+      if (isValid) {
+        MJService.shared().setApiBaseUrl(s);
+      }
+      return isValid;
+    });
+
+    // Load the stored API key
+    const s = MJService.shared().apiBaseUrl();
+    if (s) {
+      field.setString(s);
+    }
+
+    this.showMidjourneyFieldsIfNeeded();
+  }
+
+  showMidjourneyFieldsIfNeeded() {
+    console.log(`showMidjourneyFieldsIfNeeded: ${ImageGen.shared().isMidjourneyOption()}`);
+    if (ImageGen.shared().isMidjourneyOption()) {
+      document.getElementById("midjourneyApiKeyContainer").style.display = "block";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "block";
+      ImageBot.shared().setImageGen(MJImageGen.shared());
+    }
+    else if (ImageGen.shared().isDalleOption()) {
+      document.getElementById("midjourneyApiKeyContainer").style.display = "none";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "none";
+      ImageBot.shared().setImageGen(OpenAiImageGen.shared());
+    }
+    else {
+      throw "Unknown Image Gen Model Option: " + ImageGen.shared().option();
+    }
+  }
+
   // --- setup ---
 
   appDidInit() {
@@ -225,6 +317,12 @@
     const subOptionsArray =
       this.sessionTypeOptions().selectedElement()._item.options;
     this.sessionSubtypeOptions().setOptions(subOptionsArray);
+  }
+
+  onSubmit_imageGenModelOptions() {
+    ImageGen.shared().setOption(this.imageGenModelOptions().selectedValue());
+
+    this.showMidjourneyFieldsIfNeeded();
   }
 
   // --- sessionSubtypeOptions ---

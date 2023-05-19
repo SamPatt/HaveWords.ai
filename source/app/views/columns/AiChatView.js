@@ -131,7 +131,7 @@
         "Host",
         LocalUser.shared().id()
       );
-      OpenAiImageBot.shared().setSceneDescription(sanitizedHtml).trigger();
+      ImageBot.shared().setSceneDescription(sanitizedHtml).trigger();
       // Optional: Hide the button after it has been clicked
       button.style.display = "none";
     });
