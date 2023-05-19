@@ -23,21 +23,54 @@
     this.setModels(models);
   }
 
+  // --- accessible models ---
+
+  clearAvailableModelNames () {
+    this.setAvailableModelNames(null);
+    return this;
+  }
+
+  setAvailableModelNames (modelNamesArray) { /* or pass in null to clear the list */
+    localStorage.setItem("openai_available_models", JSON.stringify(modelNamesArray));
+    return this;
+  }
+
+  availableModelNames () {
+    const s = localStorage.getItem("openai_available_models");
+    try {
+      return s ? JSON.parse(s) : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+
   async asyncCheckModelsAvailability () {
-    if (this.apiKey()) {
+    if (this.apiKey() && this.availableModelNames() === null) {
       for (const model of this.models()) { 
         await model.asyncCheckAvailability();
+        this.setAvailableModelNames(this.calcAvailableModelNames());
       }
     }
   }
 
-  availableModelNames () {
+  calcAvailableModelNames () {
     return this.models().filter(model => model.isAvailable()).map(model => model.name());
   }
 
   allModelNames () {
-    return ["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"];
+    return [
+      "gpt-4", 
+      //"gpt-4-0314", 
+      "gpt-4-32k", 
+      //"gpt-4-32k-0314", 
+      "gpt-3.5-turbo", 
+      //"gpt-3.5-turbo-0301"
+    ];
   }
+
+  // ----------------------------
 
   // Function to approximate token count
   approximateTokens(message) {

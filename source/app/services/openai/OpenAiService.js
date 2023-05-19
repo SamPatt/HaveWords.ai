@@ -16,7 +16,10 @@
   // --- api key ---
 
   setApiKey (key) {
-    localStorage.setItem("openai_api_key", key)
+    if (key !== this.apiKey()) {
+      localStorage.setItem("openai_api_key", key);
+      OpenAiChat.shared().clearAvailableModelNames(); // TODO: reorg this!
+    }
     return this
   }
 

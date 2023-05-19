@@ -90,6 +90,13 @@
   }
 
   async asyncSetupAiModelOptions () {
+    const section = document.getElementById("AiModelOptionsSection");
+    //section.style.opacity = 0.5;
+
+    const note = document.getElementById("AiModelOptionsNote");
+    note.innerHTML = "Loading...";
+    note.style.color = "yellow";
+
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     const names = OpenAiChat.shared().availableModelNames();
     console.log("available model names:", names);
@@ -97,6 +104,8 @@
     .setShouldStore(true)
     .load();
     this.onUpdateInputs();
+    section.style.opacity = 1;
+    note.innerHTML = "";
   }
 
   languagePrompt () {
@@ -127,6 +136,7 @@
           this.asyncSetupAiModelOptions();
         }
       } else {
+        OpenAiService.shared().setApiKey(null);
         this.aiModelOptions().setOptions([])
       }
       return isValid;
@@ -149,6 +159,8 @@
       const isValid = AzureService.shared().validateKey(s);
       if (isValid) {
         AzureService.shared().setApiKey(s);
+      } else {
+        AzureService.shared().setApiKey(null);
       }
       return isValid;
     });

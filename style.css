@@ -35,8 +35,8 @@ select {
     outline: none;
     padding-top: 0.3em;
     padding-bottom: 0.3em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
     margin: 0px;
     margin-top: 0.2em;
     margin-bottom: 0.3em;
@@ -804,3 +804,45 @@ button {
     border-radius: 0.5em;
 }
 
+/* --- dots --- */
+@keyframes fadeInOut1 {
+    0% {opacity: 0;}
+    30% {opacity: 1;}
+    100% {opacity: 1;}
+  }
+  
+  @keyframes fadeInOut2 {
+    0% {opacity: 0;}
+    50% {opacity: 1;}
+    100% {opacity: 1;}
+  }
+  
+  @keyframes fadeInOut3 {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+  }
+  
+  @keyframes fadeOutAll {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+  }
+  
+  .dot {
+    opacity: 0;
+    animation-fill-mode: both;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .dot1 {
+    animation: fadeInOut1 1s infinite, fadeOutAll 1s 1s infinite;
+  }
+  
+  .dot2 {
+    animation: fadeInOut2 0.66s 0.33s infinite, fadeOutAll 0.66s 1.33s infinite;
+  }
+  
+  .dot3 {
+    animation: fadeInOut3 0.33s 0.66s infinite, fadeOutAll 0.33s 1.66s infinite;
+  }
+
+  /* --- end dots --- */
