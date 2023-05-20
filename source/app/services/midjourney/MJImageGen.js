@@ -8,6 +8,7 @@
 (class MJImageGen extends MJService {
   initPrototypeSlots() {
     this.newSlot("prompt", null);
+    this.newSlot("mjVersion", "5");
   }
 
   newRequest () {
@@ -18,7 +19,7 @@
 
   resultJson() {
     return this.newRequest().setEndpointPath("/imagine").setBody({
-      prompt: this.prompt()
+      prompt: this.prompt() + " --v " + this.mjVersion()
     }).asyncSend();
   }
 
@@ -29,6 +30,7 @@
   // Calls the OpenAI Image API and returns the image URL fetchOpenAIImageResponse
   async asyncFetch() {
     assert(this.prompt());
+    assert(this.mjVersion());
 
     //this.prompt().copyToClipboard(); // so the user can easily paste it into MidJourney < Rich: Are we sure we want to wipe their clipboard for this?
 
@@ -62,10 +64,7 @@
       return undefined
     }
 
-    const imageCropper = ImageCropper.clone();
-    imageCropper.setImageUrl(json.imageURL);
-    imageCropper.setBoundsAsRatios({ x: 0, y: 0, w: 0.5, h: 0.5 }); //image #1
-    return await imageCropper.asyncCrop();
+    return json.imageURL;
   }
 }.initThisClass());
 
