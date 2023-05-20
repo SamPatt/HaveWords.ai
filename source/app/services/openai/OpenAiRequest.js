@@ -8,22 +8,36 @@
 */
 
 (class OpenAiRequest extends Base {
+
+  static initThisClass () {
+    super.initThisClass();
+    this.newClassSlot("requestCount", 0);
+  }
+
+  static incrementRequestCount() {
+    this.setRequestCount(this.requestCount() + 1);
+    return this.requestCount();
+  }
+
   initPrototypeSlots() {
     this.newSlot("apiUrl", null);
     this.newSlot("apiKey", null);
-    this.newSlot("body", null); // this will contain the model choice and messages
+    this.newSlot("bodyJson", null); // this will contain the model choice and messages
     this.newSlot("response", null);
     this.newSlot("json", null);
+    this.newSlot("isStreaming", false); // external read-only
+    this.newSlot("streamTarget", null); // will receive onStreamData and onStreamComplete messages
+    this.newSlot("requestId", null); 
   }
 
   init() {
     super.init();
     this.setIsDebugging(true);
+    this.setRequestId(this.thisClass().incrementRequestCount());
   }
 
-  setBodyJson(json) {
-    this.setBody(JSON.stringify(json));
-    return this;
+  body() {
+    return JSON.stringify(this.bodyJson());
   }
 
   requestOptions() {
@@ -34,7 +48,7 @@
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: this.body(),
+      body: JSON.stringify(this.bodyJson()),
     };
   }
 
@@ -48,34 +62,148 @@
     }
   }
 
-  async asyncSend() {
-    const requestOptions = this.requestOptions();
+  showRequest () {
+    const body = this.bodyJson();
+    const model = body.model;
+    const content = body.messages[0].content;
+    this.debugLog(
+      " request " +
+      this.requestId() +
+      " apiUrl: " +
+        this.apiUrl() +
+        " model: '" +
+        model +
+        "' prompt: '" +
+        content +
+        "'"
+    );
+  }
 
-    this.assertValid();
-
-    if (this.isDebugging()) {
-      const body = JSON.parse(requestOptions.body);
-      const model = body.model;
-      const content = body.messages[0].content;
-      this.debugLog(
-        " fetch apiUrl: " +
-          this.apiUrl() +
-          " model: '" +
-          model +
-          "' prompt: '" +
-          content +
-          "'"
-      );
-    }
-
-    const response = await fetch(this.apiUrl(), requestOptions);
-    this.setResponse(response);
-    const json = await response.json();
+  showResponse () {
+    const json = this.json();
     this.debugLog(" response json: ", json);
     if (json.error) {
-      console.log(this.type() + " ERROR:", json.error.message)
+      console.log(this.type() + " ERROR:", json.error.message);
     }
+  }
+
+  /* --- normal response --- */
+
+  async asyncSend () {
+    this.setIsStreaming(false);
+    this.bodyJson().stream = this.isStreaming();
+
+    this.assertValid();
+    if (this.isDebugging()) {
+      this.showRequest();
+    }
+
+    this.setResponse(await fetch(this.apiUrl(), this.requestOptions()));
+    const json = await this.response().json();
+    this.setJson(json);
+    this.showResponse();
     return json;
+  }
+
+  /* --- streaming response --- */
+
+
+  async asyncSendAndStreamResponse () {
+    this.assertValid();
+
+    const streamTarget = this.streamTarget();
+
+    // verify streamTarget and that protocol is implemented by it
+    assert(streamTarget);
+    assert(streamTarget.onStreamData);
+    assert(streamTarget.onStreamComplete);
+    
+    this.setIsStreaming(true);
+    this.bodyJson().stream = this.isStreaming();
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", this.apiUrl());
+    const options = this.requestOptions();
+    for (const header in options.headers) {
+      const value = options.headers[header];
+      xhr.setRequestHeader(header, value);
+    }
+
+    xhr.responseType = ""; // "" or "text" is required for streams
+
+    let readIndex = 0;
+    let fullContent = "";
+
+    const onChunk = () => {
+      const newLength = xhr.responseText.length;
+      const chunk = xhr.responseText.substr(readIndex);
+      readIndex = xhr.responseText.length;
+      if (chunk.length) {
+
+        if (chunk.includes("[DONE]")) {
+          console.log("skipping chunk:" + chunk);
+          return;
+        }
+
+        const result = chunk
+        .replace(/data:\s*/g, "")
+        .replace(/[\r\n\t]/g, "")
+        .split("}{")
+        .join("},{");
+        const cleanedJsonString = `[${result}]`;
+        const parsedJson = JSON.parse(cleanedJsonString);
+
+        let newContent = "";
+        parsedJson.forEach(item => {
+          if (
+            item.choices &&
+            item.choices.length > 0 &&
+            item.choices[0].delta &&
+            item.choices[0].delta.content
+          ) {
+            newContent += item.choices[0].delta.content;
+          }
+        });
+
+        //console.log("CHUNK:", chunk);
+        //console.log("CONTENT: ", newContent);
+        fullContent += newContent;
+        streamTarget.onStreamData(this, newContent);
+      }
+    }
+
+    xhr.addEventListener("progress", (event) => {
+      onChunk();
+    });
+
+    const promise = new Promise((resolve, reject) => {
+
+      xhr.addEventListener("loadend", (event) => {
+        onChunk();
+        streamTarget.onStreamComplete(this);
+        // we already sent all the chunks, but just to be consistent with other API, return the json
+        // in this way, we may only need one fetch method
+        resolve(fullContent); 
+      });
+
+      xhr.addEventListener("error", (event) => {
+        debugger;
+        streamTarget.onStreamComplete(this);
+        reject(event);
+      });
+
+      xhr.addEventListener("abort", (event) => {
+        streamTarget.onStreamComplete(this);
+        reject(new Error("aborted"));
+      });
+      
+    });
+
+    const s = JSON.stringify(options, 2, 2);
+    //this.debugLog("SENDING REQUEST BODY:", options.body)
+    xhr.send(options.body);
+
+    return promise;
   }
 
   description() {

@@ -110,7 +110,7 @@
     return request;
   }
 
-  async asyncFetch(prompt) {
+  async asyncFetch (prompt, optionalStreamTarget) {
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
 
@@ -118,8 +118,6 @@
       role: "user",
       content: prompt,
     });
-
-    //["gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"]
 
     const request = this.newRequest().setBodyJson({
       model: selectedModel,
@@ -131,7 +129,12 @@
 
     let json = undefined;
     try {
-      json = await request.asyncSend();
+      if (optionalStreamTarget) {
+        request.setStreamTarget(optionalStreamTarget);
+        return await request.asyncSendAndStreamResponse();
+      } else {
+        json = await request.asyncSend();
+      }
     } catch (error) {
       debugger;
       console.error("Error fetching AI response:", error);

@@ -98,7 +98,7 @@ if (!String.prototype.capitalized) {
         }
 
         if (initialValue === undefined) {
-            initialValue = null
+            initialValue = null;
         };
 
         const privateName = "_" + slotName;
@@ -121,6 +121,63 @@ if (!String.prototype.capitalized) {
 
         return this;
     }
+
+    static newClassSlot (slotName, initialValue) {
+        if (typeof (slotName) !== "string") {
+            throw new Error("slot name must be a string");
+        }
+
+        if (initialValue === undefined) {
+            initialValue = null;
+        };
+
+        const privateName = "_" + slotName;
+        this[privateName] = initialValue;
+
+        if (!this[slotName]) {
+            this[slotName] = function () {
+                return this[privateName];
+            }
+        }
+
+        const setterName = "set" + slotName.capitalized()
+
+        if (!this[setterName]) {
+            this[setterName] = function (newValue) {
+                this[privateName] = newValue;
+                return this;
+            }
+        }
+
+        return this;
+    }
+
+    thisClass () {
+        if (this.isPrototype()) {
+            // it's an prototype
+            return this.constructor
+        }
+
+        // otherwise, it's an instance
+        return this.__proto__.constructor
+    }
+
+    isInstance () {
+        return !this.isPrototype() && !this.isClass()
+    }
+
+    isPrototype () {
+        return this.constructor.prototype === this
+    }
+ 
+    isInstance () {
+        return !this.isPrototype()
+    }
+ 
+    isClass () {
+        return false
+    }
+
 
     /*
     debugLog (s) {
@@ -155,7 +212,7 @@ if (!String.prototype.capitalized) {
 
 getGlobalThis().assert = function (v) {
     if (!Boolean(v)) {
-        throw new Error("assert failed - false value")
+        throw new Error("failed assert")
     }
     return v
 }

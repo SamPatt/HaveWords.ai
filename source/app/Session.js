@@ -12,7 +12,7 @@
     this.newSlot("inSession", false);
     this.newSlot("groupSessionType", undefined);
     this.newSlot("groupSessionDetails", undefined);
-    this.newSlot("groupSessionFirstAIResponse", undefined);
+    //this.newSlot("groupSessionFirstAIResponse", undefined);
 
     this.newSlot("gameMode", false);
     this.newSlot("fantasyRoleplay", false);

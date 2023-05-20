@@ -100,7 +100,7 @@
 
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
-    console.log("available model names:", names);
+    //this.debugLog("available model names:", names);
     this.aiModelOptions().setOptions(names)
     .setShouldStore(true)
     .load();
@@ -523,9 +523,15 @@
       sessionType: this.sessionType(),
     });
 
+    Sounds.shared().playOminousSound();
+
+    HostSession.shared().sendAIResponse(this.prompt());
+
+    /*
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());
+
     // Stores initial AI response, which contains character descriptions, for later use
-    Session.shared().setGroupSessionFirstAIResponse(response);
+    //Session.shared().setGroupSessionFirstAIResponse(response);
     AiChatView.shared().addAIReponse(response);
 
     // Send the response to all connected guests
@@ -535,8 +541,6 @@
       message: response,
       nickname: this.selectedModelNickname(),
     });
-
-    Sounds.shared().playOminousSound();
-    //YouTubeAudioPlayer.shared().setVideoId("fViUt4xeclo").play()
+    */
   }
 }).initThisClass();

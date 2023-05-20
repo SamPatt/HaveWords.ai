@@ -13,22 +13,36 @@
     this.newSlot("shouldRepeat", true);
     this.newSlot("frameIsReady", null);
     this.newSlot("volume", 0.05);
-    //this.newSlot("playerActionQueue", []);
+    this.newSlot("playerPromise", null);
   }
 
   init() {
     super.init();
-    this.loadFrameAPI(); // set this up, then we'll set up the player
+    //debugger;
+    //this.loadFrameAPI(); // set this up, then we'll set up the player
     this.setIsDebugging(false);
   }
 
-  // action queue
-
-  /*
-  queueAction (methodName, args) {
-    this.playerActionQueue().push({methodName: methodName, args: args});
+  playerPromise () {
+    if (!this._playerPromise) {
+      this._playerPromise = new Promise((resolve, reject) => {
+        this._resolvePlayer = resolve;
+        this._rejectPlayer = reject;
+      });
+      this.loadFrameAPI(); // this will call setupPlayer after frame is loaded
+    }
+    return this._playerPromise;
   }
-  */
+
+  setPlayer (aPlayer) {
+    this._aPlayer = aPlayer;
+    if (this._resolvePlayer) {
+      this._resolvePlayer()
+    }
+    return this;
+  }
+
+  // action queue
 
   // ----------------------------------
 
@@ -55,15 +69,6 @@
     this.setupPlayer()
     return this;
   }
-
-  /*
-  player () {
-    if (!this._player) {
-      this.setupPlayer();
-    }
-    return this._player
-  }
-  */
 
   setupPlayer() {
     this.debugLog("------------------ setupPlayer ---------------- ");
@@ -159,13 +164,12 @@
   // The API will call this function when the video player is ready
   onPlayerReady(event) {
     //this.setupFrameExceptionCatcher()
-    this.debugLog("---------------------- onPlayerReady ------------------------------");
+    this.debugLog("onPlayerReady() ------------------------------");
     this.setIsReady(true);
     const player = event.target;
     assert(player === this.player());
     this.play();
     //this.player().style.display = "none";
-
   }
 
   /*
@@ -262,4 +266,4 @@ function onYouTubeIframeAPIReady() {
   YouTubeAudioPlayer.shared().onFrameReady();
 }
 
-YouTubeAudioPlayer.shared() // get the iframe and player setup
+//YouTubeAudioPlayer.shared() // get the iframe and player setup

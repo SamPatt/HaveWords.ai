@@ -10,7 +10,7 @@ body {
     height: 100vh;
     /*height: 100%;*/
     background-color: #222;  /* Dark gray background */
-    color: rgba(255, 255, 255, 0.85); /* rgb(219, 219, 219); Light gray text */
+    color: rgba(255, 255, 255, 0.8); /* rgb(219, 219, 219); Light gray text */
 }
 
 
@@ -264,8 +264,8 @@ h2 {
 
 .inputLabel {
     /*font-size: 0.8em;*/
-    opacity: 0.6;
-    text-transform: uppercase;
+    opacity: inherit;
+    text-transform: none;
     display: block;
     margin-right: 0.4em;
     text-align: left;
@@ -841,7 +841,6 @@ button {
     animation-fill-mode: both;
     padding-left: 0.03em;
     padding-right: 0.03em;
-    /*color: rgba(255, 255, 255, 0.5);*/
   }
   
   .dot1 {

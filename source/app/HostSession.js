@@ -11,7 +11,6 @@
   initPrototypeSlots() {
     this.newSlot("bannedGuests", null);
     this.newSlot("hasSetup", false);
-    //this.newSlot("conn", null);
   }
 
   init() {
@@ -223,21 +222,26 @@
     });
   }
 
-  async sendAIResponse(message) {
+  async sendAIResponse(prompt) {
     // Get AI Response and post locally
-    const response = await OpenAiChat.shared().asyncFetch(message);
+    const response = await OpenAiChat.shared().asyncFetch(prompt, this);
   
     AiChatView.shared().addAIReponse(response);
-    if (!Session.shared().groupSessionFirstAIResponse()) {
-      Session.shared().setGroupSessionFirstAIResponse(response)
-    }
-  
+
     this.broadcast({
       type: "aiResponse",
       id: LocalUser.shared().id(),
       message: response,
       nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
+  }
+
+  onStreamData (request, newData) {
+    console.log("Host " + request.requestId() + " onStreamData:" , newData);
+  }
+
+  onStreamComplete (request, allData) {
+    console.log("Host " + request.requestId() + " onStreamComplete:" , allData);
   }
   
 }).initThisClass();
