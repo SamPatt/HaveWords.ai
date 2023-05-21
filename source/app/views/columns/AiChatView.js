@@ -230,13 +230,7 @@
 
   //addMusicTrack(
 
-  async addImage(imageURL) {
-    if (new URL(imageURL).hostname.includes('discordapp')) { // midjourneyapi.io uses the discord URL
-      const imageCropper = ImageCropper.clone();
-      imageCropper.setImageUrl(imageURL);
-      imageCropper.setBoundsAsRatios({ x: 0, y: 0, w: 0.5, h: 0.5 }); //choose image #1
-      imageURL =  await imageCropper.asyncCrop();
-    }
+  addImage(imageURL) {
     const iv = ImageMessageView.clone().setImageUrl(imageURL).setIsUser(false);
     this.addMessageElement(iv.element());
   }
