@@ -135,7 +135,7 @@
         option = new Option(item.label, item.value, false);
       }
       option.style.fontFamily = "inherit";
-      option.style.fontSize = "inherit";
+      option.style.fontSize   = "inherit";
       option.style.fontWeight = "inherit";
       option._item = item;
       e.appendChild(option);

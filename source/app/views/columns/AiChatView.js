@@ -11,11 +11,13 @@
     this.newSlot("messageInputRemote", null);
     this.newSlot("sessionTitle", null);
     this.newSlot("copyTranscriptButton", null);
+    this.newSlot("requestIdToMessageMap", null);
   }
 
   init() {
     super.init();
     this.setId("aiChatColumn");
+    this.setRequestIdToMessageMap(new Map());
     this.setupMessageInput();
     this.setupMessageInputRemote();
     this.setSessionTitle(View.clone().setId("SessionDescription"));
@@ -55,7 +57,7 @@
     const textArea = TextAreaInputView.clone()
       .setId("messageInput")
       .setSubmitFunc(() => {
-        AiChatView.shared().addPrompt();
+        this.addPrompt();
       });
 
     this.setMessageInput(textArea);
@@ -78,14 +80,30 @@
     }
   }
 
-  addAIReponse(response) {
+  addAIReponse(text, requestId) {
     Sounds.shared().playReceiveBeep();
-    AiChatView.shared().addMessage(
+
+    const messageView = this.addMessage(
       "aiResponse",
-      response,
+      text,
       SessionOptionsView.shared().selectedModelNickname(),
       "AiAvatar"
     );
+
+    this.requestIdToMessageMap().set(requestId, messageView);
+  }
+
+  updateAIResponse(requestId, text) {
+    const shouldScroll = this.isScrolledToBottom()
+    const messageView = this.requestIdToMessageMap().get(requestId);
+    if (!messageView) {
+      console.warn("missing messageView for requestId: ", requestId);
+      return;
+    }
+    messageView.setText(text);
+    if (shouldScroll) {
+      this.scrollToBottom();
+    }
   }
 
   loadingAnimation () {
@@ -125,7 +143,7 @@
 
     // Add an event listener to the icon/button
     button.addEventListener("click", () => {
-      AiChatView.shared().addMessage(
+      this.addMessage(
         "image-gen",
         "Generating image...",
         "Host",
@@ -140,8 +158,6 @@
   }
 
   addMessage(type, message, nickname, userId) {
-    assert(message);
-
     let avatar;
     if (type === "aiResponse") {
       avatar = 'resources/icons/AI-avatar.png';
@@ -179,7 +195,7 @@
           m.element().appendChild(this.genImageButtonFor(m.text()));
         }
       }
-      this.onAiResponseText(m.text());
+      //this.onAiResponseText(m.text());
 
     } else if (type === "image-gen") {
 
@@ -195,9 +211,10 @@
     if(App.shared().isHost()) {
       SessionOptionsView.shared().applySessionUiPrefs();
     }
+    return m
   }
 
-  onAiResponseText (text) {
+  onAiResponseCompleteText (text) {
       // Trigger music only if host and in session
       if (App.shared().isHost() && Session.shared().inSession()) {
         OpenAiMusicBot.shared().setSceneDescription(text).trigger();
@@ -221,9 +238,18 @@
     }, 10);
   }
 
+  scrollView () {
+    return document.querySelector("#aiScrollingOutput");
+  }
+
   scrollToBottom () {
-    const scrollView = document.querySelector("#aiScrollingOutput");
+    const scrollView = this.scrollView();
     scrollView.scrollTop = scrollView.scrollHeight;
+  }
+
+  isScrolledToBottom () {
+    const div = this.scrollViewContentElement();
+    return (div.scrollTop + div.offsetHeight) >= div.scrollHeight;
   }
 
   // ----------------------------------------------------------------
@@ -247,7 +273,7 @@
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
     });
-    AiChatView.shared().addMessage(
+    this.addMessage(
       "prompt",
       message,
       LocalUser.shared().nickname(),
@@ -258,7 +284,7 @@
 
   guestAddPrompt(data) {
     Sounds.shared().playReceiveBeep();
-    AiChatView.shared().addMessage(
+    this.addMessage(
       "prompt",
       data.message,
       data.nickname,
@@ -268,7 +294,7 @@
 
   guestAddSystemMessage(data) {
     Sounds.shared().playReceiveBeep();
-    AiChatView.shared().addMessage(
+    this.addMessage(
       "systemMessage",
       data.message,
       data.nickname,
@@ -278,7 +304,7 @@
 
   guestAddLocalPrompt(prompt) {
     Sounds.shared().playSendBeep();
-    AiChatView.shared().addMessage(
+    this.addMessage(
       "prompt",
       prompt,
       LocalUser.shared().nickname(),
@@ -286,14 +312,15 @@
     );
   }
 
-  guestAddHostAIResponse(response, nickname) {
+  guestAddHostAIResponse(json) {
     Sounds.shared().playReceiveBeep();
-    AiChatView.shared().addMessage(
+    const messageView = this.addMessage(
       "aiResponse",
-      response,
-      nickname,
+      json.message,
+      json.nickname,
       "AiAvatar"
     );
+    this.requestIdToMessageMap().set(json.requestId, messageView);
   }
 }).initThisClass();
 

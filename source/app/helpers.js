@@ -37,7 +37,7 @@ Object.defineSlot(String.prototype, "isValidJSON", function() {
 
 Object.defineSlot(String.prototype, "isValidHtml", function() {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+  const doc = parser.parseFromString(this, "text/html");
   // If the parsing was successful, the document will not be null.
   return doc !== null;
 });

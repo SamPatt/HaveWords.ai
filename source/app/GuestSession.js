@@ -98,8 +98,12 @@
     AiChatView.shared().guestAddPrompt(data);
   }
 
-  onReceived_aiResponse(data) {
-    AiChatView.shared().guestAddHostAIResponse(data.message, data.nickname);
+  onReceived_aiResponse(json) {
+    AiChatView.shared().guestAddHostAIResponse(json);
+  }
+
+  onReceived_updateAiResponse(json) {
+    AiChatView.shared().updateAIResponse(json.requestId, json.message) 
   }
 
   onReceived_ban(data) {

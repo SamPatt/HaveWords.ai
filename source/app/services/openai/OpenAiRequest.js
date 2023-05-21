@@ -20,6 +20,7 @@
   }
 
   initPrototypeSlots() {
+    this.newSlot("service", null); // optional reference to service object that owns request e.g. OpenAiChat - will receive onRequestComplete message if it responds to it
     this.newSlot("apiUrl", null);
     this.newSlot("apiKey", null);
     this.newSlot("bodyJson", null); // this will contain the model choice and messages
@@ -28,6 +29,7 @@
     this.newSlot("isStreaming", false); // external read-only
     this.newSlot("streamTarget", null); // will receive onStreamData and onStreamComplete messages
     this.newSlot("requestId", null); 
+    this.newSlot("fullContent", null); 
   }
 
   init() {
@@ -132,7 +134,7 @@
     xhr.responseType = ""; // "" or "text" is required for streams
 
     let readIndex = 0;
-    let fullContent = "";
+    this.setFullContent("");
 
     const onChunk = () => {
       const newLength = xhr.responseText.length;
@@ -167,7 +169,7 @@
 
         //console.log("CHUNK:", chunk);
         //console.log("CONTENT: ", newContent);
-        fullContent += newContent;
+        this.setFullContent(this.fullContent() + newContent);
         streamTarget.onStreamData(this, newContent);
       }
     }
@@ -183,7 +185,10 @@
         streamTarget.onStreamComplete(this);
         // we already sent all the chunks, but just to be consistent with other API, return the json
         // in this way, we may only need one fetch method
-        resolve(fullContent); 
+        if (this.service().onRequestComplete) {
+          this.service().onRequestComplete(this)
+        }
+        resolve(this.fullContent()); 
       });
 
       xhr.addEventListener("error", (event) => {

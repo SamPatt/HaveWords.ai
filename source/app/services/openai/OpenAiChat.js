@@ -47,7 +47,8 @@
 
 
   async asyncCheckModelsAvailability () {
-    if (this.apiKey() && this.availableModelNames() === null || this.availableModelNames().length === 0) {
+    const names = this.availableModelNames();
+    if (this.apiKey() && names === null || (names && names.length === 0)) {
       for (const model of this.models()) { 
         await model.asyncCheckAvailability();
         this.setAvailableModelNames(this.calcAvailableModelNames());
@@ -60,13 +61,12 @@
   }
 
   allModelNames () {
+    // model names with versions numbers are ones soon to be depricated, 
+    // so we don't include those.
     return [
       "gpt-4", 
-      //"gpt-4-0314", 
       "gpt-4-32k", 
-      //"gpt-4-32k-0314", 
       "gpt-3.5-turbo", 
-      //"gpt-3.5-turbo-0301"
     ];
   }
 
@@ -107,10 +107,11 @@
     request.setApiUrl("https://api.openai.com/v1/chat/completions");
     request.setApiKey(this.apiKey());
     //this.activeRequests().push(request)
+    request.setService(this)
     return request;
   }
 
-  async asyncFetch (prompt, optionalStreamTarget) {
+  newRequestForPrompt (prompt) {
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
 
@@ -125,16 +126,15 @@
       temperature: 0.7, // more creative
       top_p: 0.9 // more diverse
     });
+    return request
+  }
 
+  async asyncFetch (prompt) {
+    const request = this.newRequestForPrompt(prompt);
 
     let json = undefined;
     try {
-      if (optionalStreamTarget) {
-        request.setStreamTarget(optionalStreamTarget);
-        return await request.asyncSendAndStreamResponse();
-      } else {
-        json = await request.asyncSend();
-      }
+      json = await request.asyncSend();
     } catch (error) {
       debugger;
       console.error("Error fetching AI response:", error);
@@ -160,21 +160,30 @@
     }
 
     const aiResponse = json.choices[0].message.content;
+    this.addResponseText(aiResponse);
 
+    return aiResponse;
+  }
+
+  onRequestComplete (request) {
+    this.addResponseText(request.fullContent());
+  }
+
+  addResponseText (text) {
     // Add the assistant's response to the conversation history
     this.addToConversation({
       role: "assistant",
-      content: aiResponse,
+      content: text,
     });
 
     // Save the conversation history to local storage
     Session.shared().addToHistory({
       type: "aiResponse",
-      data: aiResponse,
+      data: text,
       id: LocalUser.shared().id(),
       nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
-
-    return aiResponse;
+    return this;
   }
+
 }.initThisClass());

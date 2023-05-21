@@ -71,7 +71,9 @@
 
     PeerServer.shared().setDelegate(this).setup();
 
-    SessionOptionsView.shared().appDidInit();
+    //if (this.isHost()) {
+      SessionOptionsView.shared().appDidInit();
+    //}
     this.unhide();
 
     OpenAiChat.shared().addToConversation({

@@ -224,24 +224,38 @@
 
   async sendAIResponse(prompt) {
     // Get AI Response and post locally
-    const response = await OpenAiChat.shared().asyncFetch(prompt, this);
-  
-    AiChatView.shared().addAIReponse(response);
+    const request = await OpenAiChat.shared().newRequestForPrompt(prompt);
+    request.setStreamTarget(this);
+
+    AiChatView.shared().addAIReponse("", request.requestId());
 
     this.broadcast({
       type: "aiResponse",
       id: LocalUser.shared().id(),
-      message: response,
+      requestId: request.requestId(),
+      message: "",
       nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
+
+    return await request.asyncSendAndStreamResponse();
   }
 
   onStreamData (request, newData) {
-    console.log("Host " + request.requestId() + " onStreamData:" , newData);
+    //console.log("Host " + request.requestId() + " onStreamData:" , newData);
+    const content = request.fullContent();
+    if (content.isValidHtml()) {
+      AiChatView.shared().updateAIResponse(request.requestId(), content)
+      this.broadcast({
+        type: "updateAiResponse",
+        id: LocalUser.shared().id(),
+        requestId: request.requestId(),
+        message: request.fullContent(),
+      });
+    }
   }
 
-  onStreamComplete (request, allData) {
-    console.log("Host " + request.requestId() + " onStreamComplete:" , allData);
+  onStreamComplete (request) {
+    console.log("Host " + request.requestId() + " onStreamComplete");
   }
   
 }).initThisClass();

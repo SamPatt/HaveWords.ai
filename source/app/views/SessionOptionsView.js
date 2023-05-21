@@ -32,7 +32,6 @@
     );
     this.asyncSetupAiModelOptions();
 
-
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
     this.setupAzureApiRegionOptions();
