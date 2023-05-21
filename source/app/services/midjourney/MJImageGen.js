@@ -65,14 +65,24 @@
 
     try {
       json = await imagineRequest.asyncSend();
-      const taskId = json.taskId;
-      if (!taskId) {
-        throw "taskId missing from MJ response: " + JSON.stringify(json);
+
+      let idParamName = "taskId"; //api v2
+      let idParamValue = json.taskId;
+
+      if (!idParamValue) {
+        idParamName = "resultId" //api v1
+        idParamValue = json.resultId;
       }
+      if (!idParamValue) {
+        throw "taskId/resultId missing from MJ response: " + JSON.stringify(json);
+      }
+
+      const body = {};
+      body[idParamName] = idParamValue;
 
       do {
         await new Promise(r => setTimeout(r, 200));
-        json = await this.newRequest().setEndpointPath("/result").setBody({ taskId }).asyncSend();
+        json = await this.newRequest().setEndpointPath("/result").setBody(body).asyncSend();
         console.log(json);
       } while(!json.imageURL);
     } catch (error) {
