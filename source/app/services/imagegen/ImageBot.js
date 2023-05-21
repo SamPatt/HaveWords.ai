@@ -28,7 +28,7 @@
     const data = await request.asyncSend();
     const imageDescription = data.choices[0].message.content;
 
-    const fullImageDescription = SessionOptionsView.shared().artPromptPrefix() + imageDescription + SessionOptionsView.shared().artPromptSuffix();
+    const fullImageDescription = SessionOptionsView.shared().artPromptPrefix() + " " + imageDescription + SessionOptionsView.shared().artPromptSuffix();
     console.log("Image description: " + fullImageDescription);
 
     this.imageGen().setPrompt(fullImageDescription);
@@ -43,7 +43,7 @@
     I will give you the background information for the characters and setting, and then the details of the current scene. 
     Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. 
     Do not use character's names, or location names. 
-    No proper nouns.\n\nHere is the current scene: \n\n ` +
+    No proper nouns.\n\n${this.imageGen().systemInstructions()}Here is the current scene: \n\n ` +
       this.sceneDescription()
     );
   }

@@ -8,6 +8,7 @@
 (class OpenAiImageGen extends OpenAiService {
   initPrototypeSlots() {
     this.newSlot("prompt", null);
+    this.newSlot("systemInstructions", "");
   }
 
   init() {
