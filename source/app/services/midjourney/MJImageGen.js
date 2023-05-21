@@ -8,7 +8,7 @@
 (class MJImageGen extends MJService {
   initPrototypeSlots() {
     this.newSlot("prompt", null);
-    this.newSlot("mjVersion", "5");
+    this.newSlot("mjVersion", "5.1");
   }
 
   // This function will scrub Midjourney's list of banned words from the prompt
