@@ -206,6 +206,10 @@
   }
 
   canStart() {
+    if (ImageGen.shared().isMidjourneyOption() && (!this.midjourneyApiKeyText().isValid() || !this.midjourneyApiBaseUrlText().isValid())) {
+      return false;
+    }
+    
     return this.apiKeyText().isValid() && this.aiModelOptions().selectedValue();
   }
 
@@ -233,9 +237,11 @@
   }
   
   setupMidjourneyApiKeyText(){
-    const field = TextFieldView.clone().setId("midjourneyApiKeyText");
+    const field = TextFieldView.clone().setId("midjourneyApiKeyText").setTarget(this);
     this.setMidjourneyApiKeyText(field);
 
+    const self = this;
+    
     field.setValidationFunc((s) => {
       const isValid = MJService.shared().validateKey(s);
       if (isValid) {
@@ -252,11 +258,17 @@
 
     this.showMidjourneyFieldsIfNeeded();
   }
+
+  onChange_midjourneyApiKeyText() {
+    console.log("onChange_midjourneyApiKeyText");
+    this.onUpdateInputs();
+  }
   
   setupMidjourneyApiBaseUrlText(){
-    const field = TextFieldView.clone().setId("midjourneyApiBaseUrlText");
+    const field = TextFieldView.clone().setId("midjourneyApiBaseUrlText").setTarget(this);
     this.setMidjourneyApiBaseUrlText(field);
 
+    const self = this;
     field.setValidationFunc((s) => {
       const isValid = MJService.shared().validateBaseUrl(s);
       if (isValid) {
@@ -274,8 +286,12 @@
     this.showMidjourneyFieldsIfNeeded();
   }
 
+  onChange_midjourneyApiBaseUrlText() {
+    console.log("onChange_midjourneyApiBaseUrlText");
+    this.onUpdateInputs();
+  }
+
   showMidjourneyFieldsIfNeeded() {
-    console.log(`showMidjourneyFieldsIfNeeded: ${ImageGen.shared().isMidjourneyOption()}`);
     if (ImageGen.shared().isMidjourneyOption()) {
       document.getElementById("midjourneyApiKeyContainer").style.display = "block";
       document.getElementById("midjourneyApiBaseUrlContainer").style.display = "block";
@@ -323,6 +339,8 @@
     ImageGen.shared().setOption(this.imageGenModelOptions().selectedValue());
 
     this.showMidjourneyFieldsIfNeeded();
+
+    this.onUpdateInputs();
   }
 
   // --- sessionSubtypeOptions ---
