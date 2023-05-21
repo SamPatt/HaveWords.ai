@@ -112,12 +112,17 @@
   async asyncSetupAiModelOptions () {
     const note = document.getElementById("AiModelOptionsNote");
     let names = OpenAiChat.shared().availableModelNames();
-    if (!names || names.length === 0) {
+    
+    // Get the API key
+    let apiKey = OpenAiChat.shared().apiKey();
+    
+    // Change the note's display, opacity and color only if there's an API key
+    if (apiKey && (!names || names.length === 0)) {
       note.style.display = "inline";
       note.style.opacity = 1;
       note.style.color = "yellow";
     }
-
+  
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
     console.log("available model names:", names);
@@ -125,8 +130,12 @@
     .setShouldStore(true)
     .load();
     this.onUpdateInputs();
-    note.style.opacity = 0;
-  }
+    
+    // If there is an API key, hide the note again
+    if (apiKey) {
+      note.style.opacity = 0;
+    }
+  }  
 
   languagePrompt () {
     const label = this.sessionLanguageOptions().selectedLabel();
