@@ -161,7 +161,7 @@ const sessionOptionsArray = [
 
     When the session begins, please create and title for the first chapter of the adventure and 
     place the chapter number (written in words, not number characters) within <div class=chapterNumber></div> 
-    and the chaper name within <div class=chapterTitle></div> tags. 
+    and the chapter name within <div class=chapterTitle></div> tags. 
 
     If the story is inspired by a certain author's writings, do not mention the author's name when introducing the story.
 
