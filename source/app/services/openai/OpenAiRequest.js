@@ -166,6 +166,12 @@
         const cleanedJsonString = `[${result}]`;
         const parsedJson = JSON.parse(cleanedJsonString);
 
+        /*  
+
+        example error:
+        data: {"error":{"message":"Request failed due to server shutdown","type":"server_error","param":null,"code":null}}
+
+        */
         let newContent = "";
         parsedJson.forEach(item => {
           if (

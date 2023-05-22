@@ -258,7 +258,7 @@ const sessionOptionsArray = [
         /*        Spirited Away, My Neighbor Totoro, Howl's Moving Castle, Castle in the Sky, Kiki's Delivery Service, Porco Rosso, and others.*/
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from Studio Ghibli films.
         Please create an adventure of your own creation in this world for us that feels like it could be a part of a Studio Ghibli film.
-        Please remember that Totoro doesn't speak. In your opening description, don't mention Studio Ghibli. 
+        Please remember that Totoro doesn't speak. In your adventure, please don't mention Studio Ghibli. 
         Also, please do not make decisions for the players.`,
         artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
