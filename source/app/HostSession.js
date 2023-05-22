@@ -251,7 +251,7 @@
       const newContent = content.substr(lastContent.length);
       const wrappedNewContent = newContent.wrapHtmlWordsWithSpanClass("fadeInWord");
       
-      console.log("---\n" + wrappedNewContent + "\n---");
+      //console.log("---\n" + wrappedNewContent + "\n---");
 
       const sendContent = lastContent + wrappedNewContent;
       request.setLastContent(content);
