@@ -170,6 +170,8 @@ const sessionOptionsArray = [
 
     When the story is completed, please end by saying we have come to it's conclusion, followed by a fitting title for the story 
     as if it were a book title and place it with <div class=bookTitle></div> tags. 
+    When quoting text which is handwritten, such as from a handwritten letter, please surround it with <div class=handWritten></div> tags.
+
     Please follow this with a brief summary of the story that tries to cover the story's most dramatic moments and most important player actions.
 
     Again, do not make decisions for the players.`,

@@ -633,8 +633,27 @@ button {
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin: auto;
 }
 
+.image-container::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: inherit;
+    filter: blur(10px);
+}
+
+.image-chapter-title {
+    /* Harry Potter style */
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    clip-path: ellipse(50% 30% at 50% 50%);
+}
 
 .message-content.right {
     align-items: flex-end;
@@ -742,6 +761,24 @@ button {
     padding: 0rem;
 }
 
+/*--- begin AI content inline styles --- */
+
+.handWritten {
+    font-family: Sand Dunes; /* probably want to customize this for the adventure period */
+    line-height: 1.6em;
+    font-size: 1.3em;
+
+    padding-left: 2em;
+    padding-right: 2em;
+
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.3em;
+    opacity: 0.8;
+}
+
 .drop-cap {
     float: left;
     font-size: 4.7em;
@@ -780,6 +817,8 @@ button {
     font-size: 2em;
     line-height: 1.3em;
 }
+
+/*--- end AI content inline styles --- */
 
 #SessionTitle {
     font-weight: 300;
