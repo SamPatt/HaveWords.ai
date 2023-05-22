@@ -87,10 +87,9 @@
       "aiResponse",
       text,
       SessionOptionsView.shared().selectedModelNickname(),
-      "AiAvatar"
+      "AiAvatar",
+      requestId
     );
-
-    this.requestIdToMessageMap().set(requestId, messageView);
   }
 
   updateAIResponse(requestId, text) {
@@ -104,6 +103,9 @@
     if (shouldScroll) {
       this.scrollToBottom();
     }
+    if (App.shared().isHost()) {
+      SessionOptionsView.shared().applySessionUiPrefs();
+    }
   }
 
   loadingAnimation () {
@@ -111,7 +113,7 @@
   }
 
   setShowLoading (aBool) {
-    this.loadingAnimation().style.display = aBool ? "inline" : "none";
+    //this.loadingAnimation().style.display = aBool ? "inline" : "none";
     return this;
   }
 
@@ -121,43 +123,9 @@
 
   // ========================================================
 
-  genImageButtonFor (sanitizedHtml) {
-    // Create a new icon/button element for the AI responses
-    const button = document.createElement("button");
-    //button.textContent = "🎨";
-    button.className = "generate-image-prompt-button";
-    button.setAttribute(
-      "data-tooltip",
-      "Show this scene"
-    );
-
-    const buttonView = Button.clone().setElement(button);
-    buttonView.setIconPath("resources/icons/image.svg");
-    buttonView.iconElement().style.opacity = 0.5;
-
-    button.style.width = "1.5em";
-    button.style.height = "1.5em";
-    button.style.position = "absolute";
-    button.style.top = "1em";
 
 
-    // Add an event listener to the icon/button
-    button.addEventListener("click", () => {
-      this.addMessage(
-        "image-gen",
-        "Generating image...",
-        "Host",
-        LocalUser.shared().id()
-      );
-      ImageBot.shared().setSceneDescription(sanitizedHtml).trigger();
-      // Optional: Hide the button after it has been clicked
-      button.style.display = "none";
-    });
-
-    return button
-  }
-
-  addMessage(type, message, nickname, userId) {
+  addMessage(type, message, nickname, userId, requestId) {
     let avatar;
     if (type === "aiResponse") {
       avatar = 'resources/icons/AI-avatar.png';
@@ -170,7 +138,12 @@
     m.setAvatar(avatar);
     m.setNickname(nickname);
     m.setText(message);
+    m.setRequestId(requestId);
     this.addMessageElement(m.element());
+
+    if (requestId) {
+      this.requestIdToMessageMap().set(requestId, m);
+    }
 
     // ---------
 
@@ -192,7 +165,7 @@
       this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
         if (SessionOptionsView.shared().allowsImageGen()) {
-          m.element().appendChild(this.genImageButtonFor(m.text()));
+          m.addImageGenButton();
         }
       }
       //this.onAiResponseText(m.text());
@@ -244,21 +217,20 @@
 
   scrollToBottom () {
     const scrollView = this.scrollView();
-    scrollView.scrollTop = scrollView.scrollHeight;
+    //scrollView.scrollTop = scrollView.scrollHeight;
+    scrollView.scrollTo(0, scrollView.scrollHeight); // use function to get scroll-behavior: smooth; to work
   }
 
   isScrolledToBottom () {
-    const div = this.scrollViewContentElement();
+    const div = this.scrollView();
     return (div.scrollTop + div.offsetHeight) >= div.scrollHeight;
   }
 
   // ----------------------------------------------------------------
 
-  //addMusicTrack(
-
-  addImage(imageURL) {
-    const iv = ImageMessageView.clone().setImageUrl(imageURL).setIsUser(false);
-    this.addMessageElement(iv.element());
+  addImage(imageUrl, requestId) {
+    const messageView = this.requestIdToMessageMap().get(requestId);
+    messageView.setImageUrl(imageUrl);
   }
 
   addPrompt() {
@@ -318,9 +290,9 @@
       "aiResponse",
       json.message,
       json.nickname,
-      "AiAvatar"
+      "AiAvatar",
+      json.requestId
     );
-    this.requestIdToMessageMap().set(json.requestId, messageView);
   }
 }).initThisClass();
 

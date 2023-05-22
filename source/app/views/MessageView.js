@@ -14,6 +14,10 @@
     this.newSlot("avatarElement", null);
     this.newSlot("nicknameElement", null);
     this.newSlot("textElement", null);
+    this.newSlot("messageContentElement", null);
+    this.newSlot("loadingContainer", null);
+    this.newSlot("imageContainer", null);
+    this.newSlot("requestId", null);
   }
 
   init() {
@@ -30,6 +34,7 @@
     // content
     const messageContent = document.createElement("div");
     messageContent.className = "message-content";
+    this.setMessageContentElement(messageContent);
 
     // nickname
     const nicknameElement = document.createElement("div");
@@ -44,6 +49,7 @@
     img.src = "resources/icons/default-avatar.png"; // Use a default avatar image if the user doesn't have one
     this.setAvatarElement(img);
 
+    // avatar name and wrapper
     const avatarAndNameWrapper = document.createElement("div");
     avatarAndNameWrapper.className = "avatar-and-name-wrapper";
     avatarAndNameWrapper.appendChild(img);
@@ -58,7 +64,42 @@
     this.setTextElement(messageText);
 
     messageWrapper.appendChild(messageContent);
+
+    
+    // loading animation
+    const loadingContainer = document.createElement("div");
+    loadingContainer.className = "messageImageContainer"
+    loadingContainer.innerHTML = this.dotsHtml();
+    loadingContainer.style.display = "none";
+    this.setLoadingContainer(loadingContainer);
+    messageWrapper.appendChild(loadingContainer)
+
+    // attached image
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "messageImageContainer"
+    this.setImageContainer(imageContainer);
+    messageWrapper.appendChild(imageContainer);
     return this;
+  }
+
+  setIsStreaming (aBool) {
+    this.loadingContainer().display = aBool ? "flex" : "none";
+    return this;
+  }
+
+  dotsHtml () {
+    return `<span class="dots"><span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span>`;
+  }
+
+  setImageUrl (imageUrl) {
+    if (!imageUrl) {
+      const spinner = this.dotsHtml();
+      this.imageContainer().innerHTML = spinner;
+    } else {
+      const iv = ImageMessageView.clone().setImageUrl(imageUrl).setIsUser(false);
+      this.imageContainer().innerHTML = "";
+      this.imageContainer().appendChild(iv.element());
+    }
   }
 
   // after creating the instance, these methods can be used to set bits of it's content
@@ -119,6 +160,39 @@
     return this;
   }
 
+  // --------------------------------
+
+  addImageGenButton () {
+    this.element().appendChild(this.newImageGenImageButton());
+  }
+
+  newImageGenImageButton () {
+    assert(this.requestId());
+
+    const button = document.createElement("button");
+    button.className = "generate-image-prompt-button";
+    button.setAttribute(
+      "data-tooltip",
+      "Generate image for this scene."
+    );
+
+    const buttonView = Button.clone().setElement(button);
+    buttonView.setIconPath("resources/icons/image.svg");
+    buttonView.iconElement().style.opacity = 0.5;
+
+    button.style.width = "1.5em";
+    button.style.height = "1.5em";
+    button.style.position = "absolute";
+    button.style.top = "1em";
+
+    button.addEventListener("click", () => {
+      ImageBot.shared().setSceneDescription(this.text()).setRequestId(this.requestId()).trigger();
+      // Hide the button after it has been clicked
+      button.style.display = "none";
+    });
+
+    return button
+  }
 
 }.initThisClass());
 

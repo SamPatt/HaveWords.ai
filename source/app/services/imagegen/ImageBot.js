@@ -8,10 +8,12 @@
   initPrototypeSlots() {
     this.newSlot("sceneDescription", null);
     this.newSlot("imageGen", null);
+    this.newSlot("requestId", null);
   }
 
   // ImageBot function it triggered when the host requests an image description of the current scene
   async trigger() {
+    assert(this.requestId());
     assert(this.sceneDescription());
 
     const request = OpenAiRequest.clone();
@@ -33,8 +35,8 @@
 
     this.imageGen().setPrompt(fullImageDescription);
     const imageURL = await this.imageGen().asyncFetch();
-    HostSession.shared().broadcastImage(imageURL);
-    AiChatView.shared().addImage(imageURL);
+    HostSession.shared().broadcastImage(imageURL, this.requestId());
+    AiChatView.shared().addImage(imageURL, this.requestId());
   }
 
   prompt() {

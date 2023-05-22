@@ -1,16 +1,18 @@
-
 body {
     display: flex;
     font-size: 18px;
     font-family: "Barlow Condensed", Arial, sans-serif;
     font-weight: 300;
-    line-height: 1.5em; /* 1.6 for garamond */
+    line-height: 1.5em;
+    /* 1.6 for garamond */
     margin: 0;
     padding: 0;
     height: 100vh;
     /*height: 100%;*/
-    background-color: #222;  /* Dark gray background */
-    color: rgba(255, 255, 255, 0.8); /* rgb(219, 219, 219); Light gray text */
+    background-color: #222;
+    /* Dark gray background */
+    color: rgba(255, 255, 255, 0.8);
+    /* rgb(219, 219, 219); Light gray text */
 }
 
 
@@ -64,7 +66,7 @@ option {
     font-weight: inherit;
 }
 
-input { 
+input {
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
@@ -99,7 +101,7 @@ textarea::placeholder {
 
 .infoIcon {
     opacity: 1;
-    text-transform: lowercase; 
+    text-transform: lowercase;
     font-size: 0.8em;
     padding-bottom: 1em;
 }
@@ -469,7 +471,7 @@ button {
 
 .message-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     padding-top: 1em;
     padding-bottom: 0em;
     padding-left: 1em;
@@ -477,6 +479,11 @@ button {
     margin-bottom: 2em;
     margin-top: 2em;
     position: relative;
+}
+
+.messageImageContainer {
+    display: flex;
+    justify-content: center;
 }
 
 .scrollingOutput {
@@ -487,6 +494,8 @@ button {
     /*justify-content: flex-end;*/
     overflow-y: visible;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    /* need to use scrollTo() function to get smoothing */
 }
 
 .chatMessage {
@@ -563,8 +572,15 @@ button {
 
 .message-text {
     display: inline-block;
-    text-align: justify; /* book style */
-    hyphens: auto; /* book style */
+    text-align: left;
+    
+    /* 
+    NOTE: book style doesn't work as well with streaming in words,
+    as the exisitng words and spacing will shift around as new words come in.
+    */
+    /*text-align: justify; */ /* book style */
+    /*hyphens: auto;*/  /* book style */
+   
 
     padding-top: 0.3em;
     padding-bottom: 1em;
@@ -572,7 +588,7 @@ button {
     padding-right: 0.8em;
     border-radius: 0.5em;
     /*overflow-wrap: anywhere;*/
-    max-width:35em;
+    max-width: 35em;
 }
 
 .message-text p {
@@ -632,8 +648,10 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: calc(100% - 2.6em);
+    /* get it to line up with width of text */
     margin: auto;
+    /*box-shadow: 0px 0px 10px 10px rgba(0,0,0,1);*/
 }
 
 .image-container::before {
@@ -764,19 +782,25 @@ button {
 /*--- begin AI content inline styles --- */
 
 .handWritten {
-    font-family: Sand Dunes; /* probably want to customize this for the adventure period */
-    line-height: 1.6em;
+    font-family: Sand Dunes;
+    /* probably want to customize this for the adventure period */
+    line-height: 1.9em;
     font-size: 1.3em;
+
+    margin: 1.5em;
 
     padding-left: 2em;
     padding-right: 2em;
 
-    padding-top: 1.5em;
+    padding-top: 1em;
     padding-bottom: 1.5em;
 
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0.3em;
     opacity: 0.8;
+
+    text-align: left;
+    /* so writing doesn't readjust  */
 }
 
 .drop-cap {
@@ -853,68 +877,130 @@ button {
 /* --- dots --- */
 
 @keyframes fadeInOut1 {
-    0% {opacity: 0;}
-    1% {opacity: 1;}
-    95% {opacity: 1;}
-    100% {opacity: 0;}
-  }
-  
-  @keyframes fadeInOut2 {
-    0% {opacity: 0;}
-    33% {opacity: 0;}
-    34% {opacity: 1;}
-    95% {opacity: 1;}
-    100% {opacity: 0;}
-  }
-  
-  @keyframes fadeInOut3 {
-    0% {opacity: 0;}
-    66% {opacity: 0;}
-    67% {opacity: 1;}
-    95% {opacity: 1;}
-    100% {opacity: 0;}
-  }
-  
-  .dot {
+    0% {
+        opacity: 0;
+    }
+
+    1% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInOut2 {
+    0% {
+        opacity: 0;
+    }
+
+    33% {
+        opacity: 0;
+    }
+
+    34% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInOut3 {
+    0% {
+        opacity: 0;
+    }
+
+    66% {
+        opacity: 0;
+    }
+
+    67% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.dot {
     opacity: 0;
     animation-fill-mode: both;
     padding-left: 0.03em;
     padding-right: 0.03em;
-  }
-  
-  .dot1 {
+}
+
+.dot1 {
     animation: fadeInOut1 2s infinite;
-  }
-  
-  .dot2 {
+}
+
+.dot2 {
     animation: fadeInOut2 2s infinite;
-  }
-  
-  .dot3 {
+}
+
+.dot3 {
     animation: fadeInOut3 2s infinite;
-  }
+}
 
-  /* --- end dots --- */
+/* --- end dots --- */
 
-  /* --- scrollbar --- */
+/* --- begin fade in words --- */
+
+.fadeInWord {
+    animation-duration: 1s;
+    animation-name: fadeInWordsAnimation;
+    animation-iteration-count: 1;
+    prefix: "&nbsp;";
+}
+
+@keyframes fadeInWordsAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* --- end fade in words --- */
+
+
+
+/* --- scrollbar --- */
 
 ::-webkit-scrollbar {
     width: 0.4em;
 }
 
 ::-webkit-scrollbar-track {
-    background: none; 
+    background: none;
     padding: 0.01em;
 }
- 
+
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1); 
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 0.2em;
     margin-right: 0.01em;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.1); 
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* --- end scrollbar --- */

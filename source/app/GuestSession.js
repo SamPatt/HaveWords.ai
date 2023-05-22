@@ -168,7 +168,7 @@
   }
 
   onReceived_imageLink(data) {
-    AiChatView.shared().addImage(data.message);
+    AiChatView.shared().addImage(data.message, data.requestId);
   }
 
   onReceived_gameLaunch(data) {

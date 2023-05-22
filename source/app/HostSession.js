@@ -183,10 +183,11 @@
   }
 
   // Send imageURL to all connected guests
-  broadcastImage(imageURL) {
+  broadcastImage(imageURL, requestId) {
     Session.shared().addToHistory({
       type: "imageLink",
       data: imageURL,
+      requestId: requestId,
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
     });
@@ -244,17 +245,37 @@
     //console.log("Host " + request.requestId() + " onStreamData:" , newData);
     const content = request.fullContent();
     if (content.isValidHtml()) {
-      AiChatView.shared().updateAIResponse(request.requestId(), content)
-      this.broadcast({
-        type: "updateAiResponse",
-        id: LocalUser.shared().id(),
-        requestId: request.requestId(),
-        message: request.fullContent(),
-      });
+      //const sendContent = content;
+
+      const lastContent = request.lastContent();
+      const newContent = content.substr(lastContent.length);
+      const wrappedNewContent = newContent.wrapHtmlWordsWithSpanClass("fadeInWord");
+      
+      console.log("---\n" + wrappedNewContent + "\n---");
+
+      const sendContent = lastContent + wrappedNewContent;
+      request.setLastContent(content);
+      
+      this.shareUpdate(request, sendContent);
     }
   }
 
+  shareUpdate (request, sendContent) {
+    //console.log("shareUpdate:", sendContent);
+      //console.log("---");
+
+    AiChatView.shared().updateAIResponse(request.requestId(), sendContent)
+    this.broadcast({
+      type: "updateAiResponse",
+      id: LocalUser.shared().id(),
+      requestId: request.requestId(),
+      message: sendContent,
+    });
+  }
+
   onStreamComplete (request) {
+    const content = request.fullContent();
+    this.shareUpdate(request, content);
     console.log("Host " + request.requestId() + " onStreamComplete");
   }
   

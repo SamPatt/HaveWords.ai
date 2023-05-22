@@ -30,12 +30,14 @@
     this.newSlot("streamTarget", null); // will receive onStreamData and onStreamComplete messages
     this.newSlot("requestId", null); 
     this.newSlot("fullContent", null); 
+    this.newSlot("lastContent", "");
   }
 
   init() {
     super.init();
     this.setIsDebugging(true);
     this.setRequestId(this.thisClass().incrementRequestCount());
+    this.setLastContent("");
   }
 
   body() {
@@ -209,6 +211,11 @@
       });
 
       xhr.addEventListener("error", (event) => {
+        if (event.constructor === ProgressEvent) {
+          console.warn("got a ProgressEvent as an xhr error. Why?");
+          debugger;
+          return;
+        }
         debugger;
         streamTarget.onStreamComplete(this);
         reject(event);

@@ -35,11 +35,11 @@ Object.defineSlot(String.prototype, "isValidJSON", function() {
   }
 });
 
-Object.defineSlot(String.prototype, "isValidHtml", function() {
+Object.defineSlot(String.prototype, "isValidXml", function() {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(this, "text/html");
-  // If the parsing was successful, the document will not be null.
-  return doc !== null;
+  const doc = parser.parseFromString(this, "text/xml");
+  const errorNode = doc.querySelector("parsererror");
+  return errorNode ? false : true;
 });
 
 Object.defineSlot(String.prototype, "removeWhitespace", function() {
@@ -52,7 +52,6 @@ Object.defineSlot(String.prototype, "removeWhitespace", function() {
     return jsonString;
   }
 });
-
 
 Object.defineSlot(String.prototype, "copyToClipboard", function() {
   // not the right place for this method, but ok for now
@@ -95,6 +94,49 @@ Object.defineSlot(String.prototype, "base32HexToString", function() {
     output += String.fromCharCode(charCode);
   }
   return output;
+});
+
+// HTML word wrapping
+
+function Element_wrapWordsWithSpanClassName(element, className) {
+  let nodes = Array.from(element.childNodes);
+
+  for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+
+      if (node.nodeType === Node.TEXT_NODE) {
+          const words = node.nodeValue.match(/(\S+\s*)/g); // Match words with trailing spaces
+          let newNodes = [];
+
+          words.forEach((word, index) => {
+              const span = document.createElement('span');
+              span.className = className;
+              span.textContent = word;
+              newNodes.push(span);
+          });
+
+          // Remove the current text node
+          element.removeChild(node);
+
+          // Insert new nodes at the original index
+          newNodes.forEach((newNode, index) => {
+              if (i + index < element.childNodes.length) {
+                  element.insertBefore(newNode, element.childNodes[i + index]);
+              } else {
+                  element.appendChild(newNode);
+              }
+          });
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+          Element_wrapWordsWithSpanClassName(node, className);
+      }
+  }
+}
+
+Object.defineSlot(String.prototype, "wrapHtmlWordsWithSpanClass", function(className) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(this, 'text/html');
+  Element_wrapWordsWithSpanClassName(doc.body, className);
+  return doc.body.innerHTML;
 });
 
 // --- Map ---
@@ -148,3 +190,75 @@ Object.defineSlot(Blob, "asyncFromDataUrl", async function(dataUrlString) {
   const response = await fetch(dataUrlString);
   return await response.blob();
 });
+
+
+// --- HTML validation ----------------------------------------
+
+Object.defineSlot(String.prototype, "isValidHtml", function() {
+  return simpleValidateHtmlStr(this) === true;
+});
+
+
+function simpleValidateHtmlStr(htmlStr, strictBoolean) {
+  if(typeof htmlStr!=="string")
+    return false;
+
+  let validateHtmlTag=new RegExp("<[a-z]+(\s+|\"[^\"]*\"\s?|'[^']*'\s?|[^'\">])*>","igm"),
+    sdom=document.createElement('div'),
+    noSrcNoAmpHtmlStr=htmlStr
+      .replace(/ src=/," svhs___src=")
+      .replace(/&amp;/igm,"#svhs#amp##"),
+    noSrcNoAmpIgnoreScriptContentHtmlStr=noSrcNoAmpHtmlStr
+      .replace(/\n\r?/igm,"#svhs#nl##") // temporarily remove line breaks
+      .replace(/(<script[^>]*>)(.*?)(<\/script>)/igm,"$1$3")
+      .replace(/#svhs#nl##/igm,"\n\r"),  // re-add line breaks
+    htmlTags=noSrcNoAmpIgnoreScriptContentHtmlStr.match(/<[a-z]+[^>]*>/igm),
+    htmlTagsCount=htmlTags? htmlTags.length:0,
+    tagsAreValid,resHtmlStr;
+
+  //console.log(noSrcNoAmpHtmlStr,noSrcNoAmpIgnoreScriptContentHtmlStr,htmlTags);
+
+  if(!strictBoolean) {
+    // ignore <br/> conversions
+    noSrcNoAmpHtmlStr=noSrcNoAmpHtmlStr.replace(/<br\s*\/>/,"<br>")
+  }
+
+  if(htmlTagsCount) {
+    tagsAreValid=htmlTags.reduce(function(isValid,tagStr) {
+      return isValid&&tagStr.match(validateHtmlTag);
+    },true);
+
+    if(!tagsAreValid) {
+      return false;
+    }
+  }
+
+
+  try {
+    sdom.innerHTML=noSrcNoAmpHtmlStr;
+  } catch(err) {
+    return false;
+  }
+
+  if(sdom.querySelectorAll("*").length!==htmlTagsCount) {
+    return false;
+  }
+
+  resHtmlStr=sdom.innerHTML.replace(/&amp;/igm,"&"); // undo '&' encoding
+
+  if(!strictBoolean) {
+    // ignore empty attribute normalizations
+    resHtmlStr=resHtmlStr.replace(/=""/,"")
+  }
+
+  // compare html strings while ignoring case, quote-changes, trailing spaces
+  let
+    simpleIn=noSrcNoAmpHtmlStr.replace(/["']/igm,"").replace(/\s+/igm," ").toLowerCase().trim(),
+    simpleOut=resHtmlStr.replace(/["']/igm,"").replace(/\s+/igm," ").toLowerCase().trim();
+  if(simpleIn===simpleOut)
+    return true;
+
+  //console.log(simpleIn,simpleOut);
+
+  return resHtmlStr.replace(/ svhs___src=/igm," src=").replace(/#svhs#amp##/,"&amp;");
+}
