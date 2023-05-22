@@ -65,6 +65,7 @@
   }
 
   showRequest () {
+    /*
     const body = this.bodyJson();
     const model = body.model;
     const content = body.messages[0].content;
@@ -77,6 +78,17 @@
         model +
         "' prompt: '" +
         content +
+        "'"
+    );
+    */
+
+    this.debugLog(
+      " request " +
+      this.requestId() +
+      " apiUrl: " +
+        this.apiUrl() +
+        " body: " + 
+        JSON.stringify(this.bodyJson()) +
         "'"
     );
   }
@@ -93,7 +105,6 @@
 
   async asyncSend () {
     this.setIsStreaming(false);
-    this.bodyJson().stream = this.isStreaming();
 
     this.assertValid();
     if (this.isDebugging()) {

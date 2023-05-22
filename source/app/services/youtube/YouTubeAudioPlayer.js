@@ -7,13 +7,13 @@
 (class YouTubeAudioPlayer extends Base {
   initPrototypeSlots() {
     this.newSlot("element", null);
+    this.newSlot("playerPromise", null); // resolves once player is available. Use .then() on this to queue actions to wait on it
     this.newSlot("player", null); // to store the YouTube player
     this.newSlot("isReady", false); 
     this.newSlot("videoId", null);
     this.newSlot("shouldRepeat", true);
     this.newSlot("frameIsReady", null);
     this.newSlot("volume", 0.05);
-    this.newSlot("playerPromise", null);
   }
 
   init() {
@@ -35,27 +35,15 @@
   }
 
   setPlayer (aPlayer) {
-    this._aPlayer = aPlayer;
+    this._player= aPlayer;
     if (this._resolvePlayer) {
       this._resolvePlayer()
     }
     return this;
   }
 
-  // action queue
-
-  // ----------------------------------
-
-/*
-  setVideoId (vid) {
-    if (this._videoId !== vid) {
-      this._videoId = vid;
-    }
-    return this;
-  }
-  */
-
   loadFrameAPI() {
+    this.debugLog("loadFrameAPI()");
     // Load the YouTube IFrame Player API asynchronously
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
@@ -65,13 +53,14 @@
   }
 
   onFrameReady() {
+    this.debugLog("onFrameReady()");
     this.setFrameIsReady(true);
     this.setupPlayer()
     return this;
   }
 
   setupPlayer() {
-    this.debugLog("------------------ setupPlayer ---------------- ");
+    this.debugLog("setupPlayer()");
     const json = {
       height: '0',
       width: '0',
@@ -103,7 +92,7 @@
 
     try {
       const player = new YT.Player("youTubePlayer", json);
-      //debugger;
+      assert(player);
       this.setPlayer(player);
     } catch (error) {
       console.warn(error);
@@ -164,7 +153,7 @@
   // The API will call this function when the video player is ready
   onPlayerReady(event) {
     //this.setupFrameExceptionCatcher()
-    this.debugLog("onPlayerReady() ------------------------------");
+    this.debugLog("onPlayerReady()");
     this.setIsReady(true);
     const player = event.target;
     assert(player === this.player());
@@ -172,15 +161,7 @@
     //this.player().style.display = "none";
   }
 
-  /*
-  setupFrameExceptionCatcher () {
-    const iframes = document.getElementsByTagName('iframe');
-    const playerFrame = iframes[0];
-    // TODO: add code to catch exceptions within the iframe?
-  }
-  */
-
-  // The API calls this function when the player's state changes
+  // The YouTube API calls this function when the player's state changes
   onPlayerStateChange(event) {
     this.debugLog("onPlayerStateChange " + event.data)
 
@@ -234,9 +215,10 @@
       const v = this.volume()*100;
       //debugger;
       if (this.isReady()) {
-        this.debugLog("setting volume to ", v)
+        this.debugLog("set volume:", v)
         this.player().setVolume(v);
         this.debugLog("getVolume: ", this.player().getVolume())
+        assert(v === this.player().getVolume());
       }
     }
     return this;

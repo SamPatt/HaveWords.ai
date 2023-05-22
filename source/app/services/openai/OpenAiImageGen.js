@@ -35,13 +35,14 @@
 
     let json = undefined;
     try {
+      debugger;
       json = await request.asyncSend();
     } catch (error) {
-      debugger;
+      //debugger;
       console.error("Error fetching AI response:", error);
       AiChatView.shared().addMessage(
         "systemMessage",
-        "Error fetching AI response. Make sure the model is selected and the API key is correct.",
+        "Error fetching AI response:" + error.message,
         "Host",
         LocalUser.shared().id()
       );
