@@ -247,7 +247,7 @@ const sessionOptionsArray = [
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. 
         We'd like you to write this adventure as J.K. Rowling would.`,
-        artPromptPrefix: "Charcoal style on transparent background Harry Potter chapter opening art of:",
+        artPromptPrefix: "Charcoal style Harry Potter chapter opening art of:",
         musicPlaylists: ["HarryPotter"],
         fontFamily: "Cardo",
         headerFontFamily: "Lumos",
@@ -260,7 +260,6 @@ const sessionOptionsArray = [
         Please create an adventure of your own creation in this world for us that feels like it could be a part of a Studio Ghibli film.
         Please remember that Totoro doesn't speak. In your adventure, please don't mention Studio Ghibli. 
         Also, please do not make decisions for the players.`,
-        artPromptPrefix: "Woodcut style Harry Potter chapter opening art of:",
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
         fontFamily: "Ghibli",

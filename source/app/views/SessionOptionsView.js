@@ -12,6 +12,10 @@
     this.newSlot("azureApiKeyText", null);
     this.newSlot("azureApiRegionOptions", null);
 
+    this.newSlot("imageGenModelOptions", null);
+    this.newSlot("midjourneyApiKeyText", null);
+    this.newSlot("midjourneyApiBaseUrlText", null);
+
     this.newSlot("sessionTypeOptions", null);
     this.newSlot("sessionSubtypeOptions", null);
     this.newSlot("sessionCustomizationText", null);
@@ -35,6 +39,22 @@
     this.setupApiKeyText();
     this.setupAzureApiKeyText();
     this.setupAzureApiRegionOptions();
+
+    this.setImageGenModelOptions(
+      OptionsView.clone()
+        .setId("imageGenModelOptions")
+        .setTarget(this)
+        .setOptions(ImageGen.shared()
+          .modelOptions()
+          .map((name) => {
+            return { label: name, value: name };
+          })
+        )
+    );
+
+    this.setupImageGenModelOptions();
+    this.setupMidjourneyApiKeyText();
+    this.setupMidjourneyApiBaseUrlText();
 
     this.setSessionTypeOptions(
       OptionsView.clone()
@@ -91,12 +111,17 @@
   async asyncSetupAiModelOptions () {
     const note = document.getElementById("AiModelOptionsNote");
     let names = OpenAiChat.shared().availableModelNames();
-    if (!names || names.length === 0) {
+    
+    // Get the API key
+    let apiKey = OpenAiChat.shared().apiKey();
+    
+    // Change the note's display, opacity and color only if there's an API key
+    if (apiKey && (!names || names.length === 0)) {
       note.style.display = "inline";
       note.style.opacity = 1;
       note.style.color = "yellow";
     }
-
+  
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
     //this.debugLog("available model names:", names);
@@ -104,8 +129,12 @@
     .setShouldStore(true)
     .load();
     this.onUpdateInputs();
-    note.style.opacity = 0;
-  }
+    
+    // If there is an API key, hide the note again
+    if (apiKey) {
+      note.style.opacity = 0;
+    }
+  }  
 
   languagePrompt () {
     const label = this.sessionLanguageOptions().selectedLabel();
@@ -176,6 +205,10 @@
   }
 
   canStart() {
+    if (ImageGen.shared().isMidjourneyOption() && (!this.midjourneyApiKeyText().isValid() || !this.midjourneyApiBaseUrlText().isValid())) {
+      return false;
+    }
+    
     return this.apiKeyText().isValid() && this.aiModelOptions().selectedValue();
   }
 
@@ -196,6 +229,81 @@
 
   onSubmit_azureApiRegionOptions() {
     AzureService.shared().setRegion(this.azureApiRegionOptions().selectedValue());
+  }
+
+  setupImageGenModelOptions() {
+    this.imageGenModelOptions().setSelectedLabel(ImageGen.shared().option());
+  }
+  
+  setupMidjourneyApiKeyText(){
+    const field = TextFieldView.clone().setId("midjourneyApiKeyText").setTarget(this);
+    this.setMidjourneyApiKeyText(field);
+
+    const self = this;
+    
+    field.setValidationFunc((s) => {
+      const isValid = MJService.shared().validateKey(s);
+      if (isValid) {
+        MJService.shared().setApiKey(s);
+      }
+      return isValid;
+    });
+
+    // Load the stored API key
+    const s = MJService.shared().apiKey();
+    if (s) {
+      field.setString(s);
+    }
+
+    this.showMidjourneyFieldsIfNeeded();
+  }
+
+  onChange_midjourneyApiKeyText() {
+    console.log("onChange_midjourneyApiKeyText");
+    this.onUpdateInputs();
+  }
+  
+  setupMidjourneyApiBaseUrlText(){
+    const field = TextFieldView.clone().setId("midjourneyApiBaseUrlText").setTarget(this);
+    this.setMidjourneyApiBaseUrlText(field);
+
+    const self = this;
+    field.setValidationFunc((s) => {
+      const isValid = MJService.shared().validateBaseUrl(s);
+      if (isValid) {
+        MJService.shared().setApiBaseUrl(s);
+      }
+      return isValid;
+    });
+
+    // Load the stored API key
+    const s = MJService.shared().apiBaseUrl();
+    if (s) {
+      field.setString(s);
+    }
+
+    this.showMidjourneyFieldsIfNeeded();
+  }
+
+  onChange_midjourneyApiBaseUrlText() {
+    console.log("onChange_midjourneyApiBaseUrlText");
+    this.onUpdateInputs();
+  }
+
+  showMidjourneyFieldsIfNeeded() {
+    if (ImageGen.shared().isMidjourneyOption()) {
+      document.getElementById("midjourneyApiKeyContainer").style.display = "block";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "block";
+      ImageBot.shared().setImageGen(MJImageGen.shared());
+    }
+    else if (ImageGen.shared().isDalleOption()) {
+      document.getElementById("midjourneyApiKeyContainer").style.display = "none";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "none";
+      ImageBot.shared().setImageGen(OpenAiImageGen.shared());
+    }
+    else {
+      throw "Unknown Image Gen Model Option: " + ImageGen.shared().option();
+    }
   }
 
   // --- setup ---
@@ -224,6 +332,14 @@
     const subOptionsArray =
       this.sessionTypeOptions().selectedElement()._item.options;
     this.sessionSubtypeOptions().setOptions(subOptionsArray);
+  }
+
+  onSubmit_imageGenModelOptions() {
+    ImageGen.shared().setOption(this.imageGenModelOptions().selectedValue());
+
+    this.showMidjourneyFieldsIfNeeded();
+
+    this.onUpdateInputs();
   }
 
   // --- sessionSubtypeOptions ---

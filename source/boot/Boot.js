@@ -39,18 +39,19 @@ class Boot extends Object {
       "source/app/services/azure/AzureVoices.js",
       "source/app/services/azure/AzureRegions.js",
 
-      /*
+      "source/app/services/imagegen/ImageBot.js",
+      "source/app/services/imagegen/ImageGen.js",
+      
+
       "source/app/services/midjourney/MJRequest.js",
       "source/app/services/midjourney/MJService.js",
       "source/app/services/midjourney/MJImageGen.js",
-      */
 
       "source/app/services/openai/OpenAiRequest.js",
       "source/app/services/openai/OpenAiService.js",
       "source/app/services/openai/OpenAiChatModel.js",
       "source/app/services/openai/OpenAiChat.js",
       "source/app/services/openai/OpenAiImageGen.js",
-      "source/app/services/openai/OpenAiImageBot.js",
       "source/app/services/openai/OpenAiMusicBot.js",
 
       "source/app/services/youtube/YouTubeAudioPlayer.js",

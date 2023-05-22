@@ -126,6 +126,15 @@
   // --- handling for events ---
 
   onChange(event) {
+    const t = this.target();
+    if (t) {
+      const methodName = "onChange_" + this.id();
+      const m = t[methodName];
+      if (m) {
+        m.apply(t, this);
+      }
+    }
+
     if (this.shouldStore()) {
       this.save();
     }

@@ -141,7 +141,10 @@
       e.appendChild(option);
     });
 
-    this.setSelectedValue(previouslySelectedValue);
+    if (previouslySelectedValue) {
+      this.setSelectedValue(previouslySelectedValue);
+    }
+    
     return this;
   }
 }).initThisClass();
