@@ -569,4 +569,75 @@ const sessionOptionsArray = [
       },
     ],
   },
+  {
+    value: "imageGen",
+    label: "Image Generation",
+    description: `<p>Have the AI assist you in creating new images.</p>`,
+    aiName: "Image Generator",
+    gameMode: true,
+    chatName: "Player's Chat",
+    usersName: "Players",
+    message: "The host has started an image generation session.",
+    artPromptPrefix: "",
+    musicPlaylists: ["StudioGhibli"],
+    prompt: `Please play the roll of an assistant, helping us create images. Take our messages and respond with a prompt to create an image. Only respond with the prompt (do not include the word prompt), no other explanation or text. If we ask you to change the prompt, make the minimal changes necessary to comply with our request. Use the following examples as a guide for the kinds of prompts we would like you to create, but don't use these exact prompts:
+
+    A time traveler shows what a "selfie" is
+
+    Prompt: A group of male Norse, Dane, and Vikings huddled together and is taking a group selfie picture together in 793 CE. They are drinking ale at a feast in a Viking longhouse. They are all wearing traditional Viking armor and helmets. Everyone smiling directly at the camera. The image is photorealistic, has natural lighting, and is taken with a front-facing phone selfie camera by one of the Vikings. --ar 3:2 --s 1000 --no phone --v 5 --q 2
+
+    Fantasy landscape
+
+    Prompt: fantasy landscape, atmospheric, hyper-realistic, 8k, epic composition, cinematic, octane render, artstation landscape, vista photography, 16K resolution, landscape veduta photo, 8k resolution, detailed landscape painting, DeviantArt, Flickr, rendered in Enscape, 4k detailed post processing, artstation, rendering by octane, unreal engine --ar 16:9 --v 4
+
+    Cyborg bikini model
+
+    Prompt: imagine a cyborg bikini model, facing the camera, she is very tall standing 100 meters high above much smaller buildings, 35mm film, --ar 16:9
+
+    Dolce & Gabbana Portuguese man
+
+    Prompt: Street style fashion photo, full-body shot of a Portuguese man with black hair and full beard, walking with a crowd of people on a sidewalk in Dubai while holding his leather laptop case, wearing a royal blue Dolce & Gabbana blazer and white button up, sunset lighting --ar 9:16 --stylize 1000 --v 5
+
+    Roaring Elon Musk
+
+    Prompt: Elon Musk dressed in skin-tight leopard print with a leopard scarf and a walking cane, inviting you to get you pretty lil ahh in the car as he waves you into his Cadillac Escalade
+
+    Extreme graphics card
+
+    Prompt: highly detailed photo of a graphics card in a powerful PC, bright colors, RGB lights, lots of cooling fans, glass panels, high resolution, ultra-detailed, vivid colors, neon lighting, dark background, flood light, radeon, geforce, ryzen, water cooled --ar 16:9 --v 4
+
+    Moose painting
+
+    Prompt: megan duncanson style painting, bull moose huge antlers with a snow capped mountain range, lake with reflection in background, early stages of sunset, psychedelic effects --ar 16:9
+
+    80's retro
+
+    Prompt: [two 80's looking photos added as prompt, plus...] Scene: 80's neighbourhood coming of age lighting: natural, slightly cinematic, hot summers day autobiographical VISUAL STYLE: photorealistic photograph perspective is two-point and scene has a crisp, film-photography feel style of Martin Parr, composition style of david hockney CAMERA: Stationary, Hasselblad LENS, 120mm, film stock: cinestill 50d and porta colours: natural warm tones RESOLUTION: High Definition but grainy vintage TIME OF DAY: late afternoon early evening – ar 4:3 --no busy
+
+    Photo-realistic woman
+
+    Prompt: a photo-realistic full-body portrait of a beautiful woman with blonde hair standing in a flower field. The image should be shot in a backlighting scenario during the golden hour. Please use a 50mm lens on a medium format camera to achieve a cinematic look. The colors should be rich and vibrant, with a focus on Hasselblad-style tones --ar 16:9 --v 5
+
+    Interior of a room
+
+    Prompt: photograph of the interior of a living room, large mirror on the wall, flowers in a vase, cream walls, pastel palette, clean style, soft lighting, minimalistic, hyper-realistic, high resolution, 4K detail, rendered in Octane, warm lighting --v 4
+
+    Magical golden dragon
+
+    Prompt: a cute magical flying dragon, fantasy art drawn by Disney concept artists, golden color, high quality, highly detailed, elegant, sharp focus, concept art, character concepts, digital painting, mystery, adventure, cinematic, glowing, vivid colors --ar 16:9 --v 4
+
+    Start the session by greeting the players and asking them what image they would like to see first.
+    `,
+    backgroundColor: "#222",
+    color: "rgb(219, 219, 219)",
+    fontFamily: "Barlow Condensed",
+    fontWeight: "300",
+    allowsImageGen: true,
+    options: [
+      {
+        label: "Free form",
+        value: "Free form",
+      },
+    ],
+  }
 ];
