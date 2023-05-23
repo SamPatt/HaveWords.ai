@@ -35,7 +35,7 @@
 
   init () {
     super.init();
-    this.setIsDebugging(false);
+    this.setIsDebugging(true);
   }
 
   newRequest () {
@@ -56,12 +56,23 @@
     assert(this.mjVersion());
 
     try {
+      AiChatView.shared().updateImageProgress({
+        prompt: this.prompt(),
+        status: "sending request",
+        progressPercentage: 0
+      });
+
       let json = await this.newRequest().setEndpointPath("/imagine").setBody({
         prompt: this.prompt() + " --v " + this.mjVersion()
       }).asyncSend();
 
       this.debugLog(json);
-      console.log(json);
+
+      AiChatView.shared().updateImageProgress({
+        prompt: this.prompt(),
+        status: json.status || "request sent",
+        progressPercentage: json.percentage || 0
+      });
 
       let body;
 
@@ -84,7 +95,19 @@
         if (json.errors) {
           throw new Error(JSON.stringify(json));
         }
+
+        AiChatView.shared().updateImageProgress({
+          prompt: this.prompt(),
+          status: json.status || "unknown",
+          progressPercentage: json.percentage || 0
+        });
       } while(!json.imageURL);
+
+      AiChatView.shared().updateImageProgress({
+        prompt: this.prompt(),
+        status: json.status || "upscaling",
+        progressPercentage: 99
+      });
 
       if (this.isApiV2()) {
         body = { taskId: body.taskId, position: 1 };
@@ -116,7 +139,7 @@
       console.error("Error fetching MJ response:", error);
       AiChatView.shared().addMessage(
         "systemMessage",
-        "Error fetching AI response. Make sure the model is selected and the API key is correct.",
+        "Error fetching Midjourney.io response. Make sure the model the API key and baseURL is correct.",
         "Host",
         LocalUser.shared().id()
       );

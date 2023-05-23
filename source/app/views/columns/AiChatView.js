@@ -229,6 +229,10 @@
 
   // ----------------------------------------------------------------
 
+  updateImageProgress(updateObj) { //{ prompt: string, status: string, progressPercentage: number }
+    console.log(`AiChatView MJImageGenProgress status: ${updateObj.status} progress: ${ updateObj.progressPercentage}`);
+  }
+
   addImage(imageUrl, requestId) {
     const messageView = this.requestIdToMessageMap().get(requestId);
     messageView.setImageUrl(imageUrl);
