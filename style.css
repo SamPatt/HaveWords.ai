@@ -493,6 +493,7 @@ button {
 }
 
 .scrollingOutput {
+    margin-right: 1px; /* to give scroll bar a margin */
     flex-grow: 1;
     border: 0px solid #777;
     display: flex;
@@ -787,18 +788,22 @@ button {
 
 /*--- begin AI content inline styles --- */
 
+.quote {
+    font-style: italic;
+}
+
 .handWritten {
     font-family: Sand Dunes;
     /* probably want to customize this for the adventure period */
     line-height: 1.9em;
-    font-size: 1.3em;
+    font-size: 1.1em;
 
     margin: 1.5em;
 
     padding-left: 2em;
     padding-right: 2em;
 
-    padding-top: 1em;
+    padding-top: 0.5em;
     padding-bottom: 1.5em;
 
     border: 1px solid rgba(255, 255, 255, 0.1);
