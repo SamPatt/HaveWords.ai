@@ -193,7 +193,6 @@
   }
 
   onXhrLoadEnd (event) {
-    debugger;
     this.onXhrRead();
     this.streamTarget().onStreamComplete(this);
     if (this.service().onRequestComplete) {
