@@ -24,6 +24,7 @@
   }
 
   playerPromise () {
+    debugger;
     if (!this._playerPromise) {
       this._playerPromise = new Promise((resolve, reject) => {
         this._resolvePlayer = resolve;
@@ -32,14 +33,6 @@
       this.loadFrameAPI(); // this will call setupPlayer after frame is loaded
     }
     return this._playerPromise;
-  }
-
-  setPlayer (aPlayer) {
-    this._player= aPlayer;
-    if (this._resolvePlayer) {
-      this._resolvePlayer()
-    }
-    return this;
   }
 
   loadFrameAPI() {
@@ -97,7 +90,7 @@
   }
 
   play() {
-    //debugger;
+    debugger;
     if (!this.videoId()) {
       return;
     }
@@ -153,6 +146,12 @@
     this.setIsReady(true);
     const player = event.target;
     assert(player === this.player());
+
+    assert(this._resolvePlayer);    
+    if (this._resolvePlayer) {
+      this._resolvePlayer()
+    }
+
     this.play();
     debugger;
     //this.player().style.display = "none";
@@ -223,6 +222,11 @@
   }
 
   stop() {
+    if (!this._playerPromise) {
+      // no one has asked player to play yet, 
+      // so we can ignore the stop
+      return;
+    }
     this.playerPromise().then(() => {
       this.player().stopVideo();
     });

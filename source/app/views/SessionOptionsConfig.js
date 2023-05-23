@@ -276,7 +276,7 @@ const sessionOptionsArray = [
         Feel free to borrow elements from the stories of H.P. Lovecraft, Clark Ashton Smith, or Lord Dunsany when you feel they fit well into the stories.
         As in the books, the adventures should be of epic and deal with great challenges and mysteries - nothing mundane. 
         The time period roughly corresponds to that of the earliest human civilations in the fertile cresent and while steel and magic exists in this universe, 
-        no modern technologies (such as guns, planes, or automobiles, etc) do.`,
+        no modern technologies (such as guns, planes, or automobiles, etc) do. Do not mention any of the names of the authors.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
       },
       {
@@ -289,14 +289,16 @@ const sessionOptionsArray = [
         label: "Discworld",
         value: "Discworld",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe.
-        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.`,
+        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.
+        Do not mention any of the names of the author.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: "
       },
       {
         label: "Hitchhiker's Guide to the Galaxy",
         value: "Hitchhiker's Guide to the Galaxy",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe. 
-        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.`,
+        These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.
+        Do not mention any of the names of the author.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: ",
         headerFontFamily: "Harlow",
         fontFamily: "Crimson",
@@ -305,7 +307,8 @@ const sessionOptionsArray = [
       {
         label: "Lord Dunsany",
         value: "Lord Dunsany",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.`,
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
+        Do not mention any of the names of the author.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of: "
       },
 
@@ -313,7 +316,8 @@ const sessionOptionsArray = [
         label: "H.P. Lovecraft",
         value: "H.P. Lovecraft",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories,
-        including his unpublished Dream Quest to Unknown Kadath. These stories should be dark fiction, and typically lead to the player's demise.`,
+        including his unpublished Dream Quest to Unknown Kadath. These stories should be dark fiction, and typically lead to the player's demise.
+        Do not mention any of the names of the author.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
@@ -322,7 +326,8 @@ const sessionOptionsArray = [
         label: "Clark Ashton Smith",
         value: "Clark Ashton Smith",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
-        These stories should be dark fiction, and almost always lead to the player's demise.`,
+        These stories should be dark fiction, and almost always lead to the player's demise.
+        Do not mention any of the names of the author.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
