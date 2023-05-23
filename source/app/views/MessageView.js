@@ -91,9 +91,14 @@
     return `<span class="dots"><span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span>`;
   }
 
+  centerDotsHtml () {
+    return `<span class="dots"><span class="dot dot3">.</span><span class="dot dot2">.</span><span class="dot dot1">.</span><span class="dot dot2">.</span><span class="dot dot3">.</span>`;
+  }
+
   setImageUrl (imageUrl) {
     if (!imageUrl) {
-      const spinner = this.dotsHtml();
+      const spinner = "Generating image" + this.dotsHtml();
+      //const spinner = this.centerDotsHtml();
       this.imageContainer().innerHTML = spinner;
     } else {
       const iv = ImageMessageView.clone().setImageUrl(imageUrl).setIsUser(false);

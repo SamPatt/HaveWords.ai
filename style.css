@@ -486,6 +486,7 @@ button {
     justify-content: center;
     width: 512px;
     max-width: 100%;
+    width: 100%;
     height: auto;
 }
 
