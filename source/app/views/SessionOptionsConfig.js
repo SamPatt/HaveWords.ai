@@ -136,7 +136,8 @@ const sessionOptionsArray = [
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
     promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.
     Formatting: Don't use Markdown, only use HTML. Respond with HTML but only using the formatting described here.
-    Do not use <p></p> for paragraphs. Instead use <br>. Please place any quoted speech within <span class="quote"></span> tags.
+    Do not use <p></p> for paragraphs. 
+    Please place any quoted speech within <span class="quote"></span> tags.
 
     Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
 
@@ -162,6 +163,7 @@ const sessionOptionsArray = [
 
     When the session begins, please create and title for the first chapter of the adventure and 
     place the chapter number (written in words, not number characters) within <div class=chapterNumber></div> 
+    followed by the tags <div class=chapterImage></div> 
     and the chapter name within <div class=chapterTitle></div> tags. 
 
     If the story is inspired by a certain author's writings, do not mention the author's name when introducing the story.

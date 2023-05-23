@@ -29,8 +29,9 @@
       "cocaine", "heroin", "meth", "crack","torture", "disturbing", "farts", "fart", "poop", "warts", "shit", "brown pudding", "bunghole", 
       "vomit", "voluptuous", "seductive", "sperm", "hot", "sexy", "sensored", "censored", "silenced", "deepfake", "inappropriate", "pus", 
       "waifu", "mp5", "succubus", "1488", "surgery"]`);
-    this.newSlot("pollingMs", 1000);
-  }
+      this.newSlot("pollingMs", 1000);
+      this.newSlot("timeTaken", null);
+    }
 
   init () {
     super.init();
@@ -49,6 +50,8 @@
 
   // Calls the OpenAI Image API and returns the image URL fetchOpenAIImageResponse
   async asyncFetch() {
+    const requestStartTime = new Date().getTime();
+
     assert(this.prompt());
     assert(this.mjVersion());
 
@@ -104,6 +107,8 @@
           throw new Error(JSON.stringify(json));
         }
       } while(!json.imageURL);
+
+      this.setTimeTaken(new Date().getTime() - requestStartTime);
 
       return json.imageURL;
 

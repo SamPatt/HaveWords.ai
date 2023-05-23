@@ -76,13 +76,8 @@
     //}
     this.unhide();
 
-    OpenAiChat.shared().addToConversation({
-      role: "system",
-      content: "You are a helpful assistant.",
-    });
     this.setupCompactorButtons();
     AvatarPickerView.shared().displayAvatar(LocalUser.shared().avatar());
-
   }
 
   unhide () {

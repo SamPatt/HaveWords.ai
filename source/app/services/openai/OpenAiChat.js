@@ -7,8 +7,6 @@
 
 (class OpenAiChat extends OpenAiService {
   initPrototypeSlots() {
-    //this.newSlot("model", "gpt-3.5-turbo");
-    //this.newSlot("role", "user");
     this.newSlot("conversationHistory", null);
     this.newSlot("tokenBuffer", 400); // Buffer to ensure approximation doesn't exceed limit
     this.newSlot("initialMessagesCount", 3); // Number of initial messages to always keep
@@ -21,6 +19,21 @@
     this.setConversationHistory([]);
     const models = this.allModelNames().map(name => OpenAiChatModel.clone().setName(name));
     this.setModels(models);
+  }
+
+  validRoles () {
+    /* 
+      high-level instructions to guide the model's behavior throughout the conversation. 
+      User role represents the user or the person initiating the conversation. You provide user messages or prompts in this role to instruct the model.
+      assistant role represents the AI model or the assistant. 
+      The model generates responses in this role based on the user's prompts and the conversation history.
+    */
+   
+    return [
+      "system", 
+      "user",
+      "assistant" 
+    ];
   }
 
   // --- accessible models ---
@@ -44,7 +57,6 @@
       return null;
     }
   }
-
 
   async asyncCheckModelsAvailability () {
     const names = this.availableModelNames();
@@ -78,6 +90,8 @@
   }
 
   addToConversation(json) {
+    assert(this.validRoles().indexOf(json.role) !== -1);
+
     // Check if conversation length exceeds limit
     let currentTokenCount = this.conversationHistory().reduce((count, message) => {
       return count + this.approximateTokens(message.content);
@@ -111,12 +125,12 @@
     return request;
   }
 
-  newRequestForPrompt (prompt) {
+  newRequestForPrompt (prompt, role) {
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
 
     this.addToConversation({
-      role: "user",
+      role: role,
       content: prompt,
     });
 
@@ -129,8 +143,8 @@
     return request
   }
 
-  async asyncFetch (prompt) {
-    const request = this.newRequestForPrompt(prompt);
+  async asyncFetch (prompt, role="user") {
+    const request = this.newRequestForPrompt(prompt, role);
 
     let json = undefined;
     try {

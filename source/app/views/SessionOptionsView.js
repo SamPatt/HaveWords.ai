@@ -640,7 +640,7 @@
 
     Sounds.shared().playOminousSound();
 
-    HostSession.shared().sendAIResponse(this.prompt());
+    HostSession.shared().sendAIResponse(this.prompt(), "system");
 
     /*
     const response = await OpenAiChat.shared().asyncFetch(this.prompt());

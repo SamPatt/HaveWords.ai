@@ -102,6 +102,11 @@
     SessionOptionsView.shared().displayHostHTMLChanges();
 
     OpenAiChat.shared().clearConversationHistory();
+
+    OpenAiChat.shared().addToConversation({
+      role: "system",
+      content: "You are a helpful assistant.",
+    });
     //this.showHostIntroMessage()
   }
 
@@ -223,9 +228,9 @@
     });
   }
 
-  async sendAIResponse(prompt) {
+  async sendAIResponse(prompt, role = "user") {
     // Get AI Response and post locally
-    const request = await OpenAiChat.shared().newRequestForPrompt(prompt);
+    const request = await OpenAiChat.shared().newRequestForPrompt(prompt, role);
     request.setStreamTarget(this);
 
     AiChatView.shared().addAIReponse("", request.requestId());
