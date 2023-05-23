@@ -276,6 +276,7 @@
   onStreamComplete (request) {
     const content = request.fullContent();
     this.shareUpdate(request, content);
+    AiChatView.shared().onAiResponseCompleteText(content);
     console.log("Host " + request.requestId() + " onStreamComplete");
   }
   

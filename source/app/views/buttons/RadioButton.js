@@ -31,7 +31,7 @@
   init() {
     super.init();
     this.setCanStore(true);
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
   }
 
   // --- label ---

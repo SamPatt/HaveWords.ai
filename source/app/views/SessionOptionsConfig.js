@@ -135,8 +135,9 @@ const sessionOptionsArray = [
     usersName: "Players",
     message: "The host has started a [sessionType] in the [sessionSubtype] universe.",
     promptSuffix: `You are our guide, describing the settings and the characters, and making the fictional world come alive for our group.
-    Formatting: Don't use Markdown, only use HTML. Respond with HTML formatting to use bold, italics, and use <br> for new paragraphs.
-    Please any quoted speech within <i></i> tags.
+    Formatting: Don't use Markdown, only use HTML. Respond with HTML but only using the formatting described here.
+    Do not use <p></p> for paragraphs. Instead use <br>. Please place any quoted speech within <span class="quote"></span> tags.
+
     Messages: Each player will respond with their own name at the beginning of the message for you to identify them. 
 
     You can ask players what actions they will take. Keep track of them individually but try not to split the party.

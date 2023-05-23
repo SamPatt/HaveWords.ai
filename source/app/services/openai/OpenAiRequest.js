@@ -99,7 +99,7 @@
     const json = this.json();
     this.debugLog(" response json: ", json);
     if (json.error) {
-      console.log(this.type() + " ERROR:", json.error.message);
+      console.warn(this.type() + " ERROR:", json.error.message);
     }
   }
 
@@ -156,7 +156,7 @@
       if (chunk.length) {
 
         if (chunk.includes("[DONE]")) {
-          console.log("skipping chunk:" + chunk);
+          this.debugLog("skipping chunk:" + chunk);
           return;
         }
 

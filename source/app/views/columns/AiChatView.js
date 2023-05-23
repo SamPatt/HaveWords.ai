@@ -189,6 +189,7 @@
 
   onAiResponseCompleteText (text) {
       // Trigger music only if host and in session
+      //debugger;
       if (App.shared().isHost() && Session.shared().inSession()) {
         OpenAiMusicBot.shared().setSceneDescription(text).trigger();
       }

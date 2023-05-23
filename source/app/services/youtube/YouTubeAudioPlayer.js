@@ -18,13 +18,10 @@
 
   init() {
     super.init();
-    //debugger;
-    //this.loadFrameAPI(); // set this up, then we'll set up the player
     this.setIsDebugging(false);
   }
 
   playerPromise () {
-    debugger;
     if (!this._playerPromise) {
       this._playerPromise = new Promise((resolve, reject) => {
         this._resolvePlayer = resolve;
@@ -90,7 +87,6 @@
   }
 
   play() {
-    debugger;
     if (!this.videoId()) {
       return;
     }
@@ -98,9 +94,9 @@
     this.playerPromise().then(() => {
       this.debugLog("play() after promise");
       const startSeconds = 0.0;
-      this.player().loadVideoById(this.videoId(), startSeconds);
-      //this.player().playVideo();
-      this.updateVolume();
+      if (this.videoId()) {
+        this.player().loadVideoById(this.videoId(), startSeconds);
+      }
     })
     return this
   }
@@ -114,7 +110,6 @@
 
   onPlayerError(event) {
     // Handle the error based on the error code
-    //debugger;
     const error = Number(event.data);
     this.debugLog("------------------ onPlayerError " + error + " videoId: '" + this.videoId() + "'")
 
@@ -139,25 +134,19 @@
     }
   }
 
-  // The API will call this function when the video player is ready
   onPlayerReady(event) {
-    //this.setupFrameExceptionCatcher()
     this.debugLog("onPlayerReady()");
+    assert(!this.isReady());
     this.setIsReady(true);
-    const player = event.target;
-    assert(player === this.player());
+    this.updateVolume();
 
     assert(this._resolvePlayer);    
     if (this._resolvePlayer) {
       this._resolvePlayer()
     }
-
-    this.play();
-    debugger;
     //this.player().style.display = "none";
   }
 
-  // The YouTube API calls this function when the player's state changes
   onPlayerStateChange(event) {
     this.debugLog("onPlayerStateChange " + event.data)
 
@@ -215,7 +204,7 @@
         this.debugLog("set volume:", v)
         this.player().setVolume(v);
         this.debugLog("getVolume: ", this.player().getVolume())
-        assert(v === this.player().getVolume());
+        //assert(v === this.player().getVolume());
       }
     });
     return this;
