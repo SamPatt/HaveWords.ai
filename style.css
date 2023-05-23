@@ -788,6 +788,10 @@ button {
 
 /*--- begin AI content inline styles --- */
 
+.whitespace {
+    white-space: pre;
+}
+
 .quote {
     font-style: italic;
 }
@@ -973,7 +977,7 @@ button {
 /* --- begin fade in words --- */
 
 .fadeInWord {
-    animation-duration: 1s;
+    animation-duration: 1.1s;
     animation-name: fadeInWordsAnimation;
     animation-iteration-count: 1;
     prefix: "&nbsp;";

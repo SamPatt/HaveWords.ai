@@ -262,7 +262,7 @@
 
   shareUpdate (request, sendContent) {
     //console.log("shareUpdate:", sendContent);
-      //console.log("---");
+    //console.log("---");
 
     AiChatView.shared().updateAIResponse(request.requestId(), sendContent)
     this.broadcast({

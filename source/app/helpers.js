@@ -26,6 +26,14 @@ Object.defineSlot(String.prototype, "convertToParagraphs", function() {
   return html;
 });
 
+Object.defineSlot(String.prototype, "after", function(s) {
+  const i = this.indexOf(s);
+  if (i === -1) {
+    return "";
+  }
+  return this.substr(i + s.length);
+});
+
 Object.defineSlot(String.prototype, "isValidJSON", function() {
   try {
     const parsedJSON = JSON.parse(this);
@@ -98,36 +106,37 @@ Object.defineSlot(String.prototype, "base32HexToString", function() {
 
 // HTML word wrapping
 
+/*
+function Element_asJson(element) {
+  const nodes = Array.from(element.childNodes);
+  const json = []
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      json.push(node.textContent);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      json.push({ type: node.className, children: Element_asJson(node) });
+    } else {
+      json.push(null);
+    }
+  }
+  return json;
+}
+*/
+
 function Element_wrapWordsWithSpanClassName(element, className) {
-  let nodes = Array.from(element.childNodes);
+  const nodes = Array.from(element.childNodes);
 
   for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-
       if (node.nodeType === Node.TEXT_NODE) {
-          const words = node.nodeValue.match(/(\S+\s*)/g); // Match words with trailing spaces
-          let newNodes = [];
-
-          if (words) {
-            words.forEach((word, index) => {
-                const span = document.createElement('span');
-                span.className = className;
-                span.textContent = word;
-                newNodes.push(span);
-            });
-
-            // Remove the current text node
-            element.removeChild(node);
-
-            // Insert new nodes at the original index
-            newNodes.forEach((newNode, index) => {
-                if (i + index < element.childNodes.length) {
-                    element.insertBefore(newNode, element.childNodes[i + index]);
-                } else {
-                    element.appendChild(newNode);
-                }
-            });
-          }
+          const span = document.createElement('span');
+          span.className = className;
+          //span.nodeValue = node.nodeValue;
+          span.textContent = node.textContent;
+          //debugger;
+          element.replaceChild(span, node);
       } else if (node.nodeType === Node.ELEMENT_NODE) {
           Element_wrapWordsWithSpanClassName(node, className);
       }
@@ -135,9 +144,13 @@ function Element_wrapWordsWithSpanClassName(element, className) {
 }
 
 Object.defineSlot(String.prototype, "wrapHtmlWordsWithSpanClass", function(className) {
+  const s = "<!DOCTYPE html><head><body>" + this + "</body></html>"
+  //console.log("wrapHtmlWordsWithSpanClass [[" + s + "]]");
   const parser = new DOMParser();
-  const doc = parser.parseFromString(this, 'text/html');
+  const doc = parser.parseFromString(s, 'text/html');
+  //console.log("wrapping doc: ", JSON.stringify(Element_asJson(doc), 2, 2));
   Element_wrapWordsWithSpanClassName(doc.body, className);
+  //console.log("after doc: ",  JSON.stringify(Element_asJson(doc), 2, 2));
   return doc.body.innerHTML;
 });
 

@@ -26,9 +26,17 @@
     this.newSlot("bodyJson", null); // this will contain the model choice and messages
     this.newSlot("response", null);
     this.newSlot("json", null);
+
+    // streaming
     this.newSlot("isStreaming", false); // external read-only
     this.newSlot("streamTarget", null); // will receive onStreamData and onStreamComplete messages
+    this.newSlot("xhr", null); 
+    this.newSlot("xhrResolve", null); 
+    this.newSlot("xhrReject", null); 
     this.newSlot("requestId", null); 
+    this.newSlot("readIndex", 0);
+    this.newSlot("readLines", null);
+
     this.newSlot("fullContent", null); 
     this.newSlot("lastContent", "");
   }
@@ -67,23 +75,6 @@
   }
 
   showRequest () {
-    /*
-    const body = this.bodyJson();
-    const model = body.model;
-    const content = body.messages[0].content;
-    this.debugLog(
-      " request " +
-      this.requestId() +
-      " apiUrl: " +
-        this.apiUrl() +
-        " model: '" +
-        model +
-        "' prompt: '" +
-        content +
-        "'"
-    );
-    */
-
     this.debugLog(
       " request " +
       this.requestId() +
@@ -103,7 +94,7 @@
     }
   }
 
-  /* --- normal response --- */
+  // --- normal response --- 
 
   async asyncSend () {
     this.setIsStreaming(false);
@@ -120,120 +111,8 @@
     return json;
   }
 
-  /* --- streaming response --- */
+  // --- helpers ---
 
-
-  async asyncSendAndStreamResponse () {
-    this.assertValid();
-
-    const streamTarget = this.streamTarget();
-
-    // verify streamTarget and that protocol is implemented by it
-    assert(streamTarget);
-    assert(streamTarget.onStreamData);
-    assert(streamTarget.onStreamComplete);
-    
-    this.setIsStreaming(true);
-    this.bodyJson().stream = this.isStreaming();
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", this.apiUrl());
-    const options = this.requestOptions();
-    for (const header in options.headers) {
-      const value = options.headers[header];
-      xhr.setRequestHeader(header, value);
-    }
-
-    xhr.responseType = ""; // "" or "text" is required for streams
-
-    let readIndex = 0;
-    this.setFullContent("");
-
-    const onChunk = () => {
-      const newLength = xhr.responseText.length;
-      const chunk = xhr.responseText.substr(readIndex);
-      readIndex = xhr.responseText.length;
-      if (chunk.length) {
-
-        if (chunk.includes("[DONE]")) {
-          this.debugLog("skipping chunk:" + chunk);
-          return;
-        }
-
-        const result = chunk
-        .replace(/data:\s*/g, "")
-        .replace(/[\r\n\t]/g, "")
-        .split("}{")
-        .join("},{");
-        const cleanedJsonString = `[${result}]`;
-        const parsedJson = JSON.parse(cleanedJsonString);
-
-        /*  
-
-        example error:
-        data: {"error":{"message":"Request failed due to server shutdown","type":"server_error","param":null,"code":null}}
-
-        */
-        let newContent = "";
-        parsedJson.forEach(item => {
-          if (
-            item.choices &&
-            item.choices.length > 0 &&
-            item.choices[0].delta &&
-            item.choices[0].delta.content
-          ) {
-            newContent += item.choices[0].delta.content;
-          }
-        });
-
-        //console.log("CHUNK:", chunk);
-        //console.log("CONTENT: ", newContent);
-        this.setFullContent(this.fullContent() + newContent);
-        streamTarget.onStreamData(this, newContent);
-      }
-    }
-
-    xhr.addEventListener("progress", (event) => {
-      onChunk();
-    });
-
-    const promise = new Promise((resolve, reject) => {
-
-      xhr.addEventListener("loadend", (event) => {
-        onChunk();
-        streamTarget.onStreamComplete(this);
-        // we already sent all the chunks, but just to be consistent with other API, return the json
-        // in this way, we may only need one fetch method
-        if (this.service().onRequestComplete) {
-          this.service().onRequestComplete(this)
-        }
-        resolve(this.fullContent()); 
-      });
-
-      xhr.addEventListener("error", (event) => {
-        if (event.constructor === ProgressEvent) {
-          console.warn("got a ProgressEvent as an xhr error. Why?");
-          debugger;
-          return;
-        }
-        debugger;
-        streamTarget.onStreamComplete(this);
-        reject(event);
-      });
-
-      xhr.addEventListener("abort", (event) => {
-        streamTarget.onStreamComplete(this);
-        reject(new Error("aborted"));
-      });
-      
-    });
-
-    const s = JSON.stringify(options, 2, 2);
-    //this.debugLog("SENDING REQUEST BODY:", options.body)
-    xhr.send(options.body);
-
-    return promise;
-  }
 
   description() {
     return (
@@ -256,4 +135,149 @@
     );
   }
   */
+
+  // --- streaming response --- 
+
+  assertReadyToStream () {
+    const streamTarget = this.streamTarget();
+    // verify streamTarget and that protocol is implemented by it
+    assert(streamTarget);
+    assert(streamTarget.onStreamData);
+    assert(streamTarget.onStreamComplete);
+  }
+
+  async asyncSendAndStreamResponse () {
+    this.assertValid();
+
+    this.assertReadyToStream();
+    
+    this.setIsStreaming(true);
+    this.bodyJson().stream = true;
+    this.setReadLines([]);
+
+    const xhr = new XMLHttpRequest();
+    this.setXhr(xhr);
+    xhr.open("POST", this.apiUrl());
+
+    // set headers
+    const options = this.requestOptions();
+    for (const header in options.headers) {
+      const value = options.headers[header];
+      xhr.setRequestHeader(header, value);
+    }
+
+    xhr.responseType = ""; // "" or "text" is required for streams
+
+    this.setFullContent("");
+
+    // why false arg? see https://stackoverflow.com/questions/51204603/read-response-stream-via-xmlhttprequest
+    xhr.addEventListener("progress", (event) => this.onXhrProgress(event), false);
+    xhr.addEventListener("loadend", (event) => this.onXhrLoadEnd(event));
+    xhr.addEventListener("error", (event) => this.onXhrError(event));
+    xhr.addEventListener("abort", (event) => this.onXhrAbort(event));
+
+    const promise = new Promise((resolve, reject) => {
+      this.setXhrResolve(resolve);
+      this.setXhrReject(reject);
+    });
+
+    //const s = JSON.stringify(options, 2, 2);
+    //this.debugLog("SENDING REQUEST BODY:", options.body)
+    xhr.send(options.body);
+
+    return promise;
+  }
+
+  onXhrProgress (event) {
+    this.onXhrRead();
+  }
+
+  onXhrLoadEnd (event) {
+    this.onXhrRead();
+    this.streamTarget().onStreamComplete(this);
+    if (this.service().onRequestComplete) {
+      this.service().onRequestComplete(this)
+    }
+    this.xhrReject()(this.fullContent()); 
+  }
+
+  onXhrError (event) {
+    if (event.constructor === ProgressEvent) {
+      console.warn("got a ProgressEvent as an xhr error. Why?");
+      debugger;
+      return;
+    }
+    debugger;
+    this.streamTarget().onStreamComplete(this);
+    this.xhrReject()(event);
+  }
+
+  onXhrAbort (event) {
+    this.streamTarget().onStreamComplete(this);
+    this.xhrReject()(new Error("aborted"));
+  }
+
+  readNextXhrLine () {
+    const xhr = this.xhr();
+    const unread = xhr.responseText.substr(this.readIndex());
+    const newLineIndex = unread.indexOf("\n");
+
+    if (newLineIndex === -1) {
+      return undefined; // no new line found
+    }
+
+    const newLine = unread.substr(0, newLineIndex);
+    this.setReadIndex(this.readIndex() + newLineIndex+1); // advance the read index
+    return newLine;
+  }
+
+  onXhrRead () {
+    try {
+      let line = this.readNextXhrLine();
+
+      while (line !== undefined) {
+        line = line.trim()
+        if (line.length === 0) {
+          // emplty line - ignore
+        } else if (line.startsWith("data:")) {
+          const s = line.after("data:");
+          if (line.includes("[DONE]")) {
+            // stream is done and will close
+          } else {
+            // we should expect json
+            const json = JSON.parse(s);
+            this.onStreamJsonChunk(json);
+          }
+        } 
+        line = this.readNextXhrLine();
+      }
+    } catch(error) {
+      console.warn(this.type() + " ERROR:", error);
+      this.xhrReject()(new Error(error));
+    }
+  }
+
+  onStreamJsonChunk (json) {
+    /*
+    example error:
+    {"error":{"message":"Request failed due to server shutdown","type":"server_error","param":null,"code":null}}
+    */
+
+    if (json.error) {
+      console.warn("ERROR:" + json.error.message);
+      this.xhrReject()(new Error(json.error.message));
+    } else if (
+        json.choices &&
+        json.choices.length > 0 &&
+        json.choices[0].delta &&
+        json.choices[0].delta.content
+      ) {
+        const newContent = json.choices[0].delta.content;
+        this.setFullContent(this.fullContent() + newContent);
+        this.streamTarget().onStreamData(this, newContent);
+    } else {
+      console.warn("WARNING: don't know what to do with this JsonChunk", json);
+    }
+  }
+
 }).initThisClass();
