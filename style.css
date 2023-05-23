@@ -100,10 +100,12 @@ textarea::placeholder {
 }
 
 .infoIcon {
-    opacity: 1;
+    position: relative;
+    opacity: 0.5;
     text-transform: lowercase;
     font-size: 0.8em;
-    padding-bottom: 1em;
+    top: -0.1em;
+    padding-left: 0.1em;
 }
 
 /*
