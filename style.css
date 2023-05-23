@@ -484,6 +484,9 @@ button {
 .messageImageContainer {
     display: flex;
     justify-content: center;
+    width: 512px;
+    max-width: 100%;
+    height: auto;
 }
 
 .scrollingOutput {
@@ -757,7 +760,7 @@ button {
 
 #groupChatColumn {
     flex: 2;
-    min-width: 300px;
+    min-width: 20em;
     flex-direction: column;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -765,7 +768,7 @@ button {
 #connectedUsersColumn {
     flex: 0;
     overflow-x: auto;
-    min-width: 300px;
+    min-width: 20em;
     width: auto;
     max-width: fit-content;
     border-left: 1px solid rgba(255, 255, 255, 0.1);

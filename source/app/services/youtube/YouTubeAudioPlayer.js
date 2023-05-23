@@ -84,12 +84,6 @@
       },
     };
 
-    /*
-    if (this.videoId()) {
-      json.videoId = this.videoId();
-    }
-    */
-
     try {
       const player = new YT.Player("youTubePlayer", json);
       assert(player);
@@ -104,15 +98,17 @@
 
   play() {
     //debugger;
-    if (this.isReady() && this.videoId()) {
+    if (!this.videoId()) {
+      return;
+    }
+
+    this.playerPromise().then(() => {
+      this.debugLog("play() after promise");
       const startSeconds = 0.0;
-      this.debugLog("play()");
       this.player().loadVideoById(this.videoId(), startSeconds);
       //this.player().playVideo();
       this.updateVolume();
-    } else {
-      this.debugLog("-------------- player not set up yet, but video should start when it is -------------");
-    }
+    })
     return this
   }
 
@@ -158,6 +154,7 @@
     const player = event.target;
     assert(player === this.player());
     this.play();
+    debugger;
     //this.player().style.display = "none";
   }
 
@@ -204,41 +201,41 @@
   }
 
   setVolume(v) { // 0.0 to 1.0
-    assert(v >= 0 && v <= 1.0);
-    this._volume = v;
-    this.updateVolume();
+    this.playerPromise().then(() => {
+      assert(v >= 0 && v <= 1.0);
+      this._volume = v;
+      this.updateVolume();
+    });
     return this;
   }
 
   updateVolume() {
-    if (this.player()) {
+    this.playerPromise().then(() => {
       const v = this.volume()*100;
-      //debugger;
       if (this.isReady()) {
         this.debugLog("set volume:", v)
         this.player().setVolume(v);
         this.debugLog("getVolume: ", this.player().getVolume())
         assert(v === this.player().getVolume());
       }
-    }
+    });
     return this;
   }
 
   stop() {
-    const player = this.player();
-    if (this.isReady()) {
+    this.playerPromise().then(() => {
       this.player().stopVideo();
-    }
+    });
     return this;
   }
 
   shutdown() {
-    const player = this.player();
-    if (player) {
+    this.playerPromise().then(() => {
+      const player = this.player();
       player.stopVideo();
       player.destroy();
       this.setPlayer(null);
-    }
+    });
     return this;
   }
 }).initThisClass();

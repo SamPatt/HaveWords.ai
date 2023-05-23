@@ -58,6 +58,7 @@
       }).asyncSend();
 
       this.debugLog(json);
+      console.log(json);
 
       let body;
 

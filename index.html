@@ -40,10 +40,9 @@
 
             <!--- ai column --->
 
-            <div id="aiChatColumn" class="ColumnView">
+            <div id="aiChatColumn" class="ColumnView" style="min-width: 38.5em;">
                 <div class="header" stlye="position: relative;">
-                    <h2>HaveWords.ai <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive
-                            Generative Fiction</span></h2>
+                    <h2>HaveWords.ai <!-- <span style="font-weight: 300; opacity: 0.5; padding-left: 0.1em;">Interactive Generative Fiction</span>--></h2>
                     <div id="SessionTitle"></div>
                     <div id="SessionDescription"></div>
                     <div id="compactButton1" class="compactor">
@@ -68,13 +67,14 @@
 
                 <!--- begin host settings --->
 
-                <div class="header optionsContainer scrollingOutput" id="aiSelectionBlock">
+                <div class="header optionsContainer scrollingOutput" id="aiSelectionBlock" style="padding-top: 1em; padding-left:1.5em; flex-grow: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div>
                         <h2>Welcome to your AI session!</h2>
-                        <p>First, you need to set your OpenAI API key, and select the session options.<br>
+                        <br>
+                        First, you need to set your OpenAI API key, and select the session options.<br>
                             If you'd like to invite friends, use the Copy Invite Link button on the top right of the
                             page.<br>
-                            Before you begin, you'll also want to set your player name in the Group Chat column.</p>
+                            Before you begin, you'll also want to set your player name in the Group Chat column.
 
 
                         <!-- begin Open AI settings -->
@@ -129,7 +129,7 @@
                                         <input id="midjourneyApiBaseUrlText" type="text" placeholder="Enter your Midjourneyapi.io API Base URL"
                                             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                                             value="https://api.midjourneyapi.io/v2"
-                                            class="underlinedInput optionsInput" >
+                                            class="underlinedInput optionsInput" style="min-width:12em;">
                                     </div>
                                 </td>
                             </tr>

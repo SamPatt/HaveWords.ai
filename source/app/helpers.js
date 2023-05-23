@@ -108,24 +108,26 @@ function Element_wrapWordsWithSpanClassName(element, className) {
           const words = node.nodeValue.match(/(\S+\s*)/g); // Match words with trailing spaces
           let newNodes = [];
 
-          words.forEach((word, index) => {
-              const span = document.createElement('span');
-              span.className = className;
-              span.textContent = word;
-              newNodes.push(span);
-          });
+          if (words) {
+            words.forEach((word, index) => {
+                const span = document.createElement('span');
+                span.className = className;
+                span.textContent = word;
+                newNodes.push(span);
+            });
 
-          // Remove the current text node
-          element.removeChild(node);
+            // Remove the current text node
+            element.removeChild(node);
 
-          // Insert new nodes at the original index
-          newNodes.forEach((newNode, index) => {
-              if (i + index < element.childNodes.length) {
-                  element.insertBefore(newNode, element.childNodes[i + index]);
-              } else {
-                  element.appendChild(newNode);
-              }
-          });
+            // Insert new nodes at the original index
+            newNodes.forEach((newNode, index) => {
+                if (i + index < element.childNodes.length) {
+                    element.insertBefore(newNode, element.childNodes[i + index]);
+                } else {
+                    element.appendChild(newNode);
+                }
+            });
+          }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
           Element_wrapWordsWithSpanClassName(node, className);
       }

@@ -186,6 +186,7 @@
     button.style.top = "1em";
 
     button.addEventListener("click", () => {
+      this.setImageUrl(null); // to add loading animation
       ImageBot.shared().setSceneDescription(this.text()).setRequestId(this.requestId()).trigger();
       // Hide the button after it has been clicked
       button.style.display = "none";
