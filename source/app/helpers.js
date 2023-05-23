@@ -213,6 +213,14 @@ Object.defineSlot(String.prototype, "isValidHtml", function() {
   return simpleValidateHtmlStr(this) === true;
 });
 
+Object.defineSlot(String.prototype, "validatedHtml", function() {
+  const v = simpleValidateHtmlStr(this);
+  if (v === true) {
+    return this;
+  }
+  return v;
+});
+
 
 function simpleValidateHtmlStr(htmlStr, strictBoolean) {
   if(typeof htmlStr!=="string")

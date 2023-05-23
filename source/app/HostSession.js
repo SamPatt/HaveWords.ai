@@ -246,9 +246,33 @@
     return await request.asyncSendAndStreamResponse();
   }
 
+  /*
   onStreamData (request, newData) {
     //console.log("Host " + request.requestId() + " onStreamData:" , newData);
     const content = request.fullContent();
+    const validated = constent.validatedHtml();
+    const lastContent = request.lastContent();
+
+    if (validated !== ) {
+      //const sendContent = content;
+
+      const newContent = content.substr(lastContent.length);
+      const wrappedNewContent = newContent.wrapHtmlWordsWithSpanClass("fadeInWord");
+      
+      //console.log("---\n" + wrappedNewContent + "\n---");
+
+      const sendContent = lastContent + wrappedNewContent;
+      request.setLastContent(content);
+      
+      this.shareUpdate(request, sendContent);
+    }
+  }
+  */
+
+  onStreamData (request, newData) {
+    //console.log("Host " + request.requestId() + " onStreamData:" , newData);
+    const content = request.fullContent();
+
     if (content.isValidHtml()) {
       //const sendContent = content;
 

@@ -193,26 +193,27 @@
   }
 
   onXhrLoadEnd (event) {
+    debugger;
     this.onXhrRead();
     this.streamTarget().onStreamComplete(this);
     if (this.service().onRequestComplete) {
       this.service().onRequestComplete(this)
     }
-    this.xhrReject()(this.fullContent()); 
+    this.xhrResolve()(this.fullContent()); 
   }
 
   onXhrError (event) {
+    debugger;
     if (event.constructor === ProgressEvent) {
       console.warn("got a ProgressEvent as an xhr error. Why?");
-      debugger;
       return;
     }
-    debugger;
     this.streamTarget().onStreamComplete(this);
     this.xhrReject()(event);
   }
 
   onXhrAbort (event) {
+    debugger;
     this.streamTarget().onStreamComplete(this);
     this.xhrReject()(new Error("aborted"));
   }
@@ -253,6 +254,7 @@
       }
     } catch(error) {
       console.warn(this.type() + " ERROR:", error);
+      debugger;
       this.xhrReject()(new Error(error));
     }
   }
@@ -265,6 +267,7 @@
 
     if (json.error) {
       console.warn("ERROR:" + json.error.message);
+      debugger;
       this.xhrReject()(new Error(json.error.message));
     } else if (
         json.choices &&
