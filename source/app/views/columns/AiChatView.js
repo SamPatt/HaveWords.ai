@@ -189,7 +189,7 @@
 
     // Trigger music only if host and in session
     //debugger;
-    if (App.shared().isHost() && Session.shared().inSession()) {
+    if (App.shared().isHost() && Session.shared().inSession() && text) {
       OpenAiMusicBot.shared().setSceneDescription(text).trigger();
     }
 

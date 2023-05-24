@@ -457,7 +457,7 @@
   }
 
   playerNames() {
-    return this.getCurrentUsernames().join(",");
+    return this.getCurrentUsernames().join(", ");
   }
 
   replacedConfigString(s) {
@@ -473,28 +473,38 @@
 
   // --- config lookups ---
 
-  configLookup(key) {
-    const a = this.sessionTypeOptions().selectedElement()._item[key];
-    const b = this.sessionSubtypeOptions().selectedElement()._item[key];
+  typeConfigLookup (key) {
+    return this.sessionTypeOptions().selectedElement()._item[key];
+  }
+
+  subtypeConfigLookup (key) {
+    return this.sessionSubtypeOptions().selectedElement()._item[key];
+  }
+
+  configLookup (key) {
+    const a = this.typeConfigLookup(key);
+    const b = this.subtypeConfigLookup(key);
     const v = b ? b : a;
     return v ? v : "";
   }
 
-  promptSuffix() {
-    return this.configLookup("promptSuffix");
+  addativeConfigLookup (key) {
+    const a = this.typeConfigLookup(key);
+    const b = this.subtypeConfigLookup(key);
+    let A = a ? a : "";
+    let B = b ? b : "";
+    return A + B;
   }
 
-
   prompt() {
-    let prompt = this.configLookup("prompt");
-
-    const promptSuffix = this.promptSuffix();
-    if (promptSuffix) {
-      prompt += promptSuffix; // for the prompts, we add them together, for others we typically override
-    }
-    prompt += this.languagePrompt();
+    const fullPrompt = [
+      this.configLookup("promptPrefix"), 
+      this.configLookup("prompt"), 
+      this.configLookup("promptSuffix"), 
+      this.languagePrompt()
+    ].join("\n\n");
     
-    return this.replacedConfigString(prompt);
+    return this.replacedConfigString(fullPrompt);
   }
 
   message() {
@@ -645,6 +655,9 @@
 
     Sounds.shared().playOminousSound();
 
+    console.log("--- BEGIN SYSTEM PROMPT ---");
+    console.log(this.prompt());
+    console.log("--- END SYSTEM PROMPT ---");
     HostSession.shared().sendAIResponse(this.prompt(), "system");
 
     /*

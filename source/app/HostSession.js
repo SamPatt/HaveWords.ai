@@ -205,6 +205,7 @@
     this.broadcast({
       type: "imageLink",
       message: imageURL,
+      requestId: requestId,
       nickname: LocalUser.shared().nickname(),
     });
   }

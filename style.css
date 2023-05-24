@@ -840,6 +840,13 @@ button {
     padding-bottom: 0em;
 }
 
+.chapterImage {
+    width: 100%;
+    text-align: center;
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+
 .chapterTitle {
     font-size: 2em;
     letter-spacing: 0.2em;

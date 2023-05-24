@@ -148,6 +148,7 @@
 
   async asyncSendAndStreamResponse () {
     this.assertValid();
+    assert(!this.xhr());
 
     this.assertReadyToStream();
     
@@ -203,9 +204,12 @@
 
   onXhrError (event) {
     debugger;
-    if (event.constructor === ProgressEvent) {
-      console.warn("got a ProgressEvent as an xhr error. Why?");
-      return;
+    if (event.type === "error") {
+      // error events don't contain messages - need to look at xhr and guess at what happened
+      console.warn("got an error on xhr requestId" + this.requestId() + ":");
+      console.warn("  xhr.status:     ", xhr.status); // e.g. 404 = file not found
+      console.warn("  xhr.statusText: '" + xhr.statusText + "'");
+      console.warn("  xhr.readyState: ", xhr.readyState); // e.g.. 4 === DONE
     }
     this.streamTarget().onStreamComplete(this);
     this.xhrReject()(event);
