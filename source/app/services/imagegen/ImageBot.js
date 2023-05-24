@@ -29,7 +29,7 @@
 
     const data = await request.asyncSend();
     if (data.error) {
-      throw new Error(data.error);
+      throw new Error(data.error.message);
     }
     const imageDescription = data.choices[0].message.content;
 

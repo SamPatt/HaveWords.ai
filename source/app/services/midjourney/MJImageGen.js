@@ -40,7 +40,7 @@
 
   init () {
     super.init();
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
   }
 
   newRequest () {
@@ -59,6 +59,12 @@
 
   updateTimeTaken () {
     this.setTimeTaken(new Date().getTime() - this.requestStartTime());
+  }
+
+  throwError (error) {
+    this.setStatus("error: " + error.message);
+    this.onChange()
+    throw error;
   }
 
   // Calls the OpenAI Image API and returns the image URL fetchOpenAIImageResponse
@@ -94,14 +100,14 @@
       let startTime = new Date().getTime();
       do {
         if (new Date().getTime() - startTime > 120000) {
-          throw new Error("Timeout waiting for midjourney");
+          this.throwError(new Error("Timeout waiting for midjourney"));
         }
         await new Promise(r => setTimeout(r, this.pollingMs()));
         json = await this.newRequest().setEndpointPath("/result").setBody(body).asyncSend();
         this.debugLog(json);
 
         if (json.errors) {
-          throw new Error(JSON.stringify(json));
+          this.throwError(new Error(JSON.stringify(json)));
         }
 
         if (json.percentage) {
@@ -126,7 +132,7 @@
       startTime = new Date().getTime();
       do {
         if (new Date().getTime() - startTime > 120000) {
-          throw new Error("Timeout waiting for midjourney");
+          this.throwError(new Error("Timeout waiting for midjourney"));
         }
 
         await new Promise(r => setTimeout(r, this.pollingMs()));
@@ -134,7 +140,9 @@
         this.debugLog(json);
 
         if (json.errors) {
-          throw new Error(JSON.stringify(json));
+          this.setStatus("error: " + JSON.stringify(json));
+          this.onChange()
+          this.throwError(new Error(JSON.stringify(json));
         }
       } while(!json.imageURL);
 

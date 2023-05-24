@@ -9,7 +9,7 @@
     this.newSlot("element", null);
     this.newSlot("playerPromise", null); // resolves once player is available. Use .then() on this to queue actions to wait on it
     this.newSlot("player", null); // to store the YouTube player
-    this.newSlot("isReady", false); 
+    this.newSlot("isReady", false);
     this.newSlot("videoId", null);
     this.newSlot("shouldRepeat", true);
     this.newSlot("frameIsReady", null);
@@ -21,7 +21,7 @@
     this.setIsDebugging(false);
   }
 
-  playerPromise () {
+  playerPromise() {
     if (!this._playerPromise) {
       this._playerPromise = new Promise((resolve, reject) => {
         this._resolvePlayer = resolve;
@@ -45,15 +45,15 @@
   onFrameReady() {
     this.debugLog("onFrameReady()");
     this.setFrameIsReady(true);
-    this.setupPlayer()
+    this.setupPlayer();
     return this;
   }
 
   setupPlayer() {
     this.debugLog("setupPlayer()");
     const json = {
-      height: '0',
-      width: '0',
+      height: "0",
+      width: "0",
       events: {
         onReady: (event) => {
           this.onPlayerReady(event);
@@ -82,7 +82,7 @@
       console.warn(error);
       throw error;
     }
-    this.setIsReady(false)
+    this.setIsReady(false);
     return this;
   }
 
@@ -96,9 +96,12 @@
       const startSeconds = 0.0;
       if (this.videoId()) {
         this.player().loadVideoById(this.videoId(), startSeconds);
+        //this.player().pauseVideo()
+        //this.player().cueVideoById(this.videoId());
+        //this.playWhenBuffered();
       }
-    })
-    return this
+    });
+    return this;
   }
 
   isPlaying() {
@@ -111,26 +114,40 @@
   onPlayerError(event) {
     // Handle the error based on the error code
     const error = Number(event.data);
-    this.debugLog("------------------ onPlayerError " + error + " videoId: '" + this.videoId() + "'")
+    this.debugLog(
+      "------------------ onPlayerError " +
+        error +
+        " videoId: '" +
+        this.videoId() +
+        "'"
+    );
 
     switch (error) {
       case 2: // Invalid parameter
-        console.error('The request contains an invalid parameter value. For example, this error occurs if you specify a video ID that does not have 11 characters, or if the video ID contains invalid characters, such as exclamation points or asterisks.');
+        console.error(
+          "The request contains an invalid parameter value. For example, this error occurs if you specify a video ID that does not have 11 characters, or if the video ID contains invalid characters, such as exclamation points or asterisks."
+        );
         break;
       case 5:
-        console.error("The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred.");
+        console.error(
+          "The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred."
+        );
         break;
       case 100: // Video not found
-        console.error('Video not found.');
+        console.error("Video not found.");
         break;
       case 101: // Playback not allowed
-        console.error("The owner of the requested video does not allow it to be played in embedded players.");
+        console.error(
+          "The owner of the requested video does not allow it to be played in embedded players."
+        );
         break;
       case 150: // Playback not allowed
-        console.error("The owner of the requested video does not allow it to be played in embedded players.");
+        console.error(
+          "The owner of the requested video does not allow it to be played in embedded players."
+        );
         break;
       default: // Unexpected error
-        console.error('An unexpected error occurred while loading the video.');
+        console.error("An unexpected error occurred while loading the video.");
     }
   }
 
@@ -140,15 +157,15 @@
     this.setIsReady(true);
     this.updateVolume();
 
-    assert(this._resolvePlayer);    
+    assert(this._resolvePlayer);
     if (this._resolvePlayer) {
-      this._resolvePlayer()
+      this._resolvePlayer();
     }
     //this.player().style.display = "none";
   }
 
   onPlayerStateChange(event) {
-    this.debugLog("onPlayerStateChange " + event.data)
+    this.debugLog("onPlayerStateChange " + event.data);
 
     const state = Number(event.data);
     switch (state) {
@@ -188,7 +205,8 @@
     }
   }
 
-  setVolume(v) { // 0.0 to 1.0
+  setVolume(v) {
+    // 0.0 to 1.0
     this.playerPromise().then(() => {
       assert(v >= 0 && v <= 1.0);
       this._volume = v;
@@ -199,11 +217,11 @@
 
   updateVolume() {
     this.playerPromise().then(() => {
-      const v = this.volume()*100;
+      const v = this.volume() * 100;
       if (this.isReady()) {
-        this.debugLog("set volume:", v)
+        this.debugLog("set volume:", v);
         this.player().setVolume(v);
-        this.debugLog("getVolume: ", this.player().getVolume())
+        this.debugLog("getVolume: ", this.player().getVolume());
         //assert(v === this.player().getVolume());
       }
     });
@@ -212,7 +230,7 @@
 
   stop() {
     if (!this._playerPromise) {
-      // no one has asked player to play yet, 
+      // no one has asked player to play yet,
       // so we can ignore the stop
       return;
     }
@@ -230,6 +248,31 @@
       this.setPlayer(null);
     });
     return this;
+  }
+
+  secondsBuffered() {
+    if (this.isReady()) {
+      const player = this.player();
+      var fraction = player.getVideoLoadedFraction(); // Get the fraction of the video that has been loaded
+      var duration = player.getDuration(); // Get the total duration of the video
+      var bufferedTime = fraction * duration; // Calculate the amount of time that has been buffered
+
+      console.log("Buffered time: " + bufferedTime + " seconds");
+      return this;
+    }
+    return 0;
+  }
+
+  playWhenBuffered() {
+    if (!this._checkBuffer) {
+      this._checkBuffer = setInterval(() => {
+        if (this.secondsBuffered() > 30) {
+          this.player().playVideo();
+          clearInterval(this._checkBuffer); // Stop checking the buffer size
+          this._checkBuffer = null;
+        }
+      }, 1000); // Check every second
+    }
   }
 }).initThisClass();
 

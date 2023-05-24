@@ -315,7 +315,7 @@
   }
 
   updateImageProgress(imageGen) { 
-    console.log(this.type() + ` MJImageGenProgress status: ${imageGen.status()} progress: ${ imageGen.progress()}`);
+    //console.log(this.type() + ` MJImageGenProgress status: ${imageGen.status()} progress: ${ imageGen.progress()}`);
     const json = {
       type: "updateImageProgress",
       id: LocalUser.shared().id(),

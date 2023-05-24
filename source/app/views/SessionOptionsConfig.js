@@ -252,7 +252,7 @@ const sessionOptionsArray = [
         value: "Harry Potter",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the Harry Potter books and films. 
         We'd like you to write this adventure as J.K. Rowling would.`,
-        artPromptPrefix: "Charcoal art drawing of:",
+        artPromptPrefix: "Mary GrandPré style illustration of:",
         musicPlaylists: ["HarryPotter"],
         defaultMusicTrackId: "MgkIHQvCJRk", 
         headerFontFamily: "Lumos",
