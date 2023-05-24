@@ -118,7 +118,7 @@ Dark Fantasy (adult):
   Battlestar Galactica
 
 Fantasy Period:
-  Downtown Abby
+  Downton Abby
   The Crown
   The Great Gadbsy
 
@@ -340,7 +340,7 @@ Do not mention any of the name of the author.`,
         value: "Thomas Ligotti",
         prompt: `Please play the roll of the author Thomas Ligotti and lead us on an interactive fiction adventure of your own creation in the realm of his short stories.
         These stories always lead to the doom of the character the player is playing, but don't tell the player this.`,
-        artPromptPrefix: "Pen and ink illustration of:",
+        artPromptPrefix: "Dark art pen and ink illustration of:",
         fontFamily: "XTypewriter",
       },
 
@@ -348,8 +348,11 @@ Do not mention any of the name of the author.`,
       {
         label: "Jane Austen",
         value: "Jane Austen",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s books and stories.`,
-        artPromptPrefix: "Pen and ink illustration of:",
+        prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the [sessionSubtype] books and films. 
+        We'd like you to write this adventure as [sessionSubtype] would.`,
+        artPromptPrefix: "Lithograph in the style of Théodore Gericault of:",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
 
       {
@@ -359,6 +362,8 @@ Do not mention any of the name of the author.`,
         Do not mention the author's name while telling or describing the story. Do not take actions on the player's behalf.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
 
       {
@@ -366,6 +371,8 @@ Do not mention any of the name of the author.`,
         value: "Twilight Saga",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of Stephenie Meyer's [sessionSubtype]'s books and films.`,
         artPromptPrefix: "Pen and ink illustration of:",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
 
       {

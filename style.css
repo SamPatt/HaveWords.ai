@@ -632,14 +632,15 @@ button {
 .generate-image-prompt-button:hover::before {
     content: attr(data-tooltip);
     position: absolute;
-    top: -30px;
+    top: -2em;
     /* Adjust this value to position the tooltip vertically */
-    right: 30px;
+    right: 0;
     /* Adjust this value to position the tooltip horizontally */
-    background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    padding: 5px 10px;
+    /*
+    padding: 1em 1em;
     border-radius: 0.3em;
+    */
     font-size: 1em;
     white-space: nowrap;
 }
@@ -841,6 +842,7 @@ button {
 }
 
 .chapterImage {
+    display: none;
     width: 100%;
     text-align: center;
     padding-top: 0em;

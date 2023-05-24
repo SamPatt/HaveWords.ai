@@ -36,6 +36,7 @@
       this.newSlot("requestId", null);
       this.newSlot("requestStartTime", 0);
       this.newSlot("timeTaken", 0);
+      this.newSlot("errorMessage", "");
     }
 
   init () {
@@ -62,7 +63,9 @@
   }
 
   throwError (error) {
+    debugger;
     this.setStatus("error: " + error.message);
+    this.setErrorMessage(error.message);
     this.onChange()
     throw error;
   }

@@ -18,6 +18,7 @@
     this.newSlot("loadingContainer", null);
     this.newSlot("imageContainer", null);
     this.newSlot("requestId", null);
+    this.newSlot("imageGenButton", null);
   }
 
   init() {
@@ -97,9 +98,7 @@
 
   setImageUrl (imageUrl) {
     if (!imageUrl) {
-      const spinner = "Generating image" + this.dotsHtml();
-      //const spinner = this.centerDotsHtml();
-      this.imageContainer().innerHTML = spinner;
+      this.setImageContainerText("Generating image" + this.dotsHtml());
     } else {
       const iv = ImageMessageView.clone().setImageUrl(imageUrl).setIsUser(false);
       this.imageContainer().innerHTML = "";
@@ -168,7 +167,10 @@
   // --------------------------------
 
   addImageGenButton () {
-    this.element().appendChild(this.newImageGenImageButton());
+    const button = this.newImageGenImageButton();
+    this.setImageGenButton(button);
+    this.element().appendChild(button);
+    return this;
   }
 
   newImageGenImageButton () {
@@ -194,21 +196,35 @@
       this.setImageUrl(null); // to add loading animation
       ImageBot.shared().setSceneDescription(this.text()).setRequestId(this.requestId()).trigger();
       // Hide the button after it has been clicked
-      button.style.display = "none";
+      this.hideImageGenButton();
     });
 
     return button
   }
 
+  hideImageGenButton () {
+    button.style.opacity = "none";
+  }
+
+  showImageGenButton () {
+    button.style.display = "block";
+  }
+
   updateImageProgressJson(json) {
     //debugger;
     if (json.status.includes("error")) {
-      this.imageContainer().innerHTML = "Generating image error: " + json.error + "";
+      this.setImageContainerText("Error generating image: \"" + json.errorMessage + "\"");
+      this.showImageGenButton();
     } else {
       if (json.percentage > 0) {
-        this.imageContainer().innerHTML = "Generating image " + json.percentage + "%" + this.dotsHtml();
+        this.setImageContainerText("Generating image " + json.percentage + "%" + this.dotsHtml());
       }
     }
+  }
+
+  setImageContainerText (text) {
+    this.imageContainer().innerHTML = "<span style=\"opacity:0.5;\">" + text + "</span>";
+    return this;
   }
 
 }.initThisClass());

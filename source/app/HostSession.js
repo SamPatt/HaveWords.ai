@@ -324,6 +324,7 @@
       percentage: imageGen.progress(),
       timeTaken: imageGen.timeTaken(),
       status: imageGen.status(),
+      errorMessage: imageGen.errorMessage()
     };
 
     AiChatView.shared().updateImageProgressJson(json);
