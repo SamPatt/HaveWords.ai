@@ -200,5 +200,16 @@
     return button
   }
 
+  updateImageProgressJson(json) {
+    //debugger;
+    if (json.status.includes("error")) {
+      this.imageContainer().innerHTML = "Generating image error: " + json.error + "";
+    } else {
+      if (json.percentage > 0) {
+        this.imageContainer().innerHTML = "Generating image " + json.percentage + "%" + this.dotsHtml();
+      }
+    }
+  }
+
 }.initThisClass());
 

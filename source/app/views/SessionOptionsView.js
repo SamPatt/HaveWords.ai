@@ -607,6 +607,11 @@
     this.hide();
 
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists());
+    const defaultMusicTrackId = this.configLookup("defaultMusicTrackId");
+    if (defaultMusicTrackId) {
+      HostSession.shared().playTrackId(defaultMusicTrackId);
+    }
+
     this.applySessionUiPrefs();
     this.updateSessionTitle();
 

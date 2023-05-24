@@ -29,8 +29,13 @@
       "cocaine", "heroin", "meth", "crack","torture", "disturbing", "farts", "fart", "poop", "warts", "shit", "brown pudding", "bunghole", 
       "vomit", "voluptuous", "seductive", "sperm", "hot", "sexy", "sensored", "censored", "silenced", "deepfake", "inappropriate", "pus", 
       "waifu", "mp5", "succubus", "1488", "surgery"]`);
-      this.newSlot("pollingMs", 1000);
-      this.newSlot("timeTaken", null);
+      this.newSlot("pollingMs", 2000);
+      this.newSlot("progress", 0);
+      this.newSlot("status", "");
+      this.newSlot("error", null);
+      this.newSlot("requestId", null);
+      this.newSlot("requestStartTime", 0);
+      this.newSlot("timeTaken", 0);
     }
 
   init () {
@@ -48,19 +53,24 @@
     return this.apiBaseUrl().includes("v2");
   }
 
+  onChange () {
+    HostSession.shared().updateImageProgress(this);
+  }
+
+  updateTimeTaken () {
+    this.setTimeTaken(new Date().getTime() - this.requestStartTime());
+  }
+
   // Calls the OpenAI Image API and returns the image URL fetchOpenAIImageResponse
   async asyncFetch() {
-    const requestStartTime = new Date().getTime();
+    this.setRequestStartTime(new Date().getTime());
 
     assert(this.prompt());
     assert(this.mjVersion());
 
     try {
-      AiChatView.shared().updateImageProgress({
-        prompt: this.prompt(),
-        status: "sending request",
-        progressPercentage: 0
-      });
+      this.setProgress(0);
+      this.onChange();
 
       let json = await this.newRequest().setEndpointPath("/imagine").setBody({
         prompt: this.prompt() + " --v " + this.mjVersion()
@@ -68,11 +78,9 @@
 
       this.debugLog(json);
 
-      AiChatView.shared().updateImageProgress({
-        prompt: this.prompt(),
-        status: json.status || "request sent",
-        progressPercentage: json.percentage || 0
-      });
+      this.setStatus("request sent");
+      this.setProgress(json.percentage || 0);
+      this.onChange();
 
       let body;
 
@@ -96,18 +104,17 @@
           throw new Error(JSON.stringify(json));
         }
 
-        AiChatView.shared().updateImageProgress({
-          prompt: this.prompt(),
-          status: json.status || "unknown",
-          progressPercentage: json.percentage || 0
-        });
+        if (json.percentage) {
+          this.setStatus("unknown");
+          this.setProgress(json.percentage || 0);
+          this.onChange();
+        }
+
       } while(!json.imageURL);
 
-      AiChatView.shared().updateImageProgress({
-        prompt: this.prompt(),
-        status: json.status || "upscaling",
-        progressPercentage: 99
-      });
+      this.setStatus("upscaling");
+      this.setProgress(99);
+      this.onChange();
 
       if (this.isApiV2()) {
         body = { taskId: body.taskId, position: 1 };
@@ -131,18 +138,26 @@
         }
       } while(!json.imageURL);
 
-      this.setTimeTaken(new Date().getTime() - requestStartTime);
+      this.updateTimeTaken();
+      this.setStatus("complete");
+      this.setProgress(100);
+      this.onChange();
 
       return json.imageURL;
 
     } catch (error) {
-      console.error("Error fetching MJ response:", error);
+      console.error("Error fetching MJ response:", error.message);
+      this.setError(error);
+      this.setStatus(error.message);
+      this.onChange();
+      /*
       AiChatView.shared().addMessage(
         "systemMessage",
-        "Error fetching Midjourney.io response. Make sure the model the API key and baseURL is correct.",
+        "Error fetching Midjourney.io response. " + error.message,
         "Host",
         LocalUser.shared().id()
       );
+      */
       return undefined
     }
   }

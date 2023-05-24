@@ -138,6 +138,10 @@
     SessionOptionsView.shared().guestDisplayHostSessionHistory(data.history);
   }  
 
+  onReceived_updateImageProgress(data) {
+    AiChatView.shared().updateImageProgressJson(data);
+  }
+
   onReceived_nicknameUpdate(data) {
     // Update the chat message
     GroupChatView.shared().addChatMessage(

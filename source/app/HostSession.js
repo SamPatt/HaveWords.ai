@@ -29,11 +29,14 @@
     PeerServer.shared().broadcastExceptTo(json, excludeId);
   }
 
+  playTrackId (trackId) {
+    MusicPlayer.shared().playTrackId(trackId);
+    HostSession.shared().broadcastPlayTrackId(trackId);
+  }
+
   broadcastPlayTrackId (trackId) {
     this.broadcast({
       type: "playTrackId",
-      //id: LocalUser.shared().id(),
-      //nickname: LocalUser.shared().nickname(),
       trackId: trackId,
     });
   }
@@ -111,6 +114,7 @@
   }
 
   showHostIntroMessage () {
+    /*
       const message = `<p>Welcome, <b>${LocalUser.shared().nickname()}</b>!</p>` + 
         "<p>If you'd like to have others join your session, you can share the invite link (top right button in this window) with your friends.</p>" +
         "<p>Click on their usernames in the Guest section to grant them access to your AI, or to kick or mute them if they are behaving badly.</p>";
@@ -121,6 +125,7 @@
         "HaveWords",
         LocalUser.shared().id()
       );
+      */
   }
 
   calcGuestAvatars() {
@@ -307,6 +312,21 @@
     this.shareUpdate(request, content);
     AiChatView.shared().onAiResponseCompleteText(content);
     console.log("Host " + request.requestId() + " onStreamComplete");
+  }
+
+  updateImageProgress(imageGen) { 
+    console.log(this.type() + ` MJImageGenProgress status: ${imageGen.status()} progress: ${ imageGen.progress()}`);
+    const json = {
+      type: "updateImageProgress",
+      id: LocalUser.shared().id(),
+      requestId: imageGen.requestId(),
+      percentage: imageGen.progress(),
+      timeTaken: imageGen.timeTaken(),
+      status: imageGen.status(),
+    };
+
+    AiChatView.shared().updateImageProgressJson(json);
+    this.broadcast(json);
   }
   
 }).initThisClass();

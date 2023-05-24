@@ -28,12 +28,15 @@
     });
 
     const data = await request.asyncSend();
+    if (data.error) {
+      throw new Error(data.error);
+    }
     const imageDescription = data.choices[0].message.content;
 
     const fullImageDescription = SessionOptionsView.shared().artPromptPrefix() + " " + imageDescription + SessionOptionsView.shared().artPromptSuffix();
     console.log("Image description: " + fullImageDescription);
 
-    this.imageGen().setPrompt(fullImageDescription);
+    this.imageGen().setPrompt(fullImageDescription).setRequestId(this.requestId());
     const imageURL = await this.imageGen().asyncFetch();
     HostSession.shared().broadcastImage(imageURL, this.requestId());
     AiChatView.shared().addImage(imageURL, this.requestId());

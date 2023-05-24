@@ -84,9 +84,8 @@
     this.debugLog("handlePromptResponse('" + s + "'");
     if (s.startsWith("\"") && s.endsWith("\"")) {
       const trackName = s.slice(1, -1); // remove the quotes
-      MusicPlayer.shared().playTrackWithName(trackName);
       const trackId = MusicPlayer.shared().trackIdForName(trackName);
-      HostSession.shared().broadcastPlayTrackId(trackId);
+      HostSession.shared().playTrackId(trackId)
     } else {
       this.debugLog("ERROR: response not in valid quoted format");
     }
