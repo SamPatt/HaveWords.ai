@@ -149,18 +149,10 @@
 
     let isUser = true;
     if (type === "prompt") {
-
-      this.setShowLoading(true)
+      m.setIsUser(true);
 
     } else if (type === "aiResponse") {
-      isUser = false;
-
-      // update book/chapter/etc if found
-      if (m.chapterNumber() && m.chapterTitle()) {
-        this.sessionTitle().setString(m.chapterNumber() + ": " + m.chapterTitle());
-      } else if(m.bookTitle()) {
-        this.sessionTitle().setString(m.bookTitle());
-      }
+      m.setIsUser(false);
 
       this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
@@ -168,16 +160,10 @@
           m.addImageGenButton();
         }
       }
-      //this.onAiResponseText(m.text());
-
-    } else if (type === "image-gen") {
-
-      this.setShowLoading(true);
-
     } else if (type === "systemMessage") {
-    } 
+      m.setIsUser(false);
 
-    m.setIsUser(isUser);
+    } 
 
     this.addMessageElement(m.element());
 
@@ -187,18 +173,39 @@
     return m
   }
 
-  onAiResponseCompleteText (text) {
-      // Trigger music only if host and in session
-      //debugger;
-      if (App.shared().isHost() && Session.shared().inSession()) {
-        OpenAiMusicBot.shared().setSceneDescription(text).trigger();
-      }
+  onAiResponseCompleteText (text, requestId) {
+    const m = this.requestIdToMessageMap().get(requestId);
 
-      // Trigger Text to Speech
-      AzureTextToSpeech.shared().asyncSpeakTextIfAble(text);
+    if (m) {
+      // update book/chapter/etc if found
+      if (m.chapterNumber() && m.chapterTitle()) {
+        this.sessionTitle().setString(m.chapterNumber() + ": " + m.chapterTitle());
+      } else if(m.bookTitle()) {
+        this.sessionTitle().setString(m.bookTitle());
+      }
+    } else {
+      console.warn("onAiResponseCompleteText couldn't find message for requestId:" + requestId);
+    }
+
+    // Trigger music only if host and in session
+    //debugger;
+    if (App.shared().isHost() && Session.shared().inSession()) {
+      OpenAiMusicBot.shared().setSceneDescription(text).trigger();
+    }
+
+    // Trigger Text to Speech
+    AzureTextToSpeech.shared().asyncSpeakTextIfAble(text);
   }
 
   // --------------------------------------------------------
+
+  scheduleScrollToBottomIfAtBottom () {
+    if (this.isScrolledToBottom()) {
+      setTimeout(()=> {
+        this.scrollToBottom();
+      }, 0);
+    }
+  }
 
   scrollViewContentElement () {
     //return document.querySelector(".messages");
@@ -218,8 +225,7 @@
 
   scrollToBottom () {
     const scrollView = this.scrollView();
-    //scrollView.scrollTop = scrollView.scrollHeight;
-    scrollView.scrollTo(0, scrollView.scrollHeight); // use function to get scroll-behavior: smooth; to work
+    scrollView.scrollTo(0, scrollView.scrollHeight); // use scrollTo() so "scroll-behavior: smooth;" setting can work.
   }
 
   isScrolledToBottom () {

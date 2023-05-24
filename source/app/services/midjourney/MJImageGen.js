@@ -29,7 +29,7 @@
       "cocaine", "heroin", "meth", "crack","torture", "disturbing", "farts", "fart", "poop", "warts", "shit", "brown pudding", "bunghole", 
       "vomit", "voluptuous", "seductive", "sperm", "hot", "sexy", "sensored", "censored", "silenced", "deepfake", "inappropriate", "pus", 
       "waifu", "mp5", "succubus", "1488", "surgery"]`);
-      this.newSlot("pollingMs", 2000);
+      this.newSlot("pollingMs", 4000);
       this.newSlot("progress", 0);
       this.newSlot("status", "");
       this.newSlot("error", null);

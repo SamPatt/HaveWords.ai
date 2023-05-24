@@ -278,7 +278,11 @@
         this.setFullContent(this.fullContent() + newContent);
         this.streamTarget().onStreamData(this, newContent);
     } else {
-      console.warn("WARNING: don't know what to do with this JsonChunk", json);
+      if (json.id) {
+        // this is the header chunk - TODO: save anything importent in some request slots?
+      } else {
+        console.warn("WARNING: don't know what to do with this JsonChunk", json);
+      }
     }
   }
 
