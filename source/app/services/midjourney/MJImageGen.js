@@ -142,7 +142,7 @@
         if (json.errors) {
           this.setStatus("error: " + JSON.stringify(json));
           this.onChange()
-          this.throwError(new Error(JSON.stringify(json));
+          this.throwError(new Error(JSON.stringify(json)));
         }
       } while(!json.imageURL);
 
