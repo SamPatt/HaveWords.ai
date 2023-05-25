@@ -47,7 +47,7 @@
       `We are playing a roleplaying game and need a description of the current scene in order to generate an image. 
     I will give you the background information for the characters and setting, and then the details of the current scene. 
     Using what you know of the background, describe the current scene in a single sentence using simple language which can be used to generate an image. 
-    Do not use character's names, or location names. 
+    Do not use character's names, or location names. If characters are in the scene, ensure they are given a simple description in the prompt, such as "young woman wearing robes" or "middle-aged man in a suit."
     No proper nouns.\n\n${this.imageGen().systemInstructions()}Here is the current scene: \n\n ` +
       this.sceneDescription()
     );
