@@ -471,12 +471,25 @@
 
   // --- config lookups ---
 
-  typeConfigLookup (key) {
-    return this.sessionTypeOptions().selectedElement()._item[key];
+  getPathOnJson (path, json) {
+    const parts = path.split(".");
+    let v = json;
+    let k = parts.shift();
+    while (v && k) {
+      v = v[k];
+      k = parts.shift();
+    };
+    return v;
   }
 
-  subtypeConfigLookup (key) {
-    return this.sessionSubtypeOptions().selectedElement()._item[key];
+  typeConfigLookup (path) {
+    const json = this.sessionTypeOptions().selectedElement()._item;
+    return this.getPathOnJson(path, json);
+  }
+
+  subtypeConfigLookup (path) {
+    const json = this.sessionSubtypeOptions().selectedElement()._item;
+    return this.getPathOnJson(path, json);
   }
 
   configLookup (key) {
@@ -528,29 +541,33 @@
     return this.configLookup("musicPlaylists");
   }
 
-  sessionFontFamily() {
-    return this.configLookup("fontFamily");
-  }
-
-  sessionFontWeight() {
-    const v = this.configLookup("fontWeight");
-    return v ? v : "300";
-  }
-
-  headerFontFamily() {
-    const v = this.configLookup("headerFontFamily");
-    return v ? v : "inherit";
-  }
+  // -- theme properties ---
 
   sessionBackgroundColor() {
-    const v = this.configLookup("backgroundColor");
+    const v = this.configLookup("theme.backgroundColor");
     return v ? v : "#222";
   }
 
   sessionTextColor() {
-    const v = this.configLookup("color");
+    const v = this.configLookup("theme.color");
     return v ? v : "rgb(219, 219, 219)";
   }
+  
+  sessionFontFamily() {
+    return this.configLookup("theme.fontFamily");
+  }
+
+  sessionFontWeight() {
+    const v = this.configLookup("theme.fontWeight");
+    return v ? v : "300";
+  }
+
+  headerFontFamily() {
+    const v = this.configLookup("theme.headerFontFamily");
+    return v ? v : "inherit";
+  }
+
+  // ----------------------------------
 
   allowsImageGen() {
     const v = this.configLookup("allowsImageGen");

@@ -122,6 +122,13 @@ Fantasy Period:
   The Crown
   The Great Gadbsy
 
+
+  THEMES:
+  Light Theme:
+  {
+    color: "#000",
+    backgroundColor: "#F2EDE8",
+  }
 */
 
 const sessionOptionsArray = [
@@ -179,10 +186,12 @@ Please follow this with a brief summary of the story that tries to cover the sto
 
 Again, do not make decisions for the players.`,
     musicPlaylists: ["DnD"],
-    fontFamily: "inherit",
-    headerFontFamily: "inherit",
-    backgroundColor: "#222",
-    color: "rgb(219, 219, 219)",
+    theme: {
+      fontFamily: "inherit",
+      headerFontFamily: "inherit",
+      backgroundColor: "#222",
+      color: "rgb(219, 219, 219)",
+    },
     options: [
       {
         label: "Dungeons & Dragons",
@@ -254,8 +263,10 @@ We'd like you to write this adventure as J.K. Rowling would.`,
         artPromptPrefix: "Mary GrandPré style pastel drawing of:",
         musicPlaylists: ["HarryPotter"],
         defaultMusicTrackId: "MgkIHQvCJRk", 
-        headerFontFamily: "Lumos",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Lumos",
+          fontFamily: "Cardo",
+        }
       },
       {
         label: "Studio Ghibli",
@@ -267,10 +278,12 @@ Please remember that Totoro doesn't speak. In your adventure, please don't menti
 Also, please do not make decisions for the players.`,
         artPromptPrefix: "Anime oil painting high resolution Ghibli inspired 4k.",
         musicPlaylists: ["StudioGhibli"],
-        fontFamily: "Ghibli",
-        headerFontFamily: "Ghibli",
-        backgroundColor: "#109CEB",
-        color: "rgba(255, 255, 255, 1)",
+        theme: {
+          fontFamily: "Ghibli",
+          headerFontFamily: "Ghibli",
+          backgroundColor: "#109CEB",
+          color: "rgba(255, 255, 255, 1)",
+        },
       },
       {
         value: "Conan",
@@ -281,16 +294,20 @@ As in the books, the adventures should be of epic and deal with great challenges
 The time period roughly corresponds to that of the earliest human civilations in the fertile cresent and while steel and magic exists in this universe, 
 no modern technologies (such as guns, planes, or automobiles, etc) do. Do not mention any of the names of the authors.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        },
       },
       {
         label: "Norse Mythology",
         value: "Norse Mythology",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        },
       },
       {
         label: "Discworld",
@@ -307,8 +324,10 @@ Do not mention any of the name of the author.`,
 These stories should be wimsically humorous and witty, in a good natured way and poke fun at various aspects of society and history.
 Do not mention any of the name of the author.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: ",
-        headerFontFamily: "Harlow",
-        fontFamily: "Crimson",
+        theme: {
+          headerFontFamily: "Harlow",
+          fontFamily: "Crimson",
+        }
       },
 
       {
@@ -317,8 +336,10 @@ Do not mention any of the name of the author.`,
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
 Do not mention any of the name of the author.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of: ",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        },
       },
 
       {
@@ -328,7 +349,9 @@ Do not mention any of the name of the author.`,
         including his unpublished Dream Quest to Unknown Kadath. These stories should be dark fiction, and typically lead to the player's demise.
         Do not mention any of the name of the author.`,
         artPromptPrefix: "Pen and ink illustration of:",
-        fontFamily: "XTypewriter",
+        theme: {
+          fontFamily: "XTypewriter",
+        },
       },
 
       {
@@ -338,8 +361,10 @@ Do not mention any of the name of the author.`,
         These stories should be dark fiction, and almost always lead to the player's demise.
         Do not mention any of the name of the author.`,
         artPromptPrefix: "Pen and ink illustration of:",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        },
       },
 
       {
@@ -358,8 +383,10 @@ Do not mention any of the name of the author.`,
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the [sessionSubtype] books and films. 
         We'd like you to write this adventure as [sessionSubtype] would.`,
         artPromptPrefix: "Rich color lithograph in the style of Théodore Gericault of:",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        }
       },
 
       {
@@ -369,8 +396,10 @@ Do not mention any of the name of the author.`,
         Do not mention the author's name while telling or describing the story. Do not take actions on the player's behalf.`,
         artPromptPrefix: "Pen and ink illustration of:",
         fontFamily: "XTypewriter",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        }
       },
 
       {
@@ -378,8 +407,10 @@ Do not mention any of the name of the author.`,
         value: "Twilight Saga",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of Stephenie Meyer's [sessionSubtype]'s books and films.`,
         artPromptPrefix: "Pen and ink illustration of:",
-        headerFontFamily: "Cardo",
-        fontFamily: "Cardo",
+        theme: {
+          headerFontFamily: "Cardo",
+          fontFamily: "Cardo",
+        }
       },
 
       {
@@ -388,7 +419,9 @@ Do not mention any of the name of the author.`,
         prompt: `Please play the roll of an interactive story teller and lead us on a campaign of your own creation in the genre of Cyberpunk as inspired by the books of
         William Gibson. Please create your own stories by try to replicate William Gibson's style of prose.`,
         artPromptPrefix: "Blade Runner like dark art illustration of:",
-        fontFamily: "Barlow Condensed",
+        theme: {
+          fontFamily: "Barlow Condensed",
+        }
       },
     ],
     /*
@@ -412,10 +445,12 @@ Do not mention any of the name of the author.`,
     and lead us on a trivia game of your own creation, with questions from the [sessionSubtype] category. 
     Please only as one question at a time and wait for a response. After getting a response, please tell us if it was correct and reveal the correct answer if it was wrong.
     The players are: [playerNames].`,
-    backgroundColor: "rgba(6,12,233, 1)",
-    color: "rgba(255, 255, 255, 0.7)",
-    fontFamily: "Barlow Condensed",
-    fontWeight: "300",
+    theme: {
+      backgroundColor: "rgba(6,12,233, 1)",
+      color: "rgba(255, 255, 255, 0.7)",
+      fontFamily: "Barlow Condensed",
+      fontWeight: "300",
+    },
     allowsImageGen: false,
     options: [
       {
@@ -651,10 +686,12 @@ Do not mention any of the name of the author.`,
 
     Start the session by greeting the players and asking them what image they would like to see first.
     `,
-    backgroundColor: "#222",
-    color: "rgb(219, 219, 219)",
-    fontFamily: "Barlow Condensed",
-    fontWeight: "300",
+    theme: {
+      backgroundColor: "#222",
+      color: "rgb(219, 219, 219)",
+      fontFamily: "Barlow Condensed",
+      fontWeight: "300",
+    },
     allowsImageGen: true,
     options: [
       {
