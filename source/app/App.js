@@ -171,6 +171,28 @@
     this.connectedUsersColumn().setIsHidden(aButton.state());
   }
 
+  setClassNamePropertyValue(className, propertyName, value) {
+    const styleSheet = document.styleSheets[0];
+    const rule = "." + className + " { " + propertyName + ": " + value + "; }";
+
+    //document.documentElement.style.setProperty('--class-color', color);
+    document.documentElement.style.setProperty(
+      "--" + className + "-" + propertyName,
+      value
+    );
+  }
+
+  applyThemeDict (dict) {
+    Object.keys(dict).forEach((className) => {
+      const classDict = dict[className];
+      Object.keys(classDict).forEach((propertyName) => {
+        const propertyValue = classDict[propertyName];
+        this.setClassNamePropertyValue(className, propertyName, propertyValue);
+      });
+    });
+    return this;
+  }
+
 }).initThisClass();
 
 /*

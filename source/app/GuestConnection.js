@@ -59,6 +59,8 @@
       setTimeout(() => this.shutdown(), 500);
     }
 
+    HostSession.shared().onOpenGuestConnection(this);
+
     this.setInfo({
       nickname: "",
       canSendPrompts: false,

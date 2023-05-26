@@ -120,8 +120,6 @@
 
   // ========================================================
 
-
-
   addMessage(type, message, nickname, userId, requestId) {
     let avatar;
     if (type === "aiResponse") {
@@ -186,7 +184,6 @@
       OpenAiMusicBot.shared().setSceneDescription(text).trigger();
     }
 
-    // Trigger Text to Speech
     AzureTextToSpeech.shared().asyncSpeakTextIfAble(text);
   }
 

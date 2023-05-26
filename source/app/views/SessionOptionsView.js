@@ -30,9 +30,7 @@
     this.setId("aiSelectionBlock");
 
     this.setAiModelOptions(
-      OptionsView.clone()
-        .setId("aiModelOptions")
-        .setTarget(this)
+      OptionsView.clone().setId("aiModelOptions").setTarget(this)
     );
     this.asyncSetupAiModelOptions();
 
@@ -44,11 +42,12 @@
       OptionsView.clone()
         .setId("imageGenModelOptions")
         .setTarget(this)
-        .setOptions(ImageGenOptions.shared()
-          .modelOptions()
-          .map((name) => {
-            return { label: name, value: name };
-          })
+        .setOptions(
+          ImageGenOptions.shared()
+            .modelOptions()
+            .map((name) => {
+              return { label: name, value: name };
+            })
         )
     );
 
@@ -71,7 +70,7 @@
 
     this.sessionTypeOptions().submit(); // to setup subtypes
 
-    this.sessionSubtypeOptions().setShouldStore(true).load()
+    this.sessionSubtypeOptions().setShouldStore(true).load();
 
     this.setSessionLanguageOptions(
       OptionsView.clone()
@@ -108,39 +107,37 @@
     this.onUpdateInputs(); // to enable start button if ready
   }
 
-  async asyncSetupAiModelOptions () {
+  async asyncSetupAiModelOptions() {
     const note = document.getElementById("AiModelOptionsNote");
     let names = OpenAiChat.shared().availableModelNames();
-    
+
     // Get the API key
     let apiKey = OpenAiChat.shared().apiKey();
-    
+
     // Change the note's display, opacity and color only if there's an API key
     if (apiKey && (!names || names.length === 0)) {
       note.style.display = "inline";
       note.style.opacity = 1;
       note.style.color = "yellow";
     }
-  
+
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
     //this.debugLog("available model names:", names);
-    this.aiModelOptions().setOptions(names)
-    .setShouldStore(true)
-    .load();
+    this.aiModelOptions().setOptions(names).setShouldStore(true).load();
     this.onUpdateInputs();
-    
+
     // If there is an API key, hide the note again
     if (apiKey) {
       note.style.opacity = 0;
     }
-  }  
+  }
 
-  languagePrompt () {
+  languagePrompt() {
     const label = this.sessionLanguageOptions().selectedLabel();
     const value = this.sessionLanguageOptions().selectedValue();
     AzureTextToSpeech.shared().setVoiceName(value);
-    
+
     const parts = label.split("(");
     const locale = parts[0];
     let prompt = `Please make all your responses in the ${locale} language`;
@@ -165,7 +162,7 @@
         }
       } else {
         OpenAiService.shared().setApiKey(null);
-        this.aiModelOptions().setOptions([])
+        this.aiModelOptions().setOptions([]);
       }
       return isValid;
     });
@@ -205,10 +202,14 @@
   }
 
   canStart() {
-    if (ImageGenOptions.shared().isMidjourneyOption() && (!this.midjourneyApiKeyText().isValid() || !this.midjourneyApiBaseUrlText().isValid())) {
+    if (
+      ImageGenOptions.shared().isMidjourneyOption() &&
+      (!this.midjourneyApiKeyText().isValid() ||
+        !this.midjourneyApiBaseUrlText().isValid())
+    ) {
       return false;
     }
-    
+
     return this.apiKeyText().isValid() && this.aiModelOptions().selectedValue();
   }
 
@@ -217,7 +218,10 @@
   }
 
   setupAzureApiRegionOptions() {
-    const options = OptionsView.clone().setId("azureApiRegionOptions").setOptions(AzureService.shared().regionOptions()).setTarget();
+    const options = OptionsView.clone()
+      .setId("azureApiRegionOptions")
+      .setOptions(AzureService.shared().regionOptions())
+      .setTarget();
     this.setAzureApiRegionOptions(options);
 
     // Load the stored API key
@@ -228,19 +232,25 @@
   }
 
   onSubmit_azureApiRegionOptions() {
-    AzureService.shared().setRegion(this.azureApiRegionOptions().selectedValue());
+    AzureService.shared().setRegion(
+      this.azureApiRegionOptions().selectedValue()
+    );
   }
 
   setupImageGenModelOptions() {
-    this.imageGenModelOptions().setSelectedLabel(ImageGenOptions.shared().option());
+    this.imageGenModelOptions().setSelectedLabel(
+      ImageGenOptions.shared().option()
+    );
   }
-  
-  setupMidjourneyApiKeyText(){
-    const field = TextFieldView.clone().setId("midjourneyApiKeyText").setTarget(this);
+
+  setupMidjourneyApiKeyText() {
+    const field = TextFieldView.clone()
+      .setId("midjourneyApiKeyText")
+      .setTarget(this);
     this.setMidjourneyApiKeyText(field);
 
     const self = this;
-    
+
     field.setValidationFunc((s) => {
       const isValid = MJService.shared().validateKey(s);
       if (isValid) {
@@ -262,9 +272,11 @@
     console.log("onChange_midjourneyApiKeyText");
     this.onUpdateInputs();
   }
-  
-  setupMidjourneyApiBaseUrlText(){
-    const field = TextFieldView.clone().setId("midjourneyApiBaseUrlText").setTarget(this);
+
+  setupMidjourneyApiBaseUrlText() {
+    const field = TextFieldView.clone()
+      .setId("midjourneyApiBaseUrlText")
+      .setTarget(this);
     this.setMidjourneyApiBaseUrlText(field);
 
     const self = this;
@@ -292,17 +304,21 @@
 
   showMidjourneyFieldsIfNeeded() {
     if (ImageGenOptions.shared().isMidjourneyOption()) {
-      document.getElementById("midjourneyApiKeyContainer").style.display = "block";
-      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "block";
+      document.getElementById("midjourneyApiKeyContainer").style.display =
+        "block";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display =
+        "block";
       //ImageBotJobs.shared().setImageGen(MJImageJobs.shared());
-    }
-    else if (ImageGenOptions.shared().isDalleOption()) {
-      document.getElementById("midjourneyApiKeyContainer").style.display = "none";
-      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "none";
+    } else if (ImageGenOptions.shared().isDalleOption()) {
+      document.getElementById("midjourneyApiKeyContainer").style.display =
+        "none";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display =
+        "none";
       //ImageBotJobs.shared().setImageGen(OpenAiImageGen.shared());
-    }
-    else {
-      throw "Unknown Image Gen Model Option: " + ImageGenOptions.shared().option();
+    } else {
+      throw (
+        "Unknown Image Gen Model Option: " + ImageGenOptions.shared().option()
+      );
     }
   }
 
@@ -335,7 +351,9 @@
   }
 
   onSubmit_imageGenModelOptions() {
-    ImageGenOptions.shared().setOption(this.imageGenModelOptions().selectedValue());
+    ImageGenOptions.shared().setOption(
+      this.imageGenModelOptions().selectedValue()
+    );
     this.showMidjourneyFieldsIfNeeded();
     this.onUpdateInputs();
   }
@@ -471,35 +489,35 @@
 
   // --- config lookups ---
 
-  getPathOnJson (path, json) {
+  getPathOnJson(path, json) {
     const parts = path.split(".");
     let v = json;
     let k = parts.shift();
     while (v && k) {
       v = v[k];
       k = parts.shift();
-    };
+    }
     return v;
   }
 
-  typeConfigLookup (path) {
+  typeConfigLookup(path) {
     const json = this.sessionTypeOptions().selectedElement()._item;
     return this.getPathOnJson(path, json);
   }
 
-  subtypeConfigLookup (path) {
+  subtypeConfigLookup(path) {
     const json = this.sessionSubtypeOptions().selectedElement()._item;
     return this.getPathOnJson(path, json);
   }
 
-  configLookup (key) {
+  configLookup(key) {
     const a = this.typeConfigLookup(key);
     const b = this.subtypeConfigLookup(key);
     const v = b ? b : a;
     return v ? v : "";
   }
 
-  addativeConfigLookup (key) {
+  addativeConfigLookup(key) {
     const a = this.typeConfigLookup(key);
     const b = this.subtypeConfigLookup(key);
     let A = a ? a : "";
@@ -509,12 +527,12 @@
 
   prompt() {
     const fullPrompt = [
-      this.configLookup("promptPrefix"), 
-      this.configLookup("prompt"), 
-      this.configLookup("promptSuffix"), 
-      this.languagePrompt()
+      this.configLookup("promptPrefix"),
+      this.configLookup("prompt"),
+      this.configLookup("promptSuffix"),
+      this.languagePrompt(),
     ].join("\n\n");
-    
+
     return this.replacedConfigString(fullPrompt);
   }
 
@@ -576,28 +594,40 @@
 
   // --- start session ---
 
-  setClassNamePropertyValue(className, propertyName, value) {
-    const styleSheet = document.styleSheets[0];
-    const rule = '.' + className + " { " + propertyName + ": " + value + '; }';
+  themePrefsJson() {
+    return {
+      bookTitle: { 
+        "font-family": this.headerFontFamily() 
+      },
 
-    //document.documentElement.style.setProperty('--class-color', color);
-    document.documentElement.style.setProperty('--' + className + "-" + propertyName, value);
+      chapterNumber: { 
+        "font-family": this.headerFontFamily() 
+      },
+
+      chapterTitle: { 
+        "font-family": this.headerFontFamily() 
+      },
+
+      "drop-cap": { 
+        "font-family": this.headerFontFamily() 
+      },
+
+      AiChatMessages: {
+        "font-family": this.sessionFontFamily(),
+        "font-weight": this.sessionFontWeight(),
+      },
+
+      body: {
+        "background-color": this.sessionBackgroundColor(),
+        color: this.sessionTextColor(),
+      },
+    };
   }
 
-  applyCSSPrefs () {
-    const family = this.headerFontFamily();
-    const classNames = ["chapterNumber", "chapterTitle", "drop-cap"];
-    classNames.forEach(className => {
-      this.setClassNamePropertyValue(className, "font-family", family);
-    });
-
-    this.setClassNamePropertyValue("AiChatMessages", "font-family", this.sessionFontFamily());
-    this.setClassNamePropertyValue("AiChatMessages", "font-weight", this.sessionFontWeight());
-
-    document.body.style.backgroundColor = this.sessionBackgroundColor();
-    document.body.style.color = this.sessionTextColor();
+  applyCSSPrefs() {
+    const dict = this.themePrefsJson();
+    App.shared().applyThemeDict(dict);
   }
-
 
   sessionTitle() {
     return (
@@ -608,13 +638,14 @@
   }
 
   updateSessionTitle() {
-    //debugger;
     const e = document.getElementById("SessionTitle");
     e.innerHTML = this.sessionTitle();
   }
 
-  async onSubmit_sessionStartButton() {    
+  async onSubmit_sessionStartButton() {
     this.hide();
+
+    HostSession.shared().shareThemeWithGuests()
 
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists());
     const defaultMusicTrackId = this.configLookup("defaultMusicTrackId");

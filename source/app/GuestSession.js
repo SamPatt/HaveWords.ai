@@ -179,6 +179,10 @@
     AiChatView.shared().addMessage("prompt", data.message, data.nickname, data.id);
   }
 
+  onReceived_ThemeUpdate(data) {
+    App.shared().applyThemeDict(data.json);
+  }
+
   onReceived_guestJoin(data) {
     GroupChatView.shared().addChatMessage(
       "chat",
