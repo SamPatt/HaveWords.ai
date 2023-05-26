@@ -1,6 +1,6 @@
 "use strict";
 
-(class ImageGen extends Base {
+(class ImageGenOptions extends Base {
     initPrototypeSlots () {
         this.newSlot("storagePrefix", "imageGen_");
     }
@@ -12,7 +12,8 @@
     // --- api key ---
   
     modelOptions () {
-        return [this.dalleOption(), this.midjourneyOption()];
+        return [this.midjourneyOption()];
+        //return [this.dalleOption(), this.midjourneyOption()];
     }
 
     option() {

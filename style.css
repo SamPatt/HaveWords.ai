@@ -842,9 +842,9 @@ button {
 }
 
 .chapterImage {
-    display: none;
+    display: flex;
     width: 100%;
-    text-align: center;
+    justify-content: center;
     padding-top: 0em;
     padding-bottom: 0em;
 }

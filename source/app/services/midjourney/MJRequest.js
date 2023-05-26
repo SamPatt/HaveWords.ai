@@ -11,7 +11,9 @@
   initPrototypeSlots () {
     this.newSlot("endpointPath", null);
     this.newSlot("service", null)
-    this.newSlot("body", null); //JSON object
+    this.newSlot("body", null); // JSON object
+    this.newSlot("startTime", null); // JSON object
+    this.newSlot("timeoutMs", 120000); 
   }
 
   init () {
@@ -49,40 +51,41 @@
     }
   }
 
-  async asyncSend () {
-    const requestOptions = this.requestOptions()
-    let data = undefined;
+  /*
+  timeoutPromise() {
+    return new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timed out')), this.timeoutMs());
+    });
+  }
+  */
 
+  async asyncSend () {
+    this.setStartTime(new Date().getTime());
     this.assertValid()
 
-   // debugger;
-    //try {
-      this.debugLog(" send request endpointUrl:" +  this.endpointUrl() + "options: \n", requestOptions)
-      const response = await fetch(this.endpointUrl(), requestOptions);
-      data = await response.json();
-      /*
-    } catch (error) {
-      this.reportError(error)
-    }
-    */
-    return data;
+    const requestOptions = this.requestOptions()
+
+    this.debugLog(" send request endpointUrl:" +  this.endpointUrl() + "options: \n", requestOptions)
+    const fetchPromise = fetch(this.endpointUrl(), requestOptions);
+
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error('Request timed out')), this.timeoutMs());
+    });
+
+    return Promise.race([timeoutPromise, fetchPromise])
+      .then(response => {
+        clearTimeout(timeoutId);
+        return response.json();
+      })
+      .catch(error => {
+          throw new Error("request timeout after " + this.timeoutMs() + "ms");
+      });
   }
 
   description () {
     return this.type() + " url:" + this.endpointUrl() + " request:" + JSON.stringify(this.requestOptions());
   }
-
-  /*
-  reportError (error) {
-    console.error(this.type() + " error fetching response:", error, " for url: " + this.apiUrl() + " request:", this.requestOptions());
-
-    AiChatView.shared().addMessage(
-      "systemMessage",
-      "Error fetching AI response. Make sure the model is selected and the API key is correct.",
-      "Host"
-    );
-  }
-  */
 
 }.initThisClass());
 

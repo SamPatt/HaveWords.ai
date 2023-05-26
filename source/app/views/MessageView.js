@@ -84,8 +84,20 @@
   }
 
   setIsStreaming (aBool) {
-    this.loadingContainer().display = aBool ? "flex" : "none";
+    if (aBool) {
+      this.showIsLoading();
+    } else {
+      this.hideIsLoading();
+    }
     return this;
+  }
+
+  showIsLoading () {
+    this.loadingContainer().style.display = "flex";
+  }
+
+  hideIsLoading () {
+    this.loadingContainer().style.display = "none";
   }
 
   dotsHtml () {
@@ -103,6 +115,13 @@
       const iv = ImageMessageView.clone().setImageUrl(imageUrl).setIsUser(false);
       this.imageContainer().innerHTML = "";
       this.imageContainer().appendChild(iv.element());
+      /*
+      this.imageContainer().setAttribute(
+        "data-tooltip",
+        this.imageBotJob().imagePrompt()
+      );
+      */
+      this.hideIsLoading();
     }
   }
 
@@ -125,6 +144,15 @@
     const sanitizedHtml = DOMPurify.sanitize(formatted);
     this.textElement().innerHTML = sanitizedHtml;
     return this;
+  }
+
+  imageContainer () {
+    const e = this.textElement().querySelector(".chapterImage");
+    if (e) {
+      e.style.display = "flex";
+      return e;
+    }
+    return this._imageContainer;
   }
 
   text () {
@@ -192,32 +220,41 @@
     button.style.position = "absolute";
     button.style.top = "1em";
 
-    button.addEventListener("click", () => {
-      this.setImageUrl(null); // to add loading animation
-      ImageBot.shared().setSceneDescription(this.text()).setRequestId(this.requestId()).trigger();
-      // Hide the button after it has been clicked
+    button.addEventListener("click", async () => {
       this.hideImageGenButton();
+      this.setImageUrl(null); // to add loading animation
+      const job = ImageBotJobs.shared().newJob().setSceneDescription(this.text()).setRequestId(this.requestId());
+      try {
+        await job.trigger();
+      } catch (error) {
+        this.setErrorMessage(error.message);
+      }
     });
 
     return button
   }
 
   hideImageGenButton () {
-    button.style.opacity = "none";
+    this.imageGenButton().style.display = "none";
   }
 
   showImageGenButton () {
-    button.style.display = "block";
+    this.imageGenButton().style.display = "block";
   }
 
   updateImageProgressJson(json) {
     //debugger;
-    if (json.status.includes("error")) {
-      this.setImageContainerText("Error generating image: \"" + json.errorMessage + "\"");
-      this.showImageGenButton();
+    if (json.errorMessage) {
+      this.setErrorMessage(json.errorMessage);
     } else {
+      /*
       if (json.percentage > 0) {
         this.setImageContainerText("Generating image " + json.percentage + "%" + this.dotsHtml());
+      }
+      */
+
+      if (json.status) {
+        this.setImageContainerText("Generating image" + this.dotsHtml() + " " + json.status);
       }
     }
   }
@@ -225,6 +262,14 @@
   setImageContainerText (text) {
     this.imageContainer().innerHTML = "<span style=\"opacity:0.5;\">" + text + "</span>";
     return this;
+  }
+
+  setErrorMessage (text) {
+    //debugger;
+    if (text) {
+      this.setImageContainerText("Error generating image: \"" + text + "\"");
+      this.showImageGenButton();
+    }
   }
 
 }.initThisClass());

@@ -20,24 +20,16 @@
   }
 
   setupElement () {
-    const messageWrapper = document.createElement("div");
-    messageWrapper.className = "message-wrapper";
-    this.setElement(messageWrapper);
-
-    const messageContent = document.createElement("div");
-    messageContent.className = "message-content";
-
     const imageElement = document.createElement("img");
     imageElement.className = "message-image";
     this.setImageElement(imageElement);
+
 
     const imageContainer = document.createElement("div"); // Create a new div for the image container
     imageContainer.className = "image-container"; // Set the new class for the image container
 
     imageContainer.appendChild(imageElement); // Append the image to the image container
-    messageContent.appendChild(imageContainer); // Append the image container to the message content
-
-    messageWrapper.appendChild(messageContent);
+    this.setElement(imageContainer);
 
     return this;
   }

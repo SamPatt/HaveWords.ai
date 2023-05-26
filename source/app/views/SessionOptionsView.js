@@ -44,7 +44,7 @@
       OptionsView.clone()
         .setId("imageGenModelOptions")
         .setTarget(this)
-        .setOptions(ImageGen.shared()
+        .setOptions(ImageGenOptions.shared()
           .modelOptions()
           .map((name) => {
             return { label: name, value: name };
@@ -205,7 +205,7 @@
   }
 
   canStart() {
-    if (ImageGen.shared().isMidjourneyOption() && (!this.midjourneyApiKeyText().isValid() || !this.midjourneyApiBaseUrlText().isValid())) {
+    if (ImageGenOptions.shared().isMidjourneyOption() && (!this.midjourneyApiKeyText().isValid() || !this.midjourneyApiBaseUrlText().isValid())) {
       return false;
     }
     
@@ -232,7 +232,7 @@
   }
 
   setupImageGenModelOptions() {
-    this.imageGenModelOptions().setSelectedLabel(ImageGen.shared().option());
+    this.imageGenModelOptions().setSelectedLabel(ImageGenOptions.shared().option());
   }
   
   setupMidjourneyApiKeyText(){
@@ -291,18 +291,18 @@
   }
 
   showMidjourneyFieldsIfNeeded() {
-    if (ImageGen.shared().isMidjourneyOption()) {
+    if (ImageGenOptions.shared().isMidjourneyOption()) {
       document.getElementById("midjourneyApiKeyContainer").style.display = "block";
       document.getElementById("midjourneyApiBaseUrlContainer").style.display = "block";
-      ImageBot.shared().setImageGen(MJImageGen.shared());
+      //ImageBotJobs.shared().setImageGen(MJImageJobs.shared());
     }
-    else if (ImageGen.shared().isDalleOption()) {
+    else if (ImageGenOptions.shared().isDalleOption()) {
       document.getElementById("midjourneyApiKeyContainer").style.display = "none";
       document.getElementById("midjourneyApiBaseUrlContainer").style.display = "none";
-      ImageBot.shared().setImageGen(OpenAiImageGen.shared());
+      //ImageBotJobs.shared().setImageGen(OpenAiImageGen.shared());
     }
     else {
-      throw "Unknown Image Gen Model Option: " + ImageGen.shared().option();
+      throw "Unknown Image Gen Model Option: " + ImageGenOptions.shared().option();
     }
   }
 
@@ -335,10 +335,8 @@
   }
 
   onSubmit_imageGenModelOptions() {
-    ImageGen.shared().setOption(this.imageGenModelOptions().selectedValue());
-
+    ImageGenOptions.shared().setOption(this.imageGenModelOptions().selectedValue());
     this.showMidjourneyFieldsIfNeeded();
-
     this.onUpdateInputs();
   }
 

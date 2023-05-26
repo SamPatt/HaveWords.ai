@@ -39,6 +39,7 @@
 
     this.newSlot("fullContent", null); 
     this.newSlot("lastContent", "");
+    this.newSlot("error", null);
   }
 
   init() {
@@ -202,17 +203,26 @@
     this.xhrResolve()(this.fullContent()); 
   }
 
+  setError (e) {
+    this._error = e;
+    if (e) {
+      console.warn(this.debugType() + " " + e.message);
+    }
+    return this;
+  }
+
   onXhrError (event) {
     debugger;
-    if (event.type === "error") {
-      // error events don't contain messages - need to look at xhr and guess at what happened
-      console.warn("got an error on xhr requestId" + this.requestId() + ":");
-      console.warn("  xhr.status:     ", xhr.status); // e.g. 404 = file not found
-      console.warn("  xhr.statusText: '" + xhr.statusText + "'");
-      console.warn("  xhr.readyState: ", xhr.readyState); // e.g.. 4 === DONE
-    }
+    const xhr = this.xhr();
+    // error events don't contain messages - need to look at xhr and guess at what happened
+    let s = "got an error on xhr requestId" + this.requestId() + ":";
+    s += "  xhr.status:     " + xhr.status; // e.g. 404 = file not found
+    s += "  xhr.statusText: '" + xhr.statusText + "'";
+    s += "  xhr.readyState: ", xhr.readyState; // e.g.. 4 === DONE
+    const error = new Error(s);
+    this.setError(error);
     this.streamTarget().onStreamComplete(this);
-    this.xhrReject()(event);
+    this.xhrReject()(error);
   }
 
   onXhrAbort (event) {
@@ -256,6 +266,7 @@
         line = this.readNextXhrLine();
       }
     } catch(error) {
+      this.setError(error);
       console.warn(this.type() + " ERROR:", error);
       debugger;
       this.xhrReject()(new Error(error));

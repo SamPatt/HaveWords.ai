@@ -309,22 +309,23 @@
   }
 
   onStreamComplete (request) {
+    //debugger
     const content = request.fullContent();
     this.shareUpdate(request, content);
     AiChatView.shared().onAiResponseCompleteText(content, request.requestId());
     console.log("Host " + request.requestId() + " onStreamComplete");
   }
 
-  updateImageProgress(imageGen) { 
+  updateImageProgress(aJob) { 
     //console.log(this.type() + ` MJImageGenProgress status: ${imageGen.status()} progress: ${ imageGen.progress()}`);
     const json = {
       type: "updateImageProgress",
       id: LocalUser.shared().id(),
-      requestId: imageGen.requestId(),
-      percentage: imageGen.progress(),
-      timeTaken: imageGen.timeTaken(),
-      status: imageGen.status(),
-      errorMessage: imageGen.errorMessage()
+      requestId: aJob.requestId(),
+      percentage: aJob.progress(),
+      timeTaken: aJob.timeTaken(),
+      status: aJob.status(),
+      errorMessage: aJob.errorMessage()
     };
 
     AiChatView.shared().updateImageProgressJson(json);

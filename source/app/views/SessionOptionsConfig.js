@@ -332,7 +332,8 @@ Do not mention any of the name of the author.`,
         These stories should be dark fiction, and almost always lead to the player's demise.
         Do not mention any of the name of the author.`,
         artPromptPrefix: "Pen and ink illustration of:",
-        fontFamily: "XTypewriter",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
 
       {
@@ -350,7 +351,7 @@ Do not mention any of the name of the author.`,
         value: "Jane Austen",
         prompt: `Overview: We are a group of players, exploring the fictional worlds and characters from the [sessionSubtype] books and films. 
         We'd like you to write this adventure as [sessionSubtype] would.`,
-        artPromptPrefix: "Lithograph in the style of Théodore Gericault of:",
+        artPromptPrefix: "Rich color lithograph in the style of Théodore Gericault of:",
         headerFontFamily: "Cardo",
         fontFamily: "Cardo",
       },
