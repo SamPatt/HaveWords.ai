@@ -790,6 +790,78 @@ button {
 
 /*--- begin AI content inline styles --- */
 
+/*--- begin theme related styles --- */
+
+:root {
+    --AiChatMessages-font-family: inherit; 
+    --AiChatMessages-font-weight: inherit; 
+
+    --drop-cap-font-family: inherit; 
+    --chapterNumber-family: inherit; 
+    --dchapterImage-family: inherit; 
+    --chapterTitle-family: inherit; 
+    --bookTitle-family: inherit; 
+}
+
+#AiChatMessages {
+    font-family: var(--AiChatMessages-font-family);
+    font-weight: var(--AiChatMessages-font-weight);
+}
+
+.drop-cap {
+    font-family: var(--drop-cap-font-family);
+    float: left;
+    font-size: 4.7em;
+    font-weight: bold;
+    line-height: 1.5em;
+    margin-right: 0.15em;
+    margin-top: -0.2em;
+    margin-bottom: -0.5em;
+}
+
+.chapterNumber {
+    font-family: var(--chapterNumber-font-family);
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    padding-top: 2em;
+    padding-bottom: 0em;
+}
+
+.chapterImage {
+    font-family: var(--chapterImage-font-family);
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+
+.chapterTitle {
+    font-family: var(--chapterTitle-font-family);
+    font-size: 2em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    line-height: 1.3em;
+    font-weight: normal;
+    font-style: normal;
+    width: 100%;
+    text-align: center;
+    padding-top: 0em;
+    padding-bottom: 2em;
+}
+
+.bookTitle {
+    font-family: var(--bookTitle-font-family);
+    font-size: 2em;
+    line-height: 1.3em;
+}
+
+/*--- end theme related styles --- */
+
 .whitespace {
     white-space: pre;
 }
@@ -820,52 +892,7 @@ button {
     /* so writing doesn't readjust  */
 }
 
-.drop-cap {
-    float: left;
-    font-size: 4.7em;
-    font-weight: bold;
-    line-height: 1.5em;
-    margin-right: 0.15em;
-    margin-top: -0.2em;
-    margin-bottom: -0.5em;
-}
 
-.chapterNumber {
-    font-size: 1.2em;
-    letter-spacing: 0.1em;
-    font-weight: bold;
-    text-transform: uppercase;
-    width: 100%;
-    text-align: center;
-    padding-top: 2em;
-    padding-bottom: 0em;
-}
-
-.chapterImage {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    padding-top: 0em;
-    padding-bottom: 0em;
-}
-
-.chapterTitle {
-    font-size: 2em;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    line-height: 1.3em;
-    font-weight: normal;
-    font-style: normal;
-    width: 100%;
-    text-align: center;
-    padding-top: 0em;
-    padding-bottom: 2em;
-}
-
-.bookTitle {
-    font-size: 2em;
-    line-height: 1.3em;
-}
 
 /*--- end AI content inline styles --- */
 

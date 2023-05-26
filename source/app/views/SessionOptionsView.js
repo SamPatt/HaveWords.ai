@@ -552,7 +552,7 @@
     const v = this.configLookup("theme.color");
     return v ? v : "rgb(219, 219, 219)";
   }
-  
+
   sessionFontFamily() {
     return this.configLookup("theme.fontFamily");
   }
@@ -576,43 +576,28 @@
 
   // --- start session ---
 
-  applySessionUiPrefs() {
+  setClassNamePropertyValue(className, propertyName, value) {
+    const styleSheet = document.styleSheets[0];
+    const rule = '.' + className + " { " + propertyName + ": " + value + '; }';
+
+    //document.documentElement.style.setProperty('--class-color', color);
+    document.documentElement.style.setProperty('--' + className + "-" + propertyName, value);
+  }
+
+  applyCSSPrefs () {
+    const family = this.headerFontFamily();
+    const classNames = ["chapterNumber", "chapterTitle", "drop-cap"];
+    classNames.forEach(className => {
+      this.setClassNamePropertyValue(className, "font-family", family);
+    });
+
+    this.setClassNamePropertyValue("AiChatMessages", "font-family", this.sessionFontFamily());
+    this.setClassNamePropertyValue("AiChatMessages", "font-weight", this.sessionFontWeight());
+
     document.body.style.backgroundColor = this.sessionBackgroundColor();
     document.body.style.color = this.sessionTextColor();
-
-    //const section = document.body;
-    const section = document.getElementById("AiChatMessages").parentNode;
-    section.style.fontFamily = this.sessionFontFamily();
-    section.style.fontWeight = this.sessionFontWeight();
-
-    /*
-    for (const e of document.getElementsByTagName("h2")) {
-      e.style.fontFamily = this.headerFontFamily();
-      console.log(
-        "setting font family '" +
-          this.headerFontFamily() +
-          "' on '" +
-          e.innerHTML +
-          "'"
-      );
-    }
-    */
-
-    for (const e of document.getElementsByClassName("chapterNumber")) {
-      e.style.fontFamily = this.headerFontFamily();
-      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
-    }
-
-    for (const e of document.getElementsByClassName("chapterTitle")) {
-      e.style.fontFamily = this.headerFontFamily();
-      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
-    }
-
-    for (const e of document.getElementsByClassName("drop-cap")) {
-      e.style.fontFamily = this.headerFontFamily();
-      //console.log("setting font family '" + this.headerFontFamily() + "' on '" + e.innerHTML + "'");
-    }
   }
+
 
   sessionTitle() {
     return (
@@ -628,7 +613,7 @@
     e.innerHTML = this.sessionTitle();
   }
 
-  async onSubmit_sessionStartButton() {
+  async onSubmit_sessionStartButton() {    
     this.hide();
 
     MusicPlayer.shared().selectPlaylistsWithNames(this.musicPlaylists());
@@ -637,7 +622,7 @@
       HostSession.shared().playTrackId(defaultMusicTrackId);
     }
 
-    this.applySessionUiPrefs();
+    this.applyCSSPrefs();
     this.updateSessionTitle();
 
     Session.shared().setGameMode(

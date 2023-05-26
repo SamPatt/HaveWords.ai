@@ -103,9 +103,6 @@
     if (shouldScroll) {
       this.scrollToBottom();
     }
-    if (App.shared().isHost()) {
-      SessionOptionsView.shared().applySessionUiPrefs();
-    }
   }
 
   loadingAnimation () {
@@ -166,10 +163,6 @@
     } 
 
     this.addMessageElement(m.element());
-
-    if(App.shared().isHost()) {
-      SessionOptionsView.shared().applySessionUiPrefs();
-    }
     return m
   }
 
