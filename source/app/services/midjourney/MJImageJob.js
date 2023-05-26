@@ -8,7 +8,7 @@
 
 */
 
-(class MJImageJob extends MJService {
+(class MJImageJob extends Job {
 
   static systemInstructions () {
     return       `
@@ -34,7 +34,6 @@
   }
 
   initPrototypeSlots() {
-    this.newSlot("manager", null);
     this.newSlot("mjVersion", "5.1");
     this.newSlot("prompt", null);
 
@@ -43,15 +42,7 @@
     this.newSlot("pollCount", 0);
     this.newSlot("pollingMs", 4000);
 
-    this.newSlot("progress", 0);
     this.newSlot("imageUrl", 0);
-
-    this.newSlot("status", "");
-    this.newSlot("error", null);
-    this.newSlot("requestId", null);
-    this.newSlot("requestStartTime", 0);
-    this.newSlot("timeTaken", 0);
-    this.newSlot("errorMessage", "");
   }
 
   init() {
@@ -61,52 +52,32 @@
 
   newRequest() {
     const request = MJRequest.clone();
-    request.setService(this);
+    request.setService(MJService.shared());
     return request;
   }
 
   isApiV2() {
-    return this.apiBaseUrl().includes("v2");
+    return MJService.shared().apiBaseUrl().includes("v2");
   }
 
   onChange() {
+    super.onChange();
     HostSession.shared().updateImageProgress(this);
   }
 
-  updateTimeTaken() {
-    this.setTimeTaken(new Date().getTime() - this.requestStartTime());
-  }
-
-  throwError(error) {
-    console.warn(error.message);
-    this.setStatus("error: " + error.message);
-    this.setErrorMessage(error.message);
-    this.onChange();
-    debugger;
-    throw error;
-  }
-
   assertReady() {
+    super.assertReady();
     assert(this.prompt());
-    assert(this.mjVersion());
     assert(this.requestId());
+    assert(this.mjVersion());
     assert(this.isApiV2());
   }
 
-  async asyncFetch() {
-    try {
-      this.assertReady();
-
-      this.setRequestStartTime(new Date().getTime());
-      //debugger;
-      await this.sendStartRequest();
-      await this.pollUntilReadyOrTimeout();
-      await this.sendUpscaleRequest();
-
-      return this.imageUrl();
-    } catch (error) {
-      this.throwError(error);
-    }
+  async justStart() {
+    await this.sendStartRequest();
+    await this.pollUntilReadyOrTimeout();
+    await this.sendUpscaleRequest();
+    return this.imageUrl();
   }
 
   async sendStartRequest() {
@@ -116,7 +87,7 @@
     this.onChange();
 
     const body = {
-      prompt: this.prompt() + " --v " + this.mjVersion()
+      prompt: this.prompt() + " --v " +  this.mjVersion()
     };
 
     const json = await this.newRequest().setEndpointPath("/imagine").setBody(body).asyncSend();
@@ -138,9 +109,8 @@
 
   async pollUntilReadyOrTimeout () {
     assert(this.taskId());
-    this.setStatus("polling");
+    this.setStatus("waiting for rendering to begin");
     this.onChange();
-
 
     const startTime = new Date().getTime();
     let json;
@@ -168,10 +138,8 @@
       .setBody({ taskId: this.taskId() })
       .asyncSend();
     this.debugLog(json);
+    this.throwIfContainsErrors(json);
 
-    if (json.errors) {
-      this.throwError(new Error(JSON.stringify(json)));
-    }
 
     if (json.percentage) {
       this.setStatus("rendering " + json.percentage + "%");
@@ -206,27 +174,28 @@
         })
         .asyncSend();
       this.debugLog(json);
-
-      if (json.errors) {
-        this.throwError(new Error(JSON.stringify(json)));
-      }
+      this.throwIfContainsErrors(json);
 
       if (json.imageURL) {
         this.setImageUrl(json.imageURL);
-        this.updateTimeTaken();
-        this.setStatus("complete");
-        this.setProgress(100);
-        this.onChange();
-
         break;
       } else {
         this.setPollCount(this.pollCount() + 1);
-        this.setStatus("polled " + this.pollCount() + " times");
+        if (json.percentage) {
+          this.setStatus("upscaling " + json.percentage + "%");
+        } else {
+          this.setStatus("upscaling - polled " + this.pollCount() + " times");
+        }
         this.onChange();
       }
     } while (true);
+  }
 
-
+  throwIfContainsErrors(json) {
+    if (json.errors) {
+      const s = json.errors.map(e => e.msg).join(",");
+      this.throwError(new Error(s));
+    }
   }
 
 }).initThisClass();

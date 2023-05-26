@@ -281,12 +281,16 @@ As in the books, the adventures should be of epic and deal with great challenges
 The time period roughly corresponds to that of the earliest human civilations in the fertile cresent and while steel and magic exists in this universe, 
 no modern technologies (such as guns, planes, or automobiles, etc) do. Do not mention any of the names of the authors.`,
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
       {
         label: "Norse Mythology",
         value: "Norse Mythology",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the [sessionSubtype] universe.`,
-        artPromptPrefix: "Painting in the style of Frank Frazetta of:"
+        artPromptPrefix: "Painting in the style of Frank Frazetta of:",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
       {
         label: "Discworld",
@@ -312,7 +316,9 @@ Do not mention any of the name of the author.`,
         value: "Lord Dunsany",
         prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in the realm of [sessionSubtype]'s short stories.
 Do not mention any of the name of the author.`,
-        artPromptPrefix: "Painting in the style of Frank Frazetta of: "
+        artPromptPrefix: "Painting in the style of Frank Frazetta of: ",
+        headerFontFamily: "Cardo",
+        fontFamily: "Cardo",
       },
 
       {

@@ -19,6 +19,7 @@
     this.newSlot("imageContainer", null);
     this.newSlot("requestId", null);
     this.newSlot("imageGenButton", null);
+    this.newSlot("imageUrl", null);
   }
 
   init() {
@@ -112,6 +113,8 @@
     if (!imageUrl) {
       this.setImageContainerText("Generating image" + this.dotsHtml());
     } else {
+      this._imageUrl = imageUrl;
+
       const iv = ImageMessageView.clone().setImageUrl(imageUrl).setIsUser(false);
       this.imageContainer().innerHTML = "";
       this.imageContainer().appendChild(iv.element());
@@ -225,7 +228,7 @@
       this.setImageUrl(null); // to add loading animation
       const job = ImageBotJobs.shared().newJob().setSceneDescription(this.text()).setRequestId(this.requestId());
       try {
-        await job.trigger();
+        await job.start();
       } catch (error) {
         this.setErrorMessage(error.message);
       }
@@ -243,18 +246,13 @@
   }
 
   updateImageProgressJson(json) {
-    //debugger;
-    if (json.errorMessage) {
-      this.setErrorMessage(json.errorMessage);
-    } else {
-      /*
-      if (json.percentage > 0) {
-        this.setImageContainerText("Generating image " + json.percentage + "%" + this.dotsHtml());
-      }
-      */
-
-      if (json.status) {
-        this.setImageContainerText("Generating image" + this.dotsHtml() + " " + json.status);
+    if (!this.imageUrl()) {
+      if (json.errorMessage) {
+        this.setErrorMessage(json.errorMessage);
+      } else {
+        if (json.status) {
+          this.setImageContainerText("Generating image" + this.dotsHtml() + " " + json.status);
+        }
       }
     }
   }

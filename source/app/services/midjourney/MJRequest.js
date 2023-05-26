@@ -18,6 +18,7 @@
 
   init () {
     super.init();
+    this.setService(MJService.shared());
     this.setIsDebugging(false)
   }
 

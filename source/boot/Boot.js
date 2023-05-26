@@ -39,6 +39,7 @@ class Boot extends Object {
       "source/app/services/azure/AzureVoices.js",
       "source/app/services/azure/AzureRegions.js",
 
+      "source/app/services/imagegen/Job.js",
       "source/app/services/imagegen/ImageBotJobs.js",
       "source/app/services/imagegen/ImageBotJob.js",
       "source/app/services/imagegen/ImageGenOptions.js",

@@ -162,7 +162,7 @@
     }
 
     if (json.error) {
-      const errorMessage = this.type() + " asyncFetch() ERROR: " + json.error.message;
+      const errorMessage = this.type() + " fetch ERROR: " + json.error.message;
       console.warn(errorMessage);
       AiChatView.shared().addMessage(
         "systemMessage",

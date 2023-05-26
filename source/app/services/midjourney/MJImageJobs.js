@@ -24,7 +24,7 @@
   }
 
   endJob (aJob) {
-    this.jobsSet().remove(aJob);
+    this.jobsSet().delete(aJob);
     return this;
   }
 
