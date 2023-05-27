@@ -104,6 +104,65 @@ Object.defineSlot(String.prototype, "base32HexToString", function() {
   return output;
 });
 
+Object.defineSlot(String.prototype, "base32HexToArrayBuffer", function() {
+  const base32HexString = this;
+  const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const paddingChar = '=';
+
+  const base32BitsPerChar = 5;
+  const base32HexBitsPerChar = 4;
+
+  let binaryString = '';
+  for (let i = 0; i < base32HexString.length; i++) {
+    const char = base32HexString.charAt(i);
+    if (char !== paddingChar) {
+      const base32Value = base32Alphabet.indexOf(char);
+      binaryString += ('00000' + base32Value.toString(2)).slice(-base32BitsPerChar);
+    }
+  }
+
+  const bufferLength = Math.floor(binaryString.length / base32HexBitsPerChar);
+  const arrayBuffer = new ArrayBuffer(bufferLength);
+  const uint8Array = new Uint8Array(arrayBuffer);
+
+  for (var i = 0; i < bufferLength; i++) {
+    const start = i * base32HexBitsPerChar;
+    const end = start + base32HexBitsPerChar;
+    const bits = binaryString.slice(start, end);
+    uint8Array[i] = parseInt(bits, 2);
+  }
+
+  return arrayBuffer;
+});
+
+Object.defineSlot(ArrayBuffer.prototype, "toBase64EncodedString", function() {
+  const uint8Array = new Uint8Array(this);
+  const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
+  return base64String;
+});
+
+Object.defineSlot(String.prototype, "base64ToArrayBuffer", function() {
+  const binaryString = atob(this);
+  const length = binaryString.length;
+  const bytes = new Uint8Array(length);
+
+  for (let i = 0; i < length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+});
+
+Object.defineSlot(String.prototype, "stringToUint8Array", function() {
+  const bytes = new Uint8Array(this.length);
+
+  for (let i = 0; i < this.length; i++) {
+    bytes[i] = this.charCodeAt(i);
+  }
+
+  return bytes;
+});
+
 // HTML word wrapping
 
 /*

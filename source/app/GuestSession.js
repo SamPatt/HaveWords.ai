@@ -40,13 +40,16 @@
     this.sendNickname();
   }
 
-  onData(data) {
+  async onData(data) {
     this.debugLog("onData", data);
 
     const action = "onReceived_" + data.type;
 
     const method = this[action];
     if (method) {
+      const isValid = await LocalUser.shared().cryptoId().verifySignatureOnJson(data);
+      console.log("DATA:", data);
+      console.log("SIG isValid:", isValid);
       method.apply(this, [data]);
     } else {
       console.warn("WARNING: no " + this.type() + "." + action + "() method found");

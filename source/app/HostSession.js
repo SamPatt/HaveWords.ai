@@ -21,7 +21,8 @@
     assert(App.shared().isHost()); // Guest sessions should never access this class
   }
 
-  broadcast(json) {
+  async broadcast(json) {
+    await LocalUser.shared().cryptoId().signJson(json);
     PeerServer.shared().broadcast(json);
   }
 

@@ -10,6 +10,7 @@ class Boot extends Object {
       */
       "source/external/peerjs1.3.2.min.js",
       "source/external/purify2.3.3.min.js",
+      "source/external/json-stable-stringify/json-stable-stringify.js",
       "source/boot/getGlobalThis.js",
       "source/boot/Base.js",
       "source/app/helpers.js",
