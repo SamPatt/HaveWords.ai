@@ -7,6 +7,7 @@
 
 (class PeerConnection extends Base {
   initPrototypeSlots() {
+    this.newSlot("peerId", null);
     this.newSlot("server", null);
     this.newSlot("conn", null);
     this.newSlot("info", null);
@@ -39,6 +40,7 @@
   setConn(conn) {
     this._conn = conn;
     if (conn) {
+      this.setPeerId(conn.peer);
       this.setup();
     }
     return this;
@@ -54,7 +56,8 @@
 
   // --- events ---
 
-  onOpen() {
+  onOpen(peerId) {
+    this.setPeerId(peerId);
     this.debugLog("onOpen");
     this.sendDelegateMessage("onOpen");
   }

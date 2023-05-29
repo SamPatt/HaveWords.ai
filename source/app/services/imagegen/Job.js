@@ -4,7 +4,7 @@
     Job.js
 
     An abstraction for what is typically one or more network requests.
-    These are assumed to be one shot.
+    These are assumed to be one shot (the object is not reused).
 
 */
 

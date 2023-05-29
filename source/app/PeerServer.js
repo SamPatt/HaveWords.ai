@@ -7,6 +7,7 @@
 
 (class PeerServer extends Base {
   initPrototypeSlots() {
+    this.newSlot("peerId", null);
     this.newSlot("peer", null);
     this.newSlot("retryCount", 0);
     this.newSlot("maxRetries", 5);
@@ -44,22 +45,24 @@
       }
   }
 
-  onOpen() {
-    this.debugLog("open");
-    this.delegate().onPeerServerOpen()
-  }
-
   setup() {
-    const id = LocalUser.shared().id();
-    this.debugLog("connecting to peerjs as:" + LocalUser.shared().shortId())
-    const peer = new Peer(id, this.peerOptions());
+    //const id = LocalUser.shared().id();
+    //this.debugLog("connecting to peerjs as:" + LocalUser.shared().shortId())
+    this.debugLog("connecting to peerjs")
+    const peer = new Peer(undefined, this.peerOptions());
     this.setPeer(peer);
 
-    peer.on("open", () => this.onOpen() );
+    peer.on("open", (id) => this.onOpen(id) );
     peer.on("error", (error) => this.onError(error) );
     peer.on("call", (call) => this.onCall(call) );
     peer.on("connection", (conn) => this.onConnection(conn) )
     return this;
+  }
+
+  onOpen(peerId) {
+    this.setPeerId(peerId)
+    this.debugLog("open with peerId: '" + peerId + "'");
+    this.delegate().onPeerServerOpen()
   }
   
   addPeerConnection(pc) {
@@ -69,7 +72,7 @@
   }
 
   onConnection (conn) {
-    this.debugLog("connected to peerjs server as: " + LocalUser.shared().shortId())
+    this.debugLog("incoming connection from: " + conn.peer)
     if (!this.allowsIncomingConnections()) {
       console.warn(this.type() + " attempted connection while allowsIncomingConnections is false");
       return this
@@ -85,7 +88,7 @@
     return this
   }
 
-  onOpenPeerConnection (conn) {
+  onOpenPeerConnection (pc) {
     // sent by a PeerConnection to it's PeerServer after it opens
     // and is ready for messages
     if (this.delegate().onOpenPeerConnection) {
@@ -93,16 +96,16 @@
     }
   }
 
-  onClosePeerConnection (conn) {
+  onClosePeerConnection (pc) {
     if (this.delegate().onClosePeerConnection) {
       this.delegate().onClosePeerConnection(pc);
     }
-    this.removePeerConnection(conn)
+    this.removePeerConnection(pc)
   }
 
-  removePeerConnection (conn) {
-    if (this.peerConnections().has(conn.id())) {
-      this.peerConnections().delete(conn.id())
+  removePeerConnection (pc) {
+    if (this.peerConnections().has(pc.id())) {
+      this.peerConnections().delete(pc.id())
       if (this.delegate().onRemovePeerConnection) {
         this.delegate().onRemovePeerConnection(pc);
       }
@@ -172,7 +175,7 @@
 
   broadcastExceptTo(json, excludeId) {
     this.peerConnections().forEachKV((guestId, peerConnection) => {
-        if (guestId !== excludeId) {
+        if (peerConnection.peerId() !== excludeId) {
           peerConnection.send(json);
         }
       });

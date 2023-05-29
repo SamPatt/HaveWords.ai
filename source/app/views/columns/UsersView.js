@@ -25,7 +25,7 @@
     }
   
     return this;
-  }  
+  }
 
   displayHostUserList() {
     const userList = document.getElementById("userList");

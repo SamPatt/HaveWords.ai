@@ -114,7 +114,8 @@
   }
 
   inviteLink() {
-    const hostRoomId = LocalUser.shared().id();
+    const hostRoomId = PeerServer.shared().peerId();
+    assert(hostRoomId);
     const isFile = window.location.protocol === "file:";
     const base = isFile ? window.location.href : window.location.origin + "/";
     return `${base}?room=${hostRoomId}`;

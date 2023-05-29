@@ -30,6 +30,10 @@
     this.connect();
   }
 
+  peerId () {
+    return PeerServer.shared().peerId();
+  }
+
   connect() {
     const hostConnection = PeerServer.shared().connectToPeerId(this.hostId());
     hostConnection.setDelegate(this);
@@ -37,7 +41,7 @@
   }
 
   onOpen() {
-    this.sendNickname();
+    this.sendNickname(); // This will also share our cryptoId
   }
 
   async onData(data) {
@@ -47,9 +51,11 @@
 
     const method = this[action];
     if (method) {
-      const isValid = await LocalUser.shared().cryptoId().verifySignatureOnJson(data);
+      /*
+      const isValid = await LocalUser.shared().cryptoId().verifySignatureOnJson(data); // don't forget to also check if pubkey is correct!
       console.log("DATA:", data);
       console.log("SIG isValid:", isValid);
+      */
       method.apply(this, [data]);
     } else {
       console.warn("WARNING: no " + this.type() + "." + action + "() method found");

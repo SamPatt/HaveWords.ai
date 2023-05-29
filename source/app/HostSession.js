@@ -22,7 +22,7 @@
   }
 
   async broadcast(json) {
-    await LocalUser.shared().cryptoId().signJson(json);
+    //await LocalUser.shared().cryptoId().signJson(json);
     PeerServer.shared().broadcast(json);
   }
 

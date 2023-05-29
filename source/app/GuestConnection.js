@@ -8,7 +8,9 @@
 */
 
 (class GuestConnection extends PeerConnection {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("pubkey", null); 
+  }
 
   init() {
     super.init();
@@ -51,8 +53,8 @@
   
   // ----------------
 
-  onOpen() {
-    super.onOpen();
+  onOpen(peerId) {
+    super.onOpen(peerId);
 
     if (HostSession.shared().bannedGuests().has(this.id())) {
       this.send({ type: "ban" });
@@ -71,6 +73,7 @@
 
   onData(data) {
     this.debugLog("onData", data);
+    data.peerId = this.peerId()
 
     const action = "onReceived_" + data.type;
 
@@ -96,6 +99,7 @@
       this.sendThenClose({ type: "ban" });
     } else {
       this.setNickName(data.nickname);
+      this.setPubkey(data.id);
 
       console.log("Guest connected: " + this.description())
       const newGuestUserList = HostSession.shared().calcGuestUserlist();
@@ -121,7 +125,7 @@
           joiningGuestId: data.id,
           guestUserList: newGuestUserList,
         },
-        this.id()
+        data.peerId
       );
 
       GroupChatView.shared().addChatMessage(
@@ -151,7 +155,7 @@
           message: data.message,
           nickname: data.nickname,
         },
-        data.id
+        data.peerId
       );
 
       // Display prompt
@@ -215,7 +219,7 @@
         message: data.message,
         nickname: data.nickname,
       },
-      data.id
+      data.peerId
     );
   }
 

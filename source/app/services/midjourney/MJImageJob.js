@@ -91,9 +91,7 @@
     };
 
     const json = await this.newRequest().setEndpointPath("/imagine").setBody(body).asyncSend();
-    if (json.errors) {
-      this.throwError(new Error(JSON.stringify(json)));
-    }
+    this.throwIfContainsErrors(json);
 
     this.setTaskId(json.taskId);
 
