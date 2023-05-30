@@ -24,8 +24,13 @@
     this.newSlot("apiUrl", null);
     this.newSlot("apiKey", null);
     this.newSlot("bodyJson", null); // this will contain the model choice and messages
-    this.newSlot("response", null);
     this.newSlot("json", null);
+
+    // fetching
+    this.newSlot("fetchRequest", null);
+    this.newSlot("isFetchActive", false);
+    this.newSlot("fetchAbortController", null);
+
 
     // streaming
     this.newSlot("isStreaming", false); // external read-only
@@ -105,8 +110,25 @@
       this.showRequest();
     }
 
-    this.setResponse(await fetch(this.apiUrl(), this.requestOptions()));
-    const json = await this.response().json();
+    const options = this.requestOptions();
+
+    const controller = new AbortController();
+    this.setFetchAbortController(controller);
+    options.signal = controller.signal; // add the abort controller so we can abort the fetch if needed
+
+    const fetchRequest = fetch(this.apiUrl(), options);
+
+    fetchRequest.then((response) => {
+      this.setIsFetchActive(false);
+      this.setFetchAbortController(null);
+      //return response.json();
+    }).catch((error) => {
+      this.setIsFetchActive(false);
+        console.error('Error:', error);
+    });
+
+    const response = await fetchRequest;
+    const json = response.json();
     this.setJson(json);
     this.showResponse();
     return json;
@@ -125,26 +147,15 @@
     );
   }
 
-  /*
-  reportError (error) {
-    console.error(this.type() + " error fetching response:", error, " for url: " + this.apiUrl() + " request:", this.requestOptions());
-
-    AiChatView.shared().addMessage(
-      "systemMessage",
-      "Error fetching AI response. Make sure the model is selected and the API key is correct.",
-      "Host"
-    );
-  }
-  */
-
   // --- streaming response --- 
 
   assertReadyToStream () {
-    const streamTarget = this.streamTarget();
-    // verify streamTarget and that protocol is implemented by it
-    assert(streamTarget);
-    assert(streamTarget.onStreamData);
-    assert(streamTarget.onStreamComplete);
+    const target = this.streamTarget();
+    if (target) {
+      // verify streamTarget protocol is implemented by it
+      assert(target.onStreamData);
+      assert(target.onStreamComplete);
+    }
   }
 
   async asyncSendAndStreamResponse () {
@@ -212,7 +223,7 @@
   }
 
   onXhrError (event) {
-    debugger;
+    //debugger;
     const xhr = this.xhr();
     // error events don't contain messages - need to look at xhr and guess at what happened
     let s = "got an error on xhr requestId" + this.requestId() + ":";
@@ -299,6 +310,29 @@
         console.warn("WARNING: don't know what to do with this JsonChunk", json);
       }
     }
+  }
+
+  isActive () {
+    const xhr = this.xhr();
+    if (xhr) {
+      const state = xhr.readyState;
+      return (state >= 1 && state <= 3);
+    }
+    return false;
+  }
+  
+  abort () {
+    if (this.isFetchActive()) {
+      if (this.fetchAbortController()) {
+        this.fetchAbortController().abort();
+      }
+      return this;
+    } 
+
+    if (this.isActive()) {
+      this.xhr().abort();
+    }
+    return this;
   }
 
 }).initThisClass();

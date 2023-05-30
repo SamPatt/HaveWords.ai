@@ -71,7 +71,7 @@ No proper nouns.\n\n${MJImageJob.systemInstructions()} Here is the current scene
 
     const data = await request.asyncSend();
     if (data.error) {
-      this.throwError(new Error(data.error.message));
+      this.throwError(new Error("requestSceneSummary: " + data.error.message));
     }
     const summary = data.choices[0].message.content;
     const imagePrompt = SessionOptionsView.shared().artPromptPrefix() + " " + summary + SessionOptionsView.shared().artPromptSuffix();
