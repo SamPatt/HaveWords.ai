@@ -194,6 +194,9 @@ Again, do not make decisions for the players.`,
       headerFontFamily: "inherit",
       backgroundColor: "#222",
       color: "rgb(219, 219, 219)",
+      headerFontTextTransform: "capitalize",
+      chapterNumberLetterSpacing: "0.1em",
+      chapterTitleLetterSpacing: "0.2em",
     },
     options: [
       {
@@ -409,21 +412,22 @@ no modern technologies (such as guns, planes, or automobiles, etc) do. Do not me
       {
         label: "Discworld",
         value: "Discworld",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe.
-These stories should be wimsically humorous and witty, in a good natured way and contain parodies of architypes and poke fun at various aspects of society and history.
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Terry Pratchett's[sessionSubtype] universe. 
 Do not mention any of the name of the author.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: "
       },
       {
         label: "Hitchhiker's Guide to the Galaxy",
         value: "Hitchhiker's Guide to the Galaxy",
-        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe. 
-These stories should be wimsically humorous and witty, in a good natured way and poke fun at various aspects of society and history.
+        prompt: `Please play the roll of an expert dungeon master and lead us on a campaign of your own creation in Douglas Adams's [sessionSubtype] universe.
 Do not mention any of the name of the author.`,
         artPromptPrefix: "Humorous 1980s comic book style frame of: ",
         theme: {
           headerFontFamily: "Harlow",
+          headerFontTextTransform: "none",
           fontFamily: "Crimson",
+          chapterNumberLetterSpacing: "0em",
+          chapterTitleLetterSpacing: "0em",
         }
       },
 

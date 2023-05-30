@@ -792,10 +792,16 @@ button {
     --AiChatMessages-font-weight: inherit; 
 
     --drop-cap-font-family: inherit; 
+
     --chapterNumber-family: inherit; 
-    --dchapterImage-family: inherit; 
+    --chapterNumber-letter-spacing: 0.1em;
+
     --chapterTitle-family: inherit; 
+    --chapterTitle-text-transform: capitalize;
+    --chapterTitle-letter-spacing: 0.2em;
+
     --bookTitle-family: inherit; 
+
     --body-background-color: #222;
     --body-color: rgba(255, 255, 255, 0.8);
 }
@@ -823,10 +829,10 @@ body {
 
 .chapterNumber {
     font-family: var(--chapterNumber-font-family);
+    text-transform: var(--chapterTitle-text-transform);
+    letter-spacing: var(--chapterNumber-letter-spacing);
     font-size: 1.2em;
-    letter-spacing: 0.1em;
     font-weight: bold;
-    text-transform: uppercase;
     width: 100%;
     text-align: center;
     padding-top: 2em;
@@ -844,9 +850,9 @@ body {
 
 .chapterTitle {
     font-family: var(--chapterTitle-font-family);
+    text-transform: var(--chapterTitle-text-transform);
+    letter-spacing: var(--chapterNumber-letter-spacing);
     font-size: 2em;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
     line-height: 1.3em;
     font-weight: normal;
     font-style: normal;

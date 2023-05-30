@@ -626,6 +626,12 @@
     return v ? v : "inherit";
   }
 
+
+  headerTextTransform() {
+    const v = this.configLookup("theme.headerTextTransform");
+    return v ? v : "inherit";
+  }
+
   // ----------------------------------
 
   allowsImageGen() {
@@ -642,19 +648,22 @@
   themePrefsJson() {
     return {
       bookTitle: { 
-        "font-family": this.headerFontFamily() 
+        "font-family": this.headerFontFamily(),
       },
 
       chapterNumber: { 
-        "font-family": this.headerFontFamily() 
+        "font-family": this.headerFontFamily(),
+        "letter-spacing": this.configLookup("theme.chapterNumberLetterSpacing"),
       },
 
       chapterTitle: { 
-        "font-family": this.headerFontFamily() 
+        "font-family": this.headerFontFamily(),
+        "text-transform": this.headerFontFamily(),
+        "letter-spacing": this.configLookup("theme.chapterTitleLetterSpacing"),
       },
 
       "drop-cap": { 
-        "font-family": this.headerFontFamily() 
+        "font-family": this.headerFontFamily(),
       },
 
       AiChatMessages: {
