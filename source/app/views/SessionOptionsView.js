@@ -246,7 +246,9 @@
   setupMidjourneyApiKeyText() {
     const field = TextFieldView.clone()
       .setId("midjourneyApiKeyText")
-      .setTarget(this);
+      .setTarget(this)
+      .setShouldStore(true)
+      .load()
     this.setMidjourneyApiKeyText(field);
 
     const self = this;
@@ -309,17 +311,11 @@
       document.getElementById("midjourneyApiBaseUrlContainer").style.display =
         "block";
       //ImageBotJobs.shared().setImageGen(MJImageJobs.shared());
-    } else if (ImageGenOptions.shared().isDalleOption()) {
-      document.getElementById("midjourneyApiKeyContainer").style.display =
-        "none";
-      document.getElementById("midjourneyApiBaseUrlContainer").style.display =
-        "none";
-      //ImageBotJobs.shared().setImageGen(OpenAiImageGen.shared());
     } else {
-      throw (
-        "Unknown Image Gen Model Option: " + ImageGenOptions.shared().option()
-      );
-    }
+      document.getElementById("midjourneyApiKeyContainer").style.display = "none";
+      document.getElementById("midjourneyApiBaseUrlContainer").style.display = "none";
+      //ImageBotJobs.shared().setImageGen(OpenAiImageGen.shared());
+    } 
   }
 
   // --- setup ---
@@ -588,6 +584,10 @@
   // ----------------------------------
 
   allowsImageGen() {
+    if (!ImageGenOptions.shared().allowsImageGen()) {
+      return false;
+    }
+
     const v = this.configLookup("allowsImageGen");
     return v ? v : true;
   }

@@ -10,14 +10,18 @@
     }
   
     // --- api key ---
+
+    allowsImageGen () {
+        return this.option() !== "none";
+    }
   
     modelOptions () {
-        return [this.midjourneyOption()];
+        return ["none", this.midjourneyOption()];
         //return [this.dalleOption(), this.midjourneyOption()];
     }
 
     option() {
-        return localStorage.getItem(this.storagePrefix() + "option") || this.dalleOption();
+        return localStorage.getItem(this.storagePrefix() + "option") || "none";
     }
 
     setOption(option) {
