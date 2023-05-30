@@ -66,7 +66,6 @@ class Boot extends Object {
       "source/app/views/buttons/Button.js",
       "source/app/views/buttons/RadioButton.js",
       "source/app/views/buttons/InviteButton.js",
-      "source/app/views/buttons/SessionResetButton.js",
 
       "source/app/views/inputs/OptionsView.js",
       "source/app/views/inputs/TextAreaInputView.js",

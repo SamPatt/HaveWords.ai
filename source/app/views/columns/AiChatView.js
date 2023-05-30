@@ -209,6 +209,11 @@
     }, 10);
   }
 
+  clearMessages () {
+    this.scrollViewContentElement().textContent = '';
+    this.requestIdToMessageMap().clear();
+  }
+
   scrollView () {
     return document.querySelector("#aiScrollingOutput");
   }

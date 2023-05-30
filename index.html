@@ -50,6 +50,9 @@
                     <table class="controls">
                         <tr>
                             <td>
+                                <div id="SessionResetButton" class="subheader smallButton">Reset Session</div>
+                            </td>
+                            <td>
                                 <div id="CopyTranscriptButton" class="subheader smallButton">Copy Transcript</div>
                             </td>
                             <td>
@@ -176,6 +179,16 @@
                                         </select>
                                     </div>
                                 </td>
+                                <td id="sessionSubtype2OptionsPanel">
+                                    <div style="padding-left: 1em;">
+                                        <div id="sessionSubtypeOptionsLabel" class="inputLabel">&nbsp;</div>
+                                        <select id="sessionSubtype2Options">
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" id="sessionDescription"></td>
                             </tr>
                         </table>
 
@@ -197,13 +210,6 @@
                         <div style="display: inline-block; padding-top:1em; padding-bottom: 0.5em;">
                             <div id="sessionStartButton" class="button"
                                 style="margin-top: 0.3em; background-color: transparent;">Start&nbsp;Session</div>
-                        </div>
-
-                        <div style="display: none; padding-top:1em; padding-bottom: 0.5em;">
-                            <div class="button" id="sessionResetButton"
-                                style="margin-top: 0.3em; background-color: transparent; width: fit-content;">
-                                Reset&nbsp;Session
-                            </div>
                         </div>
                     </div>
                 </div>

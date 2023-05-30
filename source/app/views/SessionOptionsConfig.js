@@ -122,6 +122,7 @@ Fantasy Period:
   The Crown
   The Great Gadbsy
 
+  
 
   THEMES:
   Light Theme:
@@ -129,6 +130,8 @@ Fantasy Period:
     color: "#000",
     backgroundColor: "#F2EDE8",
   }
+
+
 */
 
 const sessionOptionsArray = [
@@ -247,13 +250,107 @@ If the hp of a creature reaches 0, that creature dies.
 Participants in combat are unable to take actions outside of their own turn.
 Please make all rolls for the players and never ask them to make rolls for themselves.
 
-Before we begin playing, I would like you to provide my three adventure options. 
+[sessionSubtype2]
 Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
 Once I decide on the adventure, you may provide a brief setting description and begin the game. 
 I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
 Again, do not make decisions for the players.`,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
+        options: [
+            {
+              "label": "AI generated adventure",
+              "description": ""
+            },
+            {
+              "label": "The Lost City",
+              "description": "Traps adventurers in an ancient, ruined city with a mysterious pyramid."
+            },
+            {
+              "label": "Keep on the Borderlands",
+              "description": "Investigates a dangerous wilderness and a labyrinthine cave system known as the Caves of Chaos."
+            },
+            {
+              "label": "The Temple of Elemental Evil",
+              "description": "Brings characters face-to-face with the dark gods of the universe."
+            },
+            {
+              "label": "White Plume Mountain",
+              "description": "Tasks adventurers with retrieving three infamous weapons from a bizarre dungeon."
+            },
+            {
+              "label": "Against the Giants",
+              "description": "Pits players against a series of giant-led monstrous forces."
+            },
+            {
+              "label": "Descent into the Depths of the Earth",
+              "description": "Leads adventurers into the dark, subterranean world of the drow."
+            },
+            {
+              "label": "Queen of the Spiders",
+              "description": "Culminates a series of adventures against the machinations of Lolth, the demon queen of spiders."
+            },
+            {
+              "label": "The Tomb of Horrors",
+              "description": "Challenges adventurers with the deadliest dungeon, filled with lethal traps and cunning puzzles."
+            },
+            {
+              "label": "Ravenloft",
+              "description": "Introduces the iconic villain Strahd von Zarovich in his haunted castle."
+            },
+            {
+              "label": "The Hidden Shrine of Tamoachan",
+              "description": "Tests adventurers' ingenuity with Mayan/Aztec-themed puzzles and traps."
+            },
+            {
+              "label": "The Village of Hommlet",
+              "description": "Begins a grand campaign against the forces of Elemental Evil."
+            },
+            {
+              "label": "Palace of the Silver Princess",
+              "description": "Rescues a captured princess from her enchanted palace."
+            },
+            {
+              "label": "Red Hand of Doom",
+              "description": "Thwarts the invasion plan of the destructive Red Hand hobgoblin army."
+            },
+            {
+              "label": "Curse of Strahd",
+              "description": "Returns adventurers to the realm of Barovia and its vampiric master."
+            },
+            {
+              "label": "Storm King's Thunder",
+              "description": "Combats a great conflict between giants and small folk."
+            },
+            {
+              "label": "Tomb of Annihilation",
+              "description": "Faces a deadly curse in the dinosaur-filled jungles of Chult."
+            },
+            {
+              "label": "Waterdeep: Dragon Heist",
+              "description": "Reveals a hidden treasure and conspiracies in the city of Waterdeep."
+            },
+            {
+              "label": "Waterdeep: Dungeon of the Mad Mage",
+              "description": "Explores the mega-dungeon of Undermountain."
+            },
+            {
+              "label": "Ghost of Saltmarsh",
+              "description": "Features seafaring adventures and mystery in the coastal town of Saltmarsh."
+            },
+            {
+              "label": "Baldur's Gate: Descent Into Avernus",
+              "description": "Journeys from the city of Baldur's Gate to the hellscape of Avernus."
+            },
+            {
+              "label": "Icewind Dale: Rime of the Frostmaiden",
+              "description": "Survives the frozen wilderness of Icewind Dale under the shadow of a cruel god."
+            },
+            {
+              "label": "Candlekeep Mysteries",
+              "description": "Solves a variety of mysteries originating from the books in the fortress library of Candlekeep."
+            }
+          ],
       },
       {
         label: "Harry Potter",

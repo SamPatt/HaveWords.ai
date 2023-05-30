@@ -248,7 +248,16 @@
 
   hide() {
     if (!this.isHidden()) {
-      const v = this.element().style.display;
+      const e = this.element();
+      const tag = e.tagName;
+      let v = e.style.display;
+      if (tag === "TABLE") {
+        v = "table";
+      } else if (tag === "TR") {
+        v = "table-row";
+      } else if (tag === "TD") {
+        v = "table-cell";
+      }
       this.setHiddenDisplayType(v);
       this.element().style.display = "none";
     }

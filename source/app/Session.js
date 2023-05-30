@@ -61,6 +61,7 @@
     return this;
   }
 
+  /*
   reset() {
     const userChoice = confirm(
       "Do you want to start a new session? This will delete the previous session data and create a new invite link."
@@ -68,6 +69,7 @@
     Session.shared().clear();
     window.location.reload();
   }
+  */
 
   // Avatars
 

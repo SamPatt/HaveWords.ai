@@ -7,17 +7,24 @@
 
 (class SessionOptionsView extends View {
   initPrototypeSlots() {
+    // ai service
     this.newSlot("aiModelOptions", null);
     this.newSlot("apiKeyText", null);
+
+    // text to speech service for naration
     this.newSlot("azureApiKeyText", null);
     this.newSlot("azureApiRegionOptions", null);
 
+    // image gen service
     this.newSlot("imageGenModelOptions", null);
     this.newSlot("midjourneyApiKeyText", null);
     this.newSlot("midjourneyApiBaseUrlText", null);
 
+    // session options
     this.newSlot("sessionTypeOptions", null);
     this.newSlot("sessionSubtypeOptions", null);
+    this.newSlot("sessionSubtype2Options", null);
+    this.newSlot("sessionDescription", null);
     this.newSlot("sessionCustomizationText", null);
     this.newSlot("sessionLanguageOptions", null);
 
@@ -65,8 +72,15 @@
     );
 
     this.setSessionSubtypeOptions(
-      OptionsView.clone().setId("sessionSubtypeOptions").setTarget(this)
+      OptionsView.clone().setId("sessionSubtypeOptions").setTarget(this).setShouldStore(true).load()
     );
+
+    this.setSessionSubtype2Options(
+      OptionsView.clone().setId("sessionSubtype2Options").setTarget(this).setShouldStore(true).load().hide()
+    );
+
+    //debugger;
+    this.setSessionDescription(TextAreaInputView.clone().setId("sessionDescription").hide());
 
     this.sessionTypeOptions().submit(); // to setup subtypes
 
@@ -100,10 +114,15 @@
     );
 
     this.setSessionResetButton(
-      Button.clone().setId("sessionResetButton").setTarget(this)
+      Button.clone().setId("SessionResetButton").setTarget(this)
     );
 
     this.setupApiKeyText();
+
+
+    this.onSubmit_sessionSubtypeOptions()
+    this.onSubmit_sessionSubtype2Options()
+
     this.onUpdateInputs(); // to enable start button if ready
   }
 
@@ -356,7 +375,22 @@
 
   // --- sessionSubtypeOptions ---
 
-  onSubmit_sessionSubtypeOptions() {}
+  onSubmit_sessionSubtypeOptions() {
+    const options = this.sessionSubtypeOptions().selectedElement()._item.options;
+    if (options) {
+      this.sessionSubtype2Options().setOptions(options).unhide();
+      this.onSubmit_sessionSubtype2Options();
+    } else {
+      this.sessionSubtype2Options().setOptions([]).hide();
+      this.sessionDescription().hide();
+    }
+  }
+
+  onSubmit_sessionSubtype2Options() {
+    const option = this.sessionSubtype2Options().selectedElement()
+    const s = option ? option._item.description : "";
+    this.sessionDescription().setString(s).setIsHidden(s === "");
+  }
 
   hidePromptInputs() {
     document.getElementById("messageInputSection").style.display = "none"; // host ai chat input
@@ -421,7 +455,8 @@
           item.type,
           item.data,
           item.nickname,
-          item.id
+          item.id, 
+          item.requestId
         );
       } else if (item.type === "chat") {
         GroupChatView.shared().addChatMessage(
@@ -458,6 +493,15 @@
     return this.sessionSubtypeOptions().selectedValue();
   }
 
+  sessionSubtype2() {
+    if (this.sessionSubtype2Options().selectedIndex() === 0) {
+      return "Before we begin playing, I would like you to provide my three adventure options.";
+    }
+
+    const option = this.sessionSubtype2Options().selectedValue();
+    return "Please make the adventure a campaign using the DnD \"" + option + "\" module.";
+  }
+
   getCurrentUsernames() {
     // Add all nicknames of connected guests to the guestNicknames array
     const guestNicknames = PeerServer.shared()
@@ -475,6 +519,7 @@
   replacedConfigString(s) {
     s = s.replaceAll("[sessionType]", this.sessionType());
     s = s.replaceAll("[sessionSubtype]", this.sessionSubtype());
+    s = s.replaceAll("[sessionSubtype2]", this.sessionSubtype2());
     s = s.replaceAll("[playerNames]", this.playerNames());
     s = s.replaceAll(
       "[customization]",
@@ -642,8 +687,26 @@
     e.innerHTML = this.sessionTitle();
   }
 
+  onSubmit_SessionResetButton () {
+    const r = confirm("Are you sure you want to reset the session? This will lose the current session state.");
+    if (r === true) {
+      this.resetSession();
+    }
+  }
+
+  resetSession () {
+    AiChatView.shared().clearMessages();
+    Session.shared().clear();
+    this.sessionResetButton().hide();
+    this.unhide();
+    HostSession.shared().broadcast({ 
+      "type": "resetSession",
+    });
+  }
+
   async onSubmit_sessionStartButton() {
     this.hide();
+    this.sessionResetButton().unhide();
 
     HostSession.shared().shareThemeWithGuests()
 

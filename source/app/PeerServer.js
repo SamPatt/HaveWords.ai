@@ -46,6 +46,8 @@
   }
 
   setup() {
+    //console.log("getPeers: ", await this.getPeers());
+
     //const id = LocalUser.shared().id();
     //this.debugLog("connecting to peerjs as:" + LocalUser.shared().shortId())
     this.debugLog("connecting to peerjs")
@@ -63,8 +65,6 @@
     this.setPeerId(peerId)
     this.debugLog("open with peerId: '" + peerId + "'");
     this.delegate().onPeerServerOpen()
-
-    console.log("getPeers: ", await this.getPeers());
   }
   
   addPeerConnection(pc) {
@@ -199,7 +199,7 @@
     return "https://" + opts.host + opts.path + '/api/peers';
   }
 
-  async getPeers() {
+  async getPeers() { // Note this is a GET request, so we don't need to be connected to do this
     const url = this.getPeersUrl();
     console.log("getPeersUrl: '" + url + "'");
     const response = await fetch(url);

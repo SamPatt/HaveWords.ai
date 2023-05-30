@@ -76,6 +76,10 @@
     return this;
   }
 
+  selectedIndex() {
+    return this.element().selectedIndex;
+  }
+
   selectedValue() {
     const option = this.selectedElement();
     return option ? option.value : null;

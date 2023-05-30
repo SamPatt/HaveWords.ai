@@ -105,11 +105,9 @@ textarea::placeholder {
     padding-left: 0.1em;
 }
 
-/*
-#CopyTranscriptButton {
-
+#ResetSessionButton {
+    display: none;
 }
-*/
 
 .smallButton {
     transition: 0.2s;

@@ -15,6 +15,7 @@
   init() {
     super.init();
     this.setId("CopyInviteButton");
+    this.setIsHidden(!App.shared().isHost());
   }
 
   setLink (aString) {
