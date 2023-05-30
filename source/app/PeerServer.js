@@ -59,10 +59,12 @@
     return this;
   }
 
-  onOpen(peerId) {
+  async onOpen(peerId) {
     this.setPeerId(peerId)
     this.debugLog("open with peerId: '" + peerId + "'");
     this.delegate().onPeerServerOpen()
+
+    console.log("getPeers: ", await this.getPeers());
   }
   
   addPeerConnection(pc) {
@@ -190,6 +192,22 @@
       conn.shutdown();
     });
     return this;
+  }
+
+  getPeersUrl () {
+    const opts = this.peerOptions();
+    return "https://" + opts.host + opts.path + '/api/peers';
+  }
+
+  async getPeers() {
+    const url = this.getPeersUrl();
+    console.log("getPeersUrl: '" + url + "'");
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const peers = await response.json();
+    return peers;
   }
 
 }.initThisClass());
