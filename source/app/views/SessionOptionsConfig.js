@@ -176,16 +176,19 @@ place the chapter number (written in words, not number characters) within <div c
 followed by the tags <div class=chapterImage></div> 
 and the chapter name within <div class=chapterTitle></div> tags. 
 
+When the session begins, or whenever players move to a new scene/location, please start your response with a 
+<div class=sceneDescription></div> tag containing a single short sentence describing the scene.
+
+When quoting text which is handwritten, such as from a handwritten letter, please surround it with <div class=handWritten></div> tags.
+
 If the story is inspired by a certain author's writings, do not mention the author's name when introducing the story.
 
 When it feels like a new chapter is beginning, please create a title for it in a similar manner. 
 Also, please place the first letter of the first word in each chapter within an HTML span element whose class is set to "drop-cap".
 
-When the story is completed, please end by saying we have come to it's conclusion, followed by a fitting title for the story 
-as if it were a book title and place it with <div class=bookTitle></div> tags. 
-When quoting text which is handwritten, such as from a handwritten letter, please surround it with <div class=handWritten></div> tags.
-
-Please follow this with a brief summary of the story that tries to cover the story's most dramatic moments and most important player actions.
+When you feel the story is completed, please end by saying we have come to it's conclusion, followed by a fitting title for the story 
+as if it were a book title and place it with <div class=bookTitle></div> tags, and follow this with a brief summary of the story that 
+covers the adventure's most dramatic moments and most important player actions.
 
 Again, do not make decisions for the players.`,
     musicPlaylists: ["DnD"],
@@ -254,8 +257,6 @@ Participants in combat are unable to take actions outside of their own turn.
 Please make all rolls for the players and never ask them to make rolls for themselves.
 
 [sessionSubtype2]
-Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
-Once I decide on the adventure, you may provide a brief setting description and begin the game. 
 I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
 Again, do not make decisions for the players.`,
         promptSuffix: " ",

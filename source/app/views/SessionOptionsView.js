@@ -117,7 +117,7 @@
       Button.clone().setId("SessionResetButton").setTarget(this)
     );
 
-    this.setupApiKeyText();
+    //this.setupApiKeyText();
 
 
     this.onSubmit_sessionSubtypeOptions()
@@ -363,6 +363,8 @@
     const subOptionsArray =
       this.sessionTypeOptions().selectedElement()._item.options;
     this.sessionSubtypeOptions().setOptions(subOptionsArray);
+
+    this.onSubmit_sessionSubtypeOptions();
   }
 
   onSubmit_imageGenModelOptions() {
@@ -384,6 +386,7 @@
       this.sessionSubtype2Options().setOptions([]).hide();
       this.sessionDescription().hide();
     }
+    this.onSubmit_sessionSubtype2Options();
   }
 
   onSubmit_sessionSubtype2Options() {
@@ -495,7 +498,9 @@
 
   sessionSubtype2() {
     if (this.sessionSubtype2Options().selectedIndex() === 0) {
-      return "Before we begin playing, I would like you to provide my three adventure options.";
+      return `Before we begin playing, I would like you to provide my three adventure options. 
+Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. 
+Once I decide on the adventure, you may provide a brief setting description and begin the game.`;
     }
 
     const option = this.sessionSubtype2Options().selectedValue();
@@ -731,8 +736,6 @@
     Session.shared().setGameMode(
       this.sessionTypeOptions().selectedElement()._item.gameMode
     );
-
-    AiChatView.shared().setShowLoading(true);
 
     /*
     AiChatView.shared().addMessage(

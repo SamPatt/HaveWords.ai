@@ -76,7 +76,7 @@
   async onReceived_playAudioBlob(data) {
     console.log("onReceived_playAudioBlob()");
     const audioBlob = await Blob.asyncFromDataUrl(data.audioBlobDataUrl);
-    AzureTextToSpeech.shared().playAudioBlob(audioBlob);
+    AzureTextToSpeech.shared().queueAudioBlob(audioBlob);
   }
 
   onReceived_kick(data) {

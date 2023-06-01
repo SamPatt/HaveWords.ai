@@ -264,30 +264,46 @@
     return await request.asyncSendAndStreamResponse();
   }
 
+  usableStringFromString(s) {
+    //indexOfEndOfLastFullWordOnString
+    let l = s.length - 1;
+    while (l) {
+      const c = s.substr(l, 1);
+      if ([" ", ".", "\n"].indexOf(c) !== -1) {
+        break;
+      }
+      l --;
+    }
+    return s.substr(0, l);
+  }
+
   onStreamData (request, newData) {
+    //debugger;
     //console.log("Host " + request.requestId() + " onStreamData:" , newData);
-    const content = request.fullContent();
+    let content = request.fullContent();
+    /*
+    if (!content.isValidHtml()) { 
+      content += "</div>"; 
+    }
+    */
 
     if (content.isValidHtml()) {
-      //const sendContent = content;
+      const usableString = this.usableStringFromString(content);
+      //console.log("usableString [" + usableString + "]");
 
       const lastContent = request.lastContent();
-      const newContent = content.substr(lastContent.length);
-      const wrappedNewContent = newContent.wrapHtmlWordsWithSpanClass("fadeInWord");
-      
-      //console.log("---\n" + wrappedNewContent + "\n---");
-
-      const sendContent = lastContent + wrappedNewContent;
-      request.setLastContent(content);
-      
-      this.shareUpdate(request, sendContent);
+      const newContent = usableString.substr(lastContent.length);
+      if (newContent.length) {
+        const wrappedNewContent = newContent.wrapHtmlWordsWithSpanClass("fadeInWord");
+        //console.log("---\n" + wrappedNewContent + "\n---");
+        const sendContent = lastContent + wrappedNewContent;
+        request.setLastContent(usableString);
+        this.shareUpdate(request, sendContent);
+      }
     }
   }
 
   shareUpdate (request, sendContent) {
-    //console.log("shareUpdate:", sendContent);
-    //console.log("---");
-
     AiChatView.shared().updateAIResponse(request.requestId(), sendContent)
     this.broadcast({
       type: "updateAiResponse",

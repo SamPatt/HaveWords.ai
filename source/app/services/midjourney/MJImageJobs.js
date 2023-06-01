@@ -5,26 +5,13 @@
 
 */
 
-(class MJImageJobs extends MJService {
+(class MJImageJobs extends Jobs {
   initPrototypeSlots() {
-    this.newSlot("jobsSet", null);
   }
 
   init () {
     super.init();
-    this.setJobsSet(new Set());
-    return this;
-  }
-
-  newJob () {
-    const job = MJImageJob.clone();
-    job.setManager(this);
-    this.jobsSet().add(job);
-    return job;
-  }
-
-  endJob (aJob) {
-    this.jobsSet().delete(aJob);
+    this.setJobClass(MJImageJob);
     return this;
   }
 

@@ -45,7 +45,9 @@ if (!String.prototype.capitalized) {
 
     static shared () {
         if (!Object.hasOwn(this, "_shared")) {
-            this._shared = this.clone()
+            const obj = new this();
+            this._shared = obj;
+            obj.init();
         }
         return this._shared
     }

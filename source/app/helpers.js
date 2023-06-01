@@ -74,10 +74,6 @@ Object.defineSlot(String.prototype, "isHexadecimal", function() {
   return regexp.test(this);
 });
 
-Object.defineSlot(String.prototype, "removedHtmlTags", function() {
-  return this.replace(/<[^>]*>/g, '');
-});
-
 // Base32Hex character set
 
 Object.defineSlot(String.prototype, "stringToBase32Hex", function() {
@@ -161,6 +157,18 @@ Object.defineSlot(String.prototype, "stringToUint8Array", function() {
   }
 
   return bytes;
+});
+
+// --- HTML related string methods ---
+
+Object.defineSlot(String.prototype, "removedHtmlTags", function() {
+  return this.replace(/<[^>]*>/g, '');
+});
+
+Object.defineSlot(String.prototype, "stripHtml", function() {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(this, 'text/html');
+  return doc.body.textContent || "";
 });
 
 // HTML word wrapping

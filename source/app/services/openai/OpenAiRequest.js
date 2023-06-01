@@ -49,7 +49,7 @@
 
   init() {
     super.init();
-    this.setIsDebugging(true);
+    this.setIsDebugging(false);
     this.setRequestId(this.thisClass().incrementRequestCount());
     this.setLastContent("");
   }
@@ -217,7 +217,7 @@
   setError (e) {
     this._error = e;
     if (e) {
-      console.warn(this.debugType() + " " + e.message);
+      console.warn(this.debugTypeId() + " " + e.message);
     }
     return this;
   }
@@ -285,11 +285,6 @@
   }
 
   onStreamJsonChunk (json) {
-    /*
-    example error:
-    {"error":{"message":"Request failed due to server shutdown","type":"server_error","param":null,"code":null}}
-    */
-
     if (json.error) {
       console.warn("ERROR:" + json.error.message);
       debugger;
@@ -305,7 +300,7 @@
         this.streamTarget().onStreamData(this, newContent);
     } else {
       if (json.id) {
-        // this is the header chunk - TODO: save anything importent in some request slots?
+        // this is the header chunk - do we need to keep this around?
       } else {
         console.warn("WARNING: don't know what to do with this JsonChunk", json);
       }

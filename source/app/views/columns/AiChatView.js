@@ -12,6 +12,7 @@
     this.newSlot("sessionTitle", null);
     this.newSlot("copyTranscriptButton", null);
     this.newSlot("requestIdToMessageMap", null);
+    this.newSlot("scrollView", null);
   }
 
   init() {
@@ -22,6 +23,8 @@
     this.setupMessageInputRemote();
     this.setSessionTitle(View.clone().setId("SessionDescription"));
     this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
+
+    this.setScrollView(ScrollView.clone().setId("aiScrollingOutput"));
   }
 
   onSubmit_CopyTranscriptButton () {
@@ -32,7 +35,7 @@
   transcript () {
     const texts = []
     const className = "message-content"; //"message-text";
-    const messageContentElements = this.scrollViewContentElement().querySelectorAll('.' + className);
+    const messageContentElements = this.scrollView().contentView().element().querySelectorAll('.' + className);
     for (const m of messageContentElements) {
       const nicknames = m.querySelectorAll('.message-nickname');
       if (nicknames.length) {
@@ -93,7 +96,7 @@
   }
 
   updateAIResponse(requestId, text) {
-    const shouldScroll = this.isScrolledToBottom()
+    const shouldScroll = this.scrollView().isScrolledToBottom()
     const messageView = this.requestIdToMessageMap().get(requestId);
     if (!messageView) {
       console.warn("missing messageView for requestId: ", requestId);
@@ -101,21 +104,8 @@
     }
     messageView.setText(text);
     if (shouldScroll) {
-      this.scrollToBottom();
+      this.scrollView().scrollToBottom();
     }
-  }
-
-  loadingAnimation () {
-    return document.getElementById("loadingHost");
-  }
-
-  setShowLoading (aBool) {
-    //this.loadingAnimation().style.display = aBool ? "inline" : "none";
-    return this;
-  }
-
-  isShowingLoading () {
-    return this.loadingAnimation().style.display !== "none";
   }
 
   // ========================================================
@@ -134,7 +124,7 @@
     m.setNickname(nickname);
     m.setText(message);
     m.setRequestId(requestId);
-    this.addMessageElement(m.element());
+    this.addMessageView(m);
 
     if (requestId) {
       this.requestIdToMessageMap().set(requestId, m);
@@ -149,7 +139,6 @@
     } else if (type === "aiResponse") {
       m.setIsUser(false);
 
-      this.setShowLoading(false);
       if (App.shared().isHost() && Session.shared().inSession()) {
         if (SessionOptionsView.shared().allowsImageGen()) {
           m.addImageGenButton();
@@ -160,7 +149,7 @@
 
     } 
 
-    this.addMessageElement(m.element());
+    this.addMessageView(m);
     return m
   }
 
@@ -179,7 +168,6 @@
     }
 
     // Trigger music only if host and in session
-    //debugger;
     if (App.shared().isHost() && Session.shared().inSession() && text) {
       OpenAiMusicBot.shared().setSceneDescription(text).trigger();
     }
@@ -189,47 +177,19 @@
 
   // --------------------------------------------------------
 
-  scheduleScrollToBottomIfAtBottom () {
-    if (this.isScrolledToBottom()) {
-      setTimeout(()=> {
-        this.scrollToBottom();
-      }, 0);
-    }
-  }
-
-  scrollViewContentElement () {
-    //return document.querySelector(".messages");
-    return document.querySelector("#AiChatMessages");
-  }
-
-  addMessageElement(element) {
-    this.scrollViewContentElement().appendChild(element);
+  addMessageView(aView) {
+    this.scrollView().addItemView(aView);
     setTimeout(() => {
-      this.scrollToBottom();
+      this.scrollView().scrollToBottom();
     }, 10);
   }
 
   clearMessages () {
-    this.scrollViewContentElement().textContent = '';
+    this.scrollView().contentView().clear(); 
     this.requestIdToMessageMap().clear();
   }
 
-  scrollView () {
-    return document.querySelector("#aiScrollingOutput");
-  }
-
-  scrollToBottom () {
-    const scrollView = this.scrollView();
-    scrollView.scrollTo(0, scrollView.scrollHeight); // use scrollTo() so "scroll-behavior: smooth;" setting can work.
-  }
-
-  isScrolledToBottom () {
-    const div = this.scrollView();
-    return (div.scrollTop + div.offsetHeight) >= div.scrollHeight;
-  }
-
   // ----------------------------------------------------------------
-
 
   updateImageProgressJson (json) {
     const messageView = this.requestIdToMessageMap().get(json.requestId);

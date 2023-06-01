@@ -14,6 +14,7 @@
     this.newSlot("body", null); // JSON object
     this.newSlot("startTime", null); // JSON object
     this.newSlot("timeoutMs", 120000); 
+    this.newSlot("timeoutId", null); 
   }
 
   init () {
@@ -51,32 +52,21 @@
       throw new Error(this.type() + " apiBaseUrl missing");
     }
   }
-
-  /*
-  timeoutPromise() {
-    return new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timed out')), this.timeoutMs());
-    });
-  }
-  */
-
+  
   async asyncSend () {
     this.setStartTime(new Date().getTime());
     this.assertValid()
 
     const requestOptions = this.requestOptions()
 
-    this.debugLog(" send request endpointUrl:" +  this.endpointUrl() + "options: \n", requestOptions)
-    const fetchPromise = fetch(this.endpointUrl(), requestOptions);
+    this.debugLog(" send request endpointUrl:" +  this.endpointUrl() + "options: \n", requestOptions);
 
-    let timeoutId;
-    const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error('Request timed out')), this.timeoutMs());
-    });
+    const fetchPromise = fetch(this.endpointUrl(), requestOptions);
+    const timeoutPromise = this.newTimeoutPromise();
 
     return Promise.race([timeoutPromise, fetchPromise])
       .then(response => {
-        clearTimeout(timeoutId);
+        this.clearTimeout();
         return response.json();
       })
       .catch(error => {
@@ -86,6 +76,22 @@
 
   description () {
     return this.type() + " url:" + this.endpointUrl() + " request:" + JSON.stringify(this.requestOptions());
+  }
+
+  newTimeoutPromise () {
+    const timeoutPromise = new Promise((_, reject) => {
+      const timeoutId = setTimeout(() => reject(new Error('Request timed out')), this.timeoutMs());
+      this.setTimeoutId(timeoutId);
+    });
+    return timeoutPromise;
+  }
+
+  clearTimeout () {
+    if (this.timeoutId()) {
+      clearTimeout(this.timeoutId());
+      this.setTimeoutId(null);
+    }
+    return this;
   }
 
 }.initThisClass());

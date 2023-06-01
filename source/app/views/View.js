@@ -34,12 +34,66 @@
     this.listenForChange();
   }
 
+  setElement(e) {
+    this._element = e;
+    if (e) {
+      assert(!e._view);
+      e._view = this; // TODO: use WeakRef
+    }
+    return this;
+  }
+
+  create() {
+    const e = document.createElement("div");
+    this.setElement(e);
+    this.initElement();
+    return this;
+  }
+
+  addSubview (aView) {
+    this.appendChild(aView.element());
+    return this;
+  }
+
+  subviews () {
+    const subviews = [];
+    const e = this.element();
+    const children = e.children;
+    for (let i = 0; i < children.length; i++) {
+      const view = children[i]._view;
+      assert(view);
+      subviews.push(view);
+    }
+    return subviews;
+  }
+
+  clear () {
+    this.element().textContent = '';
+    return this;
+  }
+
+  removeAllSubviews () {
+    this.clear();
+    return this;
+  }
+
+  setClassName (aName) {
+    this.element().className = aName;
+    return this;
+  }
+
   setId(id) {
     this._id = id;
+    if (this.element()) {
+      this.element().id = id;
+      return this;
+    }
+
     const e = document.getElementById(id);
     if (!e) {
       throw new Error("no element found for id '" + id + "'");
     }
+    
     this.setElement(e);
     this.initElement();
     if (this.shouldStore()) {

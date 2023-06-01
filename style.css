@@ -487,6 +487,7 @@ button {
     height: auto;
 }
 
+
 .scrollingOutput {
     margin-right: 1px; /* to give scroll bar a margin */
     flex-grow: 1;

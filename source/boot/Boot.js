@@ -40,7 +40,8 @@ class Boot extends Object {
       "source/app/services/azure/AzureVoices.js",
       "source/app/services/azure/AzureRegions.js",
 
-      "source/app/services/imagegen/Job.js",
+      "source/app/services/Job.js",
+      "source/app/services/Jobs.js",
       "source/app/services/imagegen/ImageBotJobs.js",
       "source/app/services/imagegen/ImageBotJob.js",
       "source/app/services/imagegen/ImageGenOptions.js",
@@ -72,6 +73,7 @@ class Boot extends Object {
       "source/app/views/inputs/TextFieldView.js",
       "source/app/views/inputs/UsernameView.js",
 
+      "source/app/views/columns/ScrollView.js",
       "source/app/views/columns/AiChatView.js",
       "source/app/views/columns/GroupChatView.js",
       "source/app/views/columns/UsersView.js",

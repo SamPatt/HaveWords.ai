@@ -43,12 +43,12 @@
     this.newSlot("pitch", "-10%");
     this.newSlot("isMuted", false);
     this.newSlot("currentAudio", null);
-    //this.newSlot("audioQueue", null);
+    this.newSlot("audioBlobQueue", null);
   }
 
   init () {
     super.init();
-    //this.setAudioQueue([]);
+    this.setAudioBlobQueue([]);
   }
 
   jsonForVoiceShortName (shortName) {
@@ -102,6 +102,20 @@
     return this.voiceSupportsStyle(this.voiceStyle()) ? this.voiceStyle() : null;
   }
 
+  cleanText(text) {
+    // make sure we don't lose the whitespace formatting as we need it for pacing
+    text = text.replaceAll("<p>", ""); 
+    text = text.replaceAll("</p>", "\n\n"); 
+    text = text.replaceAll("<br>", "\n\n"); 
+    //text = text.replaceAll(".", "\n\n"); 
+
+    text = text.removedHtmlTags(); 
+
+    text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
+    //text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
+    return text;
+  }
+
   ssmlRequestForText(text) {
     let s = `<prosody volume='soft' rate='${this.rate()}' pitch='${this.pitch()}'>${text}</prosody>`;
 
@@ -125,19 +139,8 @@
       return;
     }
 
-    // make sure we don't lose the whitespace formatting as we need it for pacing
-    text = text.replaceAll("<p>", ""); 
-    text = text.replaceAll("</p>", "\n\n"); 
-    text = text.replaceAll("<br>", "\n\n"); 
-    //text = text.replaceAll(".", "\n\n"); 
-
-    text = text.removedHtmlTags(); 
-
-    text = text.replaceAll(" - ", "... "); // quick hack to get the pause length right for list items
-    //text = text.replaceAll(".\n\n", "...\n\n"); // quick hack to get the pause length right for list items
-
-    console.log("asyncSpeakText(" + text + ")");
-
+    text = this.cleanText(text);
+    this.debugLog("asyncSpeakText(" + text + ")");
 
     //this.debugLog("made request")
     const response = await fetch(`https://${this.region()}.tts.speech.microsoft.com/cognitiveservices/v1`, {
@@ -155,9 +158,24 @@
     }
 
     const audioBlob = await response.blob();
-    this.playAudioBlob(audioBlob);
-    
-    HostSession.shared().broadcastPlayAudioBlob(audioBlob);
+    this.queueAudioBlob(audioBlob);
+  }
+
+  queueAudioBlob (audioBlob) {
+    this.audioBlobQueue().push(audioBlob);
+    this.processQueue();
+    return this;
+  }
+
+  processQueue () {
+    if (!this.currentAudio()) {
+      const q = this.audioBlobQueue();
+      if (q.length) {
+        const blob = q.shift();
+        this.playAudioBlob(blob);
+      }
+    }
+    return this;
   }
 
   playAudioBlob (audioBlob) {
@@ -167,13 +185,19 @@
       const audio = new Audio(audioUrl);
       audio.play();
       this.setCurrentAudio(audio);
-      audio.onended = () => {
-        this.debugLog("finished playing");
-        this.setCurrentAudio(null);
-      };
-      
+      audio.onended = () => { this.onAudiEnd(audio); }
+
+      HostSession.shared().broadcastPlayAudioBlob(audioBlob);
+    } else {
+      this.processQueue();
     }
     return this;
+  }
+
+  onAudiEnd (audio) {
+    this.debugLog("finished playing");
+    this.setCurrentAudio(null);
+    this.processQueue();
   }
   
   pause() {
@@ -194,7 +218,6 @@
       //if (audio.paused) {
         audio.play();
         this.debugLog("resumed");
-
       //}
     }
   }
