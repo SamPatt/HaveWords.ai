@@ -5,15 +5,17 @@
 
 */
 
-(class GroupChatView extends View {
+(class GroupChatView extends Base {
   initPrototypeSlots() {
     this.newSlot("chatInput", null);
+    this.newSlot("scrollView", null);
   }
 
   init() {
     super.init();
-    this.setId("chatMessages");
+    //this.setId("groupChatColumn");
     this.setupMessageInput();
+    this.setScrollView(ScrollView.clone().setId("chatOutput"));
   }
 
   setupMessageInput() {
@@ -35,18 +37,14 @@
     m.setAvatar(avatar)
     m.setNickname(nickname)
     m.setText(message)
-    this.addMessageElement(m.element());
+    this.addMessageView(m);
   }
 
-  scrollViewContentElement () {
-    return document.querySelector(".chatMessages");
-  }
-
-  addMessageElement(element) {
-    const sc = this.scrollViewContentElement();
-    sc.appendChild(element);
-    const scrollView = sc.parentNode;
-    scrollView.scrollTop = scrollView.scrollHeight;
+  addMessageView(aView) {
+    this.scrollView().addItemView(aView);
+    setTimeout(() => {
+      this.scrollView().scrollToBottom();
+    }, 10);
   }
 
   // ----------------------------------------------

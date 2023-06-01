@@ -36,6 +36,8 @@
     super.init();
     this.setId("aiSelectionBlock");
 
+    assert(App.shared().isHost());
+
     this.setAiModelOptions(
       OptionsView.clone().setId("aiModelOptions").setTarget(this)
     );

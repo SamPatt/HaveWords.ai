@@ -71,9 +71,9 @@
 
     PeerServer.shared().setDelegate(this).setup();
 
-    //if (this.isHost()) {
+    if (this.isHost()) {
       SessionOptionsView.shared().appDidInit();
-    //}
+    }
     this.unhide();
 
     this.setupCompactorButtons();
