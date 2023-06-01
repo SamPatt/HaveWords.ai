@@ -442,21 +442,21 @@
   displayHistory(history) {
     history.forEach((item) => {
       if (item.type === "prompt") {
-        AiChatView.shared().addMessage(
+        AiChatColumn.shared().addMessage(
           item.type,
           item.data,
           item.nickname,
           item.id
         );
       } else if (item.type === "aiResponse") {
-        AiChatView.shared().addMessage(
+        AiChatColumn.shared().addMessage(
           item.type,
           item.data,
           item.nickname,
           item.id
         );
       } else if (item.type === "systemMessage") {
-        AiChatView.shared().addMessage(
+        AiChatColumn.shared().addMessage(
           item.type,
           item.data,
           item.nickname,
@@ -464,14 +464,14 @@
           item.requestId
         );
       } else if (item.type === "chat") {
-        GroupChatView.shared().addChatMessage(
+        GroupChatColumn.shared().addChatMessage(
           item.type,
           item.data,
           item.nickname,
           item.id
         );
       } else if (item.type === "imageLink") {
-        AiChatView.shared().addImage(item.data);
+        AiChatColumn.shared().addImage(item.data);
       }
     });
   }
@@ -711,7 +711,7 @@ Once I decide on the adventure, you may provide a brief setting description and 
   }
 
   resetSession () {
-    AiChatView.shared().clearMessages();
+    AiChatColumn.shared().clearMessages();
     Session.shared().clear();
     this.sessionResetButton().hide();
     this.unhide();
@@ -740,7 +740,7 @@ Once I decide on the adventure, you may provide a brief setting description and 
     );
 
     /*
-    AiChatView.shared().addMessage(
+    AiChatColumn.shared().addMessage(
       "prompt",
       "You've started the session!",
       LocalUser.shared().nickname(),
@@ -773,7 +773,7 @@ Once I decide on the adventure, you may provide a brief setting description and 
 
     // Stores initial AI response, which contains character descriptions, for later use
     //Session.shared().setGroupSessionFirstAIResponse(response);
-    AiChatView.shared().addAIReponse(response);
+    AiChatColumn.shared().addAIReponse(response);
 
     // Send the response to all connected guests
     HostSession.shared().broadcast({

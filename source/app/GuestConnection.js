@@ -128,7 +128,7 @@
         data.peerId
       );
 
-      GroupChatView.shared().addChatMessage(
+      GroupChatColumn.shared().addChatMessage(
         "systemMessage",
         `${data.nickname} has joined the session!`,
         LocalUser.shared().nickname(),
@@ -159,7 +159,7 @@
       );
 
       // Display prompt
-      AiChatView.shared().addMessage("prompt", data.message, data.nickname, data.id);
+      AiChatColumn.shared().addMessage("prompt", data.message, data.nickname, data.id);
 
       // If in game mode, add username to prompt
       if (Session.shared().gameMode()) {
@@ -185,7 +185,7 @@
         nickname: data.nickname,
       });
       // Update system message and display it TO DO SEND TO ALL
-      AiChatView.shared().addMessage("systemMessage", data.message, data.nickname, data.id);
+      AiChatColumn.shared().addMessage("systemMessage", data.message, data.nickname, data.id);
       HostSession.shared().guestChangeSystemMessage(data);
     } else {
       console.log(
@@ -204,7 +204,7 @@
     });
 
     // Display chat message
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       data.type,
       data.message,
       data.nickname,
@@ -228,7 +228,7 @@
     const oldNickname = this.nickname();
     this.setNickName(data.newNickname);
 
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "systemMessage",
       `${oldNickname} is now ${data.newNickname}.`,
       LocalUser.shared().nickname(),
@@ -252,7 +252,7 @@
     this.setAvatar(data.avatar);
     // Update avatar in guest user list
     Session.shared().setUserAvatar(data.id, data.avatar);
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "systemMessage",
       `${data.nickname} updated their avatar.`,
       data.nickname,
@@ -281,7 +281,7 @@
         guestUserList: HostSession.shared().calcGuestUserlist(),
       });
 
-      GroupChatView.shared().addChatMessage(
+      GroupChatColumn.shared().addChatMessage(
         "systemMessage",
         `${this.nickname()} has left the session.`,
         LocalUser.shared().nickname(),

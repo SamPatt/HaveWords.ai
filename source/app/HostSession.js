@@ -131,7 +131,7 @@
         "<p>If you'd like to have others join your session, you can share the invite link (top right button in this window) with your friends.</p>" +
         "<p>Click on their usernames in the Guest section to grant them access to your AI, or to kick or mute them if they are behaving badly.</p>";
         
-      AiChatView.shared().addMessage(
+      AiChatColumn.shared().addMessage(
         "systemMessage",
         message,
         "HaveWords",
@@ -251,7 +251,7 @@
     const request = await OpenAiChat.shared().newRequestForPrompt(prompt, role);
     request.setStreamTarget(this);
 
-    AiChatView.shared().addAIReponse("", request.requestId());
+    AiChatColumn.shared().addAIReponse("", request.requestId());
 
     this.broadcast({
       type: "aiResponse",
@@ -304,7 +304,7 @@
   }
 
   shareUpdate (request, sendContent) {
-    AiChatView.shared().updateAIResponse(request.requestId(), sendContent)
+    AiChatColumn.shared().updateAIResponse(request.requestId(), sendContent)
     this.broadcast({
       type: "updateAiResponse",
       id: LocalUser.shared().id(),
@@ -317,7 +317,7 @@
     //debugger
     const content = request.fullContent();
     this.shareUpdate(request, content);
-    AiChatView.shared().onAiResponseCompleteText(content, request.requestId());
+    AiChatColumn.shared().onAiResponseCompleteText(content, request.requestId());
     console.log("Host " + request.requestId() + " onStreamComplete");
   }
 
@@ -333,7 +333,7 @@
       errorMessage: aJob.errorMessage()
     };
 
-    AiChatView.shared().updateImageProgressJson(json);
+    AiChatColumn.shared().updateImageProgressJson(json);
     this.broadcast(json);
   }
   

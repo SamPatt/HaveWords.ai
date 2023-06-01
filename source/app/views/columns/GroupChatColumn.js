@@ -1,11 +1,11 @@
 "use strict";
 
 /* 
-    GroupChatView
+    GroupChatColumn
 
 */
 
-(class GroupChatView extends Base {
+(class GroupChatColumn extends View {
   initPrototypeSlots() {
     this.newSlot("chatInput", null);
     this.newSlot("scrollView", null);
@@ -13,7 +13,7 @@
 
   init() {
     super.init();
-    //this.setId("groupChatColumn");
+    this.setId("GroupChatColumn");
     this.setupMessageInput();
     this.setScrollView(ScrollView.clone().setId("chatOutput"));
   }
@@ -95,7 +95,7 @@
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
     });
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       message,
       LocalUser.shared().nickname(),
@@ -104,7 +104,7 @@
   }
 
   guestAddLocalChatMessage(message) {
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       message,
       LocalUser.shared().nickname(),
@@ -113,4 +113,4 @@
   }
 }.initThisClass());
 
-GroupChatView.shared();
+GroupChatColumn.shared();

@@ -157,7 +157,7 @@
       RadioButton.clone().setId("compactButton2").setTarget(this).setAction("onCompact2").setOnIconPath("resources/icons/carret-left.svg").setOffIconPath("resources/icons/carret-right.svg")
     );
 
-    this.setGroupChatColumn(View.clone().setId("groupChatColumn"));
+    this.setGroupChatColumn(GroupChatColumn.shared());
     this.setConnectedUsersColumn(View.clone().setId("connectedUsersColumn"));
   }
 

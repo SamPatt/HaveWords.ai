@@ -130,7 +130,7 @@
           "Reached maximum number of " + this.maxRetries() + " retries. Displaying system message."
       );
       // Display a system message here, e.g. by updating the UI
-      GroupChatView.shared().addChatMessage(
+      GroupChatColumn.shared().addChatMessage(
         "systemMessage",
         `Connection to peer server lost. Your existing connections still work, but you won't be able to make new connections or voice calls.`,
         "System"

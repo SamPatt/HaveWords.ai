@@ -176,7 +176,7 @@ place the chapter number (written in words, not number characters) within <div c
 followed by the tags <div class=chapterImage></div> 
 and the chapter name within <div class=chapterTitle></div> tags. 
 
-When the session begins, or whenever players move to a new scene/location, please start your response with a 
+Whenever the players are introduced to a new scene/location, please start your response with a 
 <div class=sceneDescription></div> tag containing a single short sentence describing the scene.
 
 When quoting text which is handwritten, such as from a handwritten letter, please surround it with <div class=handWritten></div> tags.

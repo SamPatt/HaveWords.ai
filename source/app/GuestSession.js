@@ -82,7 +82,7 @@
   onReceived_kick(data) {
     //this.hostConnection().shutdown();
     console.log("You have been kicked from the session.");
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       "You have been kicked from the session.",
       "System",
@@ -95,7 +95,7 @@
   onReceived_chat(data) {
     // moved to ChatDataMessage onReceived
     Sounds.shared().playReceiveBeep();
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       data.type,
       data.message,
       data.nickname,
@@ -104,20 +104,20 @@
   }
 
   onReceived_prompt(data) {
-    AiChatView.shared().guestAddPrompt(data);
+    AiChatColumn.shared().guestAddPrompt(data);
   }
 
   onReceived_aiResponse(json) {
-    AiChatView.shared().guestAddHostAIResponse(json);
+    AiChatColumn.shared().guestAddHostAIResponse(json);
   }
 
   onReceived_updateAiResponse(json) {
-    AiChatView.shared().updateAIResponse(json.requestId, json.message) 
+    AiChatColumn.shared().updateAIResponse(json.requestId, json.message) 
   }
 
   onReceived_ban(data) {
     //this.hostConnection().shutdown();
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       "You have been banned from the session.",
       "System",
@@ -148,12 +148,12 @@
   }  
 
   onReceived_updateImageProgress(data) {
-    AiChatView.shared().updateImageProgressJson(data);
+    AiChatColumn.shared().updateImageProgressJson(data);
   }
 
   onReceived_nicknameUpdate(data) {
     // Update the chat message
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       data.message,
       data.newNickname,
@@ -167,7 +167,7 @@
 
   onReceived_avatarUpdate(data) {
     Session.shared().setUserAvatar(data.userId, data.avatar);
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       data.message,
       data.nickname,
@@ -177,15 +177,15 @@
   }
 
   onReceived_systemMessage(data) {
-    AiChatView.shared().guestAddSystemMessage(data);
+    AiChatColumn.shared().guestAddSystemMessage(data);
   }
 
   onReceived_imageLink(data) {
-    AiChatView.shared().addImage(data.message, data.requestId);
+    AiChatColumn.shared().addImage(data.message, data.requestId);
   }
 
   onReceived_gameLaunch(data) {
-    AiChatView.shared().addMessage("prompt", data.message, data.nickname, data.id);
+    AiChatColumn.shared().addMessage("prompt", data.message, data.nickname, data.id);
   }
 
   onReceived_ThemeUpdate(data) {
@@ -193,7 +193,7 @@
   }
 
   onReceived_guestJoin(data) {
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       data.message,
       data.nickname,
@@ -211,7 +211,7 @@
   }
 
   onReceived_guestLeave(data) {
-    GroupChatView.shared().addChatMessage("chat", data.message, data.nickname),
+    GroupChatColumn.shared().addChatMessage("chat", data.message, data.nickname),
       data.id;
     const newGuestUserList = data.guestUserList;
     const index = newGuestUserList.findIndex(
@@ -225,10 +225,10 @@
   }
 
   onReceived_grantAiAccess(data) {
-    const messageInputRemote = AiChatView.shared().messageInputRemote();
+    const messageInputRemote = AiChatColumn.shared().messageInputRemote();
     messageInputRemote.element().disabled = false;
     messageInputRemote.element().placeholder = "Send a prompt to the AI...";
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       "You've been granted AI access!",
       "Host",
@@ -237,10 +237,10 @@
   }
 
   onReceived_revokeAiAccess(data) {
-    const messageInputRemote = AiChatView.shared().messageInputRemote();
+    const messageInputRemote = AiChatColumn.shared().messageInputRemote();
     messageInputRemote.element().disabled = true;
     essageInputRemote.element().placeholder = "No prompt permission";
-    GroupChatView.shared().addChatMessage(
+    GroupChatColumn.shared().addChatMessage(
       "chat",
       "You've lost AI access.",
       "Host",
@@ -298,7 +298,7 @@
         nickname: LocalUser.shared().nickname(),
         message: message,
       });
-      AiChatView.shared().guestAddLocalPrompt(message);
+      AiChatColumn.shared().guestAddLocalPrompt(message);
     }
   }
 }).initThisClass();

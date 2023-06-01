@@ -93,7 +93,7 @@ No proper nouns.\n\n${MJImageJob.systemInstructions()} Here is the current scene
 
     if (imageUrl) {
       HostSession.shared().broadcastImage(imageUrl, this.requestId());
-      AiChatView.shared().addImage(imageUrl, this.requestId());
+      AiChatColumn.shared().addImage(imageUrl, this.requestId());
     }
     return imageUrl;
   }

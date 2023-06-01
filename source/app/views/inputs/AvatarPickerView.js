@@ -125,7 +125,7 @@
     if (LocalUser.shared().avatar() !== base64Image) {
       LocalUser.shared().setAvatar(base64Image).shareAvatar();
 
-      GroupChatView.shared().addChatMessage(
+      GroupChatColumn.shared().addChatMessage(
         "chat",
         `You updated your avatar.`,
         LocalUser.shared().nickname(),

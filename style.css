@@ -756,11 +756,11 @@ button {
 
 /* --- columns --- */
 
-#aiChatColumn {
+#AiChatColumn {
     flex: 5;
 }
 
-#groupChatColumn {
+#GroupChatColumn {
     flex: 2;
     min-width: 20em;
     flex-direction: column;

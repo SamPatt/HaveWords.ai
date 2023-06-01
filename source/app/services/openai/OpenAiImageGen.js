@@ -41,7 +41,7 @@
     } catch (error) {
       //debugger;
       console.error("Error fetching AI response:", error);
-      AiChatView.shared().addMessage(
+      AiChatColumn.shared().addMessage(
         "systemMessage",
         "Error fetching AI response:" + error.message,
         "Host",

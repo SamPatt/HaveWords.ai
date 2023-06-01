@@ -1,11 +1,11 @@
 "use strict";
 
 /* 
-    AiChatView
+    AiChatColumn
 
 */
 
-(class AiChatView extends View {
+(class AiChatColumn extends View {
   initPrototypeSlots() {
     this.newSlot("messageInput", null);
     this.newSlot("messageInputRemote", null);
@@ -17,7 +17,7 @@
 
   init() {
     super.init();
-    this.setId("aiChatColumn");
+    this.setId("AiChatColumn");
     this.setRequestIdToMessageMap(new Map());
     this.setupMessageInput();
     this.setupMessageInputRemote();
@@ -264,5 +264,5 @@
   }
 }).initThisClass();
 
-AiChatView.shared(); // so a shared instance gets created
+AiChatColumn.shared(); // so a shared instance gets created
 

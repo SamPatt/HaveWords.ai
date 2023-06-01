@@ -6,12 +6,15 @@
 */
 
 (class UsersView extends View {
-  initPrototypeSlots() {}
+  initPrototypeSlots() {
+    this.newSlot("guestUserList", null)
+    this.newSlot("scrollView", null)
+  }
 
   init() {
     super.init();
     this.setId("userList");
-    this.newSlot("guestUserList", null)
+    this.setScrollView(ScrollView.clone().setId("userList"));
   }
 
   setGuestUserList(aList) {
@@ -193,7 +196,7 @@
     if (App.shared().isHost()) {
       // Set new host nickname and send to all guests
 
-      GroupChatView.shared().addChatMessage(
+      GroupChatColumn.shared().addChatMessage(
         "chat",
         `${oldNickname} is now <b>${LocalUser.shared().nickname()}</b>.`,
         LocalUser.shared().nickname(),

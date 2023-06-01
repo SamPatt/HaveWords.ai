@@ -152,7 +152,7 @@
     } catch (error) {
       debugger;
       console.error("Error fetching AI response:", error);
-      AiChatView.shared().addMessage(
+      AiChatColumn.shared().addMessage(
         "systemMessage",
         "Error fetching AI response. Make sure the model is selected and the API key is correct.",
         "Host",
@@ -164,7 +164,7 @@
     if (json.error) {
       const errorMessage = this.type() + " fetch ERROR: " + json.error.message;
       console.warn(errorMessage);
-      AiChatView.shared().addMessage(
+      AiChatColumn.shared().addMessage(
         "systemMessage",
         errorMessage,
         "Host",
