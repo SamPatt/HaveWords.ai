@@ -25,6 +25,7 @@
     const e = this.element()
     e.style.width = "fit-content";
     e.style.height = "fit-content";
+    e.style.paddingTop = "0.5em";
     //e.style.border = "1px dashed red";
 
     /*

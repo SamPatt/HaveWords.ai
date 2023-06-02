@@ -94,13 +94,23 @@
     const isHost = App.shared().isHost();
     const isSelf = this.isSelf();
 
+
+    const section = HView.clone();
+    this.addSubview(section);
+
+    if (isSelf) {
+      const view = AvatarPickerView.shared();
+      section.addSubview(view);
+    }
+
+
     // Create a container for the user and their actions
     const userContainer = document.createElement("div");
     this.element().appendChild(userContainer);
 
     const nameField = TextFieldView.clone().create().setString(this.guestDict().nickname);
     nameField.setShouldFitContent(true);
-    this.addSubview(nameField);
+    section.addSubview(nameField);
     nameField.element().style.marginBottom = "1em";
     nameField.element().style.marginRight = "1em";
     nameField.element().style.width = "100%";
@@ -117,10 +127,6 @@
     console.log("          this.userId():" ,this.userId());
     */
     //debugger;
-    if (isSelf) {
-      const view = AvatarPickerView.shared();
-      this.addSubview(view);
-    }
 
     if (App.shared().isHost()) {
 

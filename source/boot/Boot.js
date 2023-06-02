@@ -66,6 +66,9 @@ class Boot extends Object {
       "source/app/services/youtube/MusicPlayer.js",
 
       "source/app/views/View.js",
+      "source/app/views/organizers/HView.js",
+      "source/app/views/organizers/VView.js",
+      "source/app/views/organizers/KVView.js",
 
       "source/app/views/buttons/Button.js",
       "source/app/views/buttons/RadioButton.js",
