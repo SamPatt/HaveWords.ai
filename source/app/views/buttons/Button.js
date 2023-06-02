@@ -31,6 +31,10 @@
     return this;
   }
 
+  setLabel (s) {
+    this.setString(s);
+    return this;
+  }
 
   initElement () {
     super.initElement();

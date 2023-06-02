@@ -50,6 +50,9 @@
                     <table class="controls">
                         <tr>
                             <td>
+                                <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
+                            </td>
+                            <td>
                                 <div id="SessionResetButton" class="subheader smallButton">Reset Session</div>
                             </td>
                             <td>
@@ -61,9 +64,11 @@
                             <td>
                                 <div id="NarrationOnButton" class="subheader smallButton"></div>
                             </td>
+                            <!--
                             <td>
                                 <div id="MicButton" class="subheader smallButton"></div>
                             </td>
+                        -->
                         </tr>
                     </table>
                 </div>
@@ -74,8 +79,8 @@
                     <div>
                         <h2>Welcome to your AI session!</h2>
                         First, you need to set your OpenAI API key, and select the session options.<br>
-                        If you'd like to invite friends, use the Copy Invite Link button on the top right of the page.<br>
-                        Before you begin, you'll also want to set your player name in the Group Chat column.
+                        If you'd like to invite friends, use the Copy Invite Link button above.<br>
+                        Before you begin, you'll also want to set your player name in the Players column.
 
                         <!-- begin Open AI settings -->
 
@@ -216,7 +221,7 @@
 
                 <!--- end host settings --->
 
-                <div id="aiScrollingOutput">
+                <div id="AiChatColumn_ScrollView">
                 </div>
 
                 <!--- begin host & guest inputs --->
@@ -239,26 +244,11 @@
             <div id="GroupChatColumn" class="ColumnView" style="display:flex;">
                 <div class="header">
                     <h2>Group Chat</h2>
-                    <div class="subheader" style="width: 100%;">
-                        <table style="width: 100%;">
-                            <tr>
-                                <td>
-                                    <div id="AvatarPicker"></div>
-                                </td>
-                                <td style="width: 100%;">
-                                    <div class="username-container" style="width: 100%;">
-                                        <input id="username" type="text" placeholder="Player name" spellcheck=false
-                                            class="underlinedInput">
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
                     <div id="compactButton2" class="compactor">
                     </div>
                 </div>
 
-                <div id="chatOutput">
+                <div id="GroupChatColumn_ScrollView">
                 </div>
 
                 <!--- chat input --->
@@ -274,19 +264,11 @@
 
             <!--- begin users column --->
 
-            <div id="connectedUsersColumn" class="ColumnView" style="display:flex;">
+            <div id="PlayersColumn" class="ColumnView" style="display:flex;">
                 <div class="header">
                     <h2>Friends</h2>
-                    <span style="opacity:0.5">Click names to give prompt access, mute, block.</span>
-                    <table class="controls">
-                        <tr>
-                            <td>
-                                <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
-                            </td>
-                        </tr>
-                    </table>
                 </div>
-                <div id="userList"></div>
+                <div id="PlayersColumn_ScrollView"></div>
             </div>
 
             <!--- end users column --->

@@ -39,6 +39,7 @@
   setAutoLabel (s) {
     this.setOnLabel(s + " On");
     this.setOffLabel(s + " Off");
+    this.update();
     return this;
   }
 

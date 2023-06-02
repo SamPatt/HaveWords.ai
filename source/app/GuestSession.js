@@ -26,7 +26,7 @@
     this.setHostId(inviteId);
     this.debugLog("joinSession " + inviteId);
     Session.shared().clear()
-    SessionOptionsView.shared().displayGuestHTMLChanges();
+    GroupChatColumn.shared().displayGuestHTMLChanges();
     this.connect();
   }
 
@@ -63,7 +63,7 @@
   }
 
   clearUserList () {
-    UsersView.shared().setGuestUserList([]);
+    PlayersColumn.shared().setGuestUserList([]);
   }
 
   // --- receive messages ---
@@ -112,7 +112,7 @@
   }
 
   onReceived_updateAiResponse(json) {
-    AiChatColumn.shared().updateAIResponse(json.requestId, json.message) 
+    AiChatColumn.shared().updateAIResponseJson(json) 
   }
 
   onReceived_ban(data) {
@@ -138,7 +138,7 @@
     // Update guest list
     console.log("Received guestUserList:", data.guestUserList);
   
-    UsersView.shared().setGuestUserList(
+    PlayersColumn.shared().setGuestUserList(
       data.guestUserList.filter(
         (guest) => guest.id !== LocalUser.shared().id()
       )
@@ -161,7 +161,7 @@
     );
   
     // Update the guest user list from the received data
-    UsersView.shared().setGuestUserList(data.guestUserList);
+    PlayersColumn.shared().setGuestUserList(data.guestUserList);
     console.log("Received nickname-update" + data);
   }  
 
@@ -206,7 +206,7 @@
     if (index !== -1) {
       newGuestUserList.splice(index, 1);
     }
-    UsersView.shared().setGuestUserList(newGuestUserList);
+    PlayersColumn.shared().setGuestUserList(newGuestUserList);
     console.log("Received guest-join");
   }
 
@@ -220,7 +220,7 @@
     if (index !== -1) {
       newGuestUserList.splice(index, 1);
     }
-    UsersView.shared().setGuestUserList(newGuestUserList);
+    PlayersColumn.shared().setGuestUserList(newGuestUserList);
     console.log("Received guest-leave");
   }
 

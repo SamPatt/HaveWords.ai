@@ -15,7 +15,28 @@
     super.init();
     this.setId("GroupChatColumn");
     this.setupMessageInput();
-    this.setScrollView(ScrollView.clone().setId("chatOutput"));
+    this.setScrollView(ScrollView.clone().setId("GroupChatColumn_ScrollView"));
+  }
+
+
+  displayHostHTMLChanges() {
+    document.getElementById("appView").style.display = "block";
+    this.unhide();
+    document.getElementById("messageInputSection").style.display = "block"; // host ai chat input
+    document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
+    /*
+    document.getElementById("sessionResetButton").style.display = "block";
+    this.sessionStartButton().style.display = "block";
+    */
+  }
+  
+  displayGuestHTMLChanges() {
+    document.getElementById("appView").style.display = "block";
+    this.hide();
+    document.getElementById("messageInputSection").style.display = "none"; // hide host ai chat input
+    document.getElementById("messageInputRemoteSection").style.display =
+      "block"; // display guest ai chat input
+    messageInputRemote.disabled = true;
   }
 
   setupMessageInput() {

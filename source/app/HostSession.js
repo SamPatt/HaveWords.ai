@@ -32,7 +32,7 @@
 
   playTrackId (trackId) {
     MusicPlayer.shared().playTrackId(trackId);
-    HostSession.shared().broadcastPlayTrackId(trackId);
+    this.broadcastPlayTrackId(trackId);
   }
 
   broadcastPlayTrackId (trackId) {
@@ -103,7 +103,7 @@
 
     Session.shared().clear()
     SessionOptionsView.shared().displaySessionHistory();
-    SessionOptionsView.shared().displayHostHTMLChanges();
+    GroupChatColumn.shared().displayHostHTMLChanges();
 
     OpenAiChat.shared().clearConversationHistory();
 
@@ -112,10 +112,11 @@
       content: "You are a helpful assistant.",
     });
     //this.showHostIntroMessage()
+    this.updateGuestUserlist();
   }
 
   onOpenGuestConnection (aGuestConnection) {
-    this.shareThemeWithGuests()
+    this.shareThemeWithGuests();
   }
 
   shareThemeWithGuests () {
@@ -182,8 +183,7 @@
     }
 
   updateGuestUserlist() {
-    UsersView.shared().setGuestUserList(this.calcGuestUserlist());
-    return userList;
+    PlayersColumn.shared().setGuestUserList(this.calcGuestUserlist());
   }
 
   // ---------------------
@@ -303,20 +303,22 @@
     }
   }
 
-  shareUpdate (request, sendContent) {
-    AiChatColumn.shared().updateAIResponse(request.requestId(), sendContent)
-    this.broadcast({
+  shareUpdate (request, sendContent, isDone=false) {
+    const json = {
       type: "updateAiResponse",
       id: LocalUser.shared().id(),
       requestId: request.requestId(),
       message: sendContent,
-    });
+      isDone: isDone
+    };
+    AiChatColumn.shared().updateAIResponseJson(json)
+    this.broadcast();
   }
 
   onStreamComplete (request) {
     //debugger
     const content = request.fullContent();
-    this.shareUpdate(request, content);
+    this.shareUpdate(request, content, true);
     AiChatColumn.shared().onAiResponseCompleteText(content, request.requestId());
     console.log("Host " + request.requestId() + " onStreamComplete");
   }

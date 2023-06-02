@@ -98,6 +98,11 @@
   itemViews () {
     return this.contentView().subviews();
   }
+
+  removeAllItems () {
+    return this.contentView().clear();
+    return this;
+  }
   
 }).initThisClass();
 

@@ -20,7 +20,7 @@
 
     // columns
     this.newSlot("groupChatColumn", null);
-    this.newSlot("connectedUsersColumn", null);
+    this.newSlot("playersColumn", null);
 
     // other controls
     this.newSlot("musicOnButton", null);
@@ -67,7 +67,6 @@
     // which is were we'll set up HostSession or GuestSession
 
     await LocalUser.shared().asyncSetup();
-    UsernameView.shared().setString(LocalUser.shared().nickname());
 
     PeerServer.shared().setDelegate(this).setup();
 
@@ -158,18 +157,18 @@
     );
 
     this.setGroupChatColumn(GroupChatColumn.shared());
-    this.setConnectedUsersColumn(View.clone().setId("connectedUsersColumn"));
+    this.setPlayersColumn(PlayersColumn.shared());
   }
 
   onCompact1 (aButton) {
     const s = aButton.state();
     this.groupChatColumn().setIsHidden(s);
-    this.connectedUsersColumn().setIsHidden(s);
+    this.playersColumn().setIsHidden(s);
     this.compactButton2().setState(s)
   }
 
   onCompact2 (aButton) {
-    this.connectedUsersColumn().setIsHidden(aButton.state());
+    this.playersColumn().setIsHidden(aButton.state());
   }
 
   setClassNamePropertyValue(className, propertyName, value) {

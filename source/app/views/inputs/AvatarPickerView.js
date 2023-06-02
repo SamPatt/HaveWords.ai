@@ -14,16 +14,24 @@
 
   init() {
     super.init();
-    this.setId("AvatarPicker");
+    this.create();
+  }
+
+  initElement() {
+    super.initElement();
+
+    //this.setId("AvatarPicker");
 
     const e = this.element()
     e.style.width = "fit-content";
     e.style.height = "fit-content";
     //e.style.border = "1px dashed red";
 
+    /*
     this.setSubmitFunc(() => {
-      UsersView.shared().updateUserName();
+      PlayersColumn.shared().updateUserName(this.string());
     });
+    */
 
     // Add a label for the avatar file input
     const label = document.createElement("label");

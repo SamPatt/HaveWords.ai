@@ -110,6 +110,7 @@ textarea::placeholder {
 }
 
 .smallButton {
+    display: inline-block;
     transition: 0.2s;
     color: inherit;
     font-size: 0.6em;
@@ -120,6 +121,7 @@ textarea::placeholder {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0.3em;
     width: fit-content;
+    margin: 0.2em;
 }
 
 
@@ -259,6 +261,42 @@ h2 {
 .optionsContainer {
     display: flex;
     overflow-y: hidden;
+}
+
+.TextFieldView {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    border-radius: 0.5em;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: transparent;
+    margin: 0px;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+
+    /*font-size: 0.8em;*/
+    opacity: inherit;
+    text-transform: none;
+    display: block;
+    margin-right: 0.4em;
+    text-align: left;
+    margin-top: 1em;
+
+    overflow: visible;
+    outline: none;
+    padding-left: 0em;
+    max-width: fit-content;
+    border-radius: 0em;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: transparent;
+}
+
+.TextFieldView::placeholder {
+    color: inherit;
+    opacity: 0.5;
 }
 
 .inputLabel {
@@ -767,7 +805,7 @@ button {
     border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#connectedUsersColumn {
+#PlayersColumn {
     flex: 0;
     overflow-x: auto;
     min-width: 20em;
@@ -1067,3 +1105,9 @@ body {
 }
 
 /* --- end scrollbar --- */
+
+.sceneDescription {
+    min-width: 100%;
+    text-align: center;
+    font-style: italic;
+}

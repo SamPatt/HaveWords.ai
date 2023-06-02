@@ -176,8 +176,8 @@ place the chapter number (written in words, not number characters) within <div c
 followed by the tags <div class=chapterImage></div> 
 and the chapter name within <div class=chapterTitle></div> tags. 
 
-Whenever the players are introduced to a new scene/location, please start your response with a 
-<div class=sceneDescription></div> tag containing a single short sentence describing the scene.
+Whenever the players move to a new location in the story, please start your response with a 
+<div class=sceneDescription></div> tag containing a single short sentence describing the location.
 
 When quoting text which is handwritten, such as from a handwritten letter, please surround it with <div class=handWritten></div> tags.
 
@@ -256,8 +256,12 @@ If the hp of a creature reaches 0, that creature dies.
 Participants in combat are unable to take actions outside of their own turn.
 Please make all rolls for the players and never ask them to make rolls for themselves.
 
+Whenever the players move to a new location/scene in the story, please start your response with a 
+<div class=sceneDescription></div> tag containing a sentence describing the imagery scene.
+The players will not see the contents of this tag, but it will be used to generate an image for them to see.
+
 [sessionSubtype2]
-I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, but you will choose the other details.
+I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, and alignment but you will choose the other details.
 Again, do not make decisions for the players.`,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",

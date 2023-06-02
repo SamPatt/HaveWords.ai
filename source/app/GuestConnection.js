@@ -18,6 +18,10 @@
     this.setIsDebugging(false);
   }
 
+  hostSession () {
+    return HostSession.shared();
+  }
+
   // --- nickname ----
 
   nickname () {
@@ -54,14 +58,16 @@
   // ----------------
 
   onOpen(peerId) {
+    console.log(this.type() + " onOpen(" + peerId + ")");
+    
     super.onOpen(peerId);
 
-    if (HostSession.shared().bannedGuests().has(this.id())) {
+    if (this.hostSession().bannedGuests().has(this.id())) {
       this.send({ type: "ban" });
       setTimeout(() => this.shutdown(), 500);
     }
 
-    HostSession.shared().onOpenGuestConnection(this);
+    this.hostSession().onOpenGuestConnection(this);
 
     this.setInfo({
       nickname: "",
@@ -87,7 +93,7 @@
   }
 
   isBanned () {
-    return HostSession.shared().bannedGuests().has(this.id())
+    return this.hostSession().bannedGuests().has(this.id())
   }
 
   description () {
@@ -102,9 +108,9 @@
       this.setPubkey(data.id);
 
       console.log("Guest connected: " + this.description())
-      const newGuestUserList = HostSession.shared().calcGuestUserlist();
-      const guestAvatars = HostSession.shared().calcGuestAvatars();
-      HostSession.shared().updateGuestUserlist();
+      const newGuestUserList = this.hostSession().calcGuestUserlist();
+      const guestAvatars = this.hostSession().calcGuestAvatars();
+      this.hostSession().updateGuestUserlist();
 
       this.send({
         type: "sessionHistory",
@@ -116,7 +122,7 @@
       });
 
       // Send a new message to all connected guests to notify them of the new guest
-      HostSession.shared().broadcastExceptTo(
+      this.hostSession().broadcastExceptTo(
         {
           type: "guestJoin",
           message: this.nickname() + " has joined the session!",
@@ -148,7 +154,7 @@
       });
 
       // Send prompt to guests
-      HostSession.shared().broadcastExceptTo(
+      this.hostSession().broadcastExceptTo(
         {
           type: "prompt",
           id: data.id,
@@ -166,9 +172,9 @@
         let newMessage;
         newMessage = data.nickname + ": " + data.message;
         console.log("Game mode on, adding guest username to prompt");
-        HostSession.shared().sendAIResponse(newMessage);
+        this.hostSession().sendAIResponse(newMessage);
       } else {
-        HostSession.shared().sendAIResponse(data.message);
+        this.hostSession().sendAIResponse(data.message);
       }
     } else {
       console.log(`Rejected prompt from ${conn.peer} - ${this.nickname()}`);
@@ -186,7 +192,7 @@
       });
       // Update system message and display it TO DO SEND TO ALL
       AiChatColumn.shared().addMessage("systemMessage", data.message, data.nickname, data.id);
-      HostSession.shared().guestChangeSystemMessage(data);
+      this.hostSession().guestChangeSystemMessage(data);
     } else {
       console.log(
         `Rejected system message update from ${conn.peer} - ${channel.nickname}`
@@ -212,7 +218,7 @@
     );
 
     // Broadcast chat message to all connected guests
-    HostSession.shared().broadcastExceptTo(
+    this.hostSession().broadcastExceptTo(
       {
         type: "chat",
         id: data.id,
@@ -234,16 +240,16 @@
       LocalUser.shared().nickname(),
       data.id
     );
-    HostSession.shared().updateGuestUserlist();
+    this.hostSession().updateGuestUserlist();
     // Update nickname in guest user list
     // Send updated guest user list to all guests
-    HostSession.shared().broadcast({
+    this.hostSession().broadcast({
       type: "nicknameUpdate",
       message: `${oldNickname} is now <b>${data.newNickname}</b>.`,
       nickname: LocalUser.shared().nickname(),
       newNickname: data.newNickname,
       userId: data.id,
-      guestUserList: HostSession.shared().calcGuestUserlist(),
+      guestUserList: this.hostSession().calcGuestUserlist(),
     });
   }
 
@@ -259,7 +265,7 @@
       data.id
     );
     // Send updated guest user list to all guests
-    HostSession.shared().broadcast({
+    this.hostSession().broadcast({
       type: "avatarUpdate",
       avatar: data.avatar,
       userId: data.id,
@@ -272,13 +278,13 @@
     super.onClose();
 
     if (!this.isBanned()) {
-      HostSession.shared().broadcast({
+      this.hostSession().broadcast({
         type: "guestLeave",
         message: `${this.nickname()} has left the session.`,
         nickname: LocalUser.shared().nickname(),
         leavingGuestNickname: this.nickname(),
         leavingGuestId: this.id(),
-        guestUserList: HostSession.shared().calcGuestUserlist(),
+        guestUserList: this.hostSession().calcGuestUserlist(),
       });
 
       GroupChatColumn.shared().addChatMessage(
@@ -289,6 +295,6 @@
       );
     }
 
-    HostSession.shared().updateGuestUserlist();
+    this.hostSession().updateGuestUserlist();
   }
 }).initThisClass();

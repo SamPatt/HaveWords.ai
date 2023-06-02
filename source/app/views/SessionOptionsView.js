@@ -402,26 +402,6 @@
     document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
   }
 
-  displayHostHTMLChanges() {
-    document.getElementById("appView").style.display = "block";
-    this.unhide();
-    document.getElementById("messageInputSection").style.display = "block"; // host ai chat input
-    document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
-    /*
-    document.getElementById("sessionResetButton").style.display = "block";
-    this.sessionStartButton().style.display = "block";
-    */
-  }
-
-  displayGuestHTMLChanges() {
-    document.getElementById("appView").style.display = "block";
-    this.hide();
-    document.getElementById("messageInputSection").style.display = "none"; // hide host ai chat input
-    document.getElementById("messageInputRemoteSection").style.display =
-      "block"; // display guest ai chat input
-    messageInputRemote.disabled = true;
-  }
-
   /*
   // You can call this function when the host starts a new session
   checkForExistingSession() {

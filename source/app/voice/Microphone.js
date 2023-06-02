@@ -16,9 +16,10 @@
 
   init () {
     super.init();
-    this.setupMicButton();
+    //this.setupMicButton();
   }
 
+  /*
   setupMicButton () {
     const b = RadioButton.clone().setId("MicButton");
     b.setAutoLabel("Mic");
@@ -32,6 +33,7 @@
     b.setOnColor("yellow");
     this.setMicButton(b);  
   }
+  */
 
   toggleState () {
     if (this.isRequestingMicAccess()) {
@@ -101,4 +103,4 @@
   
 }.initThisClass());
 
-Microphone.shared();
+//Microphone.shared();

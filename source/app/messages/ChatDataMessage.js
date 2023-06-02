@@ -38,7 +38,7 @@
   }
 
   newView() {
-    const m = MessageView.clone()
+    const m = MessageView.clone();
     m.setAvatar(this.getAvatar())
     m.setNickname(this.nickname())
     m.setText(this.message())

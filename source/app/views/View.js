@@ -8,6 +8,7 @@
 (class View extends Base {
   initPrototypeSlots() {
     this.newSlot("element", null);
+    this.newSlot("tagName", "div");
     this.newSlot("id", null);
     this.newSlot("submitFunc", null);
     this.newSlot("target", null);
@@ -30,7 +31,13 @@
     return this;
   }
 
+  style () {
+    return this.element().style;
+  }
+
   initElement() {
+    this.style().display = "flex";
+    this.style().flexDirection = "column";
     this.listenForChange();
   }
 
@@ -44,7 +51,7 @@
   }
 
   create() {
-    const e = document.createElement("div");
+    const e = document.createElement(this.tagName());
     this.setElement(e);
     this.initElement();
     return this;

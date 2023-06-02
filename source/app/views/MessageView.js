@@ -8,9 +8,8 @@
 
 */
 
-(class MessageView extends Base {
+(class MessageView extends View {
   initPrototypeSlots() {
-    this.newSlot("element", null);
     this.newSlot("avatarElement", null);
     this.newSlot("nicknameElement", null);
     this.newSlot("textElement", null);
@@ -24,10 +23,12 @@
 
   init() {
     super.init();
-    this.setupElement()
+    this.create();
   }
 
-  setupElement () {
+  initElement () {
+    this.style().display = "block";
+
     // element
     const messageWrapper = document.createElement("div");
     messageWrapper.className = "message-wrapper";
@@ -94,6 +95,7 @@
   }
 
   showIsLoading () {
+    debugger;
     this.loadingContainer().style.display = "flex";
   }
 
