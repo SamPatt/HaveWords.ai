@@ -8,14 +8,8 @@
 (class Session extends Base {
   initPrototypeSlots() {
     this.newSlot("data", null);
-    this.newSlot("localUserId", null);
     this.newSlot("inSession", false);
-    this.newSlot("groupSessionType", undefined);
-    this.newSlot("groupSessionDetails", undefined);
-    //this.newSlot("groupSessionFirstAIResponse", undefined);
-
     this.newSlot("gameMode", false);
-    this.newSlot("fantasyRoleplay", false);
   }
 
   init() {

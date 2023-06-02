@@ -5,7 +5,7 @@
 
 */
 
-(class PlayersColumn extends View {
+(class ColumnView extends View {
   initPrototypeSlots() {
     this.newSlot("headerView", null)
     this.newSlot("scrollView", null)
@@ -14,12 +14,11 @@
 
   init() {
     super.init();
-    this.setId("PlayersColumn");
   }
 
   initElement() {
     super.initElement();
-    this.setScrollView(ScrollView.clone().setId("PlayersColumn_ScrollView"));
+    //this.setScrollView(ScrollView.clone().setId("PlayersColumn_ScrollView"));
     return this;
   }
 

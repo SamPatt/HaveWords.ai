@@ -5,14 +5,13 @@
 
 */
 
-(class AiChatColumn extends View {
+(class AiChatColumn extends ColumnView {
   initPrototypeSlots() {
     this.newSlot("messageInput", null);
     this.newSlot("messageInputRemote", null);
     this.newSlot("sessionTitle", null);
     this.newSlot("copyTranscriptButton", null);
     this.newSlot("requestIdToMessageMap", null);
-    this.newSlot("scrollView", null);
   }
 
   init() {

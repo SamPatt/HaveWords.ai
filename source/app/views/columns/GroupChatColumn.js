@@ -5,10 +5,9 @@
 
 */
 
-(class GroupChatColumn extends View {
+(class GroupChatColumn extends ColumnView {
   initPrototypeSlots() {
     this.newSlot("chatInput", null);
-    this.newSlot("scrollView", null);
   }
 
   init() {

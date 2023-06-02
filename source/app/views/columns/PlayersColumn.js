@@ -5,10 +5,9 @@
 
 */
 
-(class PlayersColumn extends View {
+(class PlayersColumn extends ColumnView {
   initPrototypeSlots() {
     this.newSlot("guestUserList", null)
-    this.newSlot("scrollView", null)
   }
 
   init() {

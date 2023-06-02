@@ -25,6 +25,9 @@ class Boot extends Object {
 
       "source/app/Session.js",
 
+      "source/app/players/Players.js",
+      "source/app/players/Player.js",
+
       "source/app/PeerConnection.js",
       "source/app/PeerServer.js",
       "source/app/GuestConnection.js",
@@ -73,6 +76,7 @@ class Boot extends Object {
       "source/app/views/inputs/TextFieldView.js",
 
       "source/app/views/columns/ScrollView.js",
+      "source/app/views/columns/ColumnView.js",
       "source/app/views/columns/AiChatColumn.js",
       "source/app/views/columns/GroupChatColumn.js",
       "source/app/views/columns/PlayerView.js",
