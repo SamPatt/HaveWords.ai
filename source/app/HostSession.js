@@ -102,7 +102,7 @@
     this.setupInviteButton();
 
     Session.shared().clear()
-    SessionOptionsView.shared().displaySessionHistory();
+    AiChatColumn.shared().displaySessionHistory();
     GroupChatColumn.shared().displayHostHTMLChanges();
 
     OpenAiChat.shared().clearConversationHistory();
@@ -163,18 +163,21 @@
   }  
 
   calcGuestUserlist() {
-    let userList = [];
+    const userList = [];
 
     userList.push({
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
     });
 
+    assert(userList[0].id);
+
     PeerServer.shared()
       .peerConnections()
       .forEachKV((guestId, peerConnection) => {
+        console.log("peerConnection.info():", peerConnection.info());
         userList.push({
-          id: guestId,
+          id: peerConnection.info().id,
           nickname: peerConnection.info().nickname,
         });
       });

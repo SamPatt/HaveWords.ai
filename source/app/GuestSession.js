@@ -138,13 +138,8 @@
     // Update guest list
     console.log("Received guestUserList:", data.guestUserList);
   
-    PlayersColumn.shared().setGuestUserList(
-      data.guestUserList.filter(
-        (guest) => guest.id !== LocalUser.shared().id()
-      )
-    );
-  
-    SessionOptionsView.shared().guestDisplayHostSessionHistory(data.history);
+    PlayersColumn.shared().setGuestUserList(data.guestUserList);
+    AiChatColumn.shared().guestDisplayHostSessionHistory(data.history);
   }  
 
   onReceived_updateImageProgress(data) {
@@ -255,11 +250,13 @@
   }
 
   sendNickname() {
-    this.send({
+    const json = {
       type: "nickname",
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
-    });
+    };
+    console.log("sendNickname ", json);
+    this.send(json);
   }
 
   sendNicknameUpdate(username) {

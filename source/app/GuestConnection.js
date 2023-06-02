@@ -106,6 +106,7 @@
     } else {
       this.setNickName(data.nickname);
       this.setPubkey(data.id);
+      this.info().id = data.id;
 
       console.log("Guest connected: " + this.description())
       const newGuestUserList = this.hostSession().calcGuestUserlist();

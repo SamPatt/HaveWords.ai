@@ -102,12 +102,21 @@
     nameField.setShouldFitContent(true);
     this.addSubview(nameField);
     nameField.element().style.marginBottom = "1em";
+    nameField.element().style.marginRight = "1em";
+    nameField.element().style.width = "100%";
+    nameField.element().style.minWidth = "70%";
     nameField.setSubmitFunc(() => {
       this.onEditName(nameField);
     });
 
     nameField.setIsEditable(isSelf);
 
+    /*
+    console.log("this.guestDict():" , this.guestDict());
+    console.log("LocalUser.shared().id():" , LocalUser.shared().id());
+    console.log("          this.userId():" ,this.userId());
+    */
+    //debugger;
     if (isSelf) {
       const view = AvatarPickerView.shared();
       this.addSubview(view);

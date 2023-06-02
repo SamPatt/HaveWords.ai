@@ -265,6 +265,55 @@
       json.requestId
     );
   }
+
+  // --- history ---
+
+
+  displayHistory(history) {
+    history.forEach((item) => {
+      if (item.type === "prompt") {
+        this.addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
+      } else if (item.type === "aiResponse") {
+        this.addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
+      } else if (item.type === "systemMessage") {
+        this.addMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id, 
+          item.requestId
+        );
+      } else if (item.type === "chat") {
+        GroupChatColumn.shared().addChatMessage(
+          item.type,
+          item.data,
+          item.nickname,
+          item.id
+        );
+      } else if (item.type === "imageLink") {
+        this.addImage(item.data);
+      }
+    });
+  }
+
+  guestDisplayHostSessionHistory(sessionData) {
+    this.displayHistory(sessionData);
+  }
+
+  displaySessionHistory() {
+    this.displayHistory(Session.shared().history());
+  }
+
 }).initThisClass();
 
 AiChatColumn.shared(); // so a shared instance gets created

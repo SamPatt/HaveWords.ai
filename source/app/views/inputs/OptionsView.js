@@ -125,6 +125,8 @@
   }
 
   setOptions(array) {
+    assert(array);
+    
     const previouslySelectedValue = this.selectedValue()
     //debugger;
     // array is expected to contain items like { label: "a", value: "b" } or ["foo", "bar"]

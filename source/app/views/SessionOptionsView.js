@@ -419,50 +419,6 @@
   }
   */
 
-  displayHistory(history) {
-    history.forEach((item) => {
-      if (item.type === "prompt") {
-        AiChatColumn.shared().addMessage(
-          item.type,
-          item.data,
-          item.nickname,
-          item.id
-        );
-      } else if (item.type === "aiResponse") {
-        AiChatColumn.shared().addMessage(
-          item.type,
-          item.data,
-          item.nickname,
-          item.id
-        );
-      } else if (item.type === "systemMessage") {
-        AiChatColumn.shared().addMessage(
-          item.type,
-          item.data,
-          item.nickname,
-          item.id, 
-          item.requestId
-        );
-      } else if (item.type === "chat") {
-        GroupChatColumn.shared().addChatMessage(
-          item.type,
-          item.data,
-          item.nickname,
-          item.id
-        );
-      } else if (item.type === "imageLink") {
-        AiChatColumn.shared().addImage(item.data);
-      }
-    });
-  }
-
-  guestDisplayHostSessionHistory(sessionData) {
-    this.displayHistory(sessionData);
-  }
-
-  displaySessionHistory() {
-    this.displayHistory(Session.shared().history());
-  }
 
   // --- helpers ---
 

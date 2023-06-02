@@ -33,6 +33,13 @@
 
   updateDisabled() {
     this.element().disabled = !this.isEditable();
+
+    if (this.isEditable()) {
+      this.style().borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+    } else {
+      this.style().borderBottom = "none";
+    }
+
     return this;
   }
 

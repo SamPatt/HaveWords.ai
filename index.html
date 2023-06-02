@@ -7,6 +7,7 @@
     <meta name="description" content="HaveWords is a P2P AI sharing platform using WebRTC.">
     <meta name="authors" content="Github: SamPatt, stevedekorte">
     <title>HaveWords - P2P AI Sharing</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
 
     <!-- TODO: would be nice to load these via JS -->
 
@@ -49,9 +50,7 @@
                     </div>
                     <table class="controls">
                         <tr>
-                            <td>
-                                <div id="CopyInviteButton" class="subheader smallButton">copy invite link</div>
-                            </td>
+                            <td><div id="CopyInviteButton" class="subheader smallButton">copy invite link</div></td>
                             <td>
                                 <div id="SessionResetButton" class="subheader smallButton">Reset Session</div>
                             </td>
@@ -75,7 +74,7 @@
 
                 <!--- begin host settings --->
 
-                <div class="header optionsContainer scrollingOutput" id="aiSelectionBlock" style="padding-top: 1em; padding-left:1.5em; flex-grow: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="header optionsContainer scrollingOutput" id="aiSelectionBlock" style="display: none; padding-top: 1em; padding-left:1.5em; flex-grow: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div>
                         <h2>Welcome to your AI session!</h2>
                         First, you need to set your OpenAI API key, and select the session options.<br>
