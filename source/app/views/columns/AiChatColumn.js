@@ -24,6 +24,7 @@
     this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
 
     this.setScrollView(ScrollView.clone().setId("AiChatColumn_ScrollView"));
+    this.scrollView().contentView().setId("AiChatMessages");
   }
 
   onSubmit_CopyTranscriptButton () {
@@ -96,7 +97,7 @@
 
   updateAIResponseJson(json) {
     const requestId = json.requestId;
-    const text = josn.message;
+    const text = json.message;
     const shouldScroll = this.scrollView().isScrolledToBottom()
     const messageView = this.requestIdToMessageMap().get(requestId);
     if (!messageView) {
@@ -104,7 +105,7 @@
       return;
     }
     messageView.setText(text);
-    messageView.setisStreaming(!json.isDone);
+    messageView.setIsStreaming(!json.isDone);
     if (shouldScroll) {
       this.scrollView().scrollToBottom();
     }

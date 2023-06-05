@@ -95,7 +95,7 @@
   }
 
   showIsLoading () {
-    debugger;
+    //debugger;
     this.loadingContainer().style.display = "flex";
   }
 

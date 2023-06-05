@@ -13,7 +13,9 @@
   // --- api key ---
 
   apiKey () {
-    return localStorage.getItem(this.storagePrefix() + "_api_key")
+    const v = localStorage.getItem(this.storagePrefix() + "_api_key")
+    //console.log("MS API key: ", v);
+    return v;
   }
 
   setApiKey (v) {

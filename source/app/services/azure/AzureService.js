@@ -25,7 +25,9 @@
   }
 
   apiKey () {
-    return localStorage.getItem("azure_api_key")
+    const v = localStorage.getItem("azure_api_key")
+    console.log("azure_api_key:", v);
+    return v;
   }
 
   validateKey (s) {
