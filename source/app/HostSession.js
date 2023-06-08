@@ -102,6 +102,8 @@
     this.setupInviteButton();
 
     Session.shared().clear()
+    //App.shared().session().players().addLocalPlayer();
+
     AiChatColumn.shared().displaySessionHistory();
     GroupChatColumn.shared().displayHostHTMLChanges();
 
@@ -111,7 +113,6 @@
       role: "system",
       content: "You are a helpful assistant.",
     });
-    //this.showHostIntroMessage()
     this.updateGuestUserlist();
   }
 
@@ -119,74 +120,24 @@
     this.shareThemeWithGuests();
   }
 
+  sharePlayers () {
+    const json = App.shared().session().players().asJson();
+    this.broadcast({
+      type: "updatePlayers",
+      players: json,
+    });
+    return this;
+  }
+
   shareThemeWithGuests () {
     this.broadcast({
-      type: "ThemeUpdate",
+      type: "updateTheme",
       json: SessionOptionsView.shared().themePrefsJson()
     });
   }
-  
-  showHostIntroMessage () {
-    /*
-      const message = `<p>Welcome, <b>${LocalUser.shared().nickname()}</b>!</p>` + 
-        "<p>If you'd like to have others join your session, you can share the invite link (top right button in this window) with your friends.</p>" +
-        "<p>Click on their usernames in the Guest section to grant them access to your AI, or to kick or mute them if they are behaving badly.</p>";
-        
-      AiChatColumn.shared().addMessage(
-        "systemMessage",
-        message,
-        "HaveWords",
-        LocalUser.shared().id()
-      );
-      */
-  }
-
-  calcGuestAvatars() {
-    let avatars = {};
-  
-    // Only add the local user's avatar if it exists
-    if (LocalUser.shared().avatar()) {
-      avatars[LocalUser.shared().id()] = LocalUser.shared().avatar();
-    }
-  
-    PeerServer.shared()
-      .peerConnections()
-      .forEachKV((guestId, peerConnection) => {
-        const guestAvatar = Session.shared().getUserAvatar(guestId);
-        // Only add the guest's avatar if it exists
-        if (guestAvatar) {
-          avatars[guestId] = guestAvatar;
-        }
-      });
-  
-    return avatars;
-  }  
-
-  calcGuestUserlist() {
-    const userList = [];
-
-    userList.push({
-      id: LocalUser.shared().id(),
-      nickname: LocalUser.shared().nickname(),
-    });
-
-    assert(userList[0].id);
-
-    PeerServer.shared()
-      .peerConnections()
-      .forEachKV((guestId, peerConnection) => {
-        console.log("peerConnection.info():", peerConnection.info());
-        userList.push({
-          id: peerConnection.info().id,
-          nickname: peerConnection.info().nickname,
-        });
-      });
-
-      return userList
-    }
 
   updateGuestUserlist() {
-    PlayersColumn.shared().setGuestUserList(this.calcGuestUserlist());
+    PlayersColumn.shared().syncFromNode();
   }
 
   // ---------------------
@@ -289,6 +240,7 @@
       content += "</div>"; 
     }
     */
+
 
     if (content.isValidHtml()) {
       const usableString = this.usableStringFromString(content);

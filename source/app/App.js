@@ -12,7 +12,8 @@
   }
 
   initPrototypeSlots() {
-    this.newSlot("user", null);
+    //this.newSlot("user", null);
+    this.newSlot("sessions", null);
 
     // compact controls
     this.newSlot("compactButton1", null);
@@ -29,9 +30,14 @@
 
   init() {
     super.init();
+    this.setSessions(Sessions.shared());
     this.listenForWindowClose()
     this.setIsDebugging(true);
     this.setupControls();
+  }
+
+  session () {
+    return this.sessions().subnodes()[0];
   }
 
   setupControls () {
@@ -67,6 +73,8 @@
     // which is were we'll set up HostSession or GuestSession
 
     await LocalUser.shared().asyncSetup();
+    //debugger;
+    this.session().players().addLocalPlayer();
 
     PeerServer.shared().setDelegate(this).setup();
 

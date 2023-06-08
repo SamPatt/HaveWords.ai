@@ -109,6 +109,10 @@
     if (shouldScroll) {
       this.scrollView().scrollToBottom();
     }
+
+    if (App.shared().isHost()) {
+      messageView.requestImageIfSummaryAvailable(); // this should be in a AiResponseMessage object
+    }
   }
 
   // ========================================================

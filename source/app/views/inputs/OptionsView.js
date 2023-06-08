@@ -55,7 +55,7 @@
         option.selected = match;
       }
     } else {
-      console.warn(this.type() + ".setSelectedLabel(" + s + ") - no such label in options");
+      console.warn("WARNING: " + this.type() + ".setSelectedLabel(" + s + ") - no such label in options");
     }
     return this;
   }

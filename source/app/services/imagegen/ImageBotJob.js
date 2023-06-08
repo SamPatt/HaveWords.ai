@@ -15,7 +15,7 @@
     this.newSlot("sceneSummary", null); 
 
     // turning imagePrompt into imageUrl
-    this.newSlot("imagePrompt", null); 
+    this.newSlot("imagePrompt", null);  // constructed from sceneSummary
     this.newSlot("imageGenJob", null); 
     this.newSlot("imageUrl", null); 
   }
@@ -33,12 +33,14 @@
   assertReady () {
     super.assertReady();
     assert(this.requestId());
-    assert(this.sceneDescription());
+    assert(this.sceneDescription() || this.sceneSummary());
   }
 
   async justStart() {
     // calling method is wrapped in try, so no try needed here
-    await this.requestSceneSummary();
+    if (!this.sceneSummary()) {
+      await this.requestSceneSummary();
+    }
     await this.requestImage();
     return this.imageUrl();
   }
@@ -74,9 +76,15 @@ No proper nouns.\n\n${MJImageJob.systemInstructions()} Here is the current scene
       this.throwError(new Error("requestSceneSummary: " + data.error.message));
     }
     const summary = data.choices[0].message.content;
-    const imagePrompt = SessionOptionsView.shared().artPromptPrefix() + " " + summary + SessionOptionsView.shared().artPromptSuffix();
+    this.setSceneSummary(summary);
+    return summary;
+  }
+
+  calcImagePrompt () {
+    const imagePrompt = SessionOptionsView.shared().artPromptPrefix() + " " + this.sceneSummary() + ". " + SessionOptionsView.shared().artPromptSuffix();
     console.log("imagePrompt: [[" + imagePrompt + "]]");
     this.setImagePrompt(imagePrompt);
+    return imagePrompt;
   }
 
   async requestImage () {
@@ -84,7 +92,7 @@ No proper nouns.\n\n${MJImageJob.systemInstructions()} Here is the current scene
     this.onChange();
 
     const job = MJImageJobs.shared().newJob();
-    job.setPrompt(this.imagePrompt());
+    job.setPrompt(this.calcImagePrompt());
     job.setRequestId(this.requestId());
     this.setImageGenJob(job);
 

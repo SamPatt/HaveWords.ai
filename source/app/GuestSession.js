@@ -18,6 +18,22 @@
     super.init();
     assert(!App.shared().isHost()); // Host sessions should never access this class
     this.setIsDebugging(true);
+    this.setupPlayer();
+  }
+
+  setupPlayer () {
+    const json = {
+      id: LocalUser.shared().id(),
+      nickname: LocalUser.shared().nickname(),
+      avatar: LocalUser.shared().avatar(),
+    }
+    App.shared().session().players().setJson([json]);
+    //return json;
+  }
+
+  player () {
+    console.log("LocalUser.shared().id(): ", LocalUser.shared().id());
+    return App.shared().session().players().playerWithId(LocalUser.shared().id());
   }
 
   // --- connect ---
@@ -41,7 +57,7 @@
   }
 
   onOpen() {
-    this.sendNickname(); // This will also share our cryptoId
+    this.sharePlayer();
   }
 
   async onData(data) {
@@ -62,8 +78,9 @@
     }
   }
 
-  clearUserList () {
-    PlayersColumn.shared().setGuestUserList([]);
+  clearPlayers () {
+    this.session().players().clear();
+    PlayersColumn.shared().display();
   }
 
   // --- receive messages ---
@@ -88,7 +105,7 @@
       "System",
       data.id
     );
-    this.clearUserList();
+    this.clearPlayers();
     document.getElementById("chatInput").disabled = true;
   }
 
@@ -123,17 +140,12 @@
       "System",
       data.id
     );
-    this.clearUserList();
+    this.clearPlayers();
     document.getElementById("chatInput").disabled = true;
   }
 
   onReceived_sessionHistory(data) {
     console.log("Received session history:", data.history);
-  
-    // Set user avatars
-    for (const [userId, avatar] of Object.entries(data.avatars)) {
-      Session.shared().setUserAvatar(userId, avatar);
-    }
   
     // Update guest list
     console.log("Received guestUserList:", data.guestUserList);
@@ -144,31 +156,6 @@
 
   onReceived_updateImageProgress(data) {
     AiChatColumn.shared().updateImageProgressJson(data);
-  }
-
-  onReceived_nicknameUpdate(data) {
-    // Update the chat message
-    GroupChatColumn.shared().addChatMessage(
-      "chat",
-      data.message,
-      data.newNickname,
-      data.userId
-    );
-  
-    // Update the guest user list from the received data
-    PlayersColumn.shared().setGuestUserList(data.guestUserList);
-    console.log("Received nickname-update" + data);
-  }  
-
-  onReceived_avatarUpdate(data) {
-    Session.shared().setUserAvatar(data.userId, data.avatar);
-    GroupChatColumn.shared().addChatMessage(
-      "chat",
-      data.message,
-      data.nickname,
-      data.userId
-    );
-    console.log("Received avatar-update");
   }
 
   onReceived_systemMessage(data) {
@@ -183,40 +170,8 @@
     AiChatColumn.shared().addMessage("prompt", data.message, data.nickname, data.id);
   }
 
-  onReceived_ThemeUpdate(data) {
+  onReceived_updateTheme(data) {
     App.shared().applyThemeDict(data.json);
-  }
-
-  onReceived_guestJoin(data) {
-    GroupChatColumn.shared().addChatMessage(
-      "chat",
-      data.message,
-      data.nickname,
-      data.joiningGuestId
-    );
-    const newGuestUserList = data.guestUserList;
-    const index = newGuestUserList.findIndex(
-      (guest) => guest.id === LocalUser.shared().id()
-    ); // Use a function to test each element
-    if (index !== -1) {
-      newGuestUserList.splice(index, 1);
-    }
-    PlayersColumn.shared().setGuestUserList(newGuestUserList);
-    console.log("Received guest-join");
-  }
-
-  onReceived_guestLeave(data) {
-    GroupChatColumn.shared().addChatMessage("chat", data.message, data.nickname),
-      data.id;
-    const newGuestUserList = data.guestUserList;
-    const index = newGuestUserList.findIndex(
-      (guest) => guest.id === LocalUser.shared().id()
-    ); // Use a function to test each element
-    if (index !== -1) {
-      newGuestUserList.splice(index, 1);
-    }
-    PlayersColumn.shared().setGuestUserList(newGuestUserList);
-    console.log("Received guest-leave");
   }
 
   onReceived_grantAiAccess(data) {
@@ -249,6 +204,22 @@
     this.hostConnection().send(json)
   }
 
+  sharePlayer () {
+    this.send({
+      type: "updatePlayer",
+      player: this.player().asJson()
+    });
+  }
+
+  onReceived_updatePlayers(data) {
+    if (Session.shared().players().subnodes().length === 0) {
+      this.sharePlayer();
+    }
+    Session.shared().players().setJson(data.players);
+    PlayersColumn.shared().display();
+  }
+
+  /*
   sendNickname() {
     const json = {
       type: "nickname",
@@ -266,6 +237,7 @@
       newNickname: username,
     });
   }
+  */
 
   /*
   sendAvatar() {

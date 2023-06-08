@@ -17,28 +17,28 @@ weight tips from https://www.udacity.com/blog/2021/01/html-css-font-weight.html
 
 @font-face {
     font-family: 'Crimson';
-    src: URL('Cardo-Bold.ttf') format('truetype');
+    src: URL('Crimson-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Cardo';
-    src: URL('Cardo-BoldItalic.ttf') format('truetype');
+    font-family: 'Crimson';
+    src: URL('Crimson-BoldItalic.ttf') format('truetype');
     font-weight: 700;
     font-style: italic;
 }
 
 @font-face {
-    font-family: 'Cardo';
-    src: URL('Cardo-Italic.ttf') format('truetype');
+    font-family: 'Crimson';
+    src: URL('Crimson-Italic.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'Crimson';
-    src: URL('Cardo-Roman.ttf') format('truetype');
+    src: URL('Crimson-Roman.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -46,14 +46,14 @@ weight tips from https://www.udacity.com/blog/2021/01/html-css-font-weight.html
 
 @font-face {
     font-family: 'Crimson';
-    src: URL('Cardo-SemiBold.ttf') format('truetype');
+    src: URL('Crimson-SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Crimson';
-    src: URL('Cardo-SemiboldItalic.ttf') format('truetype');
+    src: URL('Crimson-SemiboldItalic.ttf') format('truetype');
     font-weight: 600;
     font-style: italic;
 }

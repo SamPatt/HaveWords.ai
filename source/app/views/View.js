@@ -51,6 +51,7 @@
   }
 
   create() {
+    assert(!this.element());
     const e = document.createElement(this.tagName());
     this.setElement(e);
     this.initElement();
@@ -95,7 +96,11 @@
       this.element().id = id;
       return this;
     }
+    this.attachToId(id);
+    return this;
+  }
 
+  attachToId (id) {
     const e = document.getElementById(id);
     if (!e) {
       throw new Error("no element found for id '" + id + "'");

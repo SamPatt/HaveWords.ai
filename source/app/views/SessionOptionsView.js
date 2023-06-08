@@ -685,8 +685,6 @@ Once I decide on the adventure, you may provide a brief setting description and 
     */
     Session.shared().setInSession(true);
 
-    HostSession.shared().showHostIntroMessage();
-
     // Send the system message and the prompt to the AI
     // Send a message to all connected guests
     HostSession.shared().broadcast({

@@ -101,6 +101,21 @@
     this.onChange();
   }
 
+  updateJson() {
+    const json = {
+      type: "updateImageProgress",
+      //id: LocalUser.shared().id(),
+      requestId: this.requestId(),
+      percentage: this.progress(),
+      timeTaken: this.timeTaken(),
+      status: this.status(),
+      errorMessage: this.errorMessage(),
+      imageUrl: this.imageUrl(),
+      imagePrompt: this.prompt()
+    };
+    return json;
+  }
+
   async pollPause() {
     return new Promise((r) => setTimeout(r, this.pollingMs())); // pause until next poll
   }

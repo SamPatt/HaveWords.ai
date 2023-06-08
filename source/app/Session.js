@@ -7,6 +7,7 @@
 
 (class Session extends Base {
   initPrototypeSlots() {
+    this.newSlot("players", null);
     this.newSlot("data", null);
     this.newSlot("inSession", false);
     this.newSlot("gameMode", false);
@@ -14,8 +15,17 @@
 
   init() {
     super.init();
+    this.setPlayers(Players.clone());
     this.load();
     this.setIsDebugging(true);
+  }
+
+  hostSession () {
+    return HostSession.shared();
+  }
+
+  guestSession () {
+    return GuestSession.shared();
   }
 
   save() {
@@ -76,15 +86,6 @@
 
   setUserAvatar(userId, avatar) {
     localStorage.setItem(`avatar_${userId}`, avatar);
-  }
-
-  clearAllAvatars() {
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const key = localStorage.key(i);
-      if (key.startsWith('avatar_')) {
-        localStorage.removeItem(key);
-      }
-    }
   }
 
 }.initThisClass());

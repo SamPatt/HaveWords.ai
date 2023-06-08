@@ -94,6 +94,10 @@
   // --- sending ---
 
   send(json) {
+    if (!this.conn()) {
+      console.warn("attempt to send to closed connection ", this.peerId());
+      return;
+    }
     this.conn().send(json);
   }
 

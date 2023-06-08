@@ -7,9 +7,9 @@
 
 (class AvatarPickerView extends View {
   initPrototypeSlots() {
-    this.newSlot("label", null);
     this.newSlot("input", null);
     this.newSlot("image", null);
+    this.newSlot("isEditable", false);
   }
 
   init() {
@@ -19,31 +19,21 @@
 
   initElement() {
     super.initElement();
-
-    //this.setId("AvatarPicker");
-
     const e = this.element()
     e.style.width = "fit-content";
     e.style.height = "fit-content";
     e.style.paddingTop = "0.5em";
     //e.style.border = "1px dashed red";
 
-    /*
-    this.setSubmitFunc(() => {
-      PlayersColumn.shared().updateUserName(this.string());
-    });
-    */
+    this.setupAvatarInput();
+    this.setupAvatarImage();
+  }
 
-    // Add a label for the avatar file input
-    const label = document.createElement("label");
-    this.setLabel(label);
-    label.innerHTML = "Upload Avatar";
-    label.htmlFor = "avatarInput";
-    this.element().appendChild(label);
-
+  setupAvatarInput () {
     // Avatar input
     const input = document.createElement("input");
     this.setInput(input);
+    input.style.display = "none";
     input.type = "file";
     input.id = "avatarInput";
     input.accept = "image/*";
@@ -51,30 +41,33 @@
       this.handleAvatarChange(event);
     });
     this.element().appendChild(input);
+  }
 
-    // Avatar display
+  setupAvatarImage() {
     const image = document.createElement("img");
     this.setImage(image);
+    image.style.display = "block";
     image.className = "message-avatar";
-    //image.style.width = "50px";
-    //image.style.height = "50px";
-    //image.style.borderRadius = "25px";
-
-    e.addEventListener("click", () => {
-      this.input().click();
+    image.src = "resources/icons/default-avatar.png";
+    image.addEventListener("click", () => {
+      this.onClickAvatar();
     });
     this.element().appendChild(image);
+  }
 
-    // Check if there's already an avatar in localStorage
-    let avatar = LocalUser.shared().avatar();
-    if (!avatar) {
-      avatar = "resources/icons/default-avatar.png";
+  setAvatarUrl (imageUrl) {
+    //assert(imageUrl);
+    if (imageUrl === "" || !imageUrl) {
+      imageUrl = "resources/icons/default-avatar.png";
     }
-    this.image().src = avatar;
+    this.image().src = imageUrl;
+    return this;
+  }
 
-    this.image().style.display = "block";
-    this.input().style.display = "none";
-    this.label().style.display = "none";
+  onClickAvatar () {
+    if (this.isEditable()) {
+      this.input().click();
+    }
   }
 
   setString(s) {
@@ -132,14 +125,20 @@
 
   storeAvatar(base64Image) {
     if (LocalUser.shared().avatar() !== base64Image) {
-      LocalUser.shared().setAvatar(base64Image).shareAvatar();
+      LocalUser.shared().setAvatar(base64Image);
 
+      App.shared().session().players().updatePlayerJson(LocalUser.shared().asPlayerJson());
+      if (!App.shared().isHost()) {
+        GuestSession.shared().sharePlayer();
+      }
       GroupChatColumn.shared().addChatMessage(
         "chat",
         `You updated your avatar.`,
         LocalUser.shared().nickname(),
         LocalUser.shared().id()
       );
+
+      //App.shared().session().players().scheduleOnChange();
     }
   }
 

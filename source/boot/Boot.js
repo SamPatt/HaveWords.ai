@@ -16,17 +16,19 @@ class Boot extends Object {
       "source/app/helpers.js",
 
       "source/app/App.js",
-      "source/app/Sounds.js",
+      "source/app/node/Node.js",
 
+      "source/app/Sounds.js",
 
       "source/app/user/CryptoIdentity.js",
       "source/app/user/LocalUser.js",
       "source/app/user/Nickname.js",
 
-      "source/app/Session.js",
-
-      "source/app/players/Players.js",
       "source/app/players/Player.js",
+      "source/app/players/Players.js",
+
+      "source/app/Session.js",
+      "source/app/Sessions.js",
 
       "source/app/PeerConnection.js",
       "source/app/PeerServer.js",
@@ -139,5 +141,4 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 window.addEventListener('beforeunload', () => {
-  Session.shared().clearAllAvatars();
 });

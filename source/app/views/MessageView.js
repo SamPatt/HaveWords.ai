@@ -4,8 +4,6 @@
 
     MessageView
 
-
-
 */
 
 (class MessageView extends View {
@@ -14,10 +12,14 @@
     this.newSlot("nicknameElement", null);
     this.newSlot("textElement", null);
     this.newSlot("messageContentElement", null);
+
+    this.newSlot("requestId", null);
+
+    // image related
+    this.newSlot("imageJob", null);
+    this.newSlot("imageGenButton", null);
     this.newSlot("loadingContainer", null);
     this.newSlot("imageContainer", null);
-    this.newSlot("requestId", null);
-    this.newSlot("imageGenButton", null);
     this.newSlot("imageUrl", null);
   }
 
@@ -72,8 +74,9 @@
     // loading animation
     const loadingContainer = document.createElement("div");
     loadingContainer.className = "messageImageContainer"
-    loadingContainer.innerHTML = this.dotsHtml();
+    loadingContainer.innerHTML = this.centerDotsHtml();
     loadingContainer.style.display = "none";
+    loadingContainer.style.opacity = 0.5;
     this.setLoadingContainer(loadingContainer);
     messageWrapper.appendChild(loadingContainer)
 
@@ -152,11 +155,16 @@
   }
 
   imageContainer () {
+    /*
     const e = this.textElement().querySelector(".chapterImage");
     if (e) {
       e.style.display = "flex";
+      e.style.borderRadius = "50%";
+      this._imageContainer.style.display = "none";
       return e;
     }
+    */
+
     return this._imageContainer;
   }
 
@@ -182,6 +190,10 @@
     return this.contentOfFirstElementOfClass('chapterTitle'); 
   }
 
+  sceneSummary () {
+    return this.contentOfFirstElementOfClass('sceneSummary'); 
+  }
+
   bookTitle () {
     return this.contentOfFirstElementOfClass('bookTitle'); 
   }
@@ -199,6 +211,10 @@
 
   // --------------------------------
 
+  hasRequestedImage () {
+    return this.imageJob() !== null;
+  }
+
   addImageGenButton () {
     const button = this.newImageGenImageButton();
     this.setImageGenButton(button);
@@ -207,8 +223,6 @@
   }
 
   newImageGenImageButton () {
-    assert(this.requestId());
-
     const button = document.createElement("button");
     button.className = "generate-image-prompt-button";
     button.setAttribute(
@@ -225,18 +239,48 @@
     button.style.position = "absolute";
     button.style.top = "1em";
 
-    button.addEventListener("click", async () => {
-      this.hideImageGenButton();
-      this.setImageUrl(null); // to add loading animation
-      const job = ImageBotJobs.shared().newJob().setSceneDescription(this.text()).setRequestId(this.requestId());
-      try {
-        await job.start();
-      } catch (error) {
-        this.setErrorMessage(error.message);
-      }
+    button.addEventListener("click", () => {
+      this.onRequestImage();
     });
 
     return button
+  }
+
+  requestImageIfSummaryAvailable () {
+    if (!this.hasRequestedImage()) {
+      if (this.sceneSummary()) {
+        console.log("MessageView.onRequestImage")
+        this.onRequestImage();
+      }
+    }
+  }
+
+  async onRequestImage () {
+    if (this.hasRequestedImage()) {
+      console.warn("attempt to request image twice");
+      return;
+    }
+    this.hideImageGenButton();
+    this.setImageUrl(null); // to add loading animation
+
+    const job = ImageBotJobs.shared().newJob();
+
+    if (this.sceneSummary()) {
+      // if the content of the page contains a summary tag, 
+      // we use that so we can skip generating a summary from the full text
+      job.setSceneSummary(this.sceneSummary());
+    } else {
+      job.setSceneDescription(this.text());
+    }
+
+    job.setRequestId(this.requestId());
+    this.setImageJob(job);
+
+    try {
+      await job.start();
+    } catch (error) {
+      this.setErrorMessage(error.message);
+    }
   }
 
   hideImageGenButton () {
@@ -248,14 +292,17 @@
   }
 
   updateImageProgressJson(json) {
-    if (!this.imageUrl()) {
-      if (json.errorMessage) {
-        this.setErrorMessage(json.errorMessage);
-      } else {
-        if (json.status) {
-          this.setImageContainerText("Generating image" + this.dotsHtml() + " " + json.status);
-        }
-      }
+    if (this.imageUrl()) {
+      return 
+    }
+
+    if (json.errorMessage) {
+      this.setErrorMessage(json.errorMessage);
+      return
+    }
+
+    if (json.status) {
+      this.setImageContainerText("Generating image" + this.dotsHtml() + " " + json.status);
     }
   }
 

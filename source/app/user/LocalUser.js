@@ -61,6 +61,14 @@
 
   // --- json ---
 
+  asPlayerJson () {
+    return {
+      id: this.id(),
+      nickname: this.nickname(),
+      avatar: this.avatar(),
+    }
+  }
+
   asJson() {
     return {
       cryptoId: this.cryptoId().asJson(),
@@ -104,6 +112,7 @@
 
   // --- sends ---
 
+  /*
   sendChatMessage(message) {
     const m = GroupChatDataMessage.clone();
     m.setId(this.id());
@@ -130,4 +139,5 @@
       GuestSession.shared().send(json);
     }
   }
+  */
 }).initThisClass();

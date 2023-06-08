@@ -16,7 +16,10 @@
 
 (class PlayerView extends View {
   initPrototypeSlots() {
-    this.newSlot("guestDict", null);
+    this.newSlot("node", null);
+    this.newSlot("avatarView", null);
+    this.newSlot("nameField", null);
+    this.newSlot("buttonsContainer", null);
   }
 
   init() {
@@ -35,27 +38,33 @@
     e.style.paddingRight = "1em";
     e.style.paddingTop = "0.2em";
     e.style.paddingBottom = "0.2em";
+
+    this.setupSubviews();
     return this;
   }
 
-  setGuestDict (dict) {
-    this._guestDict = dict;
-    this.setup();
+  setNode
+
+  setPlayer (aPlayer) {
+    this._node = aPlayer;
+    this.syncFromNode();
     return this;
+  }
+
+  player () {
+    return this.node()
   }
 
   // --- helpers ---
 
+  /*
   peerConnection () {
     return PeerServer.shared().peerConnections().get(this.userId());
   }
+  */
 
   userId () {
-    return this.guestDict().id;
-  }
-
-  userInfo () {
-    return this.peerConnection().info();
+    return this.player().id();
   }
 
   // --- button actions ---
@@ -81,7 +90,17 @@
   }
 
   onEditName (nameField) {
-    PlayersColumn.shared().updateUserName(nameField.string());
+    this.player().setNickname(nameField.string());
+
+    //if (this.player().isLocal()) {
+      LocalUser.shared().setNickname(this.player().nickname())
+    //}
+
+    if (App.shared().isHost()) {
+      HostSession.shared().sharePlayers();
+    } else {
+      GuestSession.shared().sharePlayer();
+    }
   }
 
   isSelf () {
@@ -90,25 +109,37 @@
 
   // --- setup ---
 
-  setup() {
-    const isHost = App.shared().isHost();
-    const isSelf = this.isSelf();
+  syncFromNode() {
+    const player = this.player();
 
+    //debugger;
+    this.avatarView().setAvatarUrl(player.avatar());
+    this.avatarView().setIsEditable(this.isSelf());
 
+    this.nameField().setString(player.nickname());
+    this.nameField().setIsEditable(this.isSelf());
+
+    assert(this.avatarView().element().parentNode.parentNode === this.element());
+    //this.syncButtons();
+    return this;
+  }
+
+  setupSubviews() {
     const section = HView.clone();
     this.addSubview(section);
 
-    if (isSelf) {
-      const view = AvatarPickerView.shared();
-      section.addSubview(view);
-    }
-
+    // avatar view
+    const view = AvatarPickerView.clone();
+    this.setAvatarView(view);
+    section.addSubview(view);
 
     // Create a container for the user and their actions
     const userContainer = document.createElement("div");
     this.element().appendChild(userContainer);
 
-    const nameField = TextFieldView.clone().create().setString(this.guestDict().nickname);
+    // name field
+    const nameField = TextFieldView.clone().create();
+    this.setNameField(nameField);
     nameField.setShouldFitContent(true);
     section.addSubview(nameField);
     nameField.element().style.marginBottom = "1em";
@@ -119,29 +150,28 @@
       this.onEditName(nameField);
     });
 
-    nameField.setIsEditable(isSelf);
+    // buttonsContainer
+    const container1 = View.clone().create();
+    this.setButtonsContainer(container1);
+    container1.element().style.display = "flex";
+    container1.element().style.flexDirection = "row";
+    container1.element().style.justifyContent = "left";
+    
+    return this;
+  }
 
-    /*
-    console.log("this.guestDict():" , this.guestDict());
-    console.log("LocalUser.shared().id():" , LocalUser.shared().id());
-    console.log("          this.userId():" ,this.userId());
-    */
-    //debugger;
+  syncButtons () {
+    const isHost = App.shared().isHost();
+    const isSelf = this.isSelf();
 
-    if (App.shared().isHost()) {
-
-      const container1 = View.clone().create();
-      container1.element().style.display = "flex";
-      container1.element().style.flexDirection = "row";
-      container1.element().style.justifyContent = "left";
-      
-      this.addSubview(container1);
+    if (isHost) {
+      const container1 = this.buttonsContainer();
 
       const radioItems = [
         {
           label: "prompt",
           action: "onTogglePrompt",
-          state: this.guestDict().canSendPrompts,
+          state: this.player().canSendPrompts(),
           available: isHost && !isSelf,
         },
         {

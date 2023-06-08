@@ -1106,8 +1106,11 @@ body {
 
 /* --- end scrollbar --- */
 
-.sceneDescription {
+.sceneSummary {
+    display: flex;
     min-width: 100%;
     text-align: center;
     font-style: italic;
+    padding-bottom: 1em;
+    opacity: 0.5;
 }

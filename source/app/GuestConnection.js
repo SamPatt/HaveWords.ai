@@ -10,71 +10,77 @@
 (class GuestConnection extends PeerConnection {
   initPrototypeSlots() {
     this.newSlot("pubkey", null); 
+    this.newSlot("player", null); 
   }
 
   init() {
     super.init();
     this.setInfo({});
-    this.setIsDebugging(false);
+    this.setIsDebugging(true);
   }
 
   hostSession () {
     return HostSession.shared();
   }
 
+  id () {
+    return this.info().id;
+  }
+
+  setId (id) {
+    this.info().id = id;
+    return this;
+  }
+
   // --- nickname ----
 
   nickname () {
-    return this.info().nickname;
+    return this.player().nickname();
   }
 
   setNickName (s) {
-    this.info().nickname = s;
+    this.player().setNickname(s);
     return this;
   }
+  /*
 
   // --- avatar --- 
 
   avatar () {
-    return this.info().avatar;
+    return this.player().avatar();
   }
 
   setAvatar (s) {
-    this.info().avatar = s;
+    this.player().setAvatar(s);
     return this;
   }
 
   // --- canSendPrompts --- 
 
   canSendPrompts () {
-    return this.info().canSendPrompts;
+    return this.player().canSendPrompts();
   }
 
   setCanSendPrompts(aBool) {
-    this.info().canSendPrompts = s;
+    this.player().setCanSendPrompts(aBool);
     return this;
   }
+  */
   
   // ----------------
 
   onOpen(peerId) {
     console.log(this.type() + " onOpen(" + peerId + ")");
-    
     super.onOpen(peerId);
 
+    /*
     if (this.hostSession().bannedGuests().has(this.id())) {
       this.send({ type: "ban" });
       setTimeout(() => this.shutdown(), 500);
     }
+    */
 
     this.hostSession().onOpenGuestConnection(this);
-
-    this.setInfo({
-      nickname: "",
-      canSendPrompts: false,
-      avatar: "",
-    });
-
   }
 
   onData(data) {
@@ -87,8 +93,8 @@
     if (method) {
       method.apply(this, [data]);
     } else {
-      debugger;
       console.warn("WARNING: no " + this.type() + "." + action + "() method found");
+      debugger;
     }
   }
 
@@ -100,49 +106,19 @@
     return this.type() + " id: " + this.id() + " nick: " + this.nickname()
   }
 
-  onReceived_nickname(data) {
-    if (this.isBanned()) {
-      this.sendThenClose({ type: "ban" });
-    } else {
-      this.setNickName(data.nickname);
-      this.setPubkey(data.id);
-      this.info().id = data.id;
-
-      console.log("Guest connected: " + this.description())
-      const newGuestUserList = this.hostSession().calcGuestUserlist();
-      const guestAvatars = this.hostSession().calcGuestAvatars();
-      this.hostSession().updateGuestUserlist();
-
-      this.send({
-        type: "sessionHistory",
-        history: Session.shared().history(),
-        nickname: LocalUser.shared().nickname(),
-        guestUserList: newGuestUserList,
-        avatars: guestAvatars,
-        id: LocalUser.shared().id()
-      });
-
-      // Send a new message to all connected guests to notify them of the new guest
-      this.hostSession().broadcastExceptTo(
-        {
-          type: "guestJoin",
-          message: this.nickname() + " has joined the session!",
-          nickname: LocalUser.shared().nickname(),
-          joiningGuestNickname: data.nickname,
-          joiningGuestId: data.id,
-          guestUserList: newGuestUserList,
-        },
-        data.peerId
-      );
-
-      GroupChatColumn.shared().addChatMessage(
-        "systemMessage",
-        `${data.nickname} has joined the session!`,
-        LocalUser.shared().nickname(),
-        this.id()
-      );
-    }
+  session () {
+    return App.shared().session();
   }
+
+  // --- player data ---
+
+  onReceived_updatePlayer(data) {
+    this.setInfo(data.player);
+    const player = App.shared().session().players().updatePlayerJson(data.player);
+    this.setPlayer(player);
+  }
+
+  // --- player data ---
 
   onReceived_remotePrompt(data) {
     // Add prompt to prompt history
@@ -196,7 +172,7 @@
       this.hostSession().guestChangeSystemMessage(data);
     } else {
       console.log(
-        `Rejected system message update from ${conn.peer} - ${channel.nickname}`
+        `Rejected system message update from ${conn.peer} - ${data.nickname}`
       );
     }
   }
@@ -230,62 +206,14 @@
     );
   }
 
-  onReceived_nicknameUpdate(data) {
-    // Update nickname in datachannels
-    const oldNickname = this.nickname();
-    this.setNickName(data.newNickname);
-
-    GroupChatColumn.shared().addChatMessage(
-      "systemMessage",
-      `${oldNickname} is now ${data.newNickname}.`,
-      LocalUser.shared().nickname(),
-      data.id
-    );
-    this.hostSession().updateGuestUserlist();
-    // Update nickname in guest user list
-    // Send updated guest user list to all guests
-    this.hostSession().broadcast({
-      type: "nicknameUpdate",
-      message: `${oldNickname} is now <b>${data.newNickname}</b>.`,
-      nickname: LocalUser.shared().nickname(),
-      newNickname: data.newNickname,
-      userId: data.id,
-      guestUserList: this.hostSession().calcGuestUserlist(),
-    });
-  }
-
-  onReceived_avatarUpdate(data) {
-    // Update avatar in datachannels
-    this.setAvatar(data.avatar);
-    // Update avatar in guest user list
-    Session.shared().setUserAvatar(data.id, data.avatar);
-    GroupChatColumn.shared().addChatMessage(
-      "systemMessage",
-      `${data.nickname} updated their avatar.`,
-      data.nickname,
-      data.id
-    );
-    // Send updated guest user list to all guests
-    this.hostSession().broadcast({
-      type: "avatarUpdate",
-      avatar: data.avatar,
-      userId: data.id,
-      nickname: data.nickname,
-      message: `${data.nickname} updated their avatar.`
-    });
-  }
-
   onClose() {
     super.onClose();
 
     if (!this.isBanned()) {
       this.hostSession().broadcast({
-        type: "guestLeave",
+        type: "systemMessage",
         message: `${this.nickname()} has left the session.`,
         nickname: LocalUser.shared().nickname(),
-        leavingGuestNickname: this.nickname(),
-        leavingGuestId: this.id(),
-        guestUserList: this.hostSession().calcGuestUserlist(),
       });
 
       GroupChatColumn.shared().addChatMessage(
@@ -296,6 +224,8 @@
       );
     }
 
-    this.hostSession().updateGuestUserlist();
+    //debugger;
+    App.shared().session().players().removeSubnode(this.player());
+    this.hostSession().sharePlayers();
   }
 }).initThisClass();

@@ -34,7 +34,7 @@
   }
 
   getAvatar () {
-    return Session.shared().getUserAvatar(this.id());
+    return App.shared().session().getUserAvatar(this.id());
   }
 
   newView() {
