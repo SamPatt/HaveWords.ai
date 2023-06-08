@@ -19,6 +19,7 @@
     this.newSlot("node", null);
     this.newSlot("avatarView", null);
     this.newSlot("nameField", null);
+    this.newSlot("dataField", null);
     this.newSlot("buttonsContainer", null);
   }
 
@@ -114,13 +115,22 @@
 
     //debugger;
     this.avatarView().setAvatarUrl(player.avatar());
-    this.avatarView().setIsEditable(this.isSelf());
+    this.avatarView().setIsEditable(player.isLocal());
 
     this.nameField().setString(player.nickname());
-    this.nameField().setIsEditable(this.isSelf());
+    this.nameField().setIsEditable(player.isLocal());
+
+    if (player.data()) {
+      this.dataField().setString(JSON.stringify(player.data(), 2, 2));
+      this.dataField().unhide();
+    } else {
+      this.dataField().hide();
+    }
+    this.dataField().setIsEditable(false);
+    //this.dataField().setIsEditable(player.isLocal());
 
     assert(this.avatarView().element().parentNode.parentNode === this.element());
-    //this.syncButtons();
+    this.syncButtons();
     return this;
   }
 
@@ -149,6 +159,15 @@
     nameField.setSubmitFunc(() => {
       this.onEditName(nameField);
     });
+
+    // data field
+
+    const dataField = TextAreaInputView.clone().create();
+    dataField.element().style.minHeight = "3em";
+    dataField.element().style.whiteSpace = "pre";
+    dataField.element().style.textAlign = "left";
+    this.setDataField(dataField);
+    this.addSubview(dataField);
 
     // buttonsContainer
     const container1 = View.clone().create();

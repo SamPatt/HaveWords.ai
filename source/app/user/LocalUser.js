@@ -66,6 +66,7 @@
       id: this.id(),
       nickname: this.nickname(),
       avatar: this.avatar(),
+      data: { stats: {}, items: [] }
     }
   }
 

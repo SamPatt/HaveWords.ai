@@ -22,6 +22,7 @@
 
   init() {
     super.init();
+    this.setInfo({})
   }
 
   isLocal () {
@@ -73,11 +74,22 @@
   // canSendPrompts
 
   canSendPrompts () {
-    return this._canSendPrompts
+    return this.info()._canSendPrompts
   }
 
   setCanSendPrompts(v) {
-    this._canSendPrompts = v;
+    this.info()._canSendPrompts = v;
+    return this;
+  }
+
+  // data
+
+  data () {
+    return this.info().data;
+  }
+
+  setData (v) {
+    this.info().data = v;
     return this;
   }
 
