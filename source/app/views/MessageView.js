@@ -198,6 +198,10 @@
     return this.contentOfFirstElementOfClass('bookTitle'); 
   }
 
+  playerInfo () {
+    return this.contentOfFirstElementOfClass('playerInfo'); 
+  }
+
   // isUser - this is duplicated in ImageMessageView
 
   setIsUser (aBool) {

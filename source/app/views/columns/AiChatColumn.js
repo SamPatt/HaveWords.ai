@@ -170,6 +170,17 @@
       } else if(m.bookTitle()) {
         this.sessionTitle().setString(m.bookTitle());
       }
+
+      if (m.playerInfo()) {
+        const json = JSON.parse(m.playerInfo().removedHtmlTags());
+        if (json && json.name) {
+          const player = App.shared().session().players().playerWithName(json.name);
+          if (player) {
+            player.setData(json);
+            App.shared().session().players().onChange();
+          }
+        }
+      }
     } else {
       console.warn("onAiResponseCompleteText couldn't find message for requestId:" + requestId);
     }

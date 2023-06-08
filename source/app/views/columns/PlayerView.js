@@ -164,8 +164,10 @@
 
     const dataField = TextAreaInputView.clone().create();
     dataField.element().style.minHeight = "3em";
-    dataField.element().style.whiteSpace = "pre";
+    dataField.element().style.whiteSpace = "pre-wrap";
     dataField.element().style.textAlign = "left";
+    dataField.element().style.fontSize = "0.75em";
+    dataField.element().style.lineHeight = "1em";
     this.setDataField(dataField);
     this.addSubview(dataField);
 
@@ -175,7 +177,6 @@
     container1.element().style.display = "flex";
     container1.element().style.flexDirection = "row";
     container1.element().style.justifyContent = "left";
-    
     return this;
   }
 

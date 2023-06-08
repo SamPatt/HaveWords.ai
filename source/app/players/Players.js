@@ -50,6 +50,10 @@
     return this.subnodes().find(player => player.id() === id);
   }
 
+  playerWithName (name) {
+    return this.subnodes().find(player => player.nickname() === name);
+  }
+
   updatePlayerJson(json) { // returns true if player was updated, false if it was added
     //console.log("updatePlayerJson: ", JSON.stringify(json));
     const player = this.playerWithId(json.id);
