@@ -19,7 +19,8 @@
     this.newSlot("node", null);
     this.newSlot("avatarView", null);
     this.newSlot("nameField", null);
-    this.newSlot("dataField", null);
+    //this.newSlot("dataField", null);
+    this.newSlot("jsonView", null);
     this.newSlot("buttonsContainer", null);
   }
 
@@ -43,8 +44,6 @@
     this.setupSubviews();
     return this;
   }
-
-  setNode
 
   setPlayer (aPlayer) {
     this._node = aPlayer;
@@ -121,12 +120,16 @@
     this.nameField().setIsEditable(player.isLocal());
 
     if (player.data()) {
-      this.dataField().setString(JSON.stringify(player.data(), 2, 2));
-      this.dataField().unhide();
+      this.jsonView().setJson(player.data());
+      this.jsonView().unhide();
+
+      //this.dataField().setString(JSON.stringify(player.data(), 2, 2));
+      //this.dataField().unhide();
     } else {
-      this.dataField().hide();
+      //this.dataField().hide();
+      this.jsonView().hide();
     }
-    this.dataField().setIsEditable(false);
+    //this.dataField().setIsEditable(false);
     //this.dataField().setIsEditable(player.isLocal());
 
     assert(this.avatarView().element().parentNode.parentNode === this.element());
@@ -162,6 +165,11 @@
 
     // data field
 
+    const jsonView = ObjectView.clone();
+    this.setJsonView(jsonView);
+    this.addSubview(jsonView);
+
+    /*
     const dataField = TextAreaInputView.clone().create();
     dataField.element().style.minHeight = "3em";
     dataField.element().style.whiteSpace = "pre-wrap";
@@ -170,6 +178,7 @@
     dataField.element().style.lineHeight = "1em";
     this.setDataField(dataField);
     this.addSubview(dataField);
+    */
 
     // buttonsContainer
     const container1 = View.clone().create();

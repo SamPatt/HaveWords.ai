@@ -265,7 +265,8 @@ The players will not see the contents of this tag, but it will be used to genera
 [sessionSubtype2]
 I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, and alignment but you will choose the other details. 
 If you generate stats and items for a player, do so in JSON format (which includes a property for the player's name) and place all such info for each player in a single <div class=playerInfo></div>. 
-Please include an appearance property in the JSON whose value is a string containing a detailed description of the character's physical appearence.
+Please include an appearance property in the JSON whose value is a string containing a detailed description of the character's physical appearence. 
+Do not use the player's name in the appearance description.
 Again, do not make decisions for the players.`,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",

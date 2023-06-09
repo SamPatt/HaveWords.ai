@@ -26,6 +26,7 @@
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
       avatar: LocalUser.shared().avatar(),
+      data: { race: "human", class: "rogue", alignment: "neutral good" }, 
     }
     App.shared().session().players().setJson([json]);
     //return json;

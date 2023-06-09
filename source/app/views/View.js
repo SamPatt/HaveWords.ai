@@ -371,4 +371,14 @@
     localStorage.setItem(this.id(), v);
   }
 
+  // --- style ---
+
+  makeWidthFitContent () {
+    const s = this.element().style;
+    s.minWidth = "fit-content";
+    s.width = "fit-content";
+    s.maxWidth = "fit-content";
+    return this;
+  }
+
 }).initThisClass();

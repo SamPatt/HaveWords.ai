@@ -172,11 +172,13 @@
       }
 
       if (m.playerInfo()) {
+        //debugger;
         const json = JSON.parse(m.playerInfo().removedHtmlTags());
         if (json && json.name) {
           const player = App.shared().session().players().playerWithName(json.name);
           if (player) {
             player.setData(json);
+            player.generateImageFromAppearance();
             App.shared().session().players().onChange();
           }
         }
@@ -211,12 +213,20 @@
 
   updateImageProgressJson (json) {
     const messageView = this.requestIdToMessageMap().get(json.requestId);
-    messageView.updateImageProgressJson(json);
+    if (messageView) {
+      messageView.updateImageProgressJson(json);
+    } else {
+      console.warn("no messageView with id '" + json.requestId + "'");
+    }
   }
 
   addImage(imageUrl, requestId) {
     const messageView = this.requestIdToMessageMap().get(requestId);
-    messageView.setImageUrl(imageUrl);
+    if (messageView) {
+      messageView.setImageUrl(imageUrl);
+    } else {
+      console.warn("no messageView with id '" + json.requestId + "'");
+    }
   }
 
   addPrompt() {

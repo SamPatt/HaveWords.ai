@@ -67,6 +67,8 @@ class Boot extends Object {
       "source/app/services/youtube/MusicLibrary.js",
       "source/app/services/youtube/MusicPlayer.js",
 
+      // views
+
       "source/app/views/View.js",
       "source/app/views/organizers/HView.js",
       "source/app/views/organizers/VView.js",
@@ -79,6 +81,13 @@ class Boot extends Object {
       "source/app/views/inputs/OptionsView.js",
       "source/app/views/inputs/TextAreaInputView.js",
       "source/app/views/inputs/TextFieldView.js",
+
+      // view columns
+      "source/app/views/columns/JsonViews/JsonView.js",
+      "source/app/views/columns/JsonViews/ArrayView.js",
+      "source/app/views/columns/JsonViews/ObjectView.js",
+      "source/app/views/columns/JsonViews/StringView.js",
+      "source/app/views/columns/JsonViews/NumberView.js",
 
       "source/app/views/columns/ScrollView.js",
       "source/app/views/columns/ColumnView.js",

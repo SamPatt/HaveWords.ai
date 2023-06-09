@@ -16,6 +16,7 @@
 (class Player extends Base {
   initPrototypeSlots() {
     this.newSlot("info", null);
+    this.newSlot("imageGenJob", null);
     //this.newSlot("localUser", null);
     //this.newSlot("guestConnection", null);
   }
@@ -91,6 +92,29 @@
   setData (v) {
     this.info().data = v;
     return this;
+  }
+
+  appearance () {
+    return this.info().data.appearance;
+  }
+
+  async generateImageFromAppearance() {
+    if (this.appearance()) {
+      assert(App.shared().isHost());
+      const imagePrompt = SessionOptionsView.shared().artPromptPrefix() + " " + this.appearance() + ". " + SessionOptionsView.shared().artPromptSuffix();
+      const job = MJImageJobs.shared().newJob();
+      job.setPrompt(imagePrompt);
+      job.setRequestId("player_" + this.id());
+      this.setImageGenJob(job);
+
+      const imageUrl = await job.start();
+
+      if (imageUrl) {
+        this.setAvatar(imageUrl);
+        Players.shared().onChange()
+      }
+      return imageUrl;
+    }
   }
 
 }.initThisClass());
