@@ -239,7 +239,7 @@ This should include a name property whose value is the player's name, and also a
 When a player's attributes change during the game, such as when their hitpoints decreases due to damage, or they gain or lose an item, 
 please include a <div class=playerInfo></div> containing the updated JSON in your response.
 
-Here is an example of the preferred playerInfo JSON format:
+Here is an example of the playerInfo JSON format:
 
 {
   "name": "Foo",
@@ -288,7 +288,6 @@ Here is an example of the preferred playerInfo JSON format:
   },
   "appearance": "..."
 }
-
         `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",

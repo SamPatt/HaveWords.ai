@@ -17,7 +17,6 @@
     this.setScrollView(ScrollView.clone().setId("GroupChatColumn_ScrollView"));
   }
 
-
   displayHostHTMLChanges() {
     document.getElementById("appView").style.display = "block";
     this.unhide();

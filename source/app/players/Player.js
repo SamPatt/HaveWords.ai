@@ -69,6 +69,9 @@
 
   setAvatar (v) {
     this.info().avatar = v;
+    if (this.isLocal()) {
+      LocalUser.shared().setAvatar(v);
+    }
     return this;
   }
 
@@ -126,6 +129,7 @@
     }
   }
 
+  /*
   async generateImageFromAppearance_new () {
     if (this.hasRequestedImage()) {
       console.warn("attempt to request image twice");
@@ -153,6 +157,7 @@
       this.setErrorMessage(error.message);
     }
   }
+  */
 
 }.initThisClass());
 
