@@ -93,7 +93,17 @@
   }
 
   setData (v) {
+    const oldAppearance = this.appearance();
+
     this.info().data = v;
+    if (this.isLocal()) {
+      LocalUser.shared().setData(v);
+    }
+
+    if (this.appearance() !== oldAppearance) {
+      this.generateImageFromAppearance();
+    }
+    
     return this;
   }
 

@@ -18,13 +18,19 @@
     this.setId("AiChatColumn");
     this.setRequestIdToMessageMap(new Map());
     this.setupMessageInput();
+
     this.setSessionTitle(View.clone().setId("SessionDescription"));
-    this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
 
     this.setScrollView(ScrollView.clone().setId("AiChatColumn_ScrollView"));
     this.scrollView().contentView().setId("AiChatMessages");
 
     this.setHasPromptAccess(App.shared().isHost());
+
+    this.setupButtons();
+  }
+
+  setupButtons() {
+    this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
   }
 
   onSubmit_CopyTranscriptButton () {
