@@ -180,6 +180,13 @@
     return undefined;
   }
 
+  contentOfElementsOfClass(className) {
+    const matches = this.element().querySelectorAll('.' + className); 
+    const results = [];
+    matches.forEach(e => results.push(e.innerHTML));
+    return results;
+  }
+
   // --- helpers to get bits of tagged content ---
 
   chapterNumber () {
@@ -198,9 +205,10 @@
     return this.contentOfFirstElementOfClass('bookTitle'); 
   }
 
-  playerInfo () {
-    return this.contentOfFirstElementOfClass('playerInfo'); 
+  playerInfos () {
+    return this.contentOfElementsOfClass('playerInfo'); 
   }
+
 
   // isUser - this is duplicated in ImageMessageView
 
@@ -272,7 +280,9 @@
     if (this.sceneSummary()) {
       // if the content of the page contains a summary tag, 
       // we use that so we can skip generating a summary from the full text
-      job.setSceneSummary(this.sceneSummary());
+      const summary = this.sceneSummary();
+      Players.shared().processSceneSummary(summary);
+      job.setSceneSummary(summary);
     } else {
       job.setSceneDescription(this.text());
     }

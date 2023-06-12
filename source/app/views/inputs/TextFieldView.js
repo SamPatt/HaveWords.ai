@@ -48,6 +48,15 @@
     event.target.blur();
   }
 
+  setValue (s) {
+    this.setString(s);
+    return this;
+  }
+  
+  value () {
+    return this.string();
+  }
+
   setString(s) {
     super.setString(s);
     this.resizeIfNeeded();

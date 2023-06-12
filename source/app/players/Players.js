@@ -79,5 +79,12 @@
     PlayersColumn.shared().display();
   }
 
+  processSceneSummary(text) {
+    this.subnodes().forEach(player => {
+      text = player.processSceneSummary(text);
+    })
+    return text;
+  }
+
 }.initThisClass());
 

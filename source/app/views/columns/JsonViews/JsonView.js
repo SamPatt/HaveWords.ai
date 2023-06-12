@@ -51,9 +51,27 @@
 
   newViewForValue(v) {
     const type = this.detectType(v);
-    console.log("type: ", type);
+    //console.log("type: ", type);
     //debugger;
-    const viewClassName = type + "View";
+    let viewClassName = type + "View";
+    
+    if (type === "String") {
+      const view = TextAreaInputView.clone().create().setValue(v);
+      view.setIsEditable(false);
+      return view;
+    } else if (type === "Number") {
+      const view = TextFieldView.clone().create().setValue(v);
+      view.element().style.display = "inline-block";
+      view.element().style.margin = "0em";
+      view.element().style.padding = "0em";
+      view.setIsEditable(false);
+      view.setValidationFunc((n) => {
+        const isNumber = !isNaN(parseFloat(n)) && !isNaN(n - 0);
+        return isNumber;
+      });
+      return view;
+    }
+
     const viewClass = getGlobalThis()[viewClassName];
     if (!viewClass) {
       throw new Error("no view for type " + viewClassName);

@@ -31,8 +31,10 @@
 
     return this;
   }
+  
   initElement () {
     super.initElement();
+    this.element().style.textAlign = "left";
     this.listenForKeyDown()
   }
 

@@ -91,12 +91,15 @@
         targetWidth,
         targetHeight
       );
+
+      /*
       const imageSizeInBytes = atob(base64Image.split(",")[1]).length;
 
       if (imageSizeInBytes > maxSizeInBytes) {
         alert("Image size is too large. Please choose a smaller image.");
         return 
       } 
+      */
 
       this.storeAvatar(base64Image);
       this.displayAvatar(base64Image);

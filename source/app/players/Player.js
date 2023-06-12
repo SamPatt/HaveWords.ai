@@ -95,7 +95,16 @@
   }
 
   appearance () {
-    return this.info().data.appearance;
+    return this.info().data ? this.info().data.appearance : undefined;
+  }
+
+  processSceneSummary (text) {
+    const s = this.appearance();
+    if (s) {
+      text.replaceAll(this.nickname(), "(" + s + ")")
+    }
+    text.replaceAll(" thick ", " heavy "); // hack
+    return text;
   }
 
   async generateImageFromAppearance() {
@@ -114,6 +123,34 @@
         Players.shared().onChange()
       }
       return imageUrl;
+    }
+  }
+
+  async generateImageFromAppearance_new () {
+    if (this.hasRequestedImage()) {
+      console.warn("attempt to request image twice");
+      return;
+    }
+    this.hideImageGenButton();
+    this.setImageUrl(null); // to add loading animation
+
+    const job = ImageBotJobs.shared().newJob();
+
+    if (this.sceneSummary()) {
+      // if the content of the page contains a summary tag, 
+      // we use that so we can skip generating a summary from the full text
+      job.setSceneSummary(this.sceneSummary());
+    } else {
+      job.setSceneDescription(this.text());
+    }
+
+    job.setRequestId(this.requestId());
+    this.setImageJob(job);
+
+    try {
+      await job.start();
+    } catch (error) {
+      this.setErrorMessage(error.message);
     }
   }
 

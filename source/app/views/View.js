@@ -58,6 +58,14 @@
     return this;
   }
 
+  superView () {
+    const pe = this.element().parentNode;
+    if (pe) {
+      return pe._view;
+    }
+    return null;
+  }
+
   addSubview (aView) {
     this.appendChild(aView.element());
     return this;
@@ -191,18 +199,35 @@
 
   // --- handling for events ---
 
-  onChange(event) {
+  onDescendantChange (event) {
+    this.sendDelegate("onDescendantChange");
+
+    if (this.superView()) {
+      this.superView().onDescendantChange(event);
+    }
+  }
+
+  sendDelegate(methodName) {
     const t = this.target();
     if (t) {
-      const methodName = "onChange_" + this.id();
       const m = t[methodName];
       if (m) {
         m.apply(t, this);
+        return true;
       }
     }
+    return false;
+  }
+
+  onChange(event) {
+    this.sendDelegate("onChange_" + this.id());
 
     if (this.shouldStore()) {
       this.save();
+    }
+
+    if (this.superView()) {
+      this.superView().onDescendantChange(event);
     }
     return this;
   }
@@ -212,6 +237,8 @@
     if (event.keyCode === enterKeyCode) {
       if (event.shiftKey) {
         this.onShiftEnterKeyUp(event);
+      } if (event.altKey) {
+        this.onAltEnterKeyUp(event);
       } else {
         this.onEnterKeyUp(event);
       }
@@ -226,6 +253,8 @@
       }
     }
   }
+
+  onAltEnterKeyUp(event) {}
 
   onShiftEnterKeyUp(event) {}
 

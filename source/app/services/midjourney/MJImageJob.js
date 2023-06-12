@@ -11,11 +11,14 @@
 (class MJImageJob extends Job {
 
   static systemInstructions () {
-    return       `
+    return `
     We are using the Midjourney service for image generation. 
     The following words and phrases (formatted as json) are considered inappropriate in prompts, 
-    so please omit them or find alternative words:
-    ["blood", "bloodbath", "crucifixion", "bloody", "flesh", "bruises", "car crash", "corpse", "crucified", "cutting", 
+    so please omit them or find alternative words: ` + JSON.stringify(this.bannedWords());
+  }
+
+  static bannedWords () {
+    return ["blood", "bloodbath", "crucifixion", "bloody", "flesh", "bruises", "car crash", "corpse", "crucified", "cutting", 
     "decapitate", "infested", "gruesome", "kill", "infected", "sadist", "slaughter", "teratoma", "tryphophobia", "wound", 
     "cronenberg", "khorne", "cannibal", "cannibalism", "visceral", "guts", "bloodshot", "gory", "killing", "surgery", "vivisection", 
     "massacre", "hemoglobin", "suicide","ahegao", "pinup", "ballgag", "playboy", "bimbo", "pleasure", "bodily fluids", "pleasures", 
@@ -30,7 +33,7 @@
     "without clothes on", "negligee", "zero clothes","taboo", "fascist", "nazi", "prophet mohammed", "slave", "coon", "honkey","drugs", 
     "cocaine", "heroin", "meth", "crack","torture", "disturbing", "farts", "fart", "poop", "warts", "shit", "brown pudding", "bunghole", 
     "vomit", "voluptuous", "seductive", "sperm", "hot", "sexy", "sensored", "censored", "silenced", "deepfake", "inappropriate", "pus", 
-    "waifu", "mp5", "succubus", "1488", "surgery"]`;
+    "waifu", "mp5", "succubus", "1488", "surgery"];
   }
 
   initPrototypeSlots() {

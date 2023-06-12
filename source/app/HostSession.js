@@ -215,6 +215,8 @@
       nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
 
+    //this.shareUpdate(request, "");
+
     return await request.asyncSendAndStreamResponse();
   }
 

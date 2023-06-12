@@ -39,33 +39,10 @@
   }
 
   setNickName (s) {
+    debugger;
     this.player().setNickname(s);
     return this;
   }
-  /*
-
-  // --- avatar --- 
-
-  avatar () {
-    return this.player().avatar();
-  }
-
-  setAvatar (s) {
-    this.player().setAvatar(s);
-    return this;
-  }
-
-  // --- canSendPrompts --- 
-
-  canSendPrompts () {
-    return this.player().canSendPrompts();
-  }
-
-  setCanSendPrompts(aBool) {
-    this.player().setCanSendPrompts(aBool);
-    return this;
-  }
-  */
   
   // ----------------
 

@@ -36,7 +36,7 @@
     keys.forEach((key) => {
       const value = json[key];
       const kv = KVView.clone();
-      kv.keyView().addSubview(this.newViewForValue(key + ":"));
+      kv.keyView().addSubview(this.newViewForValue(key + ":   "));
       kv.keyView().element().style.opacity = 0.5;
       kv.keyView().makeWidthFitContent();
       kv.valueView().addSubview(this.newViewForValue(value));

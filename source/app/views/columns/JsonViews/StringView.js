@@ -8,6 +8,7 @@
 
 (class StringView extends JsonView {
   initPrototypeSlots() {
+    this.newSlot("textArea", null);
   }
 
   init() {
@@ -22,12 +23,12 @@
     e.style.textAlign = "left";
     e.style.flexDirection = "column";
 
-    //e.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
     e.style.paddingLeft = "0.2em";
     e.style.paddingRight = "0.2em";
-    e//.style.paddingTop = "0.2em";
-    //e.style.paddingBottom = "0.2em";
 
+    const textArea = TextAreaInputView.clone();
+    this.setTextArea(textArea);
+    this.addSubview(textArea);
     this.makeWidthFitContent();
     return this;
   }

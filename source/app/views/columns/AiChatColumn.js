@@ -98,8 +98,21 @@
   updateAIResponseJson(json) {
     const requestId = json.requestId;
     const text = json.message;
+    let messageView = this.requestIdToMessageMap().get(requestId);
+
+    if (!messageView) {
+      Sounds.shared().playReceiveBeep();
+
+      messageView = this.addMessage(
+        "aiResponse",
+        text,
+        SessionOptionsView.shared().selectedModelNickname(),
+        "AiAvatar",
+        requestId
+      );
+    }
+
     const shouldScroll = this.scrollView().isScrolledToBottom()
-    const messageView = this.requestIdToMessageMap().get(requestId);
     if (!messageView) {
       console.warn("missing messageView for requestId: ", requestId);
       return;
@@ -171,17 +184,21 @@
         this.sessionTitle().setString(m.bookTitle());
       }
 
-      if (m.playerInfo()) {
-        //debugger;
-        const json = JSON.parse(m.playerInfo().removedHtmlTags());
-        if (json && json.name) {
-          const player = App.shared().session().players().playerWithName(json.name);
-          if (player) {
-            player.setData(json);
-            player.generateImageFromAppearance();
-            App.shared().session().players().onChange();
+      const playerInfos = m.playerInfos();
+      if (playerInfos) {
+        playerInfos.forEach(playerInfo => {
+          const json = JSON.parse(playerInfo.removedHtmlTags());
+          if (json && json.name) {
+            const player = App.shared().session().players().playerWithName(json.name);
+            if (player) {
+              player.setData(json);
+              player.generateImageFromAppearance();
+            } else {
+              console.warn("no match for playerInfo with name '" + json.name + "'");
+            }
           }
-        }
+        })
+        App.shared().session().players().onChange();
       }
     } else {
       console.warn("onAiResponseCompleteText couldn't find message for requestId:" + requestId);
