@@ -105,7 +105,7 @@
     //App.shared().session().players().addLocalPlayer();
 
     AiChatColumn.shared().displaySessionHistory();
-    GroupChatColumn.shared().displayHostHTMLChanges();
+   //GroupChatColumn.shared().displayHostHTMLChanges();
 
     OpenAiChat.shared().clearConversationHistory();
 

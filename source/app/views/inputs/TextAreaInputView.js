@@ -51,6 +51,7 @@
   }
   */
 
+  /*
   submit () {
     const f = this.submitFunc()
     if (f) {
@@ -58,5 +59,6 @@
     }
     return this
   }
+  */
   
 }.initThisClass());

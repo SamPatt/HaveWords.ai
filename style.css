@@ -406,11 +406,6 @@ button {
     font-weight: 100;
 }
 
-#messageInputRemote {
-    flex: flex-end;
-    font-weight: 100;
-}
-
 .system-container input {
     width: auto;
 }
