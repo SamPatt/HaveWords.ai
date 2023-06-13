@@ -342,7 +342,7 @@
   // --- setup ---
 
   appDidInit() {
-    this.hidePromptInputs();
+    //this.hidePromptInputs();
 
     if (App.shared().isHost()) {
       this.unhide();
@@ -397,10 +397,11 @@
     this.sessionDescription().setString(s).setIsHidden(s === "");
   }
 
+  /*
   hidePromptInputs() {
-    document.getElementById("messageInputSection").style.display = "none"; // host ai chat input
-    document.getElementById("messageInputRemoteSection").style.display = "none"; // guest ai chat input
+    document.getElementById("messageInputSection").style.display = "none";
   }
+  */
 
   /*
   // You can call this function when the host starts a new session

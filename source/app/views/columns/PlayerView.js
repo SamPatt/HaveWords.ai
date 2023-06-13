@@ -192,10 +192,9 @@
   syncButtons () {
     const isHost = App.shared().isHost();
     const isSelf = this.isSelf();
+    const container1 = this.buttonsContainer();
 
     if (isHost) {
-      const container1 = this.buttonsContainer();
-
       const radioItems = [
         {
           label: "prompt",
@@ -252,9 +251,20 @@
           container1.addSubview(button);
         }
       })
+    }
 
+    if (this.player().isLocal()) {
+      const button = Button.clone().create().setClassName("subheader smallButton");
+      button.setLabel("clear").setTarget(this).setAction("onClear");
+      container1.addSubview(button);
     }
   }
+
+  onClear () {
+    this.player().setData({});
+    this.syncFromNode();
+    return this;
+  } 
 
 }.initThisClass());
 

@@ -9,7 +9,7 @@
     <title>HaveWords - P2P AI Sharing</title>
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
 
-    <!-- TODO: would be nice to load these via JS -->
+    <!-- TODO: would be nice to load these ccs loads via JS -->
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="resources/fonts/Barlow Condensed/Barlow Condensed.css">
@@ -42,9 +42,6 @@
     <script type="module" src="./source/external/@3d-dice//dice-parser-interface/src/ParserInterface.js"></script>
 
     <script src="source/boot/Boot.js"></script>
-    <!--
-    <script src="https://www.youtube.com/iframe_api"></script>
-    -->
 </head>
 
 <body>
@@ -125,7 +122,7 @@
                                             class="underlinedInput optionsInput" >
                                     </div>
                                 </td>
-                                <td style="padding-left: 1em;">
+                                <td style="padding-left: 1em; display: none;">
                                     <div id="midjourneyApiBaseUrlContainer" style="display:none">
                                         <div class="inputLabel">Base URL <a class="infoIcon" 
                                                 href="https://app.midjourneyapi.io/v2" target="_blank">&#9432;</a></div>
@@ -227,12 +224,7 @@
                 <!--- begin host & guest inputs --->
 
                 <div id="messageInputSection" class="inputSection">
-                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Message the narrator..."
-                        style="display: none;"></textarea>
-                </div>
-                <div id="messageInputRemoteSection" class="inputSection">
-                    <textarea id="messageInputRemote" class="input-wrapper" rows="3"
-                        placeholder="The host hasn't given you AI access..." style="display: none;"></textarea>
+                    <textarea id="messageInput" class="input-wrapper" rows="3" placeholder="Message the narrator..."></textarea>
                 </div>
 
                 <!--- end host & guest inputs --->

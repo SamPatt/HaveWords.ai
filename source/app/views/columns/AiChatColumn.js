@@ -8,7 +8,6 @@
 (class AiChatColumn extends ColumnView {
   initPrototypeSlots() {
     this.newSlot("messageInput", null);
-    this.newSlot("messageInputRemote", null);
     this.newSlot("sessionTitle", null);
     this.newSlot("copyTranscriptButton", null);
     this.newSlot("requestIdToMessageMap", null);
@@ -19,12 +18,19 @@
     this.setId("AiChatColumn");
     this.setRequestIdToMessageMap(new Map());
     this.setupMessageInput();
-    this.setupMessageInputRemote();
+
     this.setSessionTitle(View.clone().setId("SessionDescription"));
-    this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
 
     this.setScrollView(ScrollView.clone().setId("AiChatColumn_ScrollView"));
     this.scrollView().contentView().setId("AiChatMessages");
+
+    this.setHasPromptAccess(App.shared().isHost());
+
+    this.setupButtons();
+  }
+
+  setupButtons() {
+    this.setCopyTranscriptButton(Button.clone().setId("CopyTranscriptButton").setTarget(this));
   }
 
   onSubmit_CopyTranscriptButton () {
@@ -56,30 +62,45 @@
     return texts.join("\n\n");
   }
 
+  setHasPromptAccess(aBool) {
+    const view = this.messageInput();
+    if (aBool) {
+      view.element().disabled = false;
+      view.element().placeholder = "Send a prompt to the AI...";
+    } else {
+      view.element().disabled = true;
+      view.element().placeholder = "No prompt permission";
+    }
+    return this;
+  }
+
   setupMessageInput() {
     const textArea = TextAreaInputView.clone()
       .setId("messageInput")
-      .setSubmitFunc(() => {
-        this.addPrompt();
-      });
+      .setTarget(this);
 
     this.setMessageInput(textArea);
-    if (App.shared().isHost()) {
-      textArea.unhide()
-    }
   }
 
-  setupMessageInputRemote() {
-    const textArea = TextAreaInputView.clone()
-      .setId("messageInputRemote")
-      .setSubmitFunc(() => {
-        GuestSession.shared().sendGuestPrompt();
+  onSubmit_messageInput (aView) {
+    if (App.shared().isHost()) {
+      this.addPrompt();
+    } else {
+      this.sendGuestPrompt(this.messageInput().value());
+    }
+    this.messageInput().setValue("");
+  }
+
+  sendGuestPrompt(message) {
+    if (message.trim() !== "") {
+      // Send chat message to host
+      this.send({
+        type: "remotePrompt",
+        id: LocalUser.shared().id(),
+        nickname: LocalUser.shared().nickname(),
+        message: message,
       });
-
-    this.setMessageInputRemote(textArea);
-
-    if (!App.shared().isHost()) {
-      textArea.unhide()
+      this.guestAddLocalPrompt(message);
     }
   }
 

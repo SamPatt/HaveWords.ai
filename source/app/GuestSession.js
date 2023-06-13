@@ -43,7 +43,7 @@
     this.setHostId(inviteId);
     this.debugLog("joinSession " + inviteId);
     Session.shared().clear()
-    GroupChatColumn.shared().displayGuestHTMLChanges();
+    //GroupChatColumn.shared().displayGuestHTMLChanges();
     this.connect();
   }
 
@@ -175,10 +175,9 @@
     App.shared().applyThemeDict(data.json);
   }
 
+
   onReceived_grantAiAccess(data) {
-    const messageInputRemote = AiChatColumn.shared().messageInputRemote();
-    messageInputRemote.element().disabled = false;
-    messageInputRemote.element().placeholder = "Send a prompt to the AI...";
+    AiChatColumn.shared().setHasPromptAccess(true);
     GroupChatColumn.shared().addChatMessage(
       "chat",
       "You've been granted AI access!",
@@ -188,9 +187,7 @@
   }
 
   onReceived_revokeAiAccess(data) {
-    const messageInputRemote = AiChatColumn.shared().messageInputRemote();
-    messageInputRemote.element().disabled = true;
-    essageInputRemote.element().placeholder = "No prompt permission";
+    AiChatColumn.shared().setHasPromptAccess(false);
     GroupChatColumn.shared().addChatMessage(
       "chat",
       "You've lost AI access.",
@@ -255,20 +252,4 @@
     });
   }
 
-  sendGuestPrompt() {
-    const input = document.getElementById("messageInputRemote");
-    let message = input.value;
-
-    if (message.trim() !== "") {
-      input.value = "";
-      // Send chat message to host
-      this.send({
-        type: "remotePrompt",
-        id: LocalUser.shared().id(),
-        nickname: LocalUser.shared().nickname(),
-        message: message,
-      });
-      AiChatColumn.shared().guestAddLocalPrompt(message);
-    }
-  }
 }).initThisClass();

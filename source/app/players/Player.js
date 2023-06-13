@@ -69,6 +69,9 @@
 
   setAvatar (v) {
     this.info().avatar = v;
+    if (this.isLocal()) {
+      LocalUser.shared().setAvatar(v);
+    }
     return this;
   }
 
@@ -90,7 +93,17 @@
   }
 
   setData (v) {
+    const oldAppearance = this.appearance();
+
     this.info().data = v;
+    if (this.isLocal()) {
+      LocalUser.shared().setData(v);
+    }
+
+    if (this.appearance() !== oldAppearance) {
+      this.generateImageFromAppearance();
+    }
+    
     return this;
   }
 
@@ -126,6 +139,7 @@
     }
   }
 
+  /*
   async generateImageFromAppearance_new () {
     if (this.hasRequestedImage()) {
       console.warn("attempt to request image twice");
@@ -153,6 +167,7 @@
       this.setErrorMessage(error.message);
     }
   }
+  */
 
 }.initThisClass());
 
