@@ -84,6 +84,18 @@
 
     this.setupCompactorButtons();
     AvatarPickerView.shared().displayAvatar(LocalUser.shared().avatar());
+
+    await DiceRollView.shared().setup();
+
+    /*
+    const drv = DiceRollView.shared();
+    drv.setCharacter("Conan");
+    drv.setNotation("2d20+2");
+    drv.setTarget(18);
+    await drv.roll();
+    console.log(drv.rollResults());
+    console.log(drv.outcomeDescription());
+    */
   }
 
   unhide () {

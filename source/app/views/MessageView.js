@@ -151,7 +151,50 @@
     const formatted = aString.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formatted);
     this.textElement().innerHTML = sanitizedHtml;
+    this.setupLinks();
     return this;
+  }
+
+  setupLinks() {
+    this.element().querySelectorAll('a').forEach((a) => {
+      console.log(a.className)
+      switch(a.className) {
+        case "diceroll":
+          this.setupRollLink(a);
+          break;
+        case "characterChoice":
+          this.setupChoiceLink(a);
+          break;
+      }
+    });
+  }
+
+  setupRollLink(a) {
+    var self = this;
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const dv = DiceRollView.shared();
+      dv.setCharacter(a.dataset.character)
+      dv.setNotation(a.dataset.notation)
+      dv.setTarget(parseInt(a.dataset.target));
+      await dv.roll();
+      setTimeout(() => { dv.clear() }, 500);
+      AiChatColumn.shared().messageInput().appendText(dv.outcomeDescription());
+      if (e.metaKey || e.altKey) {
+        AiChatColumn.shared().messageInput().appendText("\n");
+        return;
+      }
+      AiChatColumn.shared().addPrompt();
+    });
+  }
+
+  setupChoiceLink(a) {
+    var self = this;
+    a.addEventListener('click', async (e) => {
+      console.log(AiChatColumn.shared().messageInput());
+      AiChatColumn.shared().messageInput().appendText(`${a.dataset.number}\n`);
+      AiChatColumn.shared().addPrompt();
+    });
   }
 
   imageContainer () {

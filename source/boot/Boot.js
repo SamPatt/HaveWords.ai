@@ -82,6 +82,8 @@ class Boot extends Object {
       "source/app/views/inputs/TextAreaInputView.js",
       "source/app/views/inputs/TextFieldView.js",
 
+      { src: "source/app/views/DiceRollView.js", type: "module" },
+
       // view columns
       "source/app/views/columns/JsonViews/JsonView.js",
       "source/app/views/columns/JsonViews/ArrayView.js",
@@ -122,12 +124,13 @@ class Boot extends Object {
     }
   }
 
-  loadScript (url, callback) {
-    console.log("Boot loading '" + url + "'")
+  loadScript (propertiesOrSrc, callback) {
+    console.log("Boot loading '" + (propertiesOrSrc.src || propertiesOrSrc) + "'")
     const head = document.getElementsByTagName('head')[0];
     const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
+    script.type = propertiesOrSrc.type || 'text/javascript';
+
+    script.src = propertiesOrSrc.src || propertiesOrSrc;
     script.onreadystatechange = (event) => {
       callback();
     }
@@ -135,6 +138,7 @@ class Boot extends Object {
     script.onerror = (error) => {
       console.log("Boot ERROR loading: '" + error.target.src + "'")
     }
+    
     head.appendChild(script);
   }
 

@@ -109,10 +109,13 @@
 
     OpenAiChat.shared().clearConversationHistory();
 
+    /* TODO: this was being added 2x in the D&D session. Is it needed in other contexts?
     OpenAiChat.shared().addToConversation({
       role: "system",
       content: "You are a helpful assistant.",
     });
+    */
+
     this.updateGuestUserlist();
   }
 

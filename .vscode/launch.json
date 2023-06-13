@@ -1,11 +1,26 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "chrome",
             "request": "launch",
             "name": "launch local HTTPS",
             "url": "https://localhost:8000/index.html",
+            "webRoot": "${workspaceFolder}",
+            //"runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            //"runtimeExecutable": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+            "runtimeArgs": [
+            ]
+           // "enableContentValidation": false,
+            //"sourceMaps": true
+        },
+
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "launch local HTTP",
+            "url": "http://localhost:8000/index.html",
             "webRoot": "${workspaceFolder}",
             //"runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
             //"runtimeExecutable": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",

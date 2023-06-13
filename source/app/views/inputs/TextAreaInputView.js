@@ -44,4 +44,8 @@
     event.preventDefault(); // prevent new line
   }
   
+  appendText(text) {
+    this.element().value += text;
+  }
+  
 }.initThisClass());
