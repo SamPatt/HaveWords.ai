@@ -182,10 +182,13 @@
 
     // buttonsContainer
     const container1 = View.clone().create();
+    container1.setId("buttonsContainer");
+    this.addSubview(container1);
     this.setButtonsContainer(container1);
     container1.element().style.display = "flex";
     container1.element().style.flexDirection = "row";
     container1.element().style.justifyContent = "left";
+    container1.element().style.paddingTop = "0.5em";
     return this;
   }
 
@@ -193,6 +196,7 @@
     const isHost = App.shared().isHost();
     const isSelf = this.isSelf();
     const container1 = this.buttonsContainer();
+    container1.removeAllSubviews();
 
     if (isHost) {
       const radioItems = [
@@ -253,15 +257,22 @@
       })
     }
 
-    if (this.player().isLocal()) {
-      const button = Button.clone().create().setClassName("subheader smallButton");
+    //if (this.player().isLocal()) {
+    if (App.shared().isHost()) {
+        const button = Button.clone().create().setClassName("subheader smallButton");
       button.setLabel("clear").setTarget(this).setAction("onClear");
       container1.addSubview(button);
     }
   }
 
   onClear () {
-    this.player().setData({});
+    this.player().setData({
+      name: this.player().nickname(),
+      alignment: "",
+      gender: "",
+      race: "",
+      class: "",
+    });
     this.syncFromNode();
     return this;
   } 
