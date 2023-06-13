@@ -77,8 +77,12 @@
     const children = e.children;
     for (let i = 0; i < children.length; i++) {
       const view = children[i]._view;
-      assert(view);
-      subviews.push(view);
+      //assert(view);
+      if (view) {
+        subviews.push(view);
+      } else {
+        console.warn("found childNode with no _view property set");
+      }
     }
     return subviews;
   }
@@ -181,6 +185,12 @@
       this.onClick(event);
     });
     return this;
+  }
+
+  onClick () {
+    if (this.target()) {
+      this.sendDelegate("onClickView");
+    }
   }
 
   listenForKeyUp() {
@@ -332,6 +342,11 @@
 
   // --- hiding ---
 
+  toggleHidden() {
+    this.setIsHidden(!this.isHidden());
+    return this;
+  }
+
   setIsHidden(aBool) {
     if (aBool) {
       this.hide();
@@ -407,6 +422,22 @@
     s.minWidth = "fit-content";
     s.width = "fit-content";
     s.maxWidth = "fit-content";
+    return this;
+  }
+
+  setFlexDirection(s) {
+    this.style().flexDirection = s;
+    return this;
+  }
+
+  sendRespondingDescendants(methodName) {
+    this.subviews().forEach(sv => {
+      const m = sv[methodName];
+      if (m) {
+        m.apply(sv);
+      }
+      sv.sendRespondingDescendants(methodName);
+    });
     return this;
   }
 

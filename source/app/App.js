@@ -73,7 +73,6 @@
     // which is were we'll set up HostSession or GuestSession
 
     await LocalUser.shared().asyncSetup();
-    //debugger;
     this.session().players().addLocalPlayer();
 
     PeerServer.shared().setDelegate(this).setup();

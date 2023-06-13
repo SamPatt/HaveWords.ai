@@ -17,21 +17,6 @@
     this.setScrollView(ScrollView.clone().setId("GroupChatColumn_ScrollView"));
   }
 
-  /*
-  displayHostHTMLChanges() {
-    document.getElementById("appView").style.display = "block";
-    this.unhide();
-    document.getElementById("messageInputSection").style.display = "block"; // host ai chat input
-  }
-  
-  displayGuestHTMLChanges() {
-    document.getElementById("appView").style.display = "block";
-    this.hide();
-    //document.getElementById("messageInputSection").style.display = "block"; // hide host ai chat input
-  }
-    */
-
-
   setupMessageInput() {
     const textArea = TextAreaInputView.clone()
       .setId("chatInput")
