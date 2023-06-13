@@ -324,7 +324,7 @@
       // if the content of the page contains a summary tag, 
       // we use that so we can skip generating a summary from the full text
       const summary = this.sceneSummary();
-      Players.shared().processSceneSummary(summary);
+      App.shared().session().players().processSceneSummary(summary);
       job.setSceneSummary(summary);
     } else {
       job.setSceneDescription(this.text());

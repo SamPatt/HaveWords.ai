@@ -14,6 +14,10 @@
   initPrototypeSlots() {
   }
 
+  shared () {
+    throw new Error("Players is not a singleton. Use App.shared().session().players()");
+  }
+
   init() {
     super.init();
     this.setSubnodeClass(Player);
