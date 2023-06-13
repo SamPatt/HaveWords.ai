@@ -8,7 +8,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     //Public Interface
     this.newSlot("character", "");
     this.newSlot("notation", "");
-    this.newSlot("target", NaN);
+    this.newSlot("rollTarget", NaN);
 
     //Internal
     this.newSlot("diceBox");
@@ -23,7 +23,6 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
 
   async roll() {
     this.setRollResults(null);
-    console.log("rolling " + this.notation());
     await this.diceBox().roll(this.parser().parseNotation(this.notation()));
     this.setRollResults(this.parser().parseFinalResults(this.diceBox().getRollResults()));
     this.augmentRollResults();
@@ -34,8 +33,8 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     return this.rollResults().value;
   }
 
-  hasTarget() {
-    return !isNaN(this.target());
+  hasRollTarget() {
+    return !isNaN(this.rollTarget());
   }
 
   hasAdvantage() {
@@ -131,9 +130,9 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
       }
     });
 
-    if (this.hasTarget()) {
+    if (this.hasRollTarget()) {
       const results = this.rollResults();
-      results.target = this.target();
+      results.target = this.rollTarget();
       if (this.hasAdvantage()) {
         results.critical = highestRoll.critical;
       }
@@ -256,12 +255,12 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   targetDescription() {
-    if (this.hasTarget()) {
+    if (this.hasRollTarget()) {
       let description = ' vs ';
       if (this.wasCritical()) {
         description += "<span class='ignoredRoll'>"
       }
-      description += String(this.target());
+      description += String(this.rollTarget());
       if (this.wasCritical()) {
         description += "</span>"
       }
@@ -274,7 +273,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   successDescription() {
-    if (this.hasTarget()) {
+    if (this.hasRollTarget()) {
       let description = ' (';
 
       if (this.wasCritical()) {

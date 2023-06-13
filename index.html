@@ -270,5 +270,49 @@
 
     <!--- begin dice box --->
     <div id="dice-box"></div>
+
+    <!--- begin roll panel --->
+    <div id="rollPanelView" class="message-wrapper nonAiMessage">
+        <div class="rollPanelRow">
+            <label for="rollPanelCharacter">character:</label><input id="rollPanelCharacter" class="TextFieldView" placeholder="name"/>
+        </div>
+        <div class="rollPanelRow">
+            <label for="rollPanelCount">die count:</label><input id="rollPanelCount" class="TextFieldView" placeholder="number"/>
+        </div>
+        <div class="rollPanelRow">
+            <label for="rollPanelDie">die type:</label>
+            <select id="rollPanelDie">
+                <option value="d4">d4</option>
+                <option value="d6">d6</option>
+                <option value="d8">d8</option>
+                <option value="d10">d10</option>
+                <option value="d12">d12</option>
+                <option value="d20">d20</option>
+                <option value="d100">d100</option>
+            </select>
+        </div>
+        <div class="rollPanelRow">
+            <label for="rollPanelModifier">modifier:</label><input id="rollPanelModifier" class="TextFieldView" placeholder="+/- number"/>
+        </div>
+        <div class="rollPanelRow">
+            <label for="rollPanelRollType">roll type:</label>
+            <select id="rollPanelRollType">
+                <option value="" selected>Normal</option>
+                <option value="kh1">Advantage</option>
+                <option value="kl1">Disadvantage</option>
+            </select>
+        </div>
+        <div class="rollPanelRow">
+            <label for="rollPanelTarget">target roll:</label><input id="rollPanelTarget" class="TextFieldView" placeholder="number"/>
+        </div>
+        <!---
+        <div class="rollPanelRow">
+            <label for="rollPanelSendImmediately">send immediately:</label><input type="checkbox" id="rollPanelSendImmediately" schecked="checked" />
+        </div>
+        -->
+        <div class="rollPanelRow rollPanelButtons">
+            <button id="rollPanelRollButton">Roll Dice</button> <button id="rollPanelCancelButton">Cancel</button>
+        </div>
+    </div>
 </body>
 </html>
