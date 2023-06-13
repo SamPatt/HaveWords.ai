@@ -142,6 +142,7 @@
       note.style.color = "yellow";
     }
 
+    //debugger;
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
     //this.debugLog("available model names:", names);

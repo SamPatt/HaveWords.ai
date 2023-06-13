@@ -125,7 +125,10 @@
   }
 
   setOptions(array) {
-    assert(array);
+    if (array === null || array === undefined) {
+      array = [];
+    }
+   // assert(array);
     
     const previouslySelectedValue = this.selectedValue()
     //debugger;
