@@ -10,6 +10,7 @@
     this.newSlot("cryptoId", null);
     this.newSlot("nickname", null);
     this.newSlot("avatar", null);
+    this.newSlot("data", null);
   }
 
   init() {
@@ -26,6 +27,12 @@
 
   setAvatar(aString) {
     this._avatar = aString;
+    this.save();
+    return this;
+  }
+
+  setData(json) {
+    this._data = json;
     this.save();
     return this;
   }
@@ -66,7 +73,7 @@
       id: this.id(),
       nickname: this.nickname(),
       avatar: this.avatar(),
-      //data: { stats: {}, items: [] }
+      data: this.data(),
     }
   }
 
@@ -75,12 +82,14 @@
       cryptoId: this.cryptoId().asJson(),
       nickname: this.nickname(),
       avatar: this.avatar(),
+      data: this.data(),
     };
   }
 
   async asyncFromJson(json) {
     this._nickname = json.nickname;
     this._avatar = json.avatar;
+    this._data = json.data;
     await this.cryptoId().asyncFromJson(json.cryptoId);
     return this;
   }

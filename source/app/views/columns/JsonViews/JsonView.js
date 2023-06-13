@@ -20,8 +20,8 @@
     super.initElement();
     const e = this.element();
     e.style.overflow = "hidden";
-    e.style.fontSize = "13px";
-    e.style.lineHeight = "13px";
+    //e.style.fontSize = "13px";
+    //e.style.lineHeight = "1.1em";
 
     e.style.display = "flex";
     e.style.justifyContent = "left";
@@ -92,5 +92,9 @@
     } else {
       return "Unknown";
     }
+  }
+
+  typeIsCollection(v) {
+    return ["Array", "Object"].includes(this.detectType(v));
   }
 }).initThisClass();

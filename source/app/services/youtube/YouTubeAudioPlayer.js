@@ -75,7 +75,12 @@
     };
 
     try {
-      const player = new YT.Player("youTubePlayer", json);
+      const e = document.createElement("div");
+      this.setElement(e);
+      e.id = "youTubePlayer";
+      e.style.display = "none";
+      document.body.appendChild(e);
+      const player = new YT.Player(e.id, json);
       assert(player);
       this.setPlayer(player);
     } catch (error) {

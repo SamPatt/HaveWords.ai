@@ -105,7 +105,7 @@
     //App.shared().session().players().addLocalPlayer();
 
     AiChatColumn.shared().displaySessionHistory();
-    GroupChatColumn.shared().displayHostHTMLChanges();
+   //GroupChatColumn.shared().displayHostHTMLChanges();
 
     OpenAiChat.shared().clearConversationHistory();
 
@@ -218,7 +218,7 @@
       nickname: SessionOptionsView.shared().selectedModelNickname(),
     });
 
-    //this.shareUpdate(request, "");
+    this.shareUpdate(request, "");
 
     return await request.asyncSendAndStreamResponse();
   }
