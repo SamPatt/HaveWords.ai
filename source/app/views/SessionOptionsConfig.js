@@ -287,75 +287,74 @@ Here is an example of the playerInfo JSON format:
   },
   "appearance": "..."
 }
+## Dice Rolls
 
-    ## Dice Rolls
-    
-    Be sure to request dice rolls for character whenever appropriate.
+Be sure to request dice rolls for character whenever appropriate.
 
-    When you request a dice roll, embed the information about the dice roll in a link, using an <a class="diceroll"></a> tag.
+When you request a dice roll, embed the information about the dice roll in a link, using an <a class="diceroll"></a> tag.
 
-    The player will use use this link to perform the dice roll.
+The player will use use this link to perform the dice roll.
 
-    It is essential that you include the require tag attributes if you want the player to roll correctly.
-    
-    ### Tag Attributes
-    
-    #### data-character (**required**)
-    
-    The character attribute describes the character that should make the dice roll.
-    
-    #### data-notation (**required**)
-    I
-    This attribute contains the dice notation describing the roll.
-    
-    ##### dice notation examples
-    
-    3d6: roll three six-sided dice and sum the values.
-    
-    3d6+5: roll three six-sided, sum the values and add five. (+5 modifier)
-    
-    3d6-1: roll three six-sided, sum the values and subtract five. (-1 modifier)
-    
-    2d20kh1: roll two twenty-sided dice and take the highest value (advantage)
-    
-    2d20kl1: roll two twenty-sided and take the lowest value (disadvantage)
-    
-    2d20kh1+6: roll two twenty-sided dice, add six to each roll and then take the highest value (advantage + modifier)
-    
-    2d20kl1-1: roll two twenty-sided dice, subtract 1 from each roll and then take the lowest value (disadvantage + modifier)
-    
-    #### data-target (sometimes required)
-    
-    The roll total that the player must beat to succeed.
-    
-    This attribute is required on any dice rolls where the character must match or beat a target value.
-    
-    ### Examples
-    
-    <!-- start assistant -->
-    Prepare for combat! Make <a class="diceroll" data-character="Conan" data-notation="1d20+3">1d20</a> initiative roll and add 3 from your Dexterity modifer to determine your place in the combat order.
-    <!-- end assistant -->
-    
-    <!-- start user -->
-    Conan Rolled: (7 + 3) = 10
-    <!-- end user -->
-    
-    <!-- start assistant -->
-    Roll <a class="diceroll" data-character="Conan" data-notation="2d20kh1+6" data-target="14">2d20</a> with advantage since your attack is reckless. You have a +6 bonus from your strength. You have get a 14 or higher to hit the snake.
-    <!-- end assistant -->
-    
-    <!-- start user -->
-    Conan Rolled: (3 + 8) + 6 = 14 vs 14 (Success)
-    <!-- end user -->
-    
-    <!-- start assistant -->
-    With a 23, you easily hit the snake. Roll <a class="diceroll" data-character="Conan" data-notation="2d12+4">2d12</a> to see how much damage you do. Each axe attack has a +2 damage modifier.
-    <!-- end assistant -->
-    
-    <!-- start user -->
-    Conan Rolled: (1 + 6) + 4 = 11
-    <!-- end user -->
-        `,
+It is essential that you include the require tag attributes if you want the player to roll correctly.
+
+### Tag Attributes
+
+#### data-character (**required**)
+
+The character attribute describes the character that should make the dice roll.
+
+#### data-notation (**required**)
+I
+This attribute contains the dice notation describing the roll.
+
+##### dice notation examples
+
+3d6: roll three six-sided dice and sum the values.
+
+3d6+5: roll three six-sided, sum the values and add five. (+5 modifier)
+
+3d6-1: roll three six-sided, sum the values and subtract five. (-1 modifier)
+
+2d20kh1: roll two twenty-sided dice and take the highest value (advantage)
+
+2d20kl1: roll two twenty-sided and take the lowest value (disadvantage)
+
+2d20kh1+6: roll two twenty-sided dice, add six to each roll and then take the highest value (advantage + modifier)
+
+2d20kl1-1: roll two twenty-sided dice, subtract 1 from each roll and then take the lowest value (disadvantage + modifier)
+
+#### data-target (sometimes required)
+
+The roll total that the player must beat to succeed.
+
+This attribute is required on any dice rolls where the character must match or beat a target value.
+
+### Examples
+
+<!-- start assistant -->
+Prepare for combat! Make <a class="diceroll" data-character="Conan" data-notation="1d20+3">1d20</a> initiative roll and add 3 from your Dexterity modifer to determine your place in the combat order.
+<!-- end assistant -->
+
+<!-- start user -->
+Conan Rolled: (7 + 3) = 10
+<!-- end user -->
+
+<!-- start assistant -->
+Roll <a class="diceroll" data-character="Conan" data-notation="2d20kh1+6" data-target="14">2d20</a> with advantage since your attack is reckless. You have a +6 bonus from your strength. You have get a 14 or higher to hit the snake.
+<!-- end assistant -->
+
+<!-- start user -->
+Conan Rolled: (3 + 8) + 6 = 14 vs 14 (Success)
+<!-- end user -->
+
+<!-- start assistant -->
+With a 23, you easily hit the snake. Roll <a class="diceroll" data-character="Conan" data-notation="2d12+4">2d12</a> to see how much damage you do. Each axe attack has a +2 damage modifier.
+<!-- end assistant -->
+
+<!-- start user -->
+Conan Rolled: (1 + 6) + 4 = 11
+<!-- end user -->
+`,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
         options: [
