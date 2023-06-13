@@ -26,6 +26,21 @@
     <link rel="stylesheet" href="resources/fonts/Handwriting/Handwriting.css">
     <link rel="stylesheet" href="resources/fonts/Sand Dunes/Sand Dunes.css">
 
+    <script type="importmap">
+        {
+          "imports": {
+            "@3d-dice/dice-box": "./source/external/@3d-dice/dice-box/dist/dice-box.es.min.js",
+            "@3d-dice/dice-roller-parser": "./source/external/@3d-dice/dice-roller-parser-module-fix.js",
+            "@3d-dice/dice-parser-interface": "./source/external/@3d-dice//dice-parser-interface/src/ParserInterface.js"
+          }
+        }
+    </script>
+
+    <script type="module" src="./source/external/@3d-dice/dice-box/dist/dice-box.es.min.js"></script>
+    <script src="./source/external/@3d-dice/dice-roller-parser/dist/index.js"></script>
+    <script type="module" src="./source/external/@3d-dice/dice-roller-parser-module-fix.js"></script>
+    <script type="module" src="./source/external/@3d-dice//dice-parser-interface/src/ParserInterface.js"></script>
+
     <script src="source/boot/Boot.js"></script>
     <!--
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -264,5 +279,8 @@
     <!--- begin youtube audio player --->
 
     <div id="youTubePlayer" style="display: none;"></div>
+
+    <!--- begin dice box --->
+    <div id="dice-box"></div>
 </body>
 </html>

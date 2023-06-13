@@ -151,7 +151,46 @@
     const formatted = aString.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formatted);
     this.textElement().innerHTML = sanitizedHtml;
+    this.setupLinks();
     return this;
+  }
+
+  setupLinks() {
+    this.element().querySelectorAll('a').forEach((a) => {
+      console.log(a.className)
+      switch(a.className) {
+        case "diceroll":
+          this.setupRollLink(a);
+          break;
+        case "characterChoice":
+          this.setupChoiceLink(a);
+          break;
+      }
+    });
+  }
+
+  setupRollLink(a) {
+    var self = this;
+    a.addEventListener('click', async (e) => {
+      const dv = DiceRollView.shared();
+      dv.setCharacter(a.dataset.character)
+      dv.setNotation(a.dataset.notation)
+      dv.setTarget(parseInt(a.dataset.target));
+      await dv.roll();
+      AiChatColumn.shared().messageInput().appendText(dv.outcomeDescription());
+      AiChatColumn.shared().addPrompt();
+
+      setTimeout(() => { dv.clear() }, 500);
+    });
+  }
+
+  setupChoiceLink(a) {
+    var self = this;
+    a.addEventListener('click', async (e) => {
+      console.log(AiChatColumn.shared().messageInput());
+      AiChatColumn.shared().messageInput().appendText(`${a.dataset.number}\n`);
+      AiChatColumn.shared().addPrompt();
+    });
   }
 
   imageContainer () {

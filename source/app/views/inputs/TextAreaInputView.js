@@ -58,5 +58,9 @@
     }
     return this
   }
+
+  appendText(text) {
+    this.element().value += text;
+  }
   
 }.initThisClass());
