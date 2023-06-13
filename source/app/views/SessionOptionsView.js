@@ -8,8 +8,8 @@
 (class SessionOptionsView extends View {
   initPrototypeSlots() {
     // ai service
-    this.newSlot("aiModelOptions", null);
     this.newSlot("apiKeyText", null);
+    this.newSlot("aiModelOptions", null);
 
     // text to speech service for naration
     this.newSlot("azureApiKeyText", null);
@@ -130,6 +130,7 @@
 
   async asyncSetupAiModelOptions() {
     const note = document.getElementById("AiModelOptionsNote");
+    await OpenAiChat.shared().asyncCheckModelsAvailability();
     let names = OpenAiChat.shared().availableModelNames();
 
     // Get the API key
@@ -142,6 +143,7 @@
       note.style.color = "yellow";
     }
 
+    //debugger;
     await OpenAiChat.shared().asyncCheckModelsAvailability();
     names = OpenAiChat.shared().availableModelNames();
     //this.debugLog("available model names:", names);
@@ -446,18 +448,13 @@ Once I decide on the adventure, you may provide a brief setting description and 
     return "Please make the adventure a campaign using the DnD \"" + option + "\" module.";
   }
 
-  getCurrentUsernames() {
-    // Add all nicknames of connected guests to the guestNicknames array
-    const guestNicknames = PeerServer.shared()
-      .peerConnections()
-      .valuesArray()
-      .map((pc) => pc.nickname());
-    guestNicknames.push(LocalUser.shared().nickname());
-    return guestNicknames;
+  playerNames() {
+    return Players.shared().subnodes().map(player => player.nickname()).join(", ");
   }
 
-  playerNames() {
-    return this.getCurrentUsernames().join(", ");
+  playerCharacterSheets () {
+    const sheets = Players.shared().subnodes().map(player => player.data());
+    return JSON.stringify(sheets);
   }
 
   replacedConfigString(s) {
@@ -465,6 +462,7 @@ Once I decide on the adventure, you may provide a brief setting description and 
     s = s.replaceAll("[sessionSubtype]", this.sessionSubtype());
     s = s.replaceAll("[sessionSubtype2]", this.sessionSubtype2());
     s = s.replaceAll("[playerNames]", this.playerNames());
+    s = s.replaceAll("[playerCharacterSheets]", this.playerCharacterSheets());
     s = s.replaceAll(
       "[customization]",
       this.sessionCustomizationText().string()

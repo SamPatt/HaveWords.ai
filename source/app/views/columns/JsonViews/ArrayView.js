@@ -32,4 +32,8 @@
     }
   }
 
+  toJson () {
+    return this.subviews().map(sv => sv.toJson());
+  }
+
 }).initThisClass();

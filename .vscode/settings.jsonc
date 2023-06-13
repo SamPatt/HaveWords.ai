@@ -5,7 +5,6 @@
 	"docker-explorer.enableTelemetry": false, // Docker
 	"extensions.ignoreRecommendations": true, // VSCode Core
 	"julia.enableTelemetry": false, // Julia
-	"kite.showWelcomeNotificationOnStartup": false, // Kite
 	"Lua.telemetry.enable": false, // Lua
 	"pros.useGoogleAnalytics": false, // PROS
 	"redhat.telemetry.enabled": false, // Red Hat

@@ -39,14 +39,22 @@
       //const isCollection = this.typeIsCollection(value);
       const isLongArray = (vtype === "Array" && value.length > 0) ;
       const isLongObject = (vtype === "Object" && Object.keys(value).length > 0) ;
-      const isLongString = (typeof(value) === "string" && value.length > 15);
+      const isLongString = (typeof(value) === "string" && value.length > 32);
       const isCollection = isLongArray || isLongObject || isLongString;
       const kv = KVView.clone();
-      const suffix = isCollection ? `&#8901;` : ":&nbsp;&nbsp;"; //&#x25BD;
-      kv.keyView().addSubview(this.newViewForValue(key + suffix));
-      kv.keyView().element().style.opacity = 0.5;
+      const keyView = this.newViewForValue(key); //.makeWidthFitContent();
+      keyView.setIsEditable(false);
+      keyView.setMinMaxWidth("7em");
+      keyView.element().style.textAlign = "right";
+      keyView.element().style.paddingRight = "0.5em";
+      //keyView.element().style.border = "1px solid red";
+      kv.keyView().addSubview(keyView);
+      kv.topView().element().style.opacity = 0.5;
       kv.keyView().makeWidthFitContent();
-      kv.valueView().addSubview(this.newViewForValue(value));
+
+      const valueView = this.newViewForValue(value);
+      //valueView.setIsEditable(true);
+      kv.valueView().addSubview(valueView);
 
       if (isCollection) {
         kv.setIsCollapsable(true);
@@ -57,6 +65,16 @@
       this.addSubview(kv);
     });
     return this;
+  }
+
+  toJson() {
+    const json = {};
+    this.subviews().forEach(sv => {
+      const k = sv.keyView().subviews()[0].value();
+      const v = sv.valueView().subviews()[0].toJson();
+      json[k] = v;
+    });
+    return json;
   }
 
 }).initThisClass();

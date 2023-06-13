@@ -56,19 +56,12 @@
     let viewClassName = type + "View";
     
     if (type === "String") {
-      const view = TextAreaInputView.clone().create().setValue(v);
-      view.setIsEditable(false);
+      const view = StringView.clone().create().setValue(v);
+      view.setIsEditable(true);
       return view;
     } else if (type === "Number") {
-      const view = TextFieldView.clone().create().setValue(v);
-      view.element().style.display = "inline-block";
-      view.element().style.margin = "0em";
-      view.element().style.padding = "0em";
-      view.setIsEditable(false);
-      view.setValidationFunc((n) => {
-        const isNumber = !isNaN(parseFloat(n)) && !isNaN(n - 0);
-        return isNumber;
-      });
+      const view = NumberView.clone().create().setValue(v);
+      view.setIsEditable(true);
       return view;
     }
 

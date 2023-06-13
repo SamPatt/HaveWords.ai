@@ -212,20 +212,20 @@
 
   // --- handling for events ---
 
-  onDescendantChange (event) {
-    this.sendDelegate("onDescendantChange");
+  onChangeDescendant (changedView) {
+    this.sendDelegate("onChangeDescendant", changedView);
 
     if (this.superView()) {
-      this.superView().onDescendantChange(event);
+      this.superView().onChangeDescendant(changedView);
     }
   }
 
-  sendDelegate(methodName) {
+  sendDelegate(methodName, optionalArg) {
     const t = this.target();
     if (t) {
       const m = t[methodName];
       if (m) {
-        m.apply(t, this);
+        m.apply(t, [this, optionalArg]);
         return true;
       }
     }
@@ -240,7 +240,7 @@
     }
 
     if (this.superView()) {
-      this.superView().onDescendantChange(event);
+      this.superView().onChangeDescendant(this);
     }
     return this;
   }
@@ -393,12 +393,20 @@
   // value
 
   setValue (v) {
-    this.element().innerHTML = v;
+    if (this.tagName() === "input") {
+      this.element().value = v;
+    } else {
+      this.element().innerHTML = v;
+    }
     return this;
   }
 
   value () {
-    return this.element().innerHTML;
+    if (this.tagName() === "input") {
+      return this.element().value;
+    } else {
+      return this.element().innerHTML;
+    }
   }
 
   // ----
@@ -421,10 +429,15 @@
   // --- style ---
 
   makeWidthFitContent () {
+    this.setMinMaxWidth("fit-content");
+    return this;
+  }
+
+  setMinMaxWidth(aString) {
     const s = this.element().style;
-    s.minWidth = "fit-content";
-    s.width = "fit-content";
-    s.maxWidth = "fit-content";
+    s.minWidth = aString;
+    s.width = aString;
+    s.maxWidth = aString;
     return this;
   }
 
@@ -442,6 +455,10 @@
       sv.sendRespondingDescendants(methodName);
     });
     return this;
+  }
+
+  toJson () {
+    return this.value();
   }
 
 }).initThisClass();

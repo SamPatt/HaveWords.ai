@@ -166,6 +166,7 @@
     // data field
 
     const jsonView = ObjectView.clone();
+    //jsonView.setTarget(this);
     this.setJsonView(jsonView);
     this.addSubview(jsonView);
 
@@ -182,17 +183,29 @@
 
     // buttonsContainer
     const container1 = View.clone().create();
+    container1.setId("buttonsContainer");
+    this.addSubview(container1);
     this.setButtonsContainer(container1);
     container1.element().style.display = "flex";
     container1.element().style.flexDirection = "row";
     container1.element().style.justifyContent = "left";
+    container1.element().style.paddingTop = "0.5em";
     return this;
+  }
+
+  onChangeDescendant(changedView) {
+    //console.log("jsonView changed view ", changedView.value());
+    const json = this.jsonView().toJson();
+    console.log("json:", JSON.stringify(json));
+    this.player().setData(json);
+    this.syncFromNode();
   }
 
   syncButtons () {
     const isHost = App.shared().isHost();
     const isSelf = this.isSelf();
     const container1 = this.buttonsContainer();
+    container1.removeAllSubviews();
 
     if (isHost) {
       const radioItems = [
@@ -253,15 +266,27 @@
       })
     }
 
-    if (this.player().isLocal()) {
+    //if (this.player().isLocal()) {
+    if (App.shared().isHost()) {
       const button = Button.clone().create().setClassName("subheader smallButton");
       button.setLabel("clear").setTarget(this).setAction("onClear");
       container1.addSubview(button);
     }
+
+    if (App.shared().isHost() && this.player().appearance() && !this.player().isGeneratingImage()) {
+      const button = Button.clone().create().setClassName("subheader smallButton");
+      button.setLabel("Create Avatar").setTarget(this).setAction("onRegenImage");
+      container1.addSubview(button);
+    }
+  }
+
+  onRegenImage() {
+    this.player().generateImageFromAppearance();
+    this.syncFromNode();
   }
 
   onClear () {
-    this.player().setData({});
+    this.player().setupCharacterSheet();
     this.syncFromNode();
     return this;
   } 

@@ -354,6 +354,12 @@ With a 23, you easily hit the snake. Roll <a class="diceroll" data-character="Co
 <!-- start user -->
 Conan Rolled: (1 + 6) + 4 = 11
 <!-- end user -->
+
+Here are the character sheets (in JSON format) for the players in our game:
+
+[playerCharacterSheets]
+
+If any necessary fields are empty, please fill them in. Also, if the sheets are missing stats, armorClass, hitPoints, proficiencies, equitment, features or appearance, please generate a playerInfo div that fills in those details. 
 `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
