@@ -35,7 +35,12 @@
 
     keys.forEach((key) => {
       const value = json[key];
-      const isCollection = this.typeIsCollection(value) || (typeof(value) === "string" && value.length > 15);
+      const vtype = this.detectType(value);
+      //const isCollection = this.typeIsCollection(value);
+      const isLongArray = (vtype === "Array" && value.length > 0) ;
+      const isLongObject = (vtype === "Object" && Object.keys(value).length > 0) ;
+      const isLongString = (typeof(value) === "string" && value.length > 15);
+      const isCollection = isLongArray || isLongObject || isLongString;
       const kv = KVView.clone();
       const suffix = isCollection ? `&#8901;` : ":&nbsp;&nbsp;"; //&#x25BD;
       kv.keyView().addSubview(this.newViewForValue(key + suffix));
