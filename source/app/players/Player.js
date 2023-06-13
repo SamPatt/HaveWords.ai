@@ -174,5 +174,17 @@
   }
   */
 
+  setupCharacterSheet () {
+    this.setData({
+      name: this.nickname(),
+      alignment: "",
+      gender: "",
+      race: "",
+      class: "",
+      level: 5,
+    });
+    return this;
+  }
+
 }.initThisClass());
 

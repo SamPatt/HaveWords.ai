@@ -281,17 +281,12 @@
   }
 
   onRegenImage() {
-    this.player().generateImageFromAppearance()
+    this.player().generateImageFromAppearance();
+    this.syncFromNode();
   }
 
   onClear () {
-    this.player().setData({
-      name: this.player().nickname(),
-      alignment: "",
-      gender: "",
-      race: "",
-      class: "",
-    });
+    this.player().setupCharacterSheet();
     this.syncFromNode();
     return this;
   } 
