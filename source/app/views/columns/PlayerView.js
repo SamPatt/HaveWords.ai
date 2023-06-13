@@ -166,6 +166,7 @@
     // data field
 
     const jsonView = ObjectView.clone();
+    //jsonView.setTarget(this);
     this.setJsonView(jsonView);
     this.addSubview(jsonView);
 
@@ -190,6 +191,14 @@
     container1.element().style.justifyContent = "left";
     container1.element().style.paddingTop = "0.5em";
     return this;
+  }
+
+  onChangeDescendant(changedView) {
+    //console.log("jsonView changed view ", changedView.value());
+    const json = this.jsonView().toJson();
+    console.log("json:", JSON.stringify(json));
+    this.player().setData(json);
+    this.syncFromNode();
   }
 
   syncButtons () {
@@ -259,10 +268,20 @@
 
     //if (this.player().isLocal()) {
     if (App.shared().isHost()) {
-        const button = Button.clone().create().setClassName("subheader smallButton");
+      const button = Button.clone().create().setClassName("subheader smallButton");
       button.setLabel("clear").setTarget(this).setAction("onClear");
       container1.addSubview(button);
     }
+
+    if (App.shared().isHost() && this.player().appearance() && !this.player().isGeneratingImage()) {
+      const button = Button.clone().create().setClassName("subheader smallButton");
+      button.setLabel("Create Avatar").setTarget(this).setAction("onRegenImage");
+      container1.addSubview(button);
+    }
+  }
+
+  onRegenImage() {
+    this.player().generateImageFromAppearance()
   }
 
   onClear () {

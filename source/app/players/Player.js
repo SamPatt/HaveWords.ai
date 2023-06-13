@@ -120,6 +120,10 @@
     return text;
   }
 
+  isGeneratingImage() {
+    return this.imageGenJob() !== null;
+  }
+
   async generateImageFromAppearance() {
     if (this.appearance()) {
       assert(App.shared().isHost());
@@ -135,6 +139,7 @@
         this.setAvatar(imageUrl);
         Players.shared().onChange()
       }
+      this.setImageGenJob(null);
       return imageUrl;
     }
   }

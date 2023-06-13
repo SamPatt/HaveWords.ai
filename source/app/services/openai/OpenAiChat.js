@@ -63,8 +63,8 @@
     if (this.apiKey() && names === null || (names && names.length === 0)) {
       for (const model of this.models()) { 
         await model.asyncCheckAvailability();
-        this.setAvailableModelNames(this.calcAvailableModelNames());
       }
+      this.setAvailableModelNames(this.calcAvailableModelNames());
     }
   }
 

@@ -21,11 +21,13 @@
   }
 
   async asyncCheckAvailability () {
+    //debugger;
     if (!this.apiKey()) {
+      console.warn(this.type() + " asyncCheckAvailability() - no api key");
       return null
     }
 
-    assert(this.name());
+    console.log("api key: '" + this.apiKey() + "'");
 
     const request = this.newRequest().setBodyJson({
       model: this.name(),
@@ -46,6 +48,7 @@
         - add check for "model does not exist" to ensure it's a model error
         - otherwise, retry with backoff?
       */
+     console.log(this.type()  + " " + this.name() + " asyncCheckAvailability " + json.error.code);
       this.setIsAvailable(false);
     } else {
       this.setIsAvailable(true);

@@ -12,6 +12,7 @@
 
   init () {
     super.init();
+    this.setTagName("input");
   }
 
   setIsEditable (aBool) {
@@ -24,7 +25,8 @@
     this.element().disabled = !this.isEditable();
 
     if (this.isEditable()) {
-      this.style().border = "1px solid rgba(255, 255, 255, 0.2)";
+      this.style().borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+      this.style().borderRadius = "0px";
     } else {
       this.style().border = "none";
     }

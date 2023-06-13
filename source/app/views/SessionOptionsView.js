@@ -8,8 +8,8 @@
 (class SessionOptionsView extends View {
   initPrototypeSlots() {
     // ai service
-    this.newSlot("aiModelOptions", null);
     this.newSlot("apiKeyText", null);
+    this.newSlot("aiModelOptions", null);
 
     // text to speech service for naration
     this.newSlot("azureApiKeyText", null);
@@ -130,6 +130,7 @@
 
   async asyncSetupAiModelOptions() {
     const note = document.getElementById("AiModelOptionsNote");
+    await OpenAiChat.shared().asyncCheckModelsAvailability();
     let names = OpenAiChat.shared().availableModelNames();
 
     // Get the API key

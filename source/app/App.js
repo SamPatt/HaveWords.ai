@@ -85,7 +85,9 @@
     this.setupCompactorButtons();
     AvatarPickerView.shared().displayAvatar(LocalUser.shared().avatar());
 
-    await DiceRollView.shared().setup();
+    if(getGlobalThis().DiceRollView) {
+      await DiceRollView.shared().setup();
+    }
 
     /*
     const drv = DiceRollView.shared();
