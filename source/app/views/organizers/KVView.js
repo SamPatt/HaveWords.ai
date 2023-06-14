@@ -33,7 +33,7 @@
     this.setIsCollapsable(false);
 
     this.collapseButton().style().fontSize = "0.5em";
-    this.collapseButton().style().transform = "translateY(5px)";
+    //this.collapseButton().style().transform = "translateY(5px)";
     this.collapseButton().hide();
     this.topView().addSubview(this.collapseButton());
 

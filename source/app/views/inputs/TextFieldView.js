@@ -31,13 +31,23 @@
     return this;
   }
 
+  useEditableStyle () {
+    this.style().borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+    return this;
+  }
+
+  useUneditableStyle () {
+    this.style().borderBottom = "none";
+    return this;
+  }
+
   updateDisabled() {
     this.element().disabled = !this.isEditable();
 
     if (this.isEditable()) {
-      this.style().borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+      this.useEditableStyle();
     } else {
-      this.style().borderBottom = "none";
+      this.useUneditableStyle();
     }
 
     return this;
