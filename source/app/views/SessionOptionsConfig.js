@@ -359,7 +359,7 @@ Here are the character sheets (in JSON format) for the players in our game:
 
 [playerCharacterSheets]
 
-If any necessary fields are empty, please fill them in. Also, if the sheets are missing stats, armorClass, hitPoints, proficiencies, equitment, features or appearance, please generate a playerInfo div that fills in those details. 
+If any necessary details are empty (such as stats, armorClass, hitPoints, proficiencies, equitment, features or appearance), please generate those details and provide a playerInfo div with the results. 
 `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
