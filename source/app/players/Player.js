@@ -101,6 +101,7 @@
     }
 
     if (this.appearance() !== oldAppearance) {
+      console.log("'" + this.appearance() + "' != '" + oldAppearance + "' so generating new avatar");
       this.generateImageFromAppearance();
     }
     

@@ -214,7 +214,7 @@ const sessionOptionsArray = [
         prompt: `
 Pretend we're playing a Dungeons and Dragons 5th edition game. You're the dungeon master and we're the players. 
 We create the story together, with you in charge of the setting, environment, non-player characters (NPCs), and their actions, as well as how my actions affect these elements. 
-You can only describe my character's actions based on what I say they do.
+You can only describe my character's actions based on what I say they do. Please try to use the writing style of Robert E. Howard in your responses.
 
 You also decide if my character's actions are successful. Simple actions, like opening an unlocked door, are automatic successes. 
 More complex actions, like breaking down a door, require a skill check. Ask me to make a skill check following D&D 5th edition rules when needed. 
@@ -233,6 +233,7 @@ Do not reference character names in the scene description, only describe them vi
 
 I'll provide my character's class, race, and alignment details. You'll generate their standard Dungeons and Dragons 5th edition stats, items, and other details. 
 When providing a player's stats and items for a character, use a JSON format within a <div class=playerInfo></div> tag, and use separate tags for each player. 
+When using a playerInfo div, *always* include the complete set of playerInfo info.
 This should include a name property whose value is the player's name, and also an "appearance" property, providing a detailed physical description (which should not mention the character's name or use the word 'thick'). 
 
 When a player's attributes change during the game, such as when their hitpoints decreases due to damage, or they gain or lose an item, 
@@ -359,7 +360,7 @@ Here are the character sheets (in JSON format) for the players in our game:
 
 [playerCharacterSheets]
 
-If any necessary details are empty (such as stats, armorClass, hitPoints, proficiencies, equitment, features or appearance), please generate those details and provide a playerInfo div with the results. 
+If any necessary details are empty (such as stats, armorClass, hitPoints, proficiencies, equitment, money, features or appearance), please generate those details and provide a playerInfo div with the results. 
 `,
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
