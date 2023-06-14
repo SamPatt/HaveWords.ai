@@ -1170,3 +1170,45 @@ span.criticalFailureRoll {
 span.ignoredRoll {
     color: #888;
 }
+
+/* --- RollPanelView --- */
+
+#rollPanelView {
+    position: absolute;
+    margin: 0px;
+    padding: 1em;
+    background-color: var(--body-background-color);
+    color: var(--body-color);
+    display: none;
+}
+
+#rollPanelView .rollPanelRow {
+    display: flex;
+    gap: 1em;
+    align-items: baseline;
+}
+
+#rollPanelView .rollPanelButtons {
+    align-self: center;
+}
+
+#rollPanelView label {
+    color: rgba(255, 255, 255, 0.8)
+}
+
+#rollPanelView input {
+    margin-top: 0px;
+}
+
+#rollPanelView button {
+    margin-top: 1em;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    font-size: 16px;
+}
+
+#rollPanelView input[type="checkbox"] {
+    position: relative;
+    top: 0.1em;
+}

@@ -157,7 +157,6 @@
 
   setupLinks() {
     this.element().querySelectorAll('a').forEach((a) => {
-      console.log(a.className)
       switch(a.className) {
         case "diceroll":
           this.setupRollLink(a);
@@ -171,21 +170,38 @@
 
   setupRollLink(a) {
     var self = this;
-    a.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const dv = DiceRollView.shared();
-      dv.setCharacter(a.dataset.character)
-      dv.setNotation(a.dataset.notation)
-      dv.setTarget(parseInt(a.dataset.target));
-      await dv.roll();
-      setTimeout(() => { dv.clear() }, 500);
-      AiChatColumn.shared().messageInput().appendText(dv.outcomeDescription());
-      if (e.metaKey || e.altKey) {
-        AiChatColumn.shared().messageInput().appendText("\n");
-        return;
-      }
-      AiChatColumn.shared().addPrompt();
+    a.addEventListener('mouseover', (event) => {
+      self.didMouseOverRollLink(event);
     });
+
+    a.addEventListener('mouseout', (event) => {
+      self.didMouseOutRollLink(event);
+    });
+
+    a.addEventListener('click', (event) => {
+      self.didClickRollLink(event);
+    });
+  }
+
+  didMouseOverRollLink(event) {
+    RollPanelView.shared().setCharacter(event.target.dataset.character);
+    RollPanelView.shared().setNotation(event.target.dataset.notation);
+    RollPanelView.shared().setRollTarget(event.target.dataset.target || "");
+    RollPanelView.shared().show();
+    RollPanelView.shared().positionRelativeTo(event.target);
+  }
+
+  didMouseOutRollLink(event) {
+    setTimeout(e => {
+      if (!RollPanelView.shared().isMouseOver()) {
+        RollPanelView.shared().hide();
+      }
+    }, 100);
+  }
+
+  didClickRollLink(event) {
+    event.preventDefault();
+    RollPanelView.shared().roll();
   }
 
   setupChoiceLink(a) {

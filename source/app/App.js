@@ -92,12 +92,16 @@
     /*
     const drv = DiceRollView.shared();
     drv.setCharacter("Conan");
-    drv.setNotation("2d20+2");
+    drv.setNotation("2d20kh1+2");
     drv.setTarget(18);
     await drv.roll();
     console.log(drv.rollResults());
     console.log(drv.outcomeDescription());
-    */
+    //*/
+
+    //RollPanelView.shared().setCharacter("Conan").setNotation("2d20kl1+2").setRollTarget(undefined || "16").show().positionRelativeTo(document.getElementById("sessionSubtype2Options"))
+    //return;
+    //.positionRelativeTo(document.getElementById("messageInput"));
   }
 
   unhide () {

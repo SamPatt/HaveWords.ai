@@ -67,6 +67,9 @@
   }
 
   addSubview (aView) {
+    if (!aView.element()) {
+      aView.create();
+    }
     this.appendChild(aView.element());
     return this;
   }

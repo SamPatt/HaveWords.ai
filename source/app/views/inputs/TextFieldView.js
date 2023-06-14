@@ -73,6 +73,11 @@
     return this;
   }
 
+  setPlaceholder(placeholder) {
+    this.element.placeholder = placeholder;
+    return this;
+  }
+
   onKeyUp (event) {
     super.onKeyUp(event);
     this.validate()
