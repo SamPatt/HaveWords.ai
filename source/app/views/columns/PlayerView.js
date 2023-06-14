@@ -166,7 +166,6 @@
     // data field
 
     const jsonView = ObjectView.clone();
-    //jsonView.setTarget(this);
     this.setJsonView(jsonView);
     this.addSubview(jsonView);
 
@@ -189,7 +188,7 @@
     container1.element().style.display = "flex";
     container1.element().style.flexDirection = "row";
     container1.element().style.justifyContent = "left";
-    container1.element().style.paddingTop = "0.5em";
+    container1.element().style.paddingTop = "0.8em";
     return this;
   }
 
