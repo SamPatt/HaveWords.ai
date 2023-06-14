@@ -176,6 +176,24 @@
 
   // --- listening for events ---
 
+  listenForFocus() {
+    this.element().addEventListener("focus", (event) => {
+      this.onFocus(event);
+    });
+  }
+
+  onFocus (event) {
+  }
+
+  listenForBlur() {
+    this.element().addEventListener("blur", (event) => {
+      this.onBlur(event);
+    });
+  }
+
+  onBlur (event) {
+  }
+
   listenForChange() {
     this.element().addEventListener("change", (event) => {
       this.onChange(event);
@@ -392,8 +410,12 @@
 
   // value
 
+  tagIsFormInput () {
+    return (["input", "textarea"].includes(this.tagName().toLowerCase()));
+  }
+
   setValue (v) {
-    if (this.tagName() === "input") {
+    if (this.tagIsFormInput()) {
       this.element().value = v;
     } else {
       this.element().innerHTML = v;
@@ -402,7 +424,7 @@
   }
 
   value () {
-    if (this.tagName() === "input") {
+    if (this.tagIsFormInput()) {
       return this.element().value;
     } else {
       return this.element().innerHTML;

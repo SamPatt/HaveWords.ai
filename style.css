@@ -88,6 +88,19 @@ textarea::placeholder {
 }
 
 
+input:focus {
+    outline: none;
+}
+
+textarea:focus {
+    outline: none;
+    /*
+    border: none; 
+    border-color: transparent;
+    */
+}
+
+
 /*-------------------*/
 
 .controls {

@@ -449,11 +449,11 @@ Once I decide on the adventure, you may provide a brief setting description and 
   }
 
   playerNames() {
-    return Players.shared().subnodes().map(player => player.nickname()).join(", ");
+    return App.shared().session().players().subnodes().map(player => player.nickname()).join(", ");
   }
 
   playerCharacterSheets () {
-    const sheets = Players.shared().subnodes().map(player => player.data());
+    const sheets = App.shared().session().players().subnodes().map(player => player.data());
     return JSON.stringify(sheets);
   }
 
@@ -462,7 +462,9 @@ Once I decide on the adventure, you may provide a brief setting description and 
     s = s.replaceAll("[sessionSubtype]", this.sessionSubtype());
     s = s.replaceAll("[sessionSubtype2]", this.sessionSubtype2());
     s = s.replaceAll("[playerNames]", this.playerNames());
-    s = s.replaceAll("[playerCharacterSheets]", this.playerCharacterSheets());
+    if (s.indexOf("[playerCharacterSheets]") !== -1) {
+      s = s.replaceAll("[playerCharacterSheets]", this.playerCharacterSheets());
+    }
     s = s.replaceAll(
       "[customization]",
       this.sessionCustomizationText().string()

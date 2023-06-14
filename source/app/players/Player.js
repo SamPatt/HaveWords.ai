@@ -137,7 +137,7 @@
 
       if (imageUrl) {
         this.setAvatar(imageUrl);
-        Players.shared().onChange()
+        App.shared().session().players().onChange()
       }
       this.setImageGenJob(null);
       return imageUrl;
