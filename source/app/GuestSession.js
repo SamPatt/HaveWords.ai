@@ -26,7 +26,13 @@
       id: LocalUser.shared().id(),
       nickname: LocalUser.shared().nickname(),
       avatar: LocalUser.shared().avatar(),
-      data: { name: LocalUser.shared().nickname(), level: 3, race: "Human", class: "Fighter", alignment: "Neutral Neutral" }, 
+      data: { 
+        name: LocalUser.shared().nickname(), 
+        level: 3, 
+        race: "Human", 
+        class: "Fighter",
+        alignment: "Neutral Neutral"
+      }, 
     }
     App.shared().session().players().setJson([json]);
     //return json;
