@@ -112,7 +112,6 @@
       "System",
       data.id
     );
-    this.clearPlayers();
     document.getElementById("chatInput").disabled = true;
   }
 
@@ -147,7 +146,6 @@
       "System",
       data.id
     );
-    this.clearPlayers();
     document.getElementById("chatInput").disabled = true;
   }
 
@@ -222,32 +220,6 @@
     Session.shared().players().setJson(data.players);
     PlayersColumn.shared().display();
   }
-
-  /*
-  sendNickname() {
-    const json = {
-      type: "nickname",
-      id: LocalUser.shared().id(),
-      nickname: LocalUser.shared().nickname(),
-    };
-    console.log("sendNickname ", json);
-    this.send(json);
-  }
-
-  sendNicknameUpdate(username) {
-    this.send({
-      type: "nicknameUpdate",
-      id: LocalUser.shared().id(),
-      newNickname: username,
-    });
-  }
-  */
-
-  /*
-  sendAvatar() {
-    LocalUser.shared().shareAvatar();
-  }
-  */
 
   sendChat(message) {
     this.send({

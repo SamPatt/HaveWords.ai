@@ -137,12 +137,18 @@
       job.setRequestId("player_" + this.id());
       this.setImageGenJob(job);
 
-      const imageUrl = await job.start();
+      let imageUrl;
 
-      if (imageUrl) {
-        this.setAvatar(imageUrl);
-        App.shared().session().players().onChange()
+      try { 
+        imageUrl = await job.start();
+
+        if (imageUrl) {
+          this.setAvatar(imageUrl);
+        }
+      } catch(error) {
+        console.warn(error);
       }
+      App.shared().session().players().onChange()
       this.setImageGenJob(null);
       return imageUrl;
     }
@@ -188,6 +194,12 @@
       level: 5,
     });
     return this;
+  }
+
+  share () {
+    if (!App.shared().isHost()) {
+      GuestSession.shared().sharePlayer();
+    }
   }
 
 }.initThisClass());

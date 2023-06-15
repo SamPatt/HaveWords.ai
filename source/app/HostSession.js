@@ -86,7 +86,7 @@
 
   setupInviteButton() {
     const inviteLink = App.shared().inviteLink();
-    InviteButton.shared().setLink(inviteLink);
+    InviteButton.shared().setLink(inviteLink).unhide();
   }
 
   setupHostSession() {

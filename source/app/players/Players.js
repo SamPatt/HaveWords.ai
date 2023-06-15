@@ -50,6 +50,10 @@
     return this;
   }
 
+  localPlayer() {
+    return this.playerWithId(LocalUser.shared().id());
+  }
+
   playerWithId (id) {
     return this.subnodes().find(player => player.id() === id);
   }

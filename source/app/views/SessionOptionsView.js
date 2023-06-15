@@ -119,6 +119,8 @@
       Button.clone().setId("SessionResetButton").setTarget(this)
     );
 
+    this.sessionResetButton().setIsHidden(!App.shared().isHost());
+
     //this.setupApiKeyText();
 
 

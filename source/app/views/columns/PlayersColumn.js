@@ -9,6 +9,7 @@
   initPrototypeSlots() {
     this.newSlot("guestUserList", null)
     this.newSlot("subnodeViewClass", null)
+    this.newSlot("syncButton", null)
   }
 
   init() {
@@ -16,6 +17,18 @@
     this.setId("PlayersColumn");
     this.setSubnodeViewClass(PlayerView);
     this.setScrollView(ScrollView.clone().setId("PlayersColumn_ScrollView"));
+
+    this.setSyncButton(Button.clone().setId("SyncPlayersButton").setTarget(this));
+  }
+
+  onSubmit_SyncPlayersButton () {
+    console.log("syncing players");
+
+    if (App.shared().isHost()) {
+      this.node().onChange();
+    } else {
+      this.node().localPlayer().share();
+    }
   }
 
   node () {

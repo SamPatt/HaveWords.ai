@@ -188,7 +188,7 @@
   onCompact1 (aButton) {
     const s = aButton.state();
     this.groupChatColumn().setIsHidden(s);
-    this.playersColumn().setIsHidden(s);
+    //this.playersColumn().setIsHidden(s);
     this.compactButton2().setState(s)
   }
 
