@@ -109,7 +109,37 @@ class Boot extends Object {
     ]
   }
 
+  // --- loading view ---
+
+  loadingView () {
+    return document.getElementById("loadingView");
+  }
+
+  unhideLoadingView () {
+    this.loadingView().style.display = "block";
+    this.loadingView().innerHTML = ".";
+  }
+
+  hideLoadingView() {
+    this.loadingView().style.display = "none";
+  }
+
+  updateLoadingView(file) {
+    //this.loadingView().innerHTML = "Loading " + file.split("/").pop() + "...";
+    const count = this.files().length;
+    const remaining = this._queue.length;
+    const percent = Math.round(100*((count - remaining) / count));
+    this.loadingView().innerText = "Loading " + percent + "%";
+    //console.log("'" + this.loadingView().innerText + "'");
+    if (this.loadingView().innerText === "Loading....") {
+      this.loadingView().innerText = "Loading.";
+    }
+  }
+
+  // ---
+
   start () {
+    this.unhideLoadingView();
     this._queue = this.files().slice()
     console.log("-------")
     this.loadNext()
@@ -118,8 +148,11 @@ class Boot extends Object {
   loadNext () {
     if (this._queue.length) {
       const file = this._queue.shift()
+
       this.loadScript(file, () => {
-        this.loadNext()
+        setTimeout(() => { 
+          this.loadNext()
+        }, 0);
       })
     } else {
       this.didFinish()
@@ -127,24 +160,30 @@ class Boot extends Object {
   }
 
   loadScript (propertiesOrSrc, callback) {
-    console.log("Boot loading '" + (propertiesOrSrc.src || propertiesOrSrc) + "'")
+    const src = propertiesOrSrc.src || propertiesOrSrc;
+    this.updateLoadingView(src)
+    console.log("Boot loading '" + src+ "' ---");
+    
     const head = document.getElementsByTagName('head')[0];
     const script = document.createElement('script');
     script.type = propertiesOrSrc.type || 'text/javascript';
 
-    script.src = propertiesOrSrc.src || propertiesOrSrc;
+    script.src = src;
     script.onreadystatechange = (event) => {
       callback();
     }
     script.onload = callback;
     script.onerror = (error) => {
-      console.log("Boot ERROR loading: '" + error.target.src + "'")
+      const errorMsg = "Boot ERROR loading: '" + error.target.src + "'";
+      this.loadingView().innerHTML = errorMsg;
+      console.log(errorMsg)
     }
     
     head.appendChild(script);
   }
 
   didFinish () {
+    this.hideLoadingView();
     console.log("-------")
     //console.log("Boot: ready to run app")
     App.launch();
