@@ -24,7 +24,7 @@ const nodePath = require('path');
 		//console.log("  decoded url:" + decodeURI(this.request().url))
 		this.setUrlObject(this.getUrlObject())
 		//this.setQueryDict(this.getQueryDict())
-		console.log("  path: '" + this.getPath() + "'\n" );			
+		//console.log("  path: '" + this.getPath() + "'\n" );			
 		this.setPath(this.getPath())
 
 		this.onFileRequest()
