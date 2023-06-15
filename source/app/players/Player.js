@@ -58,6 +58,9 @@
 
   setNickname (v) {
     this.info().nickname = v;
+    if (this.info().data) {
+      this.info().data.name = v;
+    }
     return this;
   }
 
