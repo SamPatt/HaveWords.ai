@@ -357,11 +357,15 @@
   }
 
   hideImageGenButton () {
-    this.imageGenButton().style.display = "none";
+    if (this.imageGenButton()) {
+      this.imageGenButton().style.display = "none";
+    }
   }
 
   showImageGenButton () {
-    this.imageGenButton().style.display = "block";
+    if (this.imageGenButton()) {
+      this.imageGenButton().style.display = "block";
+    }
   }
 
   updateImageProgressJson(json) {
