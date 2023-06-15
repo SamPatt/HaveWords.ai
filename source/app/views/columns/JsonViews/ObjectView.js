@@ -55,6 +55,10 @@
       const valueView = this.newViewForValue(value);
       //valueView.setIsEditable(true);
       kv.valueView().addSubview(valueView);
+      if (isLongString) {
+        valueView.style().width = "16em"
+        valueView.style().height = "8em"
+      }
 
       if (isCollection) {
         kv.setIsCollapsable(true);

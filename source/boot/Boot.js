@@ -117,7 +117,6 @@ class Boot extends Object {
 
   unhideLoadingView () {
     this.loadingView().style.display = "block";
-    this.loadingView().innerHTML = ".";
   }
 
   hideLoadingView() {
@@ -129,11 +128,11 @@ class Boot extends Object {
     const count = this.files().length;
     const remaining = this._queue.length;
     const percent = Math.round(100*((count - remaining) / count));
-    this.loadingView().innerText = "Loading " + percent + "%";
+
+    const bar = document.getElementById("innerLoadingView");
+    bar.style.width = 10*(percent/100) + "em";
+    //this.loadingView().innerText = "Loading " + percent + "%";
     //console.log("'" + this.loadingView().innerText + "'");
-    if (this.loadingView().innerText === "Loading....") {
-      this.loadingView().innerText = "Loading.";
-    }
   }
 
   // ---

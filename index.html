@@ -47,7 +47,9 @@
 <body>
 
     <!-- begin app -->
-    <div id="loadingView" style="display:block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: inherit; color:white;">Loading...</div>
+    <div id="loadingView" style="border-radius: 0.25em; display:block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 0; width: 10em; height: 0.5em; background: inherit; color:white; background-color: #666;">
+        <div id="innerLoadingView" style="background-color:white; border-radius: 0.25em; height: 0.5em;"></div>
+    </div>
     <div id="appView" style="display:none;">
         <div class="main-wrapper">
 
