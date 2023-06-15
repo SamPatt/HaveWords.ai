@@ -7282,17 +7282,9 @@ parcelRequire = (function (e, r, t, n) {
                 } else
                   this.serialization === a.SerializationType.JSON &&
                     (s = this.parse(o));
-                if (s === null) {
-                  console.warn("peerjs issue s === null");
-                } else {
-                  s.__peerData
-                    ? this._handleChunk(s)
-                    : n.prototype.emit.call(
-                        this,
-                        a.ConnectionEventType.Data,
-                        s
-                      );
-                }
+                s.__peerData
+                  ? this._handleChunk(s)
+                  : n.prototype.emit.call(this, a.ConnectionEventType.Data, s);
               }),
               (s.prototype._handleChunk = function (e) {
                 var t = e.__peerData,

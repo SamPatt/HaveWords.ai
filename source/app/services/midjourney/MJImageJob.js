@@ -60,7 +60,8 @@
   }
 
   isApiV2() {
-    return MJService.shared().apiBaseUrl().includes("v2");
+    const baseUrl = MJService.shared().apiBaseUrl();
+    return baseUrl && baseUrl.includes("v2");
   }
 
   onChange() {

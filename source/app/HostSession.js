@@ -272,7 +272,7 @@
       isDone: isDone
     };
     AiChatColumn.shared().updateAIResponseJson(json)
-    this.broadcast();
+    this.broadcast(json);
   }
 
   onStreamComplete (request) {

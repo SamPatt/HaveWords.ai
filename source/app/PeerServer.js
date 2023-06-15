@@ -52,6 +52,13 @@
     //this.debugLog("connecting to peerjs as:" + LocalUser.shared().shortId())
     this.debugLog("connecting to peerjs")
     const peer = new Peer(undefined, this.peerOptions());
+
+    /*
+    peer.__peerData = {
+      // Your data here
+    };
+    */
+
     this.setPeer(peer);
 
     peer.on("open", (id) => this.onOpen(id) );
