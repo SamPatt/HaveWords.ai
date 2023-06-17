@@ -97,6 +97,10 @@
 
   // --- player data ---
 
+  canSendPrompts() { //TODO implement this once prompt permission is reinstated
+    return true;
+  }
+
   onReceived_remotePrompt(data) {
     // Add prompt to prompt history
     if (this.canSendPrompts()) {

@@ -1192,6 +1192,15 @@ span.ignoredRoll {
     align-self: center;
 }
 
+#rollPanelTitle {
+    margin: 0px;
+    margin-bottom: 1em;
+}
+
+.rollPanelTitleRow {
+    align-self: center;
+}
+
 #rollPanelView label {
     color: rgba(255, 255, 255, 0.8)
 }

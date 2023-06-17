@@ -6,6 +6,11 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     this.newSlot("isMouseOver", false);
   }
 
+  setReason(title) {
+    this.titleView().setInnerText(title);
+    return this;
+  }
+
   character() {
     return this.characterTextField().value();
   }
@@ -15,34 +20,39 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     return this;
   }
 
-  notation() {
-    let notation = this.countTextField().value();
-    notation += this.dieOptionsView().selectedValue();
-    notation += this.rollTypeOptionsView().selectedValue();
-    notation += this.modifierTextField().value();
-    return notation;
+  die () {
+    return this.dieOptionsView().value();
   }
 
-  setNotation(notation) {
-    this.parser().parseNotation(notation)[0];
-    const parsedNotation = this.parser().parsedNotation;
-    //console.log(parsedNotation);
-    const die = parsedNotation.head || parsedNotation;
-    this.countTextField().setValue(String(die.count.value));
-    this.dieOptionsView().setSelectedValue('d' + String(die.die.value));
-    if (parsedNotation.ops && parsedNotation.ops.length > 0) {
-      const op = parsedNotation.ops[0];
-      this.modifierTextField().setValue(op.op + String(op.tail.value))
-    }
-    const mod = die.mods[0];
-    if (mod) {
-      if (mod.highlow == 'h') {
-        this.rollTypeOptionsView().setSelectedValue('kh1')
-      }
-      else if (mod.highlow == 'l') {
-        this.rollTypeOptionsView().setSelectedValue('kl1')
-      }
-    }
+  setDie(die) {
+    this.dieOptionsView().setValue(die);
+    return this;
+  }
+
+  count () {
+    return this.countTextField().value();
+  }
+
+  setCount(count) {
+    this.countTextField().setValue(count);
+    return this;
+  }
+
+  modifier() {
+    return this.modifierTextField().value();
+  }
+
+  setModifier(modifier) {
+    this.modifierTextField().setValue(modifier);
+    return this;
+  }
+
+  rollType() {
+    return this.rollTypeOptionsView().value();
+  }
+
+  setRollType(rollType) {
+    this.rollTypeOptionsView().setValue(rollType);
     return this;
   }
 
@@ -59,6 +69,26 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     return this;
   }
 
+  notation() {
+    let notation = this.countTextField().value();
+    notation += ("d" + this.dieOptionsView().selectedValue());
+    notation += this.rollTypeOptionsView().selectedValue();
+    notation += this.modifierTextField().value();
+    return notation;
+  }
+
+  rollInstructions() {
+    let rollInstructions = this.character() + ", roll " + this.count() + "d" + this.die() + this.modifier();
+    if (this.rollType()) {
+      rollInstructions += " with " + this.rollType();
+    }
+    if (this.rollTarget()) {
+      rollInstructions += " with a target of " + this.rollTarget() + " or higher";
+    }
+    rollInstructions += "."
+    return rollInstructions;
+  }
+
   async roll() {
     const dv = DiceRollView.shared();
     dv.setCharacter(this.character())
@@ -69,7 +99,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     setTimeout(() => { dv.clear() }, 500);
     AiChatColumn.shared().messageInput().appendText(dv.outcomeDescription());
     if (this.shouldSendImmediately()) {
-      AiChatColumn.shared().addPrompt();
+      AiChatColumn.shared().messageInput().submit();
     }
     else {
       AiChatColumn.shared().messageInput().appendText("\n");
@@ -78,21 +108,12 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   show() {
-    this.element().style.display = 'flex';
-    return this;
-  }
-
-  positionRelativeTo(element) {
-    const elementRect = element.getBoundingClientRect();
-    const myRect = this.element().getBoundingClientRect();
     this.element().style.position = 'absolute';
-    this.element().style.left = String(elementRect.left - (myRect.width - elementRect.width)/2) + "px";
-
-    let top = elementRect.top - myRect.height;
-    if (top < 0) {
-      top = elementRect.top + elementRect.height;
-    }
-    this.element().style.top = String(top) + "px";
+    this.element().style.display = 'flex';
+    const myRect = this.element().getBoundingClientRect();
+    this.element().style.left = String(window.innerWidth/2 - myRect.width/2) + "px";
+    this.element().style.top = String(window.innerHeight/2 - myRect.height/2) + "px";
+    return this;
   }
 
   hide() {
@@ -107,6 +128,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     this.initPublicPrototypeSlots();
 
     //Internal
+    this.newSlot("titleView", null);
     this.newSlot("characterTextField", null);
     this.newSlot("dieOptionsView", null);
     this.newSlot("countTextField", null);
@@ -129,6 +151,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   initElement() {
     super.initElement();
 
+    this.setTitleView(View.clone().setId("rollPanelTitle"));
     this.setCharacterTextField(TextFieldView.clone().setId("rollPanelCharacter"));
     this.setCountTextField(TextFieldView.clone().setId("rollPanelCount"));
     this.setDieOptionsView(OptionsView.clone().setId("rollPanelDie"));

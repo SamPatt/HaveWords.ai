@@ -126,24 +126,34 @@
   }
 
   newRequestForPrompt (prompt, role) {
+    /* TODO: Switch Back
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
-
+    */
+    const selectedModel = "gpt-4-0613";
+    
     this.addToConversation({
       role: role,
       content: prompt,
     });
 
-    const request = this.newRequest().setBodyJson({
+    const bodyJson = {
       model: selectedModel,
       messages: this.conversationHistory(),
       temperature: 0.7, // more creative
       top_p: 0.9 // more diverse
-    });
+    }
+
+    const functions = SessionOptionsView.shared().gptFunctions();
+    if (functions) {
+      bodyJson.functions = functions;
+    }
+
+    const request = this.newRequest().setBodyJson(bodyJson);
     return request
   }
 
-  async asyncFetch (prompt, role="user") {
+  async asyncFetch (prompt, role="user") { //TODO: Is this obsolete?
     const request = this.newRequestForPrompt(prompt, role);
 
     let json = undefined;
@@ -173,30 +183,42 @@
       return undefined
     }
 
-    const aiResponse = json.choices[0].message.content;
-    this.addResponseText(aiResponse);
+    const aiResponse = { content: json.choices[0].message.content };
+
+    if (json.choices[0].message.function_call) {
+      aiResponse.function_call = json.choices[0].message.function_call;
+    }
+
+    this.addResponse(aiResponse);
 
     return aiResponse;
   }
 
   onRequestComplete (request) {
-    this.addResponseText(request.fullContent());
+    const json = { content: request.fullContent() };
+    if (request.functionCall()) {
+      json.function_call = request.functionCall()
+    }
+    this.addResponse(json);
   }
 
-  addResponseText (text) {
+  addResponse (json) {
     // Add the assistant's response to the conversation history
-    this.addToConversation({
-      role: "assistant",
-      content: text,
-    });
+    this.addToConversation(Object.assign({ role: "assistant"}, json));
 
-    // Save the conversation history to local storage
-    Session.shared().addToHistory({
+    const historyEntry = {
       type: "aiResponse",
-      data: text,
+      data: json.content,
       id: LocalUser.shared().id(),
       nickname: SessionOptionsView.shared().selectedModelNickname(),
-    });
+    }
+
+    if (json.function_call) {
+      historyEntry.function_call = json.function_call;
+    }
+
+    // Save the conversation history to local storage
+    Session.shared().addToHistory(historyEntry);
     return this;
   }
 

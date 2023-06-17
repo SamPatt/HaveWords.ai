@@ -472,6 +472,14 @@ Once I decide on the adventure, you may provide a brief setting description and 
     return s;
   }
 
+  imageGenModel() {
+    return this.imageGenModelOptions().value();
+  }
+
+  imageGenIsEnabled() {
+    return this.imageGenModel() != null;
+  }
+
   // --- config lookups ---
 
   getPathOnJson(path, json) {
@@ -519,6 +527,10 @@ Once I decide on the adventure, you may provide a brief setting description and 
     ].join("\n\n");
 
     return this.replacedConfigString(fullPrompt);
+  }
+
+  gptFunctions() {
+    return this.configLookup("gptFunctions");
   }
 
   message() {

@@ -44,6 +44,7 @@
 
     this.newSlot("fullContent", null); 
     this.newSlot("lastContent", "");
+    this.newSlot("functionCall", null);
     this.newSlot("error", null);
   }
 
@@ -292,12 +293,21 @@
     } else if (
         json.choices &&
         json.choices.length > 0 &&
-        json.choices[0].delta &&
-        json.choices[0].delta.content
+        json.choices[0].delta
       ) {
-        const newContent = json.choices[0].delta.content;
-        this.setFullContent(this.fullContent() + newContent);
-        this.streamTarget().onStreamData(this, newContent);
+        if (json.choices[0].delta.content) {
+          const newContent = json.choices[0].delta.content;
+          this.setFullContent(this.fullContent() + newContent);
+          this.streamTarget().onStreamData(this, newContent);
+        }
+        else if (json.choices[0].delta.function_call) {
+          if (!this.functionCall()) {
+            this.setFunctionCall(json.choices[0].delta.function_call);
+          }
+          else {
+            this.functionCall().arguments += json.choices[0].delta.function_call.arguments;
+          }
+        }
     } else {
       if (json.id) {
         // this is the header chunk - do we need to keep this around?
