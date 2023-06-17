@@ -24,7 +24,8 @@
     this.setScrollView(ScrollView.clone().setId("AiChatColumn_ScrollView"));
     this.scrollView().contentView().setId("AiChatMessages");
 
-    this.setHasPromptAccess(App.shared().isHost());
+    //this.setHasPromptAccess(App.shared().isHost());
+    this.setHasPromptAccess(true); //TODO: Remove this once prompt toggle is fixed
 
     this.setupButtons();
   }
@@ -94,7 +95,7 @@
   sendGuestPrompt(message) {
     if (message.trim() !== "") {
       // Send chat message to host
-      this.send({
+      GuestSession.shared().send({
         type: "remotePrompt",
         id: LocalUser.shared().id(),
         nickname: LocalUser.shared().nickname(),
@@ -117,10 +118,14 @@
   }
 
   updateAIResponseJson(json) {
+    if (json.function_call && json.isDone) {
+      this.execFunctionCall(json);
+    }
+
     const requestId = json.requestId;
     const text = json.message;
-    let messageView = this.requestIdToMessageMap().get(requestId);
 
+    let messageView = this.requestIdToMessageMap().get(requestId);
     if (!messageView) {
       Sounds.shared().playReceiveBeep();
 
@@ -144,8 +149,53 @@
       this.scrollView().scrollToBottom();
     }
 
-    if (App.shared().isHost()) {
+    if (App.shared().isHost() && SessionOptionsView.shared().imageGenIsEnabled()) { //TODO Only include image gen in the system message if there is a model enabled.
       messageView.requestImageIfSummaryAvailable(); // this should be in a AiResponseMessage object
+    }
+  }
+
+  execFunctionCall(responseJson) {
+    switch(responseJson.function_call.name) {
+      case "diceRoll":
+        this.execDiceRoll(responseJson);
+        break;
+    }
+  }
+
+  execDiceRoll(responseJson) {
+    const args = JSON.parse(responseJson.function_call.arguments);
+
+    
+    const rp = RollPanelView.shared();
+    rp.setReason(args.reason || "DM Requests a Dice Roll");
+    rp.setCharacter(args.character || "");
+    rp.setDie(String(args.die || 20));
+    rp.setCount(String(args.count || 1));
+    let modifier = "";
+    if (args.modifier) {
+      rp.setModifier((args.modifier > 0 ? "+" : "") + String(args.modifier));
+    }
+    
+    rp.setRollTarget(String(args.target || ""));
+    rp.setRollType(String(args.keep || ""));
+
+    if (!responseJson.message) {
+      responseJson.message = rp.rollInstructions();
+    }
+
+    let player = App.shared().playerForCharacter(args.character);
+    if (player) {
+      if (player.canSendPrompts()) {
+        if (player.isLocal()) {
+          rp.show();
+        }
+      }
+      else if (App.shared.isHost()) {
+        rp.show();
+      }
+    }
+    else if (App.shared().isHost()) { //autoroll for NPCs
+      np.roll();
     }
   }
 

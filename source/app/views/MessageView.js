@@ -207,7 +207,6 @@
   setupChoiceLink(a) {
     var self = this;
     a.addEventListener('click', async (e) => {
-      console.log(AiChatColumn.shared().messageInput());
       AiChatColumn.shared().messageInput().appendText(`${a.dataset.number}\n`);
       AiChatColumn.shared().addPrompt();
     });

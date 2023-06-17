@@ -51,11 +51,12 @@
     return this;
   }
 
-  addResponseText (text) {
+  addResponseText(text) { //TODO Is this obsolete?
     // Add the assistant's response to the conversation history
     this.addToConversation({
       role: "assistant",
       content: text,
+
     });
 
     // Save the conversation history to local storage

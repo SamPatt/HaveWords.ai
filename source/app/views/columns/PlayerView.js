@@ -89,6 +89,10 @@
 
   }
 
+  onTogglePrompt(button) { //TODO: toggle is broken
+    this.player().setCanSendPrompts(button.value());
+  }
+
   onEditName (nameField) {
     this.player().setNickname(nameField.string());
 
@@ -195,7 +199,7 @@
   onChangeDescendant(changedView) {
     //console.log("jsonView changed view ", changedView.value());
     const json = this.jsonView().toJson();
-    console.log("json:", JSON.stringify(json));
+    //console.log("json:", JSON.stringify(json));
     this.player().setData(json);
     this.syncFromNode();
   }
@@ -208,12 +212,14 @@
 
     if (isHost) {
       const radioItems = [
+        /*
         {
           label: "prompt",
           action: "onTogglePrompt",
           state: this.player().canSendPrompts(),
           available: isHost && !isSelf,
         },
+        */
         {
           label: "ban",
           action: "onToggleBan",
