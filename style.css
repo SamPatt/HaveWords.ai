@@ -1135,7 +1135,7 @@ body {
 }
 
 /* --- dice box --- */
-#dice-box {
+#diceBox {
     position: absolute;
     top: 0;
     left: 0;
@@ -1146,7 +1146,7 @@ body {
     pointer-events: none;
   }
   
-#dice-box canvas {
+#diceBox canvas {
     width: 100%;
     height: 100%;
     z-index: 1;

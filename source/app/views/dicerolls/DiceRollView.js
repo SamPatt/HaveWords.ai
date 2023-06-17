@@ -81,7 +81,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   init() {
     super.init();
 
-    this.setDiceBox(new DiceBox("#dice-box", {
+    this.setDiceBox(new DiceBox("#diceBox", {
       assetPath: "assets/",
       assetPath: window.location.pathname + "source/external/@3d-dice/dice-box/dist/assets/",
       //origin: "https://unpkg.com/@3d-dice/dice-box@1.0.8/dist/",
@@ -89,7 +89,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
       theme: "smooth",
       themeColor: "#000000",
       offscreen: true,
-      scale: 5
+      scale: 4.5*screen.availHeight/document.getElementById("diceBox").clientHeight
     }));
 
     this.setParser(new ParserInterface());
