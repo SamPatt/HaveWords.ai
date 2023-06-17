@@ -83,13 +83,13 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
 
     this.setDiceBox(new DiceBox("#dice-box", {
       assetPath: "assets/",
-      assetPath: "/source/external/@3d-dice/dice-box/dist/assets/",
+      assetPath: window.location.pathname + "source/external/@3d-dice/dice-box/dist/assets/",
       //origin: "https://unpkg.com/@3d-dice/dice-box@1.0.8/dist/",
       //origin: "./source/external/@3d-dice/dice-box/dist/",
       theme: "smooth",
       themeColor: "#000000",
       offscreen: true,
-      scale: 4
+      scale: 5
     }));
 
     this.setParser(new ParserInterface());
