@@ -127,7 +127,7 @@
     const hostRoomId = PeerServer.shared().peerId();
     assert(hostRoomId);
     const isFile = window.location.protocol === "file:";
-    const base = isFile ? window.location.href : window.location.origin + "/";
+    const base = window.location.href;
     return `${base}?room=${hostRoomId}`;
   }
 
