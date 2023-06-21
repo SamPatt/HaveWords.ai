@@ -288,7 +288,7 @@
   onStreamJsonChunk (json) {
     if (json.error) {
       console.warn("ERROR:" + json.error.message);
-      debugger;
+      //debugger;
       this.xhrReject()(new Error(json.error.message));
     } else if (
         json.choices &&
@@ -296,6 +296,7 @@
         json.choices[0].delta
       ) {
         if (json.choices[0].delta.content) {
+          //console.log(json.choices[0].delta.content);
           const newContent = json.choices[0].delta.content;
           this.setFullContent(this.fullContent() + newContent);
           this.streamTarget().onStreamData(this, newContent);
@@ -305,6 +306,7 @@
             this.setFunctionCall(json.choices[0].delta.function_call);
           }
           else {
+            //console.log(json.choices[0].delta.function_call.arguments);
             this.functionCall().arguments += json.choices[0].delta.function_call.arguments;
           }
         }

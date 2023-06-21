@@ -2,114 +2,15 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
 
 (class RollPanelView extends View {
   //Public
+
   initPublicPrototypeSlots() {
-    this.newSlot("isMouseOver", false);
-  }
-
-  setReason(title) {
-    this.titleView().setInnerText(title);
-    return this;
-  }
-
-  character() {
-    return this.characterTextField().value();
-  }
-
-  setCharacter(character) {
-    this.characterTextField().setValue(character);
-    return this;
-  }
-
-  die () {
-    return this.dieOptionsView().value();
-  }
-
-  setDie(die) {
-    this.dieOptionsView().setValue(die);
-    return this;
-  }
-
-  count () {
-    return this.countTextField().value();
-  }
-
-  setCount(count) {
-    this.countTextField().setValue(count);
-    return this;
-  }
-
-  modifier() {
-    return this.modifierTextField().value();
-  }
-
-  setModifier(modifier) {
-    this.modifierTextField().setValue(modifier);
-    return this;
-  }
-
-  rollType() {
-    return this.rollTypeOptionsView().value();
-  }
-
-  setRollType(rollType) {
-    this.rollTypeOptionsView().setValue(rollType);
-    return this;
-  }
-
-  rollTarget() {
-    return parseInt(this.targetTextField().value());
-  }
-
-  setRollTarget(rollTarget) {
-    rollTarget = parseInt(rollTarget);
-    if (isNaN(rollTarget)) {
-      rollTarget = "";
-    }
-    this.targetTextField().setValue(rollTarget);
-    return this;
-  }
-
-  notation() {
-    let notation = this.countTextField().value();
-    notation += ("d" + this.dieOptionsView().selectedValue());
-    notation += this.rollTypeOptionsView().selectedValue();
-    notation += this.modifierTextField().value();
-    return notation;
-  }
-
-  rollInstructions() {
-    let rollInstructions = this.character() + ", roll " + this.count() + "d" + this.die() + this.modifier();
-    if (this.rollType()) {
-      rollInstructions += " with " + this.rollType();
-    }
-    if (this.rollTarget()) {
-      rollInstructions += " with a target of " + this.rollTarget() + " or higher";
-    }
-    rollInstructions += "."
-    return rollInstructions;
-  }
-
-  async roll() {
-    const dv = DiceRollView.shared();
-    dv.setCharacter(this.character())
-    dv.setNotation(this.notation())
-    dv.setRollTarget(this.rollTarget());
-    this.hide();
-    await dv.roll();
-    setTimeout(() => { dv.clear() }, 500);
-    AiChatColumn.shared().messageInput().appendText(dv.outcomeDescription());
-    if (this.shouldSendImmediately()) {
-      AiChatColumn.shared().messageInput().submit();
-    }
-    else {
-      AiChatColumn.shared().messageInput().appendText("\n");
-    }
-    return this;
+    this.newSlot("rollRequest", null);
+    this.newSlot("rollOutcome", null);
   }
 
   show() {
     this.element().style.position = 'absolute';
-    this.element().style.display = 'flex';
+    this.element().style.display = 'table';
     const myRect = this.element().getBoundingClientRect();
     this.element().style.left = String(window.innerWidth/2 - myRect.width/2) + "px";
     this.element().style.top = String(window.innerHeight/2 - myRect.height/2) + "px";
@@ -120,26 +21,56 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     this.element().style.display = 'none';
   }
 
+  positionRelativeTo(mouseEvent) { //position so that roll button is under click/tap location
+    const myRect = this.element().getBoundingClientRect();
+    const rollButtonRect = this.rollButton().element().getBoundingClientRect();
+    this.element().style.position = 'absolute';
+    this.element().style.left = String(Math.max(0, mouseEvent.clientX - (rollButtonRect.x - myRect.x + rollButtonRect.width/2))) + "px";
+    this.element().style.top = String(
+      Math.min( //Don't go below the bottom
+        Math.max( //Don't go above the top
+          mouseEvent.clientY - (rollButtonRect.y - myRect.y + rollButtonRect.height/2), 0
+        ),
+        document.body.clientHeight - myRect.height
+      )) + "px";
+    
+    return this;
+  }
 
-  //Internal
+  //Private
   initPrototypeSlots() {
     super.initPrototypeSlots();
-    
+
     this.initPublicPrototypeSlots();
 
-    //Internal
-    this.newSlot("titleView", null);
+    this.newSlot("reasonView", null);
     this.newSlot("characterTextField", null);
-    this.newSlot("dieOptionsView", null);
     this.newSlot("countTextField", null);
+    this.newSlot("dieOptionsView", null);
     this.newSlot("modifierTextField", null);
-    this.newSlot("rollTypeOptionsView", null);
+    this.newSlot("keepDropOptionsView", null);
+    this.newSlot("keepDropHighLowOptionsView", null);
+    this.newSlot("keepDropCountTextField", null);
     this.newSlot("targetTextField", null);
-    this.newSlot("sendImmediatelyCheckbox", null);
     this.newSlot("rollButton", null);
     this.newSlot("cancelButton", null);
 
     this.newSlot("parser", null);
+  }
+
+  setRollRequest(rollRequest) {
+    this._rollRequest = rollRequest;
+
+    this.reasonView().setInnerText(rollRequest.reason());
+    this.characterTextField().setValue(rollRequest.character());
+    this.countTextField().setValue(rollRequest.count());
+    this.dieOptionsView().setValue(String(rollRequest.die()));
+    this.modifierTextField().setValue(rollRequest.modifier());
+    this.keepDropOptionsView().setValue(rollRequest.keepDrop());
+    this.keepDropHighLowOptionsView().setValue(rollRequest.keepDropHighLow());
+    this.keepDropCountTextField().setValue(rollRequest.keepDropCount());
+    this.targetTextField().setValue(rollRequest.target() || "");
+    return this;
   }
 
   init() {
@@ -151,36 +82,58 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   initElement() {
     super.initElement();
 
-    this.setTitleView(View.clone().setId("rollPanelTitle"));
-    this.setCharacterTextField(TextFieldView.clone().setId("rollPanelCharacter"));
-    this.setCountTextField(TextFieldView.clone().setId("rollPanelCount"));
-    this.setDieOptionsView(OptionsView.clone().setId("rollPanelDie"));
-    this.setModifierTextField(TextFieldView.clone().setId("rollPanelModifier"));
-    this.setRollTypeOptionsView(OptionsView.clone().setId("rollPanelRollType"));
-    this.setTargetTextField(TextFieldView.clone().setId("rollPanelTarget"));
-    //this.setSendImmediatelyCheckbox(CheckboxView.clone().setId("rollPanelSendImmediately"));
-    this.setRollButton(Button.clone().setId("rollPanelRollButton").setTarget(this).setAction("roll"));
-    this.setCancelButton(Button.clone().setId("rollPanelCancelButton").setTarget(this).setAction("hide"));
+    this.setReasonView(View.clone().setId("rollPanel_reasonView"));
+    this.setCharacterTextField(TextFieldView.clone().setId("rollPanel_characterTextField").setTarget(this));
+    this.setCountTextField(TextFieldView.clone().setId("rollPanel_countTextField").setTarget(this));
+    this.setDieOptionsView(OptionsView.clone().setId("rollPanel_dieOptionsView").setTarget(this));
+    this.setModifierTextField(TextFieldView.clone().setId("rollPanel_modifierTextField").setTarget(this));
+    this.setKeepDropOptionsView(OptionsView.clone().setId("rollPanel_keepDropOptionsView").setTarget(this));
+    this.setKeepDropHighLowOptionsView(OptionsView.clone().setId("rollPanel_keepDropHighLowOptionsView").setTarget(this));
+    this.setKeepDropCountTextField(TextFieldView.clone().setId("rollPanel_keepDropCountTextField").setTarget(this));
+    this.setTargetTextField(TextFieldView.clone().setId("rollPanel_targetTextField").setTarget(this));
+    this.setRollButton(Button.clone().setId("rollPanel_rollButton").setTarget(this).setAction("submit"));
+    this.setCancelButton(Button.clone().setId("rollPanel_cancelButton").setTarget(this).setAction("hide"));
 
-    var self = this;
-    this.element().addEventListener('mouseover', e => { self.didMouseOver(e) });
-    this.element().addEventListener('mouseout', e => { self.didMouseOut(e) });
-    
+
+    for (let e of this.element().querySelectorAll("*")) {
+      e.style.display = "";
+      delete e.style["flex-direction"];
+    }
+
     this.hide();
   }
 
-  didMouseOver() {
-    this.setIsMouseOver(true);
+  //TODO validations
+  onChange_rollPanel_characterTextField() {
+    this.rollRequest().setCharacter(this.characterTextField().value().trim());
   }
 
-  didMouseOut() {
-    this.setIsMouseOver(false);
-    //this.hide();
+  onChange_rollPanel_countTextField() {
+    this.rollRequest().setCount(parseInt(this.countTextField().value().trim()));
   }
 
-  shouldSendImmediately() {
-    return true;
-    //return this.sendImmediatelyCheckbox().isChecked();
+  onChange_rollPanel_dieOptionsView() {
+    this.rollRequest().setDie(parseInt(this.dieOptionsView().value().trim()));
+  }
+
+  onChange_rollPanel_modifierTextField() {
+    this.rollRequest().setModifier(parseInt(this.modifierTextField().value().trim()));
+  }
+
+  onChange_rollPanel_keepDropOptionsView() {
+    this.rollRequest().setKeepDrop(this.keepDropOptionsView().value().trim());
+  }
+
+  onChange_rollPanel_keepDropHighLowOptionsView() {
+    this.rollRequest().setKeepDrop(this.keepDropHighLowOptionsView().value().trim());
+  }
+
+  onChange_rollPanel_keepDropCountTextField() {
+    this.rollRequest().setKeepDropCount(parseInt(this.keepDropCountTextField().value().trim()));
+  }
+
+  onChange_rollPanel_targetTextField() {
+    this.rollRequest().setTarget(parseInt(this.targetTextField().value().trim()));
   }
 }).initThisClass();
 
