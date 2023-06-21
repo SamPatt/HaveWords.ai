@@ -8,6 +8,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     //Public Interface
     this.newSlot("notation");
     this.newSlot("results");
+    this.newSlot("isRolling", false);
     
 
     //Internal
@@ -23,9 +24,18 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   async roll() {
-    await this.diceBox().roll(this.parser().parseNotation(this.notation()));
-    this.setResults(this.parser().parseFinalResults(this.diceBox().getRollResults()));
-    return this.results();
+    try {
+      this.setIsRolling(true);
+      await this.diceBox().roll(this.parser().parseNotation(this.notation()));
+      this.setResults(this.parser().parseFinalResults(this.diceBox().getRollResults()));
+    }
+    catch(e) {
+      throw e;
+    }
+    finally {
+      this.setIsRolling(false);
+      return this.results();
+    }
   }
 
   clear() {

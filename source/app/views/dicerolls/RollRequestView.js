@@ -56,12 +56,14 @@
   }
 
   mouseOver(evt) {
-    const rp = RollPanelView.shared();
-    rp.setRollRequest(this.rollRequest());
-    rp.setTarget(this);
-    rp.setAction("rollPanelDidSubmit");
-    rp.show();
-    rp.positionRelativeTo(evt);
+    if (!DiceBoxView.shared().isRolling() && !RollPanelView.shared().isShown()) {
+      const rp = RollPanelView.shared();
+      rp.setRollRequest(this.rollRequest());
+      rp.setTarget(this);
+      rp.setAction("rollPanelDidSubmit");
+      rp.show();
+      rp.positionRelativeTo(evt);
+    }
   }
 
   async rollPanelDidSubmit() {

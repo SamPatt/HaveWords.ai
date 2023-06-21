@@ -94,11 +94,11 @@
   }
 
   hasAdvantage() {
-    return this.notation().includes("kh1");
+    return this.count() > 1 && this.notation().includes("kh1");
   }
 
   hasDisadvantage() {
-    return this.notation().includes("kl1");
+    return this.count() > 1 && this.notation().includes("kl1");
   }
 
   wasSuccess() {

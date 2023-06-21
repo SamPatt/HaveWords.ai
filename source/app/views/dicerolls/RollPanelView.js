@@ -6,9 +6,11 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   initPublicPrototypeSlots() {
     this.newSlot("rollRequest", null);
     this.newSlot("rollOutcome", null);
+    this.newSlot("isShown", false);
   }
 
   show() {
+    this.setIsShown(true);
     this.element().style.position = 'absolute';
     this.element().style.display = 'table';
     const myRect = this.element().getBoundingClientRect();
@@ -18,6 +20,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   hide() {
+    this.setIsShown(false);
     this.element().style.display = 'none';
   }
 
