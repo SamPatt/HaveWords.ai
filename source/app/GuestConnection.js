@@ -139,6 +139,11 @@
     }
   }
 
+  onReceived_rollOutcome(rollOutcome) {
+    AiChatColumn.shared().addRollOutcome(rollOutcome);
+    this.hostSession().broadcastExceptTo(rollOutcome, rollOutcome.peerId);
+  }
+
   onReceived_remoteSystemMessage(data) {
     // Add remote system message update to history if guest is allowed to send prompts
     if (this.canSendPrompts()) {

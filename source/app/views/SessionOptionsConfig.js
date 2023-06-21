@@ -212,230 +212,181 @@ const sessionOptionsArray = [
         This is a game played by adults and should not be a children's story or involve children as characters.`,
         */
         prompt: `
-Pretend you are we're playing a Dungeons and Dragons 5th edition game. You're the dungeon master and we're the players. 
-We create the story together, with you in charge of the setting, environment, non-player characters (NPCs), and their actions, as well as how my actions affect these elements. 
-You can only describe my character's actions based on what I say they do. Please write your responses in the style that Robert E. Howard used in his novels.
+        You are an AI dungeon master dice roll simulation. Players ask you for the correct dice roll for a given D&D scenario.
 
-You also decide if my character's actions are successful. Simple actions, like opening an unlocked door, are automatic successes. 
-More complex actions, like breaking down a door, require a skill check. Ask me to make a skill check following D&D 5th edition rules when needed. 
-Impossible actions, like lifting a building, are just that: impossible.
-
-Make sure my actions fit the context of the setting. For example, in a fantasy tavern, there won't be a jukebox to play songs. 
-Keep the setting consistent and don't allow players to invent items, locations, or characters.
-
-When we start combat, roll for initiative, providing an order of action. Keep track of each creature's health points (HP), reducing them when damage is dealt. 
-If a creature's HP reaches zero, they die.
-
-[sessionSubtype2]
-
-You make the decisions for NPCs and creatures. When introducing a new scene, include a <div class=sceneSummary></div> tag with a description for generating an image of the scene. 
-Do not reference character names in the scene description, only describe them visually.
-
-I'll provide my character's class, race, and alignment details. You'll generate their standard Dungeons and Dragons 5th edition stats, items, and other details. 
-When providing a player's stats and items for a character, use a JSON format within a <div class=playerInfo></div> tag, and use separate tags for each player. 
-When using a playerInfo div, *always* include the complete set of playerInfo info.
-This should include a name property whose value is the player's name, and also an "appearance" property, providing a detailed physical description (which should not mention the character's name or use the word 'thick'). 
-
-When a player's attributes change during the game, such as when their hitpoints decreases due to damage, or they gain or lose an item, 
-please include a <div class=playerInfo></div> containing the updated JSON in your response.
-
-Here is an example of the playerInfo JSON format:
-
-{
-  "name": "Foo",
-  "level": 10,
-  "race": "Human",
-  "class": "Rogue",
-  "alignment": "Neutral Good",
-  "stats": {
-    "strength": 14,
-    "dexterity": 20,
-    "constitution": 16,
-    "intelligence": 14,
-    "wisdom": 12,
-    "charisma": 10
-  },
-  "armorClass": 17,
-  "hitPoints": 75,
-  "proficiencies": {
-    "acrobatics": 7,
-    "stealth": 9,
-    "sleightOfHand": 9,
-    "investigation": 6,
-    "perception": 5,
-    "thievesTools": 9
-  },
-  "equipment": {
-    "rapier": {
-      "damage": "1d8+5",
-      "attackBonus": 9
-    },
-    "shortbow": {
-      "damage": "1d6+5",
-      "attackBonus": 9
-    },
-    "leatherArmor": {
-      "armorClass": 12
-    },
-    "thievesTools": {},
-    "dungeoneersPack": {},
-    "cloakOfElvenkind": {}
-  },
-  "features": {
-    "evasion": {},
-    "uncannyDodge": {},
-    "sneakAttack": "5d6"
-  },
-  "appearance": "..."
-}
-
-Here are the character sheets (in JSON format) for the players in our game:
-
-[playerCharacterSheets]
-
-If any necessary details are empty (such as stats, armorClass, hitPoints, proficiencies, equitment, money, features or appearance), please generate those details and provide a playerInfo div with the results.
-
-Be sure to call the diceRoll function any time that you need dice roll results.
+        When they describe the scenario, you ask them to make the appropriate dice roll.
+        
+        Start by asking for the appropriate dice roll for the following scenario:
+        
+        A Level 1 Human Barbarian Character named Conan is rolling for initiative. His deterity modifier is +4
 `,
         gptFunctions: [
           {
-              "name": "diceRoll",
-              "descripton": "As the DM, you must call the diceRoll function when you need dice roll results for any reason. This includes rolls for player and non-player characters, as well as rolls you need to make as the DM.",
-              "parameters": {
-                  "type": "object",
-                  "properties": {
+            "name": "rollRequest",
+            "description": "The rollRequest function presents a UI element that allows players to make dice rolls and report them back to you. As the DM, you must call the rollRequest function whenever you need the player to make dice rolls. You can request many dice rolls in a single function call.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "rolls": {
+                  "type": "array",
+                  "description": "An array containing the rolls the DM is requesting.",
+                  "items": {
+                    "type": "object",
+                    "description": "An object specifying a dice roll requested for a character.",
+                    "properties": {
                       "character": {
-                          "type": "string",
-                          "description": "The name of the character that should roll. The character can be the name of a player or non-player character, or even 'DM'."
+                        "type": "string",
+                        "description": "The name of the character that should roll. The character can be the name of a player or non-player character, or even 'DM'."
                       },
                       "reason": {
-                          "type": "string",
-                          "description": "The reason the roll is required. e.g. Attack Roll, Skill Check, Initiative, Random Encounter, Loot Generation, etc."
+                        "type": "string",
+                        "description": "A ONE OR TWO WORD description of the reason that the DM requested the roll. e.g. Attack, Damage, Skill Check, Initiative, Random Encounter, Loot Generation, etc.",
+                        "maxLength": 32
                       },
                       "die": {
-                          "type": "integer",
-                          "enum": [4, 6, 8, 10, 12, 20, 100],
-                          "description": "The die number that the character should roll"
+                        "type": "integer",
+                        "enum": [4, 6, 8, 10, 12, 20, 100],
+                        "description": "The die number that the character should roll"
                       },
-                      "count": {
-                          "type": "integer",
-                          "minimum": 1,
-                          "description": "The number of dice the character should roll"
+                      "num": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "The number of dice the character should roll"
                       },
-                      "modifier": {
-                          "type": "integer",
-                          "description": "The modifier that the character should apply to the roll"
+                      "mod": {
+                        "type": "integer",
+                        "description": "(optional) The modifier that the character should apply to the roll. Omit this property entirely if the value is 0."
                       },
                       "target": {
-                          "type": "integer",
-                          "description": "The value the character needs to succeed on this roll."
+                        "type": "integer",
+                        "description": "(optional) The total that constitutes success for the roll. Omit this property entirely if the value is 0."
                       },
-                      "keep": {
-                          "type": "string",
-                          "enum": ["kh1", "khl"],
-                          "description": "Advantage Roll: kh1. Disadvantage Roll: kl1. Normal roll: omit this parameter."
+                      "kd": {
+                        "type": "object",
+                        "description": "Specifies how many dice should be kept or dropped from the roll.",
+                        "properties": {
+                          "num": {
+                            "type": "number",
+                            "description": "The number of dice to keep or drop"
+                          },
+                          "kd": {
+                            "type": "string",
+                            "enum": ["k", "d"],
+                            "description": "'k' to keep dice. 'd' to drop dice."
+                          },
+                          "hl": {
+                            "type": "string",
+                            "enum": ["h", "l"],
+                            "description": "'h' to select highest dice. 'l' to select lowest dice."
+                          }
+                        },
+                        "required": ["num", "kd", "hl"]
                       }
-                  },
-                  "required": ["character", "reason", "die", "count"]
-              }
+                    },
+                    "required": ["name", "reason", "die", "num", "kd"]
+                  }
+                }
+              },
+              "required": ["rolls"]
+            }
           }
         ],
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
         options: [
-            {
-              "label": "AI generated adventure",
-              "description": ""
-            },
-            {
-              "label": "The Lost City",
-              "description": "Traps adventurers in an ancient, ruined city with a mysterious pyramid."
-            },
-            {
-              "label": "Keep on the Borderlands",
-              "description": "Investigates a dangerous wilderness and a labyrinthine cave system known as the Caves of Chaos."
-            },
-            {
-              "label": "The Temple of Elemental Evil",
-              "description": "Brings characters face-to-face with the dark gods of the universe."
-            },
-            {
-              "label": "White Plume Mountain",
-              "description": "Tasks adventurers with retrieving three infamous weapons from a bizarre dungeon."
-            },
-            {
-              "label": "Against the Giants",
-              "description": "Pits players against a series of giant-led monstrous forces."
-            },
-            {
-              "label": "Descent into the Depths of the Earth",
-              "description": "Leads adventurers into the dark, subterranean world of the drow."
-            },
-            {
-              "label": "Queen of the Spiders",
-              "description": "Culminates a series of adventures against the machinations of Lolth, the demon queen of spiders."
-            },
-            {
-              "label": "The Tomb of Horrors",
-              "description": "Challenges adventurers with the deadliest dungeon, filled with lethal traps and cunning puzzles."
-            },
-            {
-              "label": "Ravenloft",
-              "description": "Introduces the iconic villain Strahd von Zarovich in his haunted castle."
-            },
-            {
-              "label": "The Hidden Shrine of Tamoachan",
-              "description": "Tests adventurers' ingenuity with Mayan/Aztec-themed puzzles and traps."
-            },
-            {
-              "label": "The Village of Hommlet",
-              "description": "Begins a grand campaign against the forces of Elemental Evil."
-            },
-            {
-              "label": "Palace of the Silver Princess",
-              "description": "Rescues a captured princess from her enchanted palace."
-            },
-            {
-              "label": "Red Hand of Doom",
-              "description": "Thwarts the invasion plan of the destructive Red Hand hobgoblin army."
-            },
-            {
-              "label": "Curse of Strahd",
-              "description": "Returns adventurers to the realm of Barovia and its vampiric master."
-            },
-            {
-              "label": "Storm King's Thunder",
-              "description": "Combats a great conflict between giants and small folk."
-            },
-            {
-              "label": "Tomb of Annihilation",
-              "description": "Faces a deadly curse in the dinosaur-filled jungles of Chult."
-            },
-            {
-              "label": "Waterdeep: Dragon Heist",
-              "description": "Reveals a hidden treasure and conspiracies in the city of Waterdeep."
-            },
-            {
-              "label": "Waterdeep: Dungeon of the Mad Mage",
-              "description": "Explores the mega-dungeon of Undermountain."
-            },
-            {
-              "label": "Ghost of Saltmarsh",
-              "description": "Features seafaring adventures and mystery in the coastal town of Saltmarsh."
-            },
-            {
-              "label": "Baldur's Gate: Descent Into Avernus",
-              "description": "Journeys from the city of Baldur's Gate to the hellscape of Avernus."
-            },
-            {
-              "label": "Icewind Dale: Rime of the Frostmaiden",
-              "description": "Survives the frozen wilderness of Icewind Dale under the shadow of a cruel god."
-            },
-            {
-              "label": "Candlekeep Mysteries",
-              "description": "Solves a variety of mysteries originating from the books in the fortress library of Candlekeep."
-            }
-          ],
+          {
+            "label": "AI generated adventure",
+            "description": ""
+          },
+          {
+            "label": "The Lost City",
+            "description": "Traps adventurers in an ancient, ruined city with a mysterious pyramid."
+          },
+          {
+            "label": "Keep on the Borderlands",
+            "description": "Investigates a dangerous wilderness and a labyrinthine cave system known as the Caves of Chaos."
+          },
+          {
+            "label": "The Temple of Elemental Evil",
+            "description": "Brings characters face-to-face with the dark gods of the universe."
+          },
+          {
+            "label": "White Plume Mountain",
+            "description": "Tasks adventurers with retrieving three infamous weapons from a bizarre dungeon."
+          },
+          {
+            "label": "Against the Giants",
+            "description": "Pits players against a series of giant-led monstrous forces."
+          },
+          {
+            "label": "Descent into the Depths of the Earth",
+            "description": "Leads adventurers into the dark, subterranean world of the drow."
+          },
+          {
+            "label": "Queen of the Spiders",
+            "description": "Culminates a series of adventures against the machinations of Lolth, the demon queen of spiders."
+          },
+          {
+            "label": "The Tomb of Horrors",
+            "description": "Challenges adventurers with the deadliest dungeon, filled with lethal traps and cunning puzzles."
+          },
+          {
+            "label": "Ravenloft",
+            "description": "Introduces the iconic villain Strahd von Zarovich in his haunted castle."
+          },
+          {
+            "label": "The Hidden Shrine of Tamoachan",
+            "description": "Tests adventurers' ingenuity with Mayan/Aztec-themed puzzles and traps."
+          },
+          {
+            "label": "The Village of Hommlet",
+            "description": "Begins a grand campaign against the forces of Elemental Evil."
+          },
+          {
+            "label": "Palace of the Silver Princess",
+            "description": "Rescues a captured princess from her enchanted palace."
+          },
+          {
+            "label": "Red Hand of Doom",
+            "description": "Thwarts the invasion plan of the destructive Red Hand hobgoblin army."
+          },
+          {
+            "label": "Curse of Strahd",
+            "description": "Returns adventurers to the realm of Barovia and its vampiric master."
+          },
+          {
+            "label": "Storm King's Thunder",
+            "description": "Combats a great conflict between giants and small folk."
+          },
+          {
+            "label": "Tomb of Annihilation",
+            "description": "Faces a deadly curse in the dinosaur-filled jungles of Chult."
+          },
+          {
+            "label": "Waterdeep: Dragon Heist",
+            "description": "Reveals a hidden treasure and conspiracies in the city of Waterdeep."
+          },
+          {
+            "label": "Waterdeep: Dungeon of the Mad Mage",
+            "description": "Explores the mega-dungeon of Undermountain."
+          },
+          {
+            "label": "Ghost of Saltmarsh",
+            "description": "Features seafaring adventures and mystery in the coastal town of Saltmarsh."
+          },
+          {
+            "label": "Baldur's Gate: Descent Into Avernus",
+            "description": "Journeys from the city of Baldur's Gate to the hellscape of Avernus."
+          },
+          {
+            "label": "Icewind Dale: Rime of the Frostmaiden",
+            "description": "Survives the frozen wilderness of Icewind Dale under the shadow of a cruel god."
+          },
+          {
+            "label": "Candlekeep Mysteries",
+            "description": "Solves a variety of mysteries originating from the books in the fortress library of Candlekeep."
+          }
+        ],
       },
       {
         label: "Harry Potter",
@@ -444,7 +395,7 @@ Be sure to call the diceRoll function any time that you need dice roll results.
 We'd like you to write this adventure as J.K. Rowling would.`,
         artPromptPrefix: "Mary GrandPré style pastel drawing of:",
         musicPlaylists: ["HarryPotter"],
-        defaultMusicTrackId: "MgkIHQvCJRk", 
+        defaultMusicTrackId: "MgkIHQvCJRk",
         theme: {
           headerFontFamily: "Lumos",
           fontFamily: "Cardo",

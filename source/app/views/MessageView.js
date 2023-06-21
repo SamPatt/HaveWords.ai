@@ -21,10 +21,14 @@
     this.newSlot("loadingContainer", null);
     this.newSlot("imageContainer", null);
     this.newSlot("imageUrl", null);
+
+    //Dice Rolls
+    this.newSlot("rollRequestViews");
   }
 
   init() {
     super.init();
+    this.setRollRequestViews([]);
     this.create();
   }
 
@@ -151,65 +155,7 @@
     const formatted = aString.convertToParagraphs();
     const sanitizedHtml = DOMPurify.sanitize(formatted);
     this.textElement().innerHTML = sanitizedHtml;
-    this.setupLinks();
     return this;
-  }
-
-  setupLinks() {
-    this.element().querySelectorAll('a').forEach((a) => {
-      switch(a.className) {
-        case "diceroll":
-          this.setupRollLink(a);
-          break;
-        case "characterChoice":
-          this.setupChoiceLink(a);
-          break;
-      }
-    });
-  }
-
-  setupRollLink(a) {
-    var self = this;
-    a.addEventListener('mouseover', (event) => {
-      self.didMouseOverRollLink(event);
-    });
-
-    a.addEventListener('mouseout', (event) => {
-      self.didMouseOutRollLink(event);
-    });
-
-    a.addEventListener('click', (event) => {
-      self.didClickRollLink(event);
-    });
-  }
-
-  didMouseOverRollLink(event) {
-    RollPanelView.shared().setCharacter(event.target.dataset.character);
-    RollPanelView.shared().setNotation(event.target.dataset.notation);
-    RollPanelView.shared().setRollTarget(event.target.dataset.target || "");
-    RollPanelView.shared().show();
-    RollPanelView.shared().positionRelativeTo(event.target);
-  }
-
-  didMouseOutRollLink(event) {
-    setTimeout(e => {
-      if (!RollPanelView.shared().isMouseOver()) {
-        RollPanelView.shared().hide();
-      }
-    }, 100);
-  }
-
-  didClickRollLink(event) {
-    event.preventDefault();
-    RollPanelView.shared().roll();
-  }
-
-  setupChoiceLink(a) {
-    var self = this;
-    a.addEventListener('click', async (e) => {
-      AiChatColumn.shared().messageInput().appendText(`${a.dataset.number}\n`);
-      AiChatColumn.shared().addPrompt();
-    });
   }
 
   imageContainer () {
@@ -395,5 +341,78 @@
     }
   }
 
+  /* Function Calls */
+
+  execFunctionCall(responseJson) {
+    switch(responseJson.function_call.name) {
+      case "rollRequest":
+        this.execRollRequest(responseJson);
+        break;
+    }
+  }
+
+  execRollRequest(responseJson) {
+    let container = document.createElement("div");
+    container.className = "rollRequest";
+    container.innerHTML = '<h2>Please make the following roll(s)</h2>';
+
+    //group request rolls by character for display
+    const groupedRolls = new Map();
+    
+    JSON.parse(responseJson.function_call.arguments).rolls.forEach(roll => {
+      const rolls = groupedRolls.get(roll.character) || [];
+      rolls.push(roll);
+      groupedRolls.set(roll.character, rolls);
+    });
+
+    const characterList = document.createElement("ul");
+    let id = 0;
+    for (let [character, rolls] of groupedRolls) {
+      const characterItem = document.createElement("li");
+      characterItem.innerHTML = `<h3>${ character }:</h3>`
+
+      const characterRollsList = document.createElement("ul");
+      characterItem.appendChild(characterRollsList);
+
+      for (let roll of rolls) {
+        const rrv = RollRequestView.clone().setMessageView(this).setRollRequest(RollRequest.clone().setId(id).setJson(roll)).create();
+        this.rollRequestViews().push(rrv);
+        characterRollsList.appendChild(rrv.element());
+        id ++;
+      }
+
+      characterList.appendChild(characterItem);
+    }
+    container.appendChild(characterList);
+
+    this.textElement().appendChild(container);
+  }
+
+  addRollOutcome(rollOutcome) {
+    this.rollRequestViews().find(rrv => rrv.rollRequest().id() == rollOutcome.id).addRollOutcome(rollOutcome);
+    if (App.shared().isHost() && this.rollRequestViews().every(rrv => rrv.rollOutcome())) {
+      this.sendRollOutcomePrompt();
+    }
+  }
+
+  sendRollOutcomePrompt() {
+    const message = this.rollRequestViews().map(rrv => {
+      const rr = rrv.rollRequest();
+      return `${rr.character()} (${rr.reason()}): ${rrv.textRollOutcomeDescription()}`
+    }).join("\n");
+
+    console.log(message);
+
+    Session.shared().addToHistory({
+      type: "prompt",
+      data: message,
+      id: LocalUser.shared().id(),
+      nickname: LocalUser.shared().nickname(),
+    });
+    
+    HostSession.shared().sendAIResponse(message);
+
+    Sounds.shared().playSendBeep();
+  }
 }.initThisClass());
 

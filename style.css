@@ -1154,7 +1154,13 @@ body {
     background-color: transparent;
 }
 
-/* --- DiceRollView --- */
+/* --- Dice Roll Messages --- */
+
+.rollRequest h3 {
+    font-weight: normal;
+}
+
+/* --- DiceBoxView --- */
 
 span.criticalSuccessRoll {
     font-weight: bold;
@@ -1181,6 +1187,7 @@ span.ignoredRoll {
     background-color: var(--body-background-color);
     color: var(--body-color);
     display: none;
+    
 }
 
 #rollPanelView .rollPanelRow {
@@ -1190,7 +1197,11 @@ span.ignoredRoll {
 }
 
 #rollPanelView .rollPanelButtons {
-    align-self: center;
+    text-align: center;
+}
+
+#rollPanelRollButton {
+    margin-right: 1em;
 }
 
 #rollPanelTitle {
