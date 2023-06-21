@@ -77,9 +77,9 @@
   notation() {
     let notation = String(this.count());
     notation += ("d" + String(this.die()));
-    notation += (this.keepDrop() + this.setKeepDropHighLow() + String(this.keepDropCount()))
+    notation += (this.keepDrop() + this.keepDropHighLow() + String(this.keepDropCount()))
     if (this.modifier()) {
-      notation += this.modifier() > 0 ? "+" : "-";
+      notation += (this.modifier() > 0 ? "+" : "") + String(this.modifier());
     }
     
     return notation;
