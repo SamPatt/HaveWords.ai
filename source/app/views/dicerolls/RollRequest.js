@@ -81,6 +81,7 @@
     if (this.modifier()) {
       notation += (this.modifier() > 0 ? "+" : "") + String(this.modifier());
     }
+    //console.log(notation);
     
     return notation;
   }
@@ -98,7 +99,7 @@
   }
 
   hasDisadvantage() {
-    return this.count() > 1 && this.notation().includes("kl1");
+    return this.count() > 1 &&this.notation().includes("kl1");
   }
 
   wasSuccess() {
@@ -176,25 +177,20 @@
       }
     });
 
-    if (this.hasTarget()) {
-      const results = this.results();
-      results.target = this.target();
-      if (this.hasAdvantage()) {
-        results.critical = highestRoll.critical;
-      }
-      else if (this.hasDisadvantage()) {
-        results.critical = lowestRoll.critical; 
-      }
-      else {
-        results.critical = highestRoll.critical; 
-      }
+    const results = this.results();
+    results.target = this.target();
+    if (this.hasAdvantage()) {
+      results.critical = highestRoll.critical;
+    }
+    else if (this.hasDisadvantage()) {
+      results.critical = lowestRoll.critical; 
+    }
 
-      if (this.wasCritical()) {
-        results.success = this.wasCriticalSuccess();
-      }
-      else {
-        results.success = this.value() >= results.target;
-      }
+    if (this.wasCritical()) {
+      results.success = this.wasCriticalSuccess();
+    }
+    else if (this.hasTarget()) {
+      results.success = this.value() >= results.target;
     }
   }
 
@@ -324,7 +320,7 @@
   }
 
   successDescription() {
-    if (this.hasTarget()) {
+    if (this.hasTarget() || this.wasCritical()) {
       let description = ' (';
 
       if (this.wasCritical()) {
