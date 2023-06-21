@@ -63,6 +63,9 @@
       const view = NumberView.clone().create().setValue(v);
       view.setIsEditable(true);
       return view;
+    } else if (type == "Boolean") {
+      const view = BooleanView.clone().create().setValue(String(v));
+      return view;
     }
 
     const viewClass = getGlobalThis()[viewClassName];
@@ -82,6 +85,8 @@
       return "Number";
     } else if (typeof value === "string") {
       return "String";
+    } else if (typeof value === "boolean") {
+      return "Boolean";
     } else {
       return "Unknown";
     }

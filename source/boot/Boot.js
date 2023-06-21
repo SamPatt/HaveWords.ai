@@ -94,6 +94,7 @@ class Boot extends Object {
       "source/app/views/columns/JsonViews/ObjectView.js",
       "source/app/views/columns/JsonViews/StringView.js",
       "source/app/views/columns/JsonViews/NumberView.js",
+      "source/app/views/columns/JsonViews/BooleanView.js",
 
       "source/app/views/columns/ScrollView.js",
       "source/app/views/columns/ColumnView.js",
