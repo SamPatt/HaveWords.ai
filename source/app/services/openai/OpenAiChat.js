@@ -12,6 +12,7 @@
     this.newSlot("initialMessagesCount", 3); // Number of initial messages to always keep
     this.newSlot("models", null);
     this.newSlot("didModelCheck", false);
+    this.newSlot("localStorageModelsKey", "openai_available_models_20230623")
   }
 
   init() {
@@ -44,12 +45,12 @@
   }
 
   setAvailableModelNames (modelNamesArray) { /* or pass in null to clear the list */
-    localStorage.setItem("openai_available_models", JSON.stringify(modelNamesArray));
+    localStorage.setItem(this.localStorageModelsKey(), JSON.stringify(modelNamesArray));
     return this;
   }
 
   availableModelNames () {
-    const s = localStorage.getItem("openai_available_models");
+    const s = localStorage.getItem(this.localStorageModelsKey());
     try {
       return s ? JSON.parse(s) : null;
     } catch (e) {
@@ -76,9 +77,8 @@
     // model names with versions numbers are ones soon to be depricated, 
     // so we don't include those.
     return [
-      "gpt-4", 
-      "gpt-4-32k", 
-      "gpt-3.5-turbo", 
+      "gpt-4-0613",
+      "gpt-3.5-turbo-0613",
     ];
   }
 
@@ -126,11 +126,8 @@
   }
 
   newRequestForPrompt (prompt, role) {
-    /* TODO: Switch Back
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
-    */
-    const selectedModel = "gpt-4-0613";
     
     this.addToConversation({
       role: role,
