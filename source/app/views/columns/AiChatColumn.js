@@ -24,7 +24,8 @@
     this.setScrollView(ScrollView.clone().setId("AiChatColumn_ScrollView"));
     this.scrollView().contentView().setId("AiChatMessages");
 
-    this.setHasPromptAccess(App.shared().isHost());
+    //this.setHasPromptAccess(App.shared().isHost());
+    this.setHasPromptAccess(true); //TODO: Remove this once prompt toggle is fixed
 
     this.setupButtons();
   }
@@ -94,7 +95,7 @@
   sendGuestPrompt(message) {
     if (message.trim() !== "") {
       // Send chat message to host
-      this.send({
+      GuestSession.shared().send({
         type: "remotePrompt",
         id: LocalUser.shared().id(),
         nickname: LocalUser.shared().nickname(),
@@ -119,8 +120,8 @@
   updateAIResponseJson(json) {
     const requestId = json.requestId;
     const text = json.message;
-    let messageView = this.requestIdToMessageMap().get(requestId);
 
+    let messageView = this.requestIdToMessageMap().get(requestId);
     if (!messageView) {
       Sounds.shared().playReceiveBeep();
 
@@ -140,11 +141,14 @@
     }
     messageView.setText(text);
     messageView.setIsStreaming(!json.isDone);
+    if (json.function_call && json.isDone) {
+      messageView.execFunctionCall(json);
+    }
     if (shouldScroll) {
       this.scrollView().scrollToBottom();
     }
 
-    if (App.shared().isHost()) {
+    if (App.shared().isHost() && SessionOptionsView.shared().imageGenIsEnabled()) { //TODO Only include image gen in the system message if there is a model enabled.
       messageView.requestImageIfSummaryAvailable(); // this should be in a AiResponseMessage object
     }
   }
@@ -377,6 +381,11 @@
     this.displayHistory(Session.shared().history());
   }
 
+  /* Dice Rolls */
+
+  addRollOutcome(rollOutcome) {
+    this.requestIdToMessageMap().get(rollOutcome.requestId).addRollOutcome(rollOutcome);
+  }
 }).initThisClass();
 
 AiChatColumn.shared(); // so a shared instance gets created

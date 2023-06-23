@@ -200,6 +200,10 @@
     );
   }
 
+  onReceived_rollOutcome(rollOutcome) {
+    AiChatColumn.shared().addRollOutcome(rollOutcome);
+  }
+
   // --- send messages ---
 
   send(json) {

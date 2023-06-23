@@ -271,6 +271,10 @@
       message: sendContent,
       isDone: isDone
     };
+
+    if (request.functionCall()) {
+      json.function_call = request.functionCall();
+    }
     AiChatColumn.shared().updateAIResponseJson(json)
     this.broadcast(json);
   }

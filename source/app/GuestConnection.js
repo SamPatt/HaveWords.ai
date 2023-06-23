@@ -97,6 +97,10 @@
 
   // --- player data ---
 
+  canSendPrompts() { //TODO implement this once prompt permission is reinstated
+    return true;
+  }
+
   onReceived_remotePrompt(data) {
     // Add prompt to prompt history
     if (this.canSendPrompts()) {
@@ -133,6 +137,11 @@
     } else {
       console.log(`Rejected prompt from ${conn.peer} - ${this.nickname()}`);
     }
+  }
+
+  onReceived_rollOutcome(rollOutcome) {
+    AiChatColumn.shared().addRollOutcome(rollOutcome);
+    this.hostSession().broadcastExceptTo(rollOutcome, rollOutcome.peerId);
   }
 
   onReceived_remoteSystemMessage(data) {

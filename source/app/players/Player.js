@@ -80,8 +80,9 @@
 
   // canSendPrompts
 
-  canSendPrompts () {
-    return this.info()._canSendPrompts
+  canSendPrompts () { //TODO: Allow everyone to send prompts until toggle is fixed.
+    //return this.info()._canSendPrompts
+    return true;
   }
 
   setCanSendPrompts(v) {
@@ -129,7 +130,7 @@
   }
 
   async generateImageFromAppearance() {
-    if (this.appearance()) {
+    if (this.appearance() && ImageGenOptions.shared().isMidjourneyOption()) {
       assert(App.shared().isHost());
       const imagePrompt = SessionOptionsView.shared().artPromptPrefix() + " " + this.appearance() + ". " + SessionOptionsView.shared().artPromptSuffix();
       const job = MJImageJobs.shared().newJob();

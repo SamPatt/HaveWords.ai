@@ -83,8 +83,10 @@ class Boot extends Object {
       "source/app/views/inputs/TextFieldView.js",
       "source/app/views/inputs/CheckboxView.js",
 
-      { src: "source/app/views/dicerolls/DiceRollView.js", type: "module" },
+      { src: "source/app/views/dicerolls/DiceBoxView.js", type: "module" },
       { src: "source/app/views/dicerolls/RollPanelView.js", type: "module" },
+      "source/app/views/dicerolls/RollRequest.js",
+      "source/app/views/dicerolls/RollRequestView.js",
 
       // view columns
       "source/app/views/columns/JsonViews/JsonView.js",
@@ -92,6 +94,7 @@ class Boot extends Object {
       "source/app/views/columns/JsonViews/ObjectView.js",
       "source/app/views/columns/JsonViews/StringView.js",
       "source/app/views/columns/JsonViews/NumberView.js",
+      "source/app/views/columns/JsonViews/BooleanView.js",
 
       "source/app/views/columns/ScrollView.js",
       "source/app/views/columns/ColumnView.js",

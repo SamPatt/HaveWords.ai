@@ -85,23 +85,9 @@
     this.setupCompactorButtons();
     AvatarPickerView.shared().displayAvatar(LocalUser.shared().avatar());
 
-    if(getGlobalThis().DiceRollView) {
-      await DiceRollView.shared().setup();
+    if(getGlobalThis().DiceBoxView) {
+      await DiceBoxView.shared().setup();
     }
-
-    /*
-    const drv = DiceRollView.shared();
-    drv.setCharacter("Conan");
-    drv.setNotation("2d20kh1+2");
-    drv.setTarget(18);
-    await drv.roll();
-    console.log(drv.rollResults());
-    console.log(drv.outcomeDescription());
-    //*/
-
-    //RollPanelView.shared().setCharacter("Conan").setNotation("2d20kl1+2").setRollTarget(undefined || "16").show().positionRelativeTo(document.getElementById("sessionSubtype2Options"))
-    //return;
-    //.positionRelativeTo(document.getElementById("messageInput"));
   }
 
   unhide () {
@@ -141,7 +127,7 @@
     const hostRoomId = PeerServer.shared().peerId();
     assert(hostRoomId);
     const isFile = window.location.protocol === "file:";
-    const base = isFile ? window.location.href : window.location.origin + "/";
+    const base = window.location.href;
     return `${base}?room=${hostRoomId}`;
   }
 
@@ -218,6 +204,13 @@
     return this;
   }
 
+  playerForCharacter(characterName) {
+    return this.session().players().subnodes().find(p => p.nickname() == characterName);
+  }
+
+  isPlayerCharacter(characterName) {
+    return this.playerForCharacter(characterName) != null;
+  }
 }).initThisClass();
 
 /*

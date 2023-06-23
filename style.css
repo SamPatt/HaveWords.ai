@@ -1135,7 +1135,7 @@ body {
 }
 
 /* --- dice box --- */
-#dice-box {
+#diceBox {
     position: absolute;
     top: 0;
     left: 0;
@@ -1146,7 +1146,7 @@ body {
     pointer-events: none;
   }
   
-#dice-box canvas {
+#diceBox canvas {
     width: 100%;
     height: 100%;
     z-index: 1;
@@ -1154,7 +1154,13 @@ body {
     background-color: transparent;
 }
 
-/* --- DiceRollView --- */
+/* --- Dice Roll Messages --- */
+
+.rollRequest h3 {
+    font-weight: normal;
+}
+
+/* --- DiceBoxView --- */
 
 span.criticalSuccessRoll {
     font-weight: bold;
@@ -1181,6 +1187,7 @@ span.ignoredRoll {
     background-color: var(--body-background-color);
     color: var(--body-color);
     display: none;
+    
 }
 
 #rollPanelView .rollPanelRow {
@@ -1190,6 +1197,19 @@ span.ignoredRoll {
 }
 
 #rollPanelView .rollPanelButtons {
+    text-align: center;
+}
+
+#rollPanelRollButton {
+    margin-right: 1em;
+}
+
+#rollPanelTitle {
+    margin: 0px;
+    margin-bottom: 1em;
+}
+
+.rollPanelTitleRow {
     align-self: center;
 }
 

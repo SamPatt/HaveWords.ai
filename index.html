@@ -275,50 +275,73 @@
     </div>
 
     <!--- begin dice box --->
-    <div id="dice-box"></div>
+    <div id="diceBox">
+    </div>
 
     <!--- begin roll panel --->
-    <div id="rollPanelView" class="message-wrapper nonAiMessage">
-        <div class="rollPanelRow">
-            <label for="rollPanelCharacter">character:</label><input id="rollPanelCharacter" class="TextFieldView" placeholder="name"/>
-        </div>
-        <div class="rollPanelRow">
-            <label for="rollPanelCount">die count:</label><input id="rollPanelCount" class="TextFieldView" placeholder="number"/>
-        </div>
-        <div class="rollPanelRow">
-            <label for="rollPanelDie">die type:</label>
-            <select id="rollPanelDie">
-                <option value="d4">d4</option>
-                <option value="d6">d6</option>
-                <option value="d8">d8</option>
-                <option value="d10">d10</option>
-                <option value="d12">d12</option>
-                <option value="d20">d20</option>
-                <option value="d100">d100</option>
-            </select>
-        </div>
-        <div class="rollPanelRow">
-            <label for="rollPanelModifier">modifier:</label><input id="rollPanelModifier" class="TextFieldView" placeholder="+/- number"/>
-        </div>
-        <div class="rollPanelRow">
-            <label for="rollPanelRollType">roll type:</label>
-            <select id="rollPanelRollType">
-                <option value="" selected>Normal</option>
-                <option value="kh1">Advantage</option>
-                <option value="kl1">Disadvantage</option>
-            </select>
-        </div>
-        <div class="rollPanelRow">
-            <label for="rollPanelTarget">target roll:</label><input id="rollPanelTarget" class="TextFieldView" placeholder="number"/>
-        </div>
-        <!---
-        <div class="rollPanelRow">
-            <label for="rollPanelSendImmediately">send immediately:</label><input type="checkbox" id="rollPanelSendImmediately" schecked="checked" />
-        </div>
-        -->
-        <div class="rollPanelRow rollPanelButtons">
-            <button id="rollPanelRollButton">Roll Dice</button> <button id="rollPanelCancelButton">Cancel</button>
-        </div>
-    </div>
+    <table id="rollPanelView" class="message-wrapper nonAiMessage">
+        <tr>
+            <th colspan="2"><h2 id="rollPanel_reasonView">Hello</h2></th>
+        </tr>
+    
+        <tr>
+            <td><label for="rollPanel_characterTextField">character:</label></td>
+            <td><input id="rollPanel_characterTextField" class="TextFieldView" placeholder="name"/></td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_countTextField">die count:</label></td>
+            <td><input id="rollPanel_countTextField" class="TextFieldView" placeholder="number"/></td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_dieOptionsView">die type:</label></td>
+            <td>
+                <select id="rollPanel_dieOptionsView">
+                    <option value="4">d4</option>
+                    <option value="6">d6</option>
+                    <option value="8">d8</option>
+                    <option value="10">d10</option>
+                    <option value="12">d12</option>
+                    <option value="20">d20</option>
+                    <option value="100">d100</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_modifierTextField">modifier:</label></td>
+            <td><input id="rollPanel_modifierTextField" class="TextFieldView" placeholder="+/- number"/></td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_keepDropOptionsView">keep/drop:</label></td>
+            <td>
+                <select id="rollPanel_keepDropOptionsView">
+                    <option value="k" selected>Keep</option>
+                    <option value="d">Drop</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_keepDropHighLowOptionsView">k/d type:</label></td>
+            <td>
+                <select id="rollPanel_keepDropHighLowOptionsView">
+                    <option value="h" selected>High</option>
+                    <option value="l">Low</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_keepDropCountTextField">k/d count:</label></td>
+            <td><input id="rollPanel_keepDropCountTextField" class="TextFieldView" placeholder="number"/></td>
+        </tr>
+        <tr>
+            <td><label for="rollPanel_targetTextField">target:</label></td>
+            <td><input id="rollPanel_targetTextField" class="TextFieldView" placeholder="number"/></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="rollPanelButtons">
+                <button id="rollPanel_rollButton">Roll Dice</button> 
+                <button id="rollPanel_cancelButton">Cancel</button>
+            </td>
+        </tr>
+    </table>    
 </body>
 </html>

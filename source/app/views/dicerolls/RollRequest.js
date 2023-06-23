@@ -1,52 +1,109 @@
-import DiceBox from "@3d-dice/dice-box";
-import ParserInterface from "@3d-dice/dice-parser-interface";
+"use strict";
 
-(class DiceRollView extends View {
-  initPrototypeSlots() {
-    super.initPrototypeSlots();
+/* 
 
-    //Public Interface
-    this.newSlot("character", "");
-    this.newSlot("notation", "");
-    this.newSlot("rollTarget", NaN);
+    RollRequest
 
-    //Internal
-    this.newSlot("diceBox");
-    this.newSlot("parser");
-    this.newSlot("rollResults", "");
+*/
+
+(class RollRequest extends Base {
+  //Public
+  initPublicPrototypeSlots() {
+    this.newSlot("id", -1);
+    this.newSlot("reason", "Dice Roll");
+    this.newSlot("character", "Unspecified Character"); //name
+    this.newSlot("count", 1);
+    this.newSlot("die", 20);
+    this.newSlot("modifier", 0);
+    this.newSlot("keepDrop", "k");
+    this.newSlot("keepDropHighLow", "h");
+    this.newSlot("keepDropCount", 1);
+    this.newSlot("target", 0);
+    this.newSlot("results", 0);
   }
 
-  //Public Interface
-  async setup() {
-    return this.diceBox().init();
-  }
+  setJson(json) { //JSON from GPT function_call
+    if (json.reason) {
+      this.setReason(json.reason);
+    }
 
-  async roll() {
-    this.setRollResults(null);
-    await this.diceBox().roll(this.parser().parseNotation(this.notation()));
-    this.setRollResults(this.parser().parseFinalResults(this.diceBox().getRollResults()));
-    this.augmentRollResults();
+    if (json.character) {
+      this.setCharacter(json.character);
+    }
+
+    if (json.num) {
+      this.setCount(json.num);
+    }
+
+    if (json.die) {
+      this.setDie(json.die);
+    }
+
+    if (json.mod) {
+      this.setModifier(json.mod);
+    }
+
+    if (json.kd) {
+      if (json.kd.kd) {
+        this.setKeepDrop(json.kd.kd);
+      }
+
+      if (json.kd.hl) {
+        this.setKeepDropHighLow(json.kd.hl);
+      }
+
+      if (json.kd.num) {
+        this.setKeepDropCount(json.kd.num);
+      }
+      else {
+        this.setKeepDropCount(this.count());  
+      }
+    }
+    else {
+      this.setKeepDropCount(this.count());
+    }
+
+    if (json.target) {
+      this.setTarget(json.target);
+    }
+
     return this;
   }
 
-  value() {
-    return this.rollResults().value;
+  playerCharacter() {
+    return App.shared().playerForCharacter(this.character());
   }
 
-  hasRollTarget() {
-    return !isNaN(this.rollTarget());
+  notation() {
+    let notation = String(this.count());
+    notation += ("d" + String(this.die()));
+    notation += (this.keepDrop() + this.keepDropHighLow() + String(this.keepDropCount()))
+    if (this.modifier()) {
+      notation += (this.modifier() > 0 ? "+" : "") + String(this.modifier());
+    }
+    //console.log(notation);
+    
+    return notation;
+  }
+
+  value() {
+    return this.results().value;
+  }
+
+  hasTarget() {
+    return !!this.target();
   }
 
   hasAdvantage() {
-    return this.notation().includes("kh1");
+    return this.count() > 1 && this.notation().includes("kh1");
   }
 
   hasDisadvantage() {
-    return this.notation().includes("kl1");
+    return this.count() > 1 &&this.notation().includes("kl1");
   }
 
   wasSuccess() {
-    return this.rollResults().success;
+    return this.results().success;
   }
 
   wasCritical() {
@@ -54,16 +111,15 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   wasCriticalSuccess() {
-    return this.rollResults().critical == "success";
+    return this.results().critical == "success";
   }
 
   wasCriticalFailure() {
-    return this.rollResults().critical == "failure";
+    return this.results().critical == "failure";
   }
 
   outcomeDescription() {
-    return this.characterDescription() + 
-      this.diceDescription() + 
+    return this.diceDescription() + 
       this.advantageDescription() + 
       ':' + 
       this.rollDescription() +
@@ -73,39 +129,28 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
       this.successDescription();
   }
 
-  clear() {
-    this.diceBox().clear();
+  /*
+  rollInstructions() {
+    let rollInstructions = this.character() + ", roll " + this.count() + "d" + this.die() + this.modifier();
+    if (this.rollType()) {
+      rollInstructions += " with " + this.rollType();
+    }
+    if (this.target()) {
+      rollInstructions += " with a target of " + this.target() + " or higher";
+    }
+    rollInstructions += "."
+    return rollInstructions;
+  }
+  */
+
+  //Private
+
+  initPrototypeSlots() {
+    this.initPublicPrototypeSlots();
   }
 
-  //Internal
-  init() {
-    super.init();
-
-    this.setDiceBox(new DiceBox("#dice-box", {
-      assetPath: "assets/",
-      assetPath: "/source/external/@3d-dice/dice-box/dist/assets/",
-      //origin: "https://unpkg.com/@3d-dice/dice-box@1.0.8/dist/",
-      //origin: "./source/external/@3d-dice/dice-box/dist/",
-      theme: "smooth",
-      themeColor: "#000000",
-      offscreen: true,
-      scale: 4
-    }));
-
-    this.setParser(new ParserInterface());
-  }
-
-  rolls() {
-    switch(this.rollResults().type) {
-      case "die":
-        return this.rollResults().rolls;
-      case "expressionroll":
-       return this.rollResults().dice.find(die => die.type == "die").rolls;
-    } 
-  }
-
-  augmentRollResults() {
-    const results = this.rollResults();
+  setResults(diceBoxResults) {
+    this._results = diceBoxResults;
 
     const rolls = this.rolls();
     let highestRoll = { value: Number.MIN_SAFE_INTEGER }
@@ -132,30 +177,30 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
       }
     });
 
-    if (this.hasRollTarget()) {
-      const results = this.rollResults();
-      results.target = this.rollTarget();
-      if (this.hasAdvantage()) {
-        results.critical = highestRoll.critical;
-      }
-      else if (this.hasDisadvantage()) {
-        results.critical = lowestRoll.critical; 
-      }
-      else {
-        results.critical = highestRoll.critical; 
-      }
+    const results = this.results();
+    results.target = this.target();
+    if (this.hasAdvantage()) {
+      results.critical = highestRoll.critical;
+    }
+    else if (this.hasDisadvantage()) {
+      results.critical = lowestRoll.critical; 
+    }
 
-      if (this.wasCritical()) {
-        results.success = this.wasCriticalSuccess();
-      }
-      else {
-        results.success = this.value() >= results.target;
-      }
+    if (this.wasCritical()) {
+      results.success = this.wasCriticalSuccess();
+    }
+    else if (this.hasTarget()) {
+      results.success = this.value() >= results.target;
     }
   }
 
-  characterDescription() {
-    return `${this.character()} rolled`;
+  rolls() {
+    switch(this.results().type) {
+      case "die":
+        return this.results().rolls;
+      case "expressionroll":
+       return this.results().dice.find(die => die.type == "die").rolls;
+    } 
   }
 
   diceDescription() {
@@ -163,7 +208,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   rollInfo() {
-    let results = this.rollResults();
+    let results = this.results();
     if (results.type == "expressionroll") {
       return results.dice.find(d => d.type == "die");
     }
@@ -177,7 +222,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   dieNumber() {
-    let results = this.rollResults();
+    let results = this.results();
     let die = results;
     if (results.type == "expressionroll") {
       die = results.dice.find(d => d.type == "die");
@@ -231,7 +276,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
 
   modifierDescription() {
     if (this.hasModifier()) {
-      const results = this.rollResults();
+      const results = this.results();
       return ' ' + results.ops[0] + ' ' + String(results.dice.find(d => d.type == "number").value);
     }
     else {
@@ -240,7 +285,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   hasModifier() {
-    return this.rollResults().type == "expressionroll";
+    return this.results().type == "expressionroll";
   }
 
   valueDescription() {
@@ -257,12 +302,12 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   targetDescription() {
-    if (this.hasRollTarget()) {
+    if (this.hasTarget()) {
       let description = ' vs ';
       if (this.wasCritical()) {
         description += "<span class='ignoredRoll'>"
       }
-      description += String(this.rollTarget());
+      description += String(this.target());
       if (this.wasCritical()) {
         description += "</span>"
       }
@@ -275,7 +320,7 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
   }
 
   successDescription() {
-    if (this.hasRollTarget()) {
+    if (this.hasTarget() || this.wasCritical()) {
       let description = ' (';
 
       if (this.wasCritical()) {
@@ -293,5 +338,3 @@ import ParserInterface from "@3d-dice/dice-parser-interface";
     }
   }
 }).initThisClass();
-
-window.DiceRollView = DiceRollView;

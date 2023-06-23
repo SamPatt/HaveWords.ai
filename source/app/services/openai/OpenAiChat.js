@@ -12,6 +12,7 @@
     this.newSlot("initialMessagesCount", 3); // Number of initial messages to always keep
     this.newSlot("models", null);
     this.newSlot("didModelCheck", false);
+    this.newSlot("localStorageModelsKey", "openai_available_models_20230623")
   }
 
   init() {
@@ -44,12 +45,12 @@
   }
 
   setAvailableModelNames (modelNamesArray) { /* or pass in null to clear the list */
-    localStorage.setItem("openai_available_models", JSON.stringify(modelNamesArray));
+    localStorage.setItem(this.localStorageModelsKey(), JSON.stringify(modelNamesArray));
     return this;
   }
 
   availableModelNames () {
-    const s = localStorage.getItem("openai_available_models");
+    const s = localStorage.getItem(this.localStorageModelsKey());
     try {
       return s ? JSON.parse(s) : null;
     } catch (e) {
@@ -76,9 +77,8 @@
     // model names with versions numbers are ones soon to be depricated, 
     // so we don't include those.
     return [
-      "gpt-4", 
-      "gpt-4-32k", 
-      "gpt-3.5-turbo", 
+      "gpt-4-0613",
+      "gpt-3.5-turbo-0613",
     ];
   }
 
@@ -128,22 +128,29 @@
   newRequestForPrompt (prompt, role) {
     const selectedModel = SessionOptionsView.shared().aiModel();
     assert(this.allModelNames().includes(selectedModel));
-
+    
     this.addToConversation({
       role: role,
       content: prompt,
     });
 
-    const request = this.newRequest().setBodyJson({
+    const bodyJson = {
       model: selectedModel,
       messages: this.conversationHistory(),
       temperature: 0.7, // more creative
       top_p: 0.9 // more diverse
-    });
+    }
+
+    const functions = SessionOptionsView.shared().gptFunctions();
+    if (functions) {
+      bodyJson.functions = functions;
+    }
+
+    const request = this.newRequest().setBodyJson(bodyJson);
     return request
   }
 
-  async asyncFetch (prompt, role="user") {
+  async asyncFetch (prompt, role="user") { //TODO: Is this obsolete?
     const request = this.newRequestForPrompt(prompt, role);
 
     let json = undefined;
@@ -173,30 +180,42 @@
       return undefined
     }
 
-    const aiResponse = json.choices[0].message.content;
-    this.addResponseText(aiResponse);
+    const aiResponse = { content: json.choices[0].message.content };
+
+    if (json.choices[0].message.function_call) {
+      aiResponse.function_call = json.choices[0].message.function_call;
+    }
+
+    this.addResponse(aiResponse);
 
     return aiResponse;
   }
 
   onRequestComplete (request) {
-    this.addResponseText(request.fullContent());
+    const json = { content: request.fullContent() };
+    if (request.functionCall()) {
+      json.function_call = request.functionCall()
+    }
+    this.addResponse(json);
   }
 
-  addResponseText (text) {
+  addResponse (json) {
     // Add the assistant's response to the conversation history
-    this.addToConversation({
-      role: "assistant",
-      content: text,
-    });
+    this.addToConversation(Object.assign({ role: "assistant"}, json));
 
-    // Save the conversation history to local storage
-    Session.shared().addToHistory({
+    const historyEntry = {
       type: "aiResponse",
-      data: text,
+      data: json.content,
       id: LocalUser.shared().id(),
       nickname: SessionOptionsView.shared().selectedModelNickname(),
-    });
+    }
+
+    if (json.function_call) {
+      historyEntry.function_call = json.function_call;
+    }
+
+    // Save the conversation history to local storage
+    Session.shared().addToHistory(historyEntry);
     return this;
   }
 
