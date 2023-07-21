@@ -225,6 +225,8 @@
         })
         App.shared().session().players().onChange();
       }
+
+      m.checkDiceRolls();
     } else {
       console.warn("onAiResponseCompleteText couldn't find message for requestId:" + requestId);
     }

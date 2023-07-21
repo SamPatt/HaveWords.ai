@@ -213,6 +213,10 @@
     return this.contentOfElementsOfClass('playerInfo'); 
   }
 
+  rollWasMentioned() {
+    return this.text().match(/[^a-zA-Z]*roll[^a-zA-Z]*/i);
+  }
+
 
   // isUser - this is duplicated in ImageMessageView
 
@@ -343,6 +347,16 @@
 
   /* Function Calls */
 
+  async checkDiceRolls() {
+    if (this.rollWasMentioned()) {
+      const request = OpenAiDiceRollsRequest.clone();
+      let responseJson = await request.asyncFetch();
+      if (responseJson.function_call) {
+        this.execRollRequest(responseJson);
+      }
+    }
+  }
+
   execFunctionCall(responseJson) {
     switch(responseJson.function_call.name) {
       case "rollRequest":
@@ -352,6 +366,12 @@
   }
 
   execRollRequest(responseJson) {
+    const rolls = JSON.parse(responseJson.function_call.arguments).rolls;
+
+    if (rolls.length == 0) {
+      return;
+    }
+
     let container = document.createElement("div");
     container.className = "rollRequest";
     container.innerHTML = '<h2>Please make the following roll(s)</h2>';
@@ -359,7 +379,7 @@
     //group request rolls by character for display
     const groupedRolls = new Map();
     
-    JSON.parse(responseJson.function_call.arguments).rolls.forEach(roll => {
+    rolls.forEach(roll => {
       const rolls = groupedRolls.get(roll.character) || [];
       rolls.push(roll);
       groupedRolls.set(roll.character, rolls);
@@ -386,6 +406,10 @@
     container.appendChild(characterList);
 
     this.textElement().appendChild(container);
+
+    setTimeout(() => {
+      AiChatColumn.shared().scrollView().scrollToBottom();
+    }, 10);
   }
 
   addRollOutcome(rollOutcome) {
