@@ -295,79 +295,14 @@ Here are the character sheets (in JSON format) for the players in our game:
 
 If any necessary details are empty (such as stats, armorClass, hitPoints, proficiencies, equitment, money, features or appearance), please generate those details and provide a playerInfo div with the results.
 
-You should call the rollRequest function to request player character, non-player character and dm dice rolls.
+When you ask players to make dice rolls, remember to tell them:
+- the reason for the roll
+- the type of dice to roll
+- how many dice to roll
+- if there are any modifiers that apply
+- the target roll they have to beat, if any
 `,
-        gptFunctions: [
-          {
-            "name": "rollRequest",
-            "description": "The rollRequest function presents a UI element that allows players to make dice rolls and report them back to you. As the DM, you must call the rollRequest function whenever you need the player to make dice rolls. You can request many dice rolls in a single function call.",
-            "parameters": {
-              "type": "object",
-              "properties": {
-                "rolls": {
-                  "type": "array",
-                  "description": "An array containing the rolls the DM is requesting.",
-                  "items": {
-                    "type": "object",
-                    "description": "An object specifying a dice roll requested for a character.",
-                    "properties": {
-                      "character": {
-                        "type": "string",
-                        "description": "The name of the character that should roll. The character can be the name of a player or non-player character, or even 'DM'."
-                      },
-                      "reason": {
-                        "type": "string",
-                        "description": "A ONE OR TWO WORD description of the reason that the DM requested the roll. e.g. Attack, Damage, Skill Check, Initiative, Random Encounter, Loot Generation, etc.",
-                        "maxLength": 32
-                      },
-                      "die": {
-                        "type": "integer",
-                        "enum": [4, 6, 8, 10, 12, 20, 100],
-                        "description": "The die number that the character should roll"
-                      },
-                      "num": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "description": "The number of dice the character should roll"
-                      },
-                      "mod": {
-                        "type": "integer",
-                        "description": "(optional) The modifier that the character should apply to the roll. Omit this property entirely if the value is 0."
-                      },
-                      "target": {
-                        "type": "integer",
-                        "description": "(optional) The total that constitutes success for the roll. Omit this property entirely if the value is 0."
-                      },
-                      "kd": {
-                        "type": "object",
-                        "description": "Specifies how many dice should be kept or dropped from the roll.",
-                        "properties": {
-                          "num": {
-                            "type": "number",
-                            "description": "The number of dice to keep or drop"
-                          },
-                          "kd": {
-                            "type": "string",
-                            "enum": ["k", "d"],
-                            "description": "'k' to keep dice. 'd' to drop dice."
-                          },
-                          "hl": {
-                            "type": "string",
-                            "enum": ["h", "l"],
-                            "description": "'h' to select highest dice. 'l' to select lowest dice."
-                          }
-                        },
-                        "required": ["num", "kd", "hl"]
-                      }
-                    },
-                    "required": ["name", "reason", "die", "num", "kd"]
-                  }
-                }
-              },
-              "required": ["rolls"]
-            }
-          }
-        ],
+//prompt: "Please ask the player (Conan) to make an attack roll with advantage (2d20). Conan has +6 to hit and must beat an AC of 16 to succeed.",
         promptSuffix: " ",
         artPromptPrefix: "Painting in the style of Frank Frazetta of:",
         options: [

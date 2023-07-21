@@ -208,10 +208,10 @@
 
   onXhrLoadEnd (event) {
     this.onXhrRead();
-    this.streamTarget().onStreamComplete(this);
     if (this.service().onRequestComplete) {
       this.service().onRequestComplete(this)
     }
+    this.streamTarget().onStreamComplete(this);
     this.xhrResolve()(this.fullContent()); 
   }
 
