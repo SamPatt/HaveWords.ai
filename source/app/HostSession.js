@@ -279,8 +279,16 @@
     this.broadcast(json);
   }
 
-  onStreamComplete (request) {
+  async onStreamComplete (request) {
     //debugger
+    if (!request.functionCall() && SessionOptionsView.shared().sessionTypeOptions().value() == "fantasyRoleplay") {
+      const diceRollRequest = OpenAiDiceRollsRequest.clone();
+      let responseJson = await diceRollRequest.asyncFetch();
+      if (responseJson.function_call) {
+        request.setFunctionCall(responseJson.function_call);
+      }
+    }
+    
     const content = request.fullContent();
     this.shareUpdate(request, content, true);
     AiChatColumn.shared().onAiResponseCompleteText(content, request.requestId());

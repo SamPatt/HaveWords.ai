@@ -347,19 +347,12 @@
 
   /* Function Calls */
 
-  async checkDiceRolls() {
-    if (this.rollWasMentioned()) {
-      const request = OpenAiDiceRollsRequest.clone();
-      let responseJson = await request.asyncFetch();
-      if (responseJson.function_call) {
-        this.execRollRequest(responseJson);
-      }
-    }
-  }
-
   execFunctionCall(responseJson) {
     switch(responseJson.function_call.name) {
       case "rollRequest":
+        this.execRollRequest(responseJson);
+        break;
+      case "dice_rolls":
         this.execRollRequest(responseJson);
         break;
     }
